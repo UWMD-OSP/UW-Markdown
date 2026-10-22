@@ -21,32 +21,7 @@ metadata and block-override predicates enumerated below, and `META-06`/error
 for conditional agent identity presence and stated provenance-reference carrier
 requirements. Preserve META-01/02/03/04, existing completeness warnings and SRC
 vocabulary ownership. Use the accepted retained-physical/current-model operation.
-**Accepted by the owner,2026-10-18, as reviewed atc551e956.**
-
-> RFC 0095 (#389) is accepted as pinned at c551e956: U1 the DQ-06 split with attribution under META-06, U2 symmetric stated-assertion triggers, U3 the whole-string YYYY-MM-DD Gregorian date domain. Mark it ready and merge when exact-main CI is green; record the acceptance in NOW.md with the SHA and CI link. Implement META-05/06 and the as_of domain in TS and Python together on the #354 lane, with the 89-reference inventory frozen as the activation baseline and the calendar vectors as cross-runtime tests. No release, version, tag or publication.
-
-This docs-only acceptance records the approved contract. Synchronized
-Format/Protocol/schema, TypeScript/Python and conformance implementation follows
-on Issue354. This PR itself changes no live registry, runtime predicate,
-conformance expectation, capability declaration or receipt behavior. The frozen
-89-reference inventory is the activation baseline; its scope and limits below
-remain explicit. Earlier drafting authority and owner direction follow.
-
-Owner direction,2026-10-18, with the exact question context:
-
-> May I prepare a docs-only RFC 0095 from the concrete Issue #354 packet (https://github.com/UWMD-OSP/UW-Markdown/issues/354#issuecomment-6256947939)? It would propose closed META-05/06 allocations for the remaining optional metadata and conditional-reference requirements, leaving the DQ-06 collision, reference triggers and as_of domain as explicit owner choices. This authorizes drafting only; acceptance and activation remain separate.
-
-> Approve docs-only RFC 0095 draft
-
-The owner's subsequent choices, quoted verbatim (2026-10-18):
-
-> U1 adopt the draft's recommended split: DQ-06/info stays for stage readiness only; promoted-reference attribution moves to META-06/error under the U2 trigger; remove the duplicate emission; inventory the newly assessed population and report it to me before any activation.
->
-> U2: the obligation is triggered by canonical provenance.resolution and by any stated override resolution assertion, applied identically to both references; shadowed and duplicate paths are suppressed exactly once; no fetching, no inferred asymmetry.
->
-> U3: calendar date domain: whole-string YYYY-MM-DD, ASCII digits, valid Gregorian date, years 0001–9999, no trimming or normalization, null and absence as the draft defines; synchronize Format, Protocol and schema in the same RFC and add independent TS and Python vectors; do not reuse T1B.
->
-> Pin all three in the RFC text, re-review, and bring it to me for acceptance when exact-head CI is green. Drafting authority only until then; prelaunch 4.x, no versions, releases, tags or publication.
+**Accepted by the owner, 2026-10-18.** See [Resolution](#resolution).
 
 ## Motivation and verified authority
 
@@ -463,7 +438,7 @@ and its linked JSON/compressed trace identify every input hash, block origin,
 parent gate, canonical/override assertion and rejection. The observer compiles
 exact Git runtime sources and executes the actual old checkDataQuality function;
 it does not use stale dist or activate the candidate. A separately written
-integrator observer independently reproduces the standalone counts and new rows.
+second observer independently reproduces the standalone counts and new rows.
 
 | Measured standalone population | Count |
 |---|---:|
@@ -586,11 +561,40 @@ procedure, schema fallback or capability promotion is needed for this allocation
 Production implementation and changes to governing contracts are outside this
 docs-only acceptance PR. The isolated review controls have no production imports or hooks.
 
-## Synchronized implementation checkpoint
+## Alternatives considered
 
-The Issue354 activation implements the closed predicates in TypeScript and
-independent Python source validation, with Format/Protocol/registry/schema
-synchronized. The reviewed89-reference inventory and all calendar inputs remain
+- Extend META-01 or META-04: obscures their owner-accepted closed predicates.
+- Emit one generic schema error: conflates missing diagnostics with composition,
+  source availability, optional annotations and requirements owned by other codes.
+- Treat bad metadata as a parse refusal: misclassifies admitted JSON and erases
+  the ordinary validation/error transport boundary.
+- Infer missing identity/reference/defaults or fetch external data: changes the
+  stated record and exceeds read-only validation.
+- Activate the uncontroversial rows while leaving U1–U3 implementation-defined:
+  would leave cross-implementation results undefined; the owner accepted the exact
+  U1–U3 text instead.
+
+## Resolution
+
+Accepted by the owner, 2026-10-18, in
+[#389](https://github.com/UWMD-OSP/UW-Markdown/pull/389):
+
+> RFC 0095 (#389) is accepted as pinned at c551e956: U1 the DQ-06 split with attribution under META-06, U2 symmetric stated-assertion triggers, U3 the whole-string YYYY-MM-DD Gregorian date domain. Mark it ready and merge when exact-main CI is green; […] Implement META-05/06 and the as_of domain in TS and Python together on the #354 lane, with the 89-reference inventory frozen as the activation baseline and the calendar vectors as cross-runtime tests. No release, version, tag or publication.
+
+The owner's U1–U3 choices, pinned in the sections above, were given verbatim
+(2026-10-18):
+
+> U1 adopt the draft's recommended split: DQ-06/info stays for stage readiness only; promoted-reference attribution moves to META-06/error under the U2 trigger; remove the duplicate emission; inventory the newly assessed population and report it to me before any activation.
+>
+> U2: the obligation is triggered by canonical provenance.resolution and by any stated override resolution assertion, applied identically to both references; shadowed and duplicate paths are suppressed exactly once; no fetching, no inferred asymmetry.
+>
+> U3: calendar date domain: whole-string YYYY-MM-DD, ASCII digits, valid Gregorian date, years 0001–9999, no trimming or normalization, null and absence as the draft defines; synchronize Format, Protocol and schema in the same RFC and add independent TS and Python vectors; do not reuse T1B.
+>
+> Pin all three in the RFC text, re-review, and bring it to me for acceptance when exact-head CI is green. Drafting authority only until then; prelaunch 4.x, no versions, releases, tags or publication.
+
+The implementation ([#392](https://github.com/UWMD-OSP/UW-Markdown/pull/392))
+implements the closed predicates in TypeScript and independent Python source
+validation, with Format/Protocol/registry/schema synchronized. The reviewed89-reference inventory and all calendar inputs remain
 unchanged. A separate exact-RFC0094-base inventory of884 recognized sources
 (820 fenced parses,9 prior typed refusals,55 Lite inputs outside this census)
 found no META-05/06 findings in2320 retained/current references;408 earlier-parent
@@ -613,19 +617,6 @@ SRC to META's retained-physical population or silently fix other source grammar
 behavior. No complete validation/Verifier capability, release or publication is
 claimed by this allocation. The complete-validation WIP remains independently
 gated; full certification cannot be inferred from portable examples or helpers.
-
-## Alternatives considered
-
-- Extend META-01 or META-04: obscures their owner-accepted closed predicates.
-- Emit one generic schema error: conflates missing diagnostics with composition,
-  source availability, optional annotations and requirements owned by other codes.
-- Treat bad metadata as a parse refusal: misclassifies admitted JSON and erases
-  the ordinary validation/error transport boundary.
-- Infer missing identity/reference/defaults or fetch external data: changes the
-  stated record and exceeds read-only validation.
-- Activate the uncontroversial rows while leaving U1–U3 implementation-defined:
-  would leave cross-implementation results undefined; the owner accepted the exact
-  U1–U3 text instead.
 
 ## Prior art
 

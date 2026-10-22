@@ -15,8 +15,8 @@ affects:
 
 # RFC 0066: Resolve calc identifiers over variant-map sections the way cross-checks do
 
-**Implemented; released in 2.15.0.** On 2026-10-02 Jared made three owner
-decisions:
+**Implemented; released in core/CLI 2.15.0 with Protocol 2.19.0.** See
+[Resolution](#resolution). On 2026-10-02 the owner made three decisions:
 
 - **D1.** Protocol §VIII.2a's section-context rule becomes normative for every
   section-rooted identifier, with refusal as a new `CALC-RESOLVE-002`.
@@ -31,15 +31,11 @@ precedent. Those rules are listed under
 [Consequences of D1 and D2](#independent-verification-and-owner-decision-set-2026-10-02);
 none is a separate owner decision.
 
-**Released in core/CLI 2.15.0 with Protocol 2.19.0.** PR #234 merged the
-implementation once the [merge conditions](#merge-readiness) held. The
-`v2.15.0` tag on release commit `aaa9ec3` published it on 2026-10-02.
-
-A coding agent wrote this RFC. StackUW's engine-exported documents and its
-app-side note UPSTREAM-016 are adopter requirements evidence, not UWMD owner
-authorship. Where the original proposal below differs from the accepted
-decision set, the decision set and Protocol §VIII.2 govern. See
-[Decision status](#decision-status).
+Drafted with AI assistance; reviewed by maintainers. An adopter's
+engine-exported documents and its issue report are requirements evidence, not
+UWMD owner authorship. Where the original proposal below differs from the
+accepted decision set, the decision set and Protocol §VIII.2 govern. See
+[Resolution](#resolution).
 
 ## Summary
 
@@ -70,9 +66,8 @@ evaluator never select different blocks.
 
 ## Independent verification and owner decision set (2026-10-02)
 
-A second agent session re-checked this diagnosis on `main` at `6ad146a`, the
-2.14.0 candidate. Everything was checked against built code, not prose. The
-draft status is unchanged.
+An independent review re-checked this diagnosis on `main` at `6ad146a`, the
+2.14.0 candidate. Everything was checked against built code, not prose.
 
 **Every code claim below reproduces.** Over `10-declared-roles.uwx.md` and its
 variants, three readers disagree:
@@ -91,7 +86,7 @@ variants, three readers disagree:
   broken even when calc resolves. This predates 2.14.0; standalone Excel is
   unpublished.
 
-**Adopter scale (de-identified).** StackUW's 11 canonical engine exports were
+**Adopter scale (de-identified).** An adopter's 11 canonical engine exports were
 measured under core 2.7.0 and the 2.14.0 candidate:
 
 - Every one states `debt_structure` as a `senior` + `junior` role map, and one
@@ -173,8 +168,8 @@ may still revisit any of them:
   selects under its targets' declared roles and reports each excluded target,
   mirroring §VIII.2b's `period_inputs`.
 - **Payload.** Every consumer reads the selected block's payload the way
-  §VIII.2 defines it, through `blockPayload`. That comes from the separate
-  payload-unwrapping fix this branch is rebased on; it is not part of RFC 0066's
+  §VIII.2 defines it, through `blockPayload`. That comes from a separate
+  payload-unwrapping fix that landed first; it is not part of RFC 0066's
   contract.
 - **Receipts.** Over an unresolvable map, issuance changes from
   `computed: false` to `RCP_COMPUTATION_FAILED`. That is the existing receipt
@@ -253,10 +248,10 @@ symbols rather than line numbers.
   metrics that read `debt_structure` in all ten built-in packs in
   `PACK_REGISTRY` (`packs/index.ts`) report `ok: true, value: null`. Those
   metrics are `ltv`, `ltc`, `dscr`, `debt_yield`, `loan_per_*` and
-  `cash_on_cash`, as each pack declares them. StackUW reported the same on an
+  `cash_on_cash`, as each pack declares them. An adopter reported the same on an
   engine-exported document on 2026-09-28: three of the student-housing pack's
-  fourteen metrics evaluated (its note UPSTREAM-016). That figure is adopter
-  evidence and was not reproduced here. A null that means "the evaluator
+  fourteen metrics evaluated. That figure is adopter evidence and was not
+  reproduced here. A null that means "the evaluator
   declined to choose a block" is indistinguishable from one that means "the
   field is not stated". RFC 0037 corrected the same failure for cross-checks
   with coverage and `CC-16`.
@@ -527,7 +522,7 @@ All cases use two `debt_structure` blocks shaped like those in
 | `variant-07-explicit-missing` | as 03 | `{ "sectionVariants": { "debt_structure": "absent-key" } }` | `ok: false`, `CALC-RESOLVE-002` (today `ok: true, value: null`) |
 | `variant-08-primary-collision` | two `_role: primary` blocks | none | `ok: false`, `CALC-RESOLVE-002` (today `ok: true, value: null`) |
 
-> **After 2.15.0 (StackUW's UPSTREAM-021).** As shipped, `variant-05` and
+> **After 2.15.0 (an adopter report).** As shipped, `variant-05` and
 > `variant-11` put the named block in the last fence, so a last-fence reader
 > passed both. Each now appends a third `junior` fence after it. A first-fence
 > or a last-fence reader therefore fails. Expected results and the rule above
@@ -655,9 +650,10 @@ of one under precedent.
   decision, and this draft only makes the evaluator honest about the maps that
   do exist. *Still out of scope; parser routing is unchanged.*
 
-## Decision status
+## Resolution
 
-RFC 0066 is `implemented`, released in core/CLI 2.15.0 with Protocol 2.19.0.
+RFC 0066 was accepted on 2026-10-02 and is `implemented`, released in core/CLI
+2.15.0 with Protocol 2.19.0 on 2026-10-02.
 
 | Item | Source | State |
 |---|---|---|
@@ -671,33 +667,12 @@ RFC 0066 is `implemented`, released in core/CLI 2.15.0 with Protocol 2.19.0.
 | `--calc-context` accepts `sectionVariants` for any section | Consequence of D1 | Specified. |
 | Implementation; release target core/CLI 2.15.0 with Protocol 2.19.0 | D3, 2026-10-02 | Implemented; released in core/CLI 2.15.0 on 2026-10-02. |
 
-## Merge readiness
-
-D3 set the release target. The owner then asked that the implementation not
-merge until three conditions held. All three now do:
-
-1. **`v2.14.0` is published.** The tag published core/CLI 2.14.0 on
-   2026-10-02, with Protocol 2.18.0.
-2. **The branch sits on released `main`.** The payload-unwrapping fix merges
-   first, as its own change; this branch is rebased behind it.
-3. **The 2.15.0 package generation is prepared and gated**, following the
-   2.14.0 candidate's pattern:
-   - core/CLI 2.15.0, and core's optional signing peer at 0.2.19;
-   - exact-pin bumps for every dependent: signing 0.2.19, batch 0.8.14,
-     Excel 0.9.7, report 0.8.19, lake 0.2.3, and the two modules at 0.1.7;
-   - the root lockfile and `CORE_VERSION`;
-   - receipt issuance baselines and the frozen result-disagreement fixture at
-     engine 2.15.0;
-   - the `VERSIONS.md` rows, a `[2.15.0]` candidate CHANGELOG section and the
-     candidate record (`docs/releases/2.15.0-candidate.md`).
-
-   The release gates were rerun under the pinned toolchain (Node 22.14.0,
-   npm 11.5.1). The candidate record lists the results.
-
-PR #234 merged the implementation at `4227744`. After the RFC 0062
-portable-runner cases (PR #235) and the release record (PR #236), the owner
-pushed the `v2.15.0` tag on release commit `aaa9ec3`, which published
-core/CLI 2.15.0 on 2026-10-02.
+The implementation merged in
+[#234](https://github.com/UWMD-OSP/UW-Markdown/pull/234), on top of the
+separate payload-unwrapping fix, which landed first as its own change. The
+release followed 2.14.0 (Protocol 2.18.0) and also carried the RFC 0062
+portable-runner cases from
+[#235](https://github.com/UWMD-OSP/UW-Markdown/pull/235).
 
 ## Prior art
 

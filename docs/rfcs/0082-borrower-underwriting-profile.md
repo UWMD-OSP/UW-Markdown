@@ -20,8 +20,8 @@ affects:
 
 # RFC 0082: A borrower-underwriting document profile for a loan to an operating company
 
-**Draft agent proposal.** A coding agent wrote this RFC. StackUW's lending
-program, its owner's decisions and its shipped engine are cited as adopter
+**Draft proposal.** Drafted with AI assistance; reviewed by maintainers. An
+adopter's lending program, its decisions and its shipped engine are cited as
 requirements evidence. They are not UWMD owner authorship or acceptance.
 Nothing here is accepted until the UWMD owner accepts it.
 
@@ -77,19 +77,18 @@ reference validator already treats any declared profile other than
 (`packages/uwmd-core/src/validator.ts`, the `CC-13` and `CC-14`
 preconditions). A borrower record is the same shape of problem.
 
-**Adopter evidence (StackUW).** StackUW is a UWMD adopter. In its lending
-program, its owner chose an operating company on a senior term loan as the
-first non-real-estate subject (StackUW decision Q-434, 2026-10-10). On
-2026-10-12 he opened that program's signed export, filing this RFC upstream
-first. StackUW's engine already computes the figures this profile states:
+**Adopter evidence.** In an adopter's lending program, the adopter chose an
+operating company on a senior term loan as the first non-real-estate subject
+(2026-10-10). On 2026-10-12 it opened that program's signed export, filing
+this RFC upstream first. The adopter's engine already computes the figures
+this profile states:
 
 - an income statement to EBITDA and free cash flow, with every year stated and
   none estimated;
 - one senior term loan with a monthly schedule, a balloon at maturity, and
   leverage and fixed-charge coverage tests per year.
 
-It has shipped them through its connector (StackUW tasks 4850, 4994, 4995,
-4996 and 5003). Its signed export waits on a protocol home for these figures,
+It has shipped them through its connector. Its signed export waits on a protocol home for these figures,
 which is what this RFC proposes.
 
 ## Proposed change
@@ -216,7 +215,7 @@ Normative rules:
 - **D&A within operating expenses (`BRW-06`, error).**
   `depreciation_and_amortization` MUST NOT exceed `operating_expenses`. It is
   stated as part of them, so a larger figure states a negative remainder.
-  StackUW refuses the same input today (`DA_EXCEEDS_OPEX`).
+  The adopter's engine refuses the same input today (`DA_EXCEEDS_OPEX`).
 - **Each entry is one full fiscal year.** Interim and last-twelve-months
   periods are out of scope (see Unresolved questions).
 
@@ -354,7 +353,7 @@ codes.
 **What is not verified, deliberately:**
 
 - **`interest` against the terms.** Reproducing it needs an accrual
-  convention: StackUW accrues monthly at the coupon ÷ 12 on the opening
+  convention: the adopter accrues monthly at the coupon ÷ 12 on the opening
   balance, with coupon = max(`reference_rate`, `rate_floor`) + `spread`.
   The standard should choose a convention before it verifies one (Unresolved
   question 2).

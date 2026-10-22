@@ -24,20 +24,7 @@ model-reference operation already established by RFCs0090/0091/0093. Add a
 separate ordered pass after the required booleans and before role/period/source
 checks. Conditional provenance references remain separate.
 
-**Accepted by the owner,2026-10-18, as reviewed at47e6a547.**
-
-> RFC 0094 (#387) is accepted as drafted at 47e6a547: META-04/error only for present-invalid confidence, revision and timestamp (T1B), absence warnings and META-01/02/03 unchanged; mark it ready, merge on green, then implement it in TS and Python on the #354 lane.
-
-This docs-only acceptance records the approved contract and intent to implement.
-Synchronized specification, schema, registry, TypeScript/Python and conformance
-integration follows on Issue354; this PR itself activates no runtime behavior,
-capability declaration or release state. The earlier direction record follows.
-
-Owner direction,2026-10-18, recorded with its exact question context:
-
-> RFC0093 explicitly excludes these remaining fields. Do you approve the reviewed Issue #354 packet’s proposed direction for a separate bounded RFC: META-04/error for present-invalid confidence, revision and timestamp; preserve existing absence warnings and META-01/02/03; keep conditional references separate? This approves direction only, not activation. Packet: https://github.com/UWMD-OSP/UW-Markdown/issues/354#issuecomment-6256947939
-
-> Approve this RFC direction
+**Accepted by the owner, 2026-10-18.** See [Resolution](#resolution).
 
 ## Motivation
 
@@ -185,8 +172,8 @@ Owner2026-10-18 selected T1B in response to this exact question:
 
 > T1B: exact UTC-Z (Recommended)
 
-That selection resolved the earlier T1 direction. The subsequent owner decision
-above accepts the complete RFC at47e6a547; synchronized implementation remains owed.
+That selection resolved the earlier T1 direction. The owner's acceptance recorded
+in [Resolution](#resolution) covers the complete RFC.
 
 ### Exact accepted UTC-Z predicate
 
@@ -316,13 +303,13 @@ all1509 present timestamp values and their source identities. Independent exact
 UTC-Z classification admits1501 and rejects exactly the same8 `<volatile>`
 comparison-template markers: no additional candidate delta. Combined with the
 unchanged166 confidence findings, the inventory remains174 leaves across78 files.
-The integrator separately matched every captured timestamp to unchanged source
+A separate check matched every captured timestamp to unchanged source
 bytes and checked the exact profile using the existing integer calendar predicate
 and a separate full-string ASCII check. No production validator was modified.
 
 Two independently authored local Python/JavaScript predicates agree with all60
 manually specified boundary controls in AppendixB (11 positive,49 negative).
-The integrator independently rechecked those60 expected results. This is bounded
+Those60 expected results were independently rechecked. This is bounded
 read-only profile evidence, not production TS/Python integration or a platform
 certification run. Existing absence, parent, physical/composition and transport
 controls remain required for the future implementation.
@@ -333,7 +320,7 @@ independent reclassification
 `b6b6da021ccc389f622e4cc9a40d77ab6520a860b76599a4764069c2198dddb6`;
 independent60-case boundary report
 `e4aa843ebe32e87d2e491a9e63dabefcf92c454e82d3932dfbd083528db12f2f`;
-integrator value/source/boundary audit
+value/source/boundary audit
 `94d0359d1edc94157e890ad1131b1408beeec7553e9bbb82da4df472ad83a217`.
 All captures refer to the immutable baseline and selected profile, not accepted
 validation expectations or changed financial/source/receipt subjects.
@@ -378,18 +365,17 @@ function, generic fallback, manifest capability or complete Verifier claim.
 - Host-parser date acceptance or trim/default repair: produces runtime-dependent
   admission or alters the evidence instead of validating the stated record.
 
-## Acceptance and implementation gates
+## Resolution
 
-1. Owner acceptance is recorded above for the complete reviewed contract at47e6a547.
-   Independent profile evidence and the exact lexical/calendar boundaries remain
-   required implementation controls; no installed format library defines additional
-   accepted spellings.
-2. Merge this docs-only acceptance only after independent review and green
-   exact-final-head CI. Acceptance does not itself claim a shipped runtime change.
-3. Before implementation integration, independently inventory actual validation/
-   CLI/receipt impact on unchanged sources; synchronize both implementations,
-   contracts and individually governed expectations. Preserve unrelated issue
-   order and assertion strength; run required exact-head integration CI.
+Accepted by the owner, 2026-10-18, in
+[#387](https://github.com/UWMD-OSP/UW-Markdown/pull/387):
+
+> RFC 0094 (#387) is accepted as drafted at 47e6a547: META-04/error only for present-invalid confidence, revision and timestamp (T1B), absence warnings and META-01/02/03 unchanged; mark it ready, merge on green, then implement it in TS and Python on the #354 lane.
+
+The timestamp profile is the owner-selected T1B above. Implemented in
+TypeScript and Python in [#388](https://github.com/UWMD-OSP/UW-Markdown/pull/388).
+The exact lexical/calendar boundaries are required implementation controls; no
+installed format library defines additional accepted spellings.
 
 Conditional references and remaining unallocated metadata requirements remain
 separate. RFC0085/0089/0092 and numerical semantics are untouched.

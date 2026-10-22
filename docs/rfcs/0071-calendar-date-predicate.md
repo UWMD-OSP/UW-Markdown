@@ -18,17 +18,9 @@ affects:
 
 # RFC 0071: A calendar-date validity predicate for safe expressions
 
-**Implemented; released and independently verified.** A coding agent wrote
-this RFC, and the owner accepted it on 2026-10-04 (see the
-[owner acceptance record](#owner-acceptance-record-2026-10-04)). The owner
-separately authorized implementation the same day (see
-[Owner implementation authorization](#owner-implementation-authorization-2026-10-04)).
-PR #250 merged the implementation. Release preparation paired it with
-Protocol 2.22.0 (see the
-[release-preparation direction](#owner-release-preparation-direction-2026-10-05)).
-The owner-authorized `v2.18.0` release published it in core/CLI 2.18.0 with
-Stable Protocol 2.22.0, and independent publication verification passed (see
-[Publication and verification](#owner-authorized-publication-and-verification-2026-10-08)).
+**Implemented; released in 2.18.0.** See [Resolution](#resolution).
+
+Drafted with AI assistance; reviewed by maintainers.
 
 ## Summary
 
@@ -64,101 +56,10 @@ With it, RFC 0068's `CC-MOD-MH-05` can be written as
 `as_of_date` then reports `CC-MOD-MH-05` through an ordinary rule evaluating
 `false`, and no module-specific runtime is needed.
 
-## Owner acceptance record (2026-10-04)
-
-- **Decision.** Jared, the project owner, accepted RFC 0071 on 2026-10-04,
-  under the owner-led process in [GOVERNANCE.md](../../GOVERNANCE.md). In that
-  mode no public-comment period or waiver is required.
-- **Frozen contract.** The accepted form is PR #249 head
-  [`bf57e6037032cbcb32964fcde071a9c75c611e45`](https://github.com/UWMD-OSP/UW-Markdown/commit/bf57e6037032cbcb32964fcde071a9c75c611e45).
-  This record changes no contract text. The accepted contract is:
-  - `is_calendar_date(value) → boolean` is part of the shared §VIII.3
-    safe-expression builtin set.
-  - The lexical form is exactly `YYYY-MM-DD`, in ASCII.
-  - Validity follows the proleptic Gregorian calendar for years `0000`–`9999`.
-  - The predicate returns `false` for:
-    - `null` and absent values;
-    - non-strings, arrays and objects;
-    - malformed strings;
-    - impossible dates;
-    - date-times.
-  - There is no coercion or trimming, and no use of locale, time zone, host
-    clock or `Date.parse`.
-  - A call with the wrong number of arguments raises `CALC-TYPE-001`.
-  - An error raised while evaluating the argument propagates normally.
-  - A module rule whose predicate returns `false` reports the rule's own code.
-  - A module that uses the predicate **MUST** set `requires_protocol` to
-    exclude every Protocol version without the builtin.
-- **Disposition.** The status is `accepted`, and intent to implement is
-  recorded. Implementation needs separate authorization. This is not
-  `implemented`, and no released capability is added.
-- **Authorization boundary.** This record covers acceptance and the required
-  documentation only. It does not authorize:
-  - Protocol, spec or schema edits;
-  - builtin or test code;
-  - conformance changes;
-  - version bumps or release preparation;
-  - any change to RFC 0068;
-  - a fix to `actualDays()`.
-- **Related decisions.**
-  - RFC 0068 is intended to adopt the predicate in its own later revision.
-  - No numeric-type predicate is authorized.
-  - The `actualDays()` early-year defect stays a separate implementation bug
-    that needs no RFC (see
-    [Existing implementation drift](#existing-implementation-drift-non-scope)).
-- **Version direction.** Format stays 2.0. Protocol and core each take a
-  minor version. The exact numbers are deferred to release preparation;
-  2.22.0 and 2.18.0 are provisional only. Published Format 2.0, Protocol
-  2.21.0 and core/CLI 2.17.0 are unchanged.
-- **Next decision.** Whether to authorize implementation.
-
-## Owner implementation authorization (2026-10-04)
-
-- **Decision.** Jared separately authorized implementation of the frozen
-  accepted contract on 2026-10-04, after PR #249 merged at canonical `main`
-  `a1b3a747f5dcd3c42f6d8159305bba0774d71366`.
-- **Scope.** RFC 0071 only. The authorization excludes:
-  - the `actualDays()` years-0000–0099 fix;
-  - any change to RFC 0068;
-  - a numeric-type predicate;
-  - release preparation and final version selection;
-  - changes to unrelated financial semantics.
-- **Status.** The RFC stays `accepted` until the implementation ships in a
-  release and its publication is independently verified.
-
-## Owner release-preparation direction (2026-10-05)
-
-The owner directed 2.18.0 release preparation on 2026-10-05. It pairs core/CLI
-**2.18.0** with Protocol **2.22.0** and Format **2.0**. Protocol takes a minor
-version for the normative addition, following this RFC's version direction and
-the RFC 0070 precedent. The §X floor is therefore `>=2.22.0`. The test-only constant described in the implementation notes is renamed `RFC_0071_FLOOR`, because 2.22.0 is now the selected floor. Preparation follows
-[wiki 11](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/11-build-release-governance.md),
-and [the preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-preparation.md)
-documents it. RFC 0071 remains `accepted` throughout preparation. It becomes
-`implemented` only after shipment and independent publication verification.
-Tagging and publication need separate owner action. The accepted semantics are
-unchanged.
-
-## Owner-authorized publication and verification (2026-10-08)
-
-The owner authorized annotated `v2.18.0` on the release-prepared merge
-`4e0a8c18091377fa25800dc2b16954a636be1d83`, not the later head of `main`.
-[Release run 37795279528](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37795279528)
-succeeded and published core/CLI 2.18.0, signing 0.2.22, batch 0.8.17 and
-both modules 0.1.10. Independent registry, provenance, published-file,
-delivered-CLI (210/210) and module-consumer checks passed; see
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-publication.md).
-Publication verification precedes this separate `accepted` → `implemented`
-reconciliation. The immutable release tag and every normative section below
-remain unchanged.
-
 ## Implementation notes
 
-This source implementation was made in PR #250, implementation commit
-`493811eb6d4be60a39a9d60eea9d51107012fd88`, from canonical base `a1b3a74`. Its
-completed matrix is archived at `specs/archive/rfc-0071-calendar-date-predicate.md`.
-It is not yet released. The notes below record where the implementation
-differs from the text above, or makes it more specific.
+PR #250 made this implementation. The notes below record where the
+implementation differs from the text above, or makes it more specific.
 
 1. **The builtin.** `BUILTINS.is_calendar_date` in `calc/builtins.ts` checks
    arity, then returns `typeof value === 'string' && parseISODate(value) !== null`.
@@ -612,8 +513,7 @@ still cannot grow by accretion.
 
 ## Reference implementation
 
-This plan is accepted but not yet authorized. Once implementation is
-authorized:
+PR #250 implemented this plan (see [Implementation notes](#implementation-notes)):
 
 - **Builtin.** `packages/uwmd-core/src/calc/builtins.ts` gains
   `is_calendar_date`, about ten lines:
@@ -822,12 +722,15 @@ The owner also directed:
 
 | Item | Direction | State |
 |---|---|---|
-| Acceptance | Accept once these corrections are in and CI is green | **Accepted 2026-10-04** at `bf57e60` (see [Owner acceptance record](#owner-acceptance-record-2026-10-04)) |
+| Acceptance | Accept once these corrections are in and CI is green | **Accepted 2026-10-04** (see [Resolution](#resolution)) |
 | Implementation | Authorize separately, after acceptance | Not authorized |
 | RFC 0068 | Adopt `is_calendar_date` in RFC 0068's own revision | Directed. RFC 0068 is not edited here |
 | Numeric type predicate | No RFC at this time | Decided: none |
 | Protocol and core numbers | A release-preparation decision; 2.22.0 and 2.18.0 are provisional only | Deferred to release |
 | `actualDays` early-year drift | Repair separately against §VIII.9.1, with no RFC | Recorded in `13-status.md` |
+
+The State column records the position at acceptance; the final status of each
+item is in [Resolution](#resolution).
 
 ## Draft verification record
 
@@ -849,6 +752,31 @@ not committed. No repository code was changed.
   The type condition is therefore load-bearing, not defensive.
 - **Early-year day counts.** The three `actualDays` results in the drift
   table were observed through the built `@uwmd/core` exports.
+
+## Resolution
+
+**Accepted 2026-10-04; implemented 2026-10-08; released in core/CLI 2.18.0
+with Protocol 2.22.0 and Format 2.0.**
+
+- **Acceptance.** The owner accepted the RFC on 2026-10-04 under the owner-led
+  process in [GOVERNANCE.md](../../GOVERNANCE.md), in the form proposed in PR
+  #249. The accepted contract is [Proposed change](#proposed-change) sections
+  1-6 with the [case matrix](#deterministic-semantics-the-case-matrix) and
+  [rule and error behaviour](#rule-and-error-behaviour) above, including the
+  mandatory §X `requires_protocol` floor.
+- **Implementation.** Authorized separately on 2026-10-04 for RFC 0071 only and
+  implemented in PR #250 (see [Implementation notes](#implementation-notes)).
+  The authorization excluded the `actualDays()` years-`0000`–`0099` fix, any
+  change to RFC 0068, a numeric-type predicate and changes to unrelated
+  financial semantics.
+- **Version.** Protocol took a minor version for the normative addition,
+  following the RFC 0070 precedent. The first Protocol containing the builtin
+  is 2.22.0, so the §X floor is `>=2.22.0`. The test-only constant described in
+  implementation note 3 was renamed `RFC_0071_FLOOR` once 2.22.0 was selected.
+- **Related decisions.** RFC 0068 adopts `is_calendar_date` in its own revision;
+  no numeric-type predicate is authorized; the `actualDays()` early-year defect
+  is a separate implementation bug that needs no RFC (see
+  [Existing implementation drift](#existing-implementation-drift-non-scope)).
 
 ## Prior art
 

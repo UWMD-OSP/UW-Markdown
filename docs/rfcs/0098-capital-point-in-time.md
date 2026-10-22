@@ -14,10 +14,10 @@ affects:
 
 # RFC 0098: Declare the point in time of the capital stack and senior loans, and reconcile CC-03 per point
 
-> **Accepted by the owner, 2026-10-19, as drafted** (Jared: "RFC 0098 (#402) is
+> **Accepted by the owner, 2026-10-19, as drafted** (owner: "RFC 0098 (#402) is
 > accepted as drafted; implement it"). The Decisions table D1–D9 stands as
 > written. This is a breaking format change (a newly required field); it opened
-> alone as a draft under PROCESS, and the synchronized implementation follows in
+> alone as a draft, and the synchronized implementation follows in
 > its own PR.
 
 ## Summary
@@ -37,7 +37,7 @@ tolerance do not change.
 
 ## Motivation
 
-Issue #403, filed by StackUW (its tracker id UPSTREAM-030), reports a correct
+Issue #403, filed by an adopter, reports a correct
 construction-to-permanent record that fails `CC-03` with an error:
 
 - `capital_stack` is one point in time. [RFC 0033](./0033-capital-stack-point-in-time.md)
@@ -55,8 +55,8 @@ construction-to-permanent record that fails `CC-03` with an error:
   takeout with 0 and raises `CC-03` (error).
 
 Every figure is right. No section says which date its senior figure describes, so
-the check compares a stabilization amount with a closing amount. StackUW refuses
-to sign such records today, and before RFC 0033 its predecessor suppressed
+the check compares a stabilization amount with a closing amount. The adopter
+refuses to sign such records today, and before RFC 0033 its predecessor suppressed
 `capital_stack` on development deals altogether.
 
 RFC 0033 anticipated this. It rejected a temporal marker in 2026-09 because
@@ -189,10 +189,9 @@ every `capital_stack`.
   `DS-01`, per-point candidates and the widened `resolutions` keys. The
   independent Python implementation (Issue #354) follows in the same
   synchronized implementation, as RFCs 0090 to 0097 did.
-- **Adopters.** StackUW and underwriter.cc state the field on emitted stacks.
-  StackUW can sign construction-to-permanent records once it lands.
-- **Transition.** None, by the prelaunch rule (PROCESS principle 5; Jared,
-  2026-10-11 and 2026-10-19): no grandfathering, default or deprecation period
+- **Adopters.** Adopters state the field on emitted stacks. The reporting
+  adopter can sign construction-to-permanent records once it lands.
+- **Transition.** None, by the prelaunch rule: no grandfathering, default or deprecation period
   for the required field. Absence on `debt_structure` is not a compatibility
   default. It is the defined meaning "outstanding at both points" (see
   *Alternatives*).

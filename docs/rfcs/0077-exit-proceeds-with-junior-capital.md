@@ -20,16 +20,12 @@ affects:
 
 # RFC 0077: Define exit proceeds to equity when the capital stack carries junior capital
 
-**Implemented; released and independently verified.** A coding agent wrote
-this RFC from issue #278 (StackUW UPSTREAM-025). Each decision below was
-answered from existing contracts. On 2026-10-07 the owner accepted D1–D6 as
-recommended and directed implementation (see the
-[owner acceptance record](#owner-acceptance-record-2026-10-07)). PR #279
-carries the implementation and recorded that acceptance when it merged.
-Release preparation paired it with Format 2.0 and core/CLI 2.19.0; it needs no
-Protocol change. The `v2.19.0` release published it in core/CLI 2.19.0 with
-unchanged Format 2.0, and independent publication verification passed (see
-[Publication and verification](#publication-and-verification-2026-10-09)).
+**Implemented; released in 2.19.0.** See [Resolution](#resolution).
+
+Drafted with AI assistance; reviewed by maintainers.
+
+This RFC answers issue #278, an adopter report. Each decision below was
+answered from existing contracts.
 
 ## Summary
 
@@ -145,7 +141,7 @@ Add after the template:
   (checked: `02-full-multifamily` and both Parkview examples). The new fields
   are absent from all of them.
 - **Producers stating common's residual in `net_proceeds_to_equity`**
-  (StackUW from its next release) are misstating the field under D1. They
+  (one adopter, from its next release) are misstating the field under D1. They
   move that figure to `net_proceeds_to_common_equity`, state the
   redemption, and keep `net_proceeds_to_equity` as the total. Until they do,
   the editor corrects the field to the total. That is today's behavior,
@@ -194,17 +190,11 @@ derived passes on both.
   test), Format §4.9, and tier-1 fixture 17 with its baselines.
 - **API surface:** none beyond one more footed field path.
 
-## Owner acceptance record (2026-10-07)
-
-The owner accepted D1–D6 as recommended on 2026-10-07 and directed
-implementation. No decision was changed. Merging the implementation's pull
-request records the acceptance.
-
 ## Alternatives considered
 
 | Alternative | Reason not selected |
 |---|---|
-| **(a) Redefine `net_proceeds_to_equity` as common's residual**, subtracting a stated redemption when present (StackUW's reading) | The field's meaning would depend on whether another field is stated. Two documents with the same stack would disagree on what the field measures, the comparability failure RFC 0038 fixed for return bases. It also contradicts §4.24, which counts preferred equity as equity. |
+| **(a) Redefine `net_proceeds_to_equity` as common's residual**, subtracting a stated redemption when present (the adopter's reading) | The field's meaning would depend on whether another field is stated. Two documents with the same stack would disagree on what the field measures, the comparability failure RFC 0038 fixed for return bases. It also contradicts §4.24, which counts preferred equity as equity. |
 | **(a′) Subtract the pref tranche's `amount` from the stack** | The committed amount is not the redemption: accrued return is missing, and computing it needs conventions UWMD does not define (RFC 0052, financing brief). It would also read §4.24 from `dcf`, against RFC 0033's point-in-time scope. |
 | **(c) Make the field producer-defined when preferred equity exists, and stop footing it** | A field no reader can interpret. It also gives up the editor's consistency for every stack document. |
 | **One `junior_capital_repaid_at_exit` covering mezzanine and pref** | Mezzanine is debt. D2 puts it in `loan_balance_at_exit`, so the equity line stays clean. Lumping the two would hide whether common's residual is after debt or after equity. |
@@ -217,6 +207,14 @@ None. D1–D6 are accepted.
 Out of scope, recorded so it is not mistaken for decided: which equity the
 `returns` metrics describe when preferred equity exists (D6).
 
+## Resolution
+
+**Accepted 2026-10-07; implemented 2026-10-09; released in core/CLI 2.19.0
+with Format 2.0; no Protocol change.** On 2026-10-07 the owner accepted D1-D6
+as recommended, with no decision changed, and directed implementation. PR #279
+carries the implementation and recorded the acceptance when it merged. The
+[Decisions](#decisions) table D1-D6 is the accepted contract.
+
 ## Prior art
 
 - RFC 0038 (`returns.tax_basis`): one declared meaning per field, never
@@ -226,17 +224,3 @@ Out of scope, recorded so it is not mistaken for decided: which equity the
   distribution waterfall splits the equity side.
 - Common CRE models present "net sale proceeds", less the loan payoff, as
   proceeds "to equity", then split them through the equity waterfall.
-
-## Publication and verification (2026-10-09)
-
-Annotated `v2.19.0` targets the release-prepared merge
-`139268f34be9550287d8782e44767a9f7e8273b1` (PR #284), not a later head of
-`main`.
-[Release run 37950962666](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37950962666)
-succeeded and published core/CLI 2.19.0, signing 0.2.23, batch 0.8.18 and
-both modules 0.1.11. Independent registry, provenance, published-file,
-delivered-CLI (228/228) and module-consumer checks passed; see
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.19.0-publication.md).
-Publication verification precedes this separate `accepted` → `implemented`
-reconciliation. The immutable release tag and every normative section above
-remain unchanged.

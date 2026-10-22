@@ -12,7 +12,7 @@ affects:
 
 # RFC 0105: Financial-validity thresholds read named, defined fields
 
-> **Accepted by the owner, 2026-10-20, as drafted** (Jared: "RFC 0105 accepted as drafted (D1 every Format-defined home, D2 most severe band only, D3 keep FV-01..FV-14 numbering, D4 undefined fields not read, D5 no version)").
+> **Accepted by the owner, 2026-10-20, as drafted** (owner: "RFC 0105 accepted as drafted (D1 every Format-defined home, D2 most severe band only, D3 keep FV-01..FV-14 numbering, D4 undefined fields not read, D5 no version)").
 > Origin:
 > [#428](https://github.com/UWMD-OSP/UW-Markdown/issues/428), found while
 > certifying the independent Python implementation (#354). It changes which

@@ -18,6 +18,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Scrub RFC records for public launch: every RFC's `author` is now `UWMD maintainers`;
+  the owner's personal name, private adopter identifiers, branch names and
+  private-repository references leave RFC prose; owner and phase logs collapse
+  into one `## Resolution` section; Golden Deal citations are restated
+  generically; RFC 0068 is marked superseded by RFC 0080. No decision,
+  normative text, code or version changes.
+
 - Implement accepted RFC 0110: a stored §4.17 `financial_validity[]` entry names
   its band `band` (`error | warning`), as the validation result's deal flags do,
   in place of `severity`; the entry's `metric` list gains `ltc`; and an entry that

@@ -12,7 +12,7 @@ affects:
 
 # RFC 0102: A structured block opens only on a three-backtick json line
 
-> **Accepted by the owner, 2026-10-19** (Jared on #405: "backtick fences only;
+> **Accepted by the owner, 2026-10-19** (owner on #405: "backtick fences only;
 > Python aligns"). The RFC, its decisions and the alignment land together.
 
 ## Summary

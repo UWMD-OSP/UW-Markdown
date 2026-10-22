@@ -12,7 +12,7 @@ affects:
 
 # RFC 0104: Validation issue field paths and issue order
 
-> **Accepted by the owner, 2026-10-20, as drafted** (Jared: "RFC 0104 accepted as drafted (D1 dotted paths from the payload/frontmatter root, D2 issue order not normative, D3 array elements by index, D4 no version allocated)").
+> **Accepted by the owner, 2026-10-20, as drafted** (owner: "RFC 0104 accepted as drafted (D1 dotted paths from the payload/frontmatter root, D2 issue order not normative, D3 array elements by index, D4 no version allocated)").
 > Origin:
 > [#424](https://github.com/UWMD-OSP/UW-Markdown/issues/424), found while
 > certifying the independent Python implementation (#354). It changes what a
@@ -64,7 +64,7 @@ Protocol §III.6a gains two rules:
 
 ## Compatibility analysis
 
-No compatibility path (prelaunch; PROCESS principle 5). Consumers reading the
+No compatibility path (the prelaunch rule). Consumers reading the
 old short `field` spellings of the `META_*` completeness codes see full paths.
 The portable corpus does not pin these spellings, so no frozen expectation
 changes; reference-only baselines that do are re-derived in the implementation

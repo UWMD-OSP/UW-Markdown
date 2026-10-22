@@ -16,15 +16,9 @@ affects:
 
 # RFC 0074: What a dependent module's declaration override means
 
-**Implemented; released and independently verified.** A coding agent wrote this RFC. The owner
-settled O1–O3 on 2026-10-05 and directed its implementation the same day.
-The owner accepted it by merging the implementation, PR #273, on
-2026-10-06.
-Release preparation paired it with Protocol 2.22.0 (see the
-[release-preparation direction](#owner-release-preparation-direction-2026-10-05)).
-The owner-authorized `v2.18.0` release published it in core/CLI 2.18.0 with
-Stable Protocol 2.22.0, and independent publication verification passed (see
-[Publication and verification](#owner-authorized-publication-and-verification-2026-10-08)).
+**Implemented; released in 2.18.0.** See [Resolution](#resolution).
+
+Drafted with AI assistance; reviewed by maintainers.
 
 ## Summary
 
@@ -46,8 +40,8 @@ scheduling calculations across modules.
 
 The owner settled its three open questions on 2026-10-05
 ([Owner decisions](#owner-decisions-2026-10-05)). Protocol §VII.3 and §X now
-carry the normative text, and [Implementation record](#implementation-record)
-describes the implementation.
+carry the normative text, and [Resolution](#resolution) records the
+implementation.
 
 ## Motivation
 
@@ -376,7 +370,7 @@ No semantic question remains open. The owner decisions are recorded below, and r
 
 ### Owner decisions (2026-10-05)
 
-Jared decided these on 2026-10-05.
+The owner decided these on 2026-10-05.
 
 - **O1. Direct dependency only.** An override is permitted only when the
   overriding module names, in its own `depends_on`, the module whose
@@ -412,67 +406,40 @@ Jared decided these on 2026-10-05.
 - Two view models for one `section_id` inside a single manifest are outside
   §VII.3. They stay unrefused and are not decided here.
 
-## Implementation record
+## Resolution
 
-- **Code.** It restores #267's `31ccff4` in `modules.ts`,
-  `module-runtime.ts`, their tests and the conformance runner. `main` was
-  byte-identical to the reduction `7dc78b8` on those paths. Checked against
-  this text: `claimDeclarations` already required a direct `depends_on` on
-  the current owner (O1), and the reader rule was already the conservative
-  one (O2). Beyond the restore, only comments that cited PR #267 changed,
-  and one P6 test was added.
-- **P6.** A module-runtime test shows an older host refusing an overriding
-  module through `PROTO-MOD-030`, as RFC 0071's floor does. Release
-  preparation assigns the floor and raises the overriding registry fixtures'
-  `requires_protocol` to it. Until then they used `>=1.0.0`; the 2.18.0
-  preparation raised them to `>=2.22.0`.
-- **Conformance.** `conformance/modules/registry/` keeps #267's 01–04 and
-  makes 05 assert the effective owners. It adds 06–24, one or more per row
-  of [Conformance impact](#conformance-impact), plus the P1.2 sibling,
-  first-declarer exemption and self-read cases. Against the pre-RFC
-  implementation every scenario from 05 on fails, except 22: it pins a
-  sibling refusal that #267 already made.
-- **Defects found in `31ccff4` and fixed.** An independent review of this
-  branch found two:
-  - **Self-read.** `unservedReader` skipped the overriding module's own
-    declaration of the id, so a replacement `x = x * 10` loaded and
-    evaluated to `null`. Before the RFC that value was 10. It now refuses
-    with `083`, as P3.1 and the table above require (scenario 20).
+**Accepted 2026-10-06; implemented 2026-10-08; released in core/CLI 2.18.0
+with Protocol 2.22.0 and Format 2.0.** The owner settled O1-O3 on 2026-10-05
+([Owner decisions](#owner-decisions-2026-10-05)) and directed implementation
+the same day; the owner accepted the RFC by merging the implementation, PR
+#273, on 2026-10-06. The accepted contract is P1-P6 above.
+
+- **Implementation.** PR #273 restored #267's implementation of P1-P5 in
+  `modules.ts`, `module-runtime.ts`, their tests and the conformance runner.
+  Checked against this text, it already required a direct `depends_on` on the
+  current owner (O1) and already used the conservative reader rule (O2).
+- **Defects fixed.** Review of that implementation found two defects, both
+  fixed:
+  - **Self-read.** A replacement reading its own id (`x = x * 10`) loaded and
+    evaluated to `null`; before the RFC that value was 10. It now refuses with
+    `083`, as P3.1 and its table require (scenario 20).
   - **Duplicate listing.** In a chain whose owner is not among the listed
     modules, `getModuleCalculationsForAssetClass` listed the effective
     declaration once per listed declarer. It now lists it once (P4).
-
-  The review also showed that scenario 18 could not pin both namespaces,
-  because refusals compare code sets. It is split into 18 (sections) and
-  19 (view models).
-- **Not changed.** Format, schemas, public exports, `ModuleRegistry` and
-  version labels.
-
-## Owner release-preparation direction (2026-10-05)
-
-The owner directed 2.18.0 release preparation on 2026-10-05. It pairs core/CLI
-**2.18.0** with Protocol **2.22.0** and Format **2.0**. Protocol takes a minor
-version for the normative addition, following this RFC's version direction and
-the RFC 0070 precedent. The P6 floor is therefore `>=2.22.0`. The overriding manifests in `conformance/modules/registry/` (23 of them) now declare it, and so does the module-runtime P6 test. Preparation follows
-[wiki 11](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/11-build-release-governance.md),
-and [the preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-preparation.md)
-documents it. RFC 0074 remains `accepted` throughout preparation. It becomes
-`implemented` only after shipment and independent publication verification.
-Tagging and publication need separate owner action. The accepted semantics are
-unchanged.
-
-## Owner-authorized publication and verification (2026-10-08)
-
-The owner authorized annotated `v2.18.0` on the release-prepared merge
-`4e0a8c18091377fa25800dc2b16954a636be1d83`, not the later head of `main`.
-[Release run 37795279528](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37795279528)
-succeeded and published core/CLI 2.18.0, signing 0.2.22, batch 0.8.17 and
-both modules 0.1.10. Independent registry, provenance, published-file,
-delivered-CLI (210/210) and module-consumer checks passed; see
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-publication.md).
-Publication verification precedes this separate `accepted` → `implemented`
-reconciliation. The immutable release tag and every normative section above
-remain unchanged.
+- **Conformance.** `conformance/modules/registry/` keeps #267's 01-04, makes
+  05 assert the effective owners, and adds 06-24: one or more per row of
+  [Conformance impact](#conformance-impact), plus the P1.2 sibling,
+  first-declarer exemption and self-read cases. Against the pre-RFC
+  implementation every scenario from 05 on fails, except 22, which pins a
+  sibling refusal #267 already made. Because refusals compare code sets, one
+  scenario could not pin both namespaces, so it is split into 18 (sections)
+  and 19 (view models).
+- **P6 floor.** Protocol took a minor version for the normative addition,
+  following the RFC 0070 precedent. The floor is `>=2.22.0`; the 23 overriding
+  manifests in `conformance/modules/registry/` and the module-runtime P6 test,
+  which shows an older host refusing an overriding module through
+  `PROTO-MOD-030`, declare it.
+- **Not changed.** Format, schemas, public exports and `ModuleRegistry`.
 
 ## Prior art
 

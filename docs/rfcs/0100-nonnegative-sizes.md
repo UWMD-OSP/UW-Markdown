@@ -14,7 +14,7 @@ affects:
 
 # RFC 0100: Refuse negative sizes, counts, areas and rents
 
-> **Accepted by the owner, 2026-10-20, with D2 decided** (Jared: "RFC 0100
+> **Accepted by the owner, 2026-10-20, with D2 decided** (owner: "RFC 0100
 > (#418) is accepted with D2 = a new SIZE-01 code (not CLS-04), and D3 as drafted
 > (zero stays admissible); implement it"). The text below is amended to the
 > chosen code; every other decision stands as drafted. Origin: issue
@@ -104,7 +104,7 @@ code.
   class examples states one (the #415 pass at `main` `902695e0`). The
   implementation PR measures the conformance corpus the same way and lists any
   fixture it must change. No compatibility path is added
-  (PROCESS principle 5).
+  (the prelaunch rule).
 - **Signed amounts** are out of scope by construction: concessions
   (`concessions_monthly`, the lease-up `concessions: -5400` example), credits,
   loss-to-lease and every cash-flow line keep their signs.

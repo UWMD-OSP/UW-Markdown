@@ -18,13 +18,9 @@ affects:
 
 # RFC 0075: Read a rate hedge from the senior loan when debt_structure is a role map
 
-**Implemented; released and independently verified.** A coding agent wrote
-this RFC from issue #266 (StackUW UPSTREAM-024) and implemented it in the same
-pull request. The owner accepted it by merging that pull request, PR #276, on
-2026-10-06. Release preparation paired it with Protocol 2.23.0 and core/CLI
-2.19.0. The `v2.19.0` release published it in core/CLI 2.19.0 with Stable
-Protocol 2.23.0, and independent publication verification passed (see
-[Publication and verification](#publication-and-verification-2026-10-09)).
+**Implemented; released in 2.19.0.** See [Resolution](#resolution).
+
+Drafted with AI assistance; reviewed by maintainers.
 
 ## Summary
 
@@ -222,6 +218,15 @@ Against the implementation before this RFC, every case fails except
    including the same defect when `sources_uses` refuses. Its decided tests
    and conformance cases replace the undecided ones.
 
+## Resolution
+
+**Accepted 2026-10-06; implemented 2026-10-09; released in core/CLI 2.19.0
+with Protocol 2.23.0.** The RFC answers issue #266, an adopter report, and
+was implemented in the same pull request; the owner accepted it by merging
+that pull request, PR #276, on 2026-10-06. The [Decisions](#decisions) D1-D4
+are the accepted contract. The unresolved question above is answered by
+[RFC 0076](0076-hedge-checks-under-refused-selection.md).
+
 ## Prior art
 
 - [RFC 0040](0040-variant-role-resolution.md): per-rule role preferences, and
@@ -230,17 +235,3 @@ Against the implementation before this RFC, every case fails except
   metrics declare `senior`, keyed per calculation.
 - Lender practice: an interest-rate cap is a condition of the floating-rate
   senior loan, and the cap's notional and strike are sized to that loan.
-
-## Publication and verification (2026-10-09)
-
-Annotated `v2.19.0` targets the release-prepared merge
-`139268f34be9550287d8782e44767a9f7e8273b1` (PR #284), not a later head of
-`main`.
-[Release run 37950962666](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37950962666)
-succeeded and published core/CLI 2.19.0, signing 0.2.23, batch 0.8.18 and
-both modules 0.1.11. Independent registry, provenance, published-file,
-delivered-CLI (228/228) and module-consumer checks passed; see
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.19.0-publication.md).
-Publication verification precedes this separate `accepted` → `implemented`
-reconciliation. The immutable release tag and every normative section above
-remain unchanged.

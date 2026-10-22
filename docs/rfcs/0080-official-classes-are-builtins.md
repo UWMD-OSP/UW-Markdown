@@ -26,12 +26,9 @@ affects:
 
 **Compatibility clauses superseded by [RFC 0081](0081-one-format-one-protocol.md).** §5 (the `org.uwmd.data_center` alias, `CLS-01`/`CLS-02`, module-gated severities), the module shells and the transition decision rows are removed, and the hotel facts consolidate into `rent_roll`. The builtin-class design stands.
 
-**Accepted with its implementation.** The direction is the owner's
-(Product principle 1, 2026-10-10); this RFC turns it into a contract. It lands
-`accepted` together with its implementation in one PR, as RFCs 0064, 0065 and
-0072 did. Merging that PR is the acceptance. **Implemented; released and
-independently verified** in 3.0.0 with Format 2.1 and Stable Protocol 3.0.0
-(see [Publication and verification](#publication-and-verification-2026-10-11)).
+**Implemented; released in 3.0.0** with Format 2.1 and Stable Protocol
+3.0.0. The direction is the owner's (Product principle 1, 2026-10-10); this
+RFC turns it into a contract. See [Resolution](#resolution).
 
 ## Summary
 
@@ -77,7 +74,7 @@ This RFC:
 - **Hotel fields sit outside the standard.** ADR, RevPAR and F&B live in a
   module (RFC 0006 Alternative 3), although hospitality is a builtin, so a
   hotel document's core metrics are second-class too.
-- **The adopter need is concrete.** StackUW's park exports (MH-8) need a
+- **The adopter need is concrete.** An adopter's park exports need a
   manufactured-housing class whose identity never changes, so that lake
   benchmark keys never split (issue #263).
 
@@ -88,7 +85,7 @@ This RFC:
 | P1 | Every official asset class is a full builtin, equal to multifamily: in the `asset_class` list with its own calc pack, Excel layout, size registry and defaults. No official class is a module class, a namespaced id or a separate npm package. Modules exist only for third parties. | Owner, 2026-10-10 (Product principle 1) |
 | D5 | "Equal" holds in both layers. Standard: class id, size metric, required sections, metric-dictionary definitions, verification rules. Starter: calc pack, Excel layout, defaults, example. | RFC 0078 |
 | M1 | RFC 0068's first-scope owner decisions carry over unchanged: `weighted_pad_rent_monthly` as the pad-rent representation; `poh_home_rent_monthly` required when `park_owned_homes > 0` and absent otherwise; `age_restricted`, `poh_rent_share`, `expense_ratio` and the generic debt metrics deferred; nonnegative pad rent. | Owner, 2026-10-01 (RFC 0068 decision table) |
-| M2 | No promotion problem: StackUW's manufactured-housing documents must never need to change class id. | Owner (StackUW answer on #263), 2026-10-10 |
+| M2 | No promotion problem: an adopter's manufactured-housing documents must never need to change class id. | Owner (answer on #263), 2026-10-10 |
 
 ## Proposed change
 
@@ -119,7 +116,7 @@ This RFC:
   0079, price and NOI per unit of size), enter the metric dictionary and a
   `data_center` pack.
 - **Excel, defaults, example.** An Excel layout, a defaults table (see
-  Unresolved questions), and the Mesa Gateway example restated as
+  Decisions), and the Mesa Gateway example restated as
   `asset_class: data_center`.
 - **No fallback field.** A builtin needs no `fallback`. Readers that predate
   this RFC see an unknown builtin, covered under Compatibility.
@@ -127,9 +124,9 @@ This RFC:
 ### 3. Manufactured housing (`manufactured_housing`)
 
 - **Content.** RFC 0068's first scope, under M1: the `mhc_sites` section,
-  its six calculations and its seven rules become standard. Codex's parked
-  branch `codex/rfc-0068-mhc` holds that work as a module; reuse its section
-  schema, rules, tests and example.
+  its six calculations and its seven rules become standard. An earlier module
+  branch holds that work as a module; reuse its section schema, rules, tests
+  and example.
 - **Size.** The primary size is sites (`property.total_sites`, by the same
   precedent as data center).
 - **Metrics.** The six RFC 0068 calculations plus the standard income-class
@@ -186,9 +183,7 @@ the choice in the Decisions table.
   and 1.x unchanged.
 - **Protocol.** The label moves at release preparation, as before. Release
   preparation pairs Format 2.1 with Protocol 3.0.0 and core/CLI 3.0.0; both
-  module packages ship 0.2.0 as their final version. Released in 3.0.0;
-  publication was independently verified before this RFC moved to
-  `implemented`.
+  module packages ship 0.2.0 as their final version. Released in 3.0.0.
 
 ## Compatibility analysis
 
@@ -204,9 +199,9 @@ the choice in the Decisions table.
 - **Third-party modules.** These are unaffected, except that a module can no
   longer declare `data_center` or `manufactured_housing` as custom ids. The
   same rule already applied to every builtin name.
-- **StackUW.** Park exports use `manufactured_housing` from the first release
-  that includes this RFC. Its export refusal for manufactured housing can be
-  lifted then.
+- **Adopters.** An adopter's park exports use `manufactured_housing` from the
+  first release that includes this RFC. Its export refusal for manufactured
+  housing can be lifted then.
 
 ## Conformance impact
 
@@ -269,7 +264,7 @@ Also in this change:
 | Date and type checks | MHC `as_of_date` is presence-only, including the existing malformed-date negative controls that establish the boundary. Date validity stays a separate core follow-up. Calculation errors retain `MOD-CALC-ERROR`; rule evaluation type errors use `MOD-RULE-ERROR`; fixed field-shape defects additionally use `CLS-04`. Q3/Q4 and the other owner deferrals remain outside scope. | RFC 0068 first-scope decisions and RFC 0039 runtime precedent. |
 | Compatibility identity | Resolve exactly `org.uwmd.data_center` as `data_center` with `CLS-01`; never rewrite the parsed source or digest. Official module dependencies emit `CLS-02` and require no external module load, including the restricted frontmatter reader's legacy `id: org.uwmd.*` list spelling for exactly these two shipped modules. Third-party suffix shadows newly become `INVALID-ASSET-CLASS-002`. | RFC 0080 narrow grandfathering, not a general equivalence or suffix-matching contract. |
 | Standard codes | Register `CC-DC-01..08`, `CC-MH-01..08`, `CC-HOSP-01..03` and `CLS-01..05`; class rules execute in ordinary core validation. Missing required class sections use `CLS-03`. | Existing closed code-family and safe-expression verification patterns. |
-| Defaults | Propose industrial starter ranges for data-center common financial assumptions, excluding per-square-foot TI; propose multifamily starter ranges for MHC, explicitly mapping the reserve basis from dwelling to site. Every low/central/high value is an owner-review proxy, not a claimed market estimate. No physical facts or POH rent are defaulted. Jared must review the tables at the top of the PR before merge. | RFC 0078 distinguishes starter assumptions from verification; RFC 0080 makes defaults the explicit owner gate. |
+| Defaults | Propose industrial starter ranges for data-center common financial assumptions, excluding per-square-foot TI; propose multifamily starter ranges for MHC, explicitly mapping the reserve basis from dwelling to site. Every low/central/high value is an owner-review proxy, not a claimed market estimate. No physical facts or POH rent are defaulted. The owner must review the tables at the top of the PR before merge. | RFC 0078 distinguishes starter assumptions from verification; RFC 0080 makes defaults the explicit owner gate. |
 | Official module packages | Keep package identities, core pins and publish membership. Retain API constants and empty view exports; the 0.2.0 compatibility manifests declare no class, section, calculation or rule. Retirement and npm deprecation occur separately at release. | RFC 0080 §6 and independent package/manifest versioning. |
 | RFC 0073 | Keep it draft for third-party identity renames. Official classes no longer depend on an identity-promotion contract. | RFC 0080 Alternatives and Product principle 1. |
 | Native block/envelope shape | New examples and new-class Lite output use canonical section_id/_meta/content wrappers with nested metadata. Mixed-use validation reads the canonical payload, preserving its matching-class and NOI-footing negative controls. The format-neutral envelope accepts both existing v1 metadata and the v2 schema; reading it normalizes metadata for eligibility without rewriting raw content or digest. | RFC 0009's one-shape rule and the existing envelope's lossless, format-neutral contract; no new representation or financial convention. |
@@ -282,17 +277,20 @@ Also in this change:
 | Data-center expense ratio | No `noi_model.expense_ratio` default (owner decision 2026-10-10). The cascade falls through as for land; no other class's table is borrowed. | Owner: the industrial NNN proxy does not fit a power-grossed-up basis (Mesa runs 0.595). Land/mixed-use omissions are the precedent. |
 | Grouping keys | Batch filters/summaries and lake indexed `asset_class` columns use the resolved builtin; index entries and envelopes keep the stated id. | M2 / issue #263: benchmark keys must never split; §5 forbids rewriting the source. |
 
-## Owner review at merge
+## Resolution
 
-1. **Defaults for data center and manufactured housing.** Defaults are a
-   starter product (RFC 0078 D4), but they are still underwriting
-   assumptions (vacancy, expense ratios, reserves). The implementation PR
-   proposes values with sources for owner review before merge. It does not
-   invent them silently.
-2. **RFC 0073.** It becomes unnecessary for official classes. Whether to
-   withdraw it or keep it for third-party module renames is decided with
-   this RFC's acceptance; the recommendation is to keep it as a draft for
-   third parties.
+**Accepted with its implementation in PR #302** (merging it was the
+acceptance, as for RFCs 0064, 0065 and 0072); **implemented 2026-10-11;
+released in 3.0.0** with Format 2.1, Stable Protocol 3.0.0 and core/CLI 3.0.0
+(release preparation PR #305). The binding direction is P1, D5, M1 and M2
+under [Owner direction](#owner-direction-binding); the implementation choices
+are the [Decisions](#decisions) table. The two items held for owner review at
+merge were settled there: the data-center and manufactured-housing defaults
+were proposed with sources as owner-review proxies (see the Defaults and
+Data-center expense ratio rows), and RFC 0073 stays a draft for third-party
+identity renames. Both official module packages shipped their final 0.2.0
+shells, declaring nothing, and were deprecated on npm on 2026-10-11,
+completing §6.
 
 ## Prior art
 
@@ -301,22 +299,3 @@ Also in this change:
 - **XBRL taxonomies.** New industries extend the standard taxonomy through
   the standard's own process, rather than living as permanent private
   extensions.
-
-## Publication and verification (2026-10-11)
-
-Annotated `v3.0.0` targets the release-prepared merge
-`44ab7347a8a3054fc377e19e85f89ad6f1539dea` (PR #305).
-[Release run 38163964522](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38163964522)
-succeeded and published core/CLI 3.0.0, signing 0.2.26, batch 0.8.21, Excel
-0.9.14, report 0.8.26, lake 0.2.10 and both module packages 0.2.0, pairing
-Stable Protocol 3.0.0 with Format 2.1. Independent registry, provenance,
-published-file, delivered-CLI (332/332 portable cases, no skips) and consumer
-checks passed, including all twelve builtin classes in the published core and
-both 0.2.0 module shells declaring nothing and pinning core 3.0.0 exactly; see
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/3.0.0-publication.md).
-The §6 retirement is complete: the owner deprecated `@uwmd/module-hospitality`
-and `@uwmd/module-data-center` on npm on 2026-10-11, and the registry shows
-the retirement message on every version of each. Removing both packages from
-the release workflow is left to a later release. Publication verification
-precedes this separate `accepted` → `implemented` reconciliation. The
-immutable release tag and every normative section above remain unchanged.

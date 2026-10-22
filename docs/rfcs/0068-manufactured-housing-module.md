@@ -1,7 +1,8 @@
 ---
 rfc: 0068
 title: Manufactured-housing module — a community leased by the site, with park-owned homes as a second income line
-status: draft
+status: superseded
+superseded_by: 0080
 author: UWMD maintainers
 created: 2026-09-29
 depends_on:
@@ -15,11 +16,13 @@ affects:
 
 # RFC 0068: Manufactured-housing module — a community leased by the site, with park-owned homes as a second income line
 
+> **Superseded by [RFC 0080](0080-official-classes-are-builtins.md).** Manufactured housing ships as a full builtin class; this module design is kept as design history.
+
 **Packaging superseded by [RFC 0080](0080-official-classes-are-builtins.md).** Official class content now ships as a full builtin. The recorded field, calculation and owner decisions remain its design history.
 
 
-**Draft agent proposal.** A coding agent wrote this RFC. StackUW's
-manufactured-housing plan is adopter requirements evidence, not UWMD
+**Draft proposal.** Drafted with AI assistance; reviewed by maintainers. An
+adopter's manufactured-housing plan is requirements evidence, not UWMD
 authority, and it is not verifiable in this repository.
 
 On 2026-10-01 the owner gave directions that narrow the first scope (see
@@ -83,7 +86,7 @@ No Format or Protocol change is proposed, and no version moves.
     `if(x > 0, 1 / x, null)` still raises `CALC-DIV-ZERO`.
   - **Type errors.** An ordered comparison or arithmetic on a non-number is
     `CALC-TYPE-001`. `==` and `!=` return booleans, including against `null`.
-- **Adopter evidence (unverified here).** StackUW's planning record, dated
+- **Adopter evidence (unverified here).** An adopter's planning record, dated
   2026-09-29, treats the site as the underwriting unit, with POH home rent as a
   second stream.
 
@@ -351,7 +354,7 @@ separate branch, as RFC 0039's did:
 - the example `examples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md`;
 - the runtime fixtures above.
 
-StackUW's adoption is the adopter's own follow-up.
+Adoption is the adopter's own follow-up.
 
 ## Alternatives considered
 
@@ -407,7 +410,7 @@ RFC 0068 remains `draft`.
 | The degraded fallback renders view models only and reports `MOD-FALLBACK-001` | Protocol §X.2.2 | Existing rule. |
 | No collection iteration; no string literals; `if()` is eager | Protocol §VIII.1, §VIII.3; evaluator | Existing behaviour. |
 | Module rules fire on `false` and are silent on `null`; failures report `MOD-RULE-ERROR` / `MOD-CALC-ERROR`; section schemas are not enforced at runtime | `module-runtime.ts`, `modules.ts` | Existing behaviour. |
-| Sites as the underwriting unit, with POH rent as a second stream | StackUW planning, 2026-09-29 | Adopter evidence. Not verified here. Not authority. |
+| Sites as the underwriting unit, with POH rent as a second stream | Adopter planning, 2026-09-29 | Adopter evidence. Not verified here. Not authority. |
 | `weighted_pad_rent_monthly` (site-weighted, all sites, vacant at stated asking rent; stated, not derived) is the first-scope pad-rent representation | Owner direction, 2026-10-01 | Selected for first scope. |
 | `age_restricted` removed from first scope | Owner direction, 2026-10-01 | Deferred. |
 | Generic debt calculations (`loan_per_site`, `ltv`, `ltc`, `dscr`, `debt_yield`) deferred; no recommendation to omit true zero values | Owner direction, 2026-10-01 | Deferred. |

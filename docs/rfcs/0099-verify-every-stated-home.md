@@ -14,10 +14,10 @@ affects:
 
 # RFC 0099: Verify each dictionary metric wherever the document states it
 
-> **Accepted by the owner, 2026-10-20, as drafted** (Jared: "RFC 0099 (#417) is
+> **Accepted by the owner, 2026-10-20, as drafted** (owner: "RFC 0099 (#417) is
 > accepted as drafted; implement it"). The Decisions table D1–D6 stands as
-> written. It changes what a Verifier owes, so it opened alone as a draft under
-> PROCESS, and the synchronized implementation follows in its own PR. Origin:
+> written. It changes what a Verifier owes, so it opened alone as a draft, and
+> the synchronized implementation follows in its own PR. Origin:
 > issue [#416](https://github.com/UWMD-OSP/UW-Markdown/issues/416), ruled
 > 2026-10-19 ("verify every home").
 
@@ -133,8 +133,8 @@ public symbol is added or removed.
   now fails `verify`. That is the defect being fixed. Every section-home
   statement in the 13 class examples verifies under the registry (measured at
   `main` `902695e0`: all `verified`, none `failed` or `unverifiable`), and the
-  corpus already exercises the table. No compatibility path is added (PROCESS
-  principle 5).
+  corpus already exercises the table. No compatibility path is added (the
+  prelaunch rule).
 - **Implementers.** A Verifier must read the registry. The independent Python
   implementation (#354) adopts it in the same synchronized implementation.
 - **Versions.** None allocated (RFC 0091 D6); prelaunch work stays 4.x.

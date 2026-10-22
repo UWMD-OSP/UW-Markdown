@@ -17,8 +17,8 @@ affects:
 
 # RFC 0067: Tenure and ground-lease contract
 
-**Draft agent proposal.** A coding agent wrote this RFC. StackUW's
-leasehold-acquisition plan is adopter requirements evidence, not UWMD
+**Draft proposal.** Drafted with AI assistance; reviewed by maintainers. An
+adopter's leasehold-acquisition plan is requirements evidence, not UWMD
 authority. No owner decision selects any of the semantics proposed here. The
 owner has not accepted the RFC, and implementation is not authorized. Open
 decisions are listed in [Decision status](#decision-status).
@@ -79,12 +79,12 @@ leasehold, leased fee, fee simple or tenure.
 reflected in NOI, at the author's discretion and without a named line". A
 reader cannot tell whether a document's NOI is before or after ground rent.
 
-**Adopter evidence.** This is StackUW's (`cc.underwriter`) evidence, not
-verified in this repository. Its planning, dated 2026-09-29, prioritizes
+**Adopter evidence.** This is an adopter's evidence, not verified in this
+repository. Its planning, dated 2026-09-29, prioritizes
 underwriting a leasehold acquisition (improvements on leased land, ground rent
 an obligation), with ground rent stated before NOI as a named line. It reports
 that it currently signs a leasehold deal's ground rent only as dollars inside
-NOI and total operating expenses, with no tenure stated (its Q-100 rule). It
+NOI and total operating expenses, with no tenure stated. It
 also applies a leasehold exit-value adjustment. Adopter demand shows a consumer
 exists; it does not set UWMD's contract.
 
@@ -299,7 +299,7 @@ none.
 Each of these needs its own contract and evidence:
 
 - **`leased_fee` tenure** and leased-fee underwriting: no consumer.
-- **A leasehold exit-value adjustment.** StackUW applies one, but it is a
+- **A leasehold exit-value adjustment.** An adopter applies one, but it is a
   valuation assumption. Its home (§4.9 `exit_analysis`, §4.6 `valuation`, or
   elsewhere) and its rules are unsettled, so this draft names no field. A
   later contract must keep it outside the lease facts and must not derive it
@@ -410,7 +410,7 @@ RFC 0067 remains `draft`.
 | A ground lease is not a capital-stack tranche; `TrancheClass` unchanged | RFC 0060 (`decided`, 2026-09-19) | Existing decision. Unchanged. |
 | §4.5 lines compose `total_operating_expenses`; sizing verbs read `noi_model.net_operating_income`; Excel ↔ calc parity is exact | Format §4.5, §4.24; Protocol §VIII.5; `uwmd-excel` | Existing. Unchanged. |
 | Stated schedules are verified, never projected; options are never exercised | RFC 0053, RFC 0055 | Existing posture, adopted here. |
-| Leasehold acquisition is the demonstrated consumer | StackUW planning, 2026-09-29 | Adopter evidence. Not verified in this repository. Not authority. |
+| Leasehold acquisition is the demonstrated consumer | Adopter planning, 2026-09-29 | Adopter evidence. Not verified in this repository. Not authority. |
 | `interest_type` (`fee_simple`, `leasehold`); absence is unstated | This draft | Proposal. |
 | Ground-lease contract fields (stated lease facts only) | This draft | Proposal. |
 | Named §4.5 `ground_rent` line inside `total_operating_expenses` | This draft, following RFC 0060 and §4.5 structure | Proposal. |

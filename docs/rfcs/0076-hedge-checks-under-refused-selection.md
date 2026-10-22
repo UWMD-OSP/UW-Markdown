@@ -20,17 +20,13 @@ affects:
 
 # RFC 0076: Refuse a stated rate hedge whose loan or cash lines cannot be selected
 
-**Implemented; released and independently verified.** A coding agent wrote this RFC. It
-answers [RFC 0075](0075-hedge-senior-role-preference.md)'s one unresolved
-question, which issue #266 also raised (its point 3). Each decision below was
-answered from existing contracts. On 2026-10-06 the owner accepted D1–D7 as
-recommended and directed implementation (see the
-[owner acceptance record](#owner-acceptance-record-2026-10-06)). PR #277
-carries the implementation and recorded that acceptance when it merged.
-Release preparation paired it with Protocol 2.23.0 and core/CLI 2.19.0. The
-`v2.19.0` release published it in core/CLI 2.19.0 with Stable Protocol
-2.23.0, and independent publication verification passed (see
-[Publication and verification](#publication-and-verification-2026-10-09)).
+**Implemented; released in 2.19.0.** See [Resolution](#resolution).
+
+Drafted with AI assistance; reviewed by maintainers.
+
+This RFC answers [RFC 0075](0075-hedge-senior-role-preference.md)'s one
+unresolved question, which issue #266 also raised (its point 3). Each decision
+below was answered from existing contracts.
 
 ## Summary
 
@@ -56,7 +52,7 @@ resolvable document are unchanged. No new code, field or export.
 
 ### What happens today
 
-Measured on `claude/hedge-senior-preference` (RFC 0075, PR #276). A
+Measured on the RFC 0075 implementation (PR #276). A
 `debt_structure` selection refuses only when its blocks carry `_role`. A
 role-free section is never a variant map, because the parser keeps one block.
 These four refusal paths behave identically: two `senior`, two `primary`, two
@@ -241,6 +237,14 @@ refuses and **no** hedge is stated, ESC-01–03 also go unevaluated and only
 CC-16 reports. That is an escrow-only question, not a hedge question, and
 this RFC leaves it as it is.
 
+## Resolution
+
+**Accepted 2026-10-06; implemented 2026-10-09; released in core/CLI 2.19.0
+with Protocol 2.23.0.** The draft opened as PR #277. On 2026-10-06 the owner
+accepted D1-D7 as recommended, with no decision changed, and directed
+implementation in the same pull request; merging PR #277 recorded the
+acceptance. The [Decisions](#decisions) table D1-D7 is the accepted contract.
+
 ## Prior art
 
 - RFC 0070, Protocol §V.12.1 step 1: refuse a needed selection; never treat
@@ -249,24 +253,3 @@ this RFC leaves it as it is.
   fallback, and CC-16 records skipped cross-checks.
 - JSON Schema's distinction between an absent property and an invalid one
   (`required` versus a failing subschema) mirrors D7's absence/refusal line.
-
-## Owner acceptance record (2026-10-06)
-
-The draft opened as PR #277. On 2026-10-06 the owner accepted D1–D7 as
-recommended and directed implementation on the same branch. No decision was
-changed. The implementation is in that pull request, and merging it records
-the acceptance.
-
-## Publication and verification (2026-10-09)
-
-Annotated `v2.19.0` targets the release-prepared merge
-`139268f34be9550287d8782e44767a9f7e8273b1` (PR #284), not a later head of
-`main`.
-[Release run 37950962666](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37950962666)
-succeeded and published core/CLI 2.19.0, signing 0.2.23, batch 0.8.18 and
-both modules 0.1.11. Independent registry, provenance, published-file,
-delivered-CLI (228/228) and module-consumer checks passed; see
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.19.0-publication.md).
-Publication verification precedes this separate `accepted` → `implemented`
-reconciliation. The immutable release tag and every normative section above
-remain unchanged.
