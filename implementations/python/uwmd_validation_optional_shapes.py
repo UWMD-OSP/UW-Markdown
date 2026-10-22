@@ -188,6 +188,7 @@ def _registered_optional_owner(block, index, field, constraint, issues):
             if valid and pool is not None and (not isinstance(pool, list) or not pool
                     or any(item not in _POOL for item in pool)):
                 code = "REC-03"
+                if path != "recovery_terms.recoverable_pool": owner_field = root+path
         elif path.startswith("recovery_true_up"):
             entries = tenant.get("recovery_true_up")
             if path == "recovery_true_up":
@@ -198,6 +199,8 @@ def _registered_optional_owner(block, index, field, constraint, issues):
                 if child and isinstance(entries,list) and int(child[1]) < len(entries):
                     row = entries[int(child[1])]; leaf = child[2]
                     owner_field = root+"recovery_true_up["+child[1]+"]"
+                    if leaf in ("period_start","period_end"): owner_field += ".period_start"
+                    elif leaf == "settlement": owner_field += ".settlement"
                     if leaf is None:
                         valid = not isinstance(row,dict) and constraint == ("type",("object",))
                     elif isinstance(row,dict) and leaf in ("period_start","period_end"):
@@ -227,7 +230,7 @@ def _registered_optional_owner(block, index, field, constraint, issues):
                 if (("basis" not in claim and constraint == ("required",None)) or
                     ("basis" in claim and basis not in ("lp_preferred_shortfall","lp_irr_floor","lp_em_floor")
                      and constraint == ("enum",("lp_preferred_shortfall","lp_irr_floor","lp_em_floor")))):
-                    code,owner_field = "WF-10","clawback"
+                    code,owner_field = "WF-10",field
             elif ((field == "clawback.floor_rate" and basis == "lp_irr_floor") or
                   (field == "clawback.floor_multiple" and basis == "lp_em_floor")):
                 value = claim.get(field.split(".")[1]); rate = basis == "lp_irr_floor"
@@ -236,7 +239,7 @@ def _registered_optional_owner(block, index, field, constraint, issues):
                     or finite(value) and value <= (0 if rate else 1)
                        and constraint == ("exclusiveMinimum",0 if rate else 1)
                     or rate and finite(value) and value >= 1 and constraint == ("exclusiveMaximum",1)):
-                    code,owner_field = "WF-10","clawback"
+                    code,owner_field = "WF-10",field
             elif field == "clawback.cap":
                 if (("cap" not in claim and constraint==("required",None)) or
                     (claim.get("cap")!="promote_received" and constraint==("const","promote_received"))):

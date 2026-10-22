@@ -29,6 +29,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #517: Python validation diagnostics agree with the reference across the
+  tracked structured corpus, including finding counts and precise field paths.
+  Add a read-only cross-implementation CI check; advertised capabilities stay
+  grounded in the portable conformance driver.
+
 - Fix #488: reading CLI commands and Excel load registered UWX, Lite, JSON,
   XML and CSV bundle sources through one decoder. Source writers refuse
   unsupported representations explicitly; document signatures remain UWX-only.
