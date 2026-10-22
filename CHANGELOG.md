@@ -32,6 +32,9 @@ protocol, and each package each carry an independent semver).
 - Fix #488: reading CLI commands and Excel load registered UWX, Lite, JSON,
   XML and CSV bundle sources through one decoder. Source writers refuse
   unsupported representations explicitly; document signatures remain UWX-only.
+- Fix #516's four reference departures: null tax/hedge terms are unstated,
+  CC-15 uses the documented sole-variant fallback, and unresolved replacement
+  sources take precedence over malformed reference values.
 
 - Fix #494: an unknown `render --format` is a typed refusal
   (`UNSUPPORTED_RENDER_FORMAT`, exit 1, no stack trace), and `uwmd --help` no
@@ -44,6 +47,12 @@ protocol, and each package each carry an independent semver).
 - Fix #489: `render --format csv` quotes and escapes fields per RFC 4180, so a
   comma or quote in a value no longer shifts the columns. The text columns that
   were always quoted stay quoted, with embedded quotes doubled.
+- Implement accepted RFC 0119: when model NOI is zero or negative, CC-05 and
+  CC-06 evaluate the stated restatements with the owner-accepted $500 absolute
+  tolerance; a greater difference is a warning. Positive model NOI retains
+  the 1%/2% rules. TypeScript/Python and explicit boundary/coverage controls
+  agree, including equality, both directions, aliases and missing facts.
+
 - Implement accepted RFC 0114: an optional `property.area_measurement` records
   the standard behind a record's areas (`standard`: `boma`, `ipms`, `rebny`,
   `rics` or `other`; free-text `edition`; optional `note`; no other member). A

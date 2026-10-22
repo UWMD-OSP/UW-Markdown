@@ -337,5 +337,18 @@ ${[...debts.map(([v, c]) => fence('debt_structure', v, c)), ...sources.map(([v, 
   it('D7: keeps ESC-04 when sources_uses is absent, not refused', () => {
     expect(codesOf([['a', loan('senior', replace)]])).toEqual(['ESC-04']);
   });
+
+  it('does not refuse a strike-only hedge with null terms on ambiguous debt or cash', () => {
+    const strikeOnly = {
+      strike_rate: 0.035, notional: null, index: null, effective_date: null,
+      expiration_date: null, post_expiration_assumption: null, replacement_funding: null,
+    };
+    const cash: Blocks = [['a', escrowed('primary')], ['b', escrowed('primary')]];
+    expect(codesOf([['a', loan('senior', strikeOnly)], ['b', loan('senior')]]))
+      .not.toContain('HDG-08');
+    expect(codesOf([[null, loan('senior', strikeOnly)]], cash)).not.toContain('HDG-08');
+    expect(codesOf([[null, loan('senior', { ...strikeOnly, notional: 100 })]], cash))
+      .toContain('HDG-08');
+  });
 });
 

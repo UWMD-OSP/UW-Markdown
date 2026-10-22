@@ -22,6 +22,12 @@ in TypeScript and Python. Invalid non-null values produce field-specific errors;
 readiness remains independent. Five invalid-value document fixtures pin Reader
 admission and Verifier refusal. Current positive fixture statuses use in_progress.
 
+**RFC 0119 implemented (owner acceptance, 2026-10-22 second set).** CC-05/06
+evaluate stated NOI <= 0 using the accepted $500 absolute tolerance, zero
+included. Greater differences remain warnings; positive-NOI percentages are
+unchanged. Sixteen new records pin validation and evaluated/skipped coverage
+in both the reference runner and portable CLI cases.
+
 **RFC 0117 implemented (owner acceptance, 2026-10-22 second set).** The
 component schema's three count and two area/capacity fields now participate in
 SIZE-01 on each admitted slot, in TypeScript and Python. The eight mixed-use
