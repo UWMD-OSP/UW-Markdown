@@ -38,6 +38,41 @@ function file(
 const codes = (parsed: ParsedUWFile, code: string): ValidationMessage[] =>
   validateUWFile(parsed).issues.filter((i) => i.code === code);
 
+describe('RFC 0116 stated sections and cumulative readiness', () => {
+  it('does not count reserved values, empty containers, or all-null nested leaves', () => {
+    const validation = block('validation', {});
+    validation.content = { _notes: 'narrative', _role: 'primary', nested: [{ value: null }, {}] };
+    const parsed = file({ property: block('property', {}), debt_structure: block('debt_structure', {}), validation }, { deal_stage: 'screening' });
+    expect(codes(parsed, 'DQ-06').map(i => i.section)).toEqual(['validation']);
+    expect(validateUWFile(parsed).stage_readiness.screening).toBe(false);
+    validation.content.nested = [{ value: false }];
+    expect(validateUWFile(parsed).stage_readiness.screening).toBe(true);
+  });
+
+  it('inherits a missing scope field through every later stage', () => {
+    const sections = Object.fromEntries(STAGE_REQUIREMENTS.monitoring.required_sections.map(id => [id, block(id, {})]));
+    sections.property!.content.address = null;
+    expect(Object.values(validateUWFile(file(sections)).stage_readiness)).toEqual(Array(7).fill(false));
+  });
+
+  it('uses the class primary size or valuation, never an undefined property alias', () => {
+    const property = block('property', {});
+    property.content = { address: 'A', asset_class: 'office', units: 10, asking_price: 100 };
+    const parsed = file({ property }, { deal_stage: 'scope' });
+    expect(validateUWFile(parsed).stage_readiness.scope).toBe(false);
+    parsed.sections.valuation = block('valuation', { purchase_price: 0 });
+    expect(validateUWFile(parsed).stage_readiness.scope).toBe(true);
+  });
+
+  it.each([['data_center', 'dc_capacity'], ['manufactured_housing', 'mhc_sites']])(
+    '%s needs %s from screening, without CLS-03', (asset_class, section) => {
+      const parsed = file({ property: block('property', {}), debt_structure: block('debt_structure', {}), validation: block('validation', {}) }, { asset_class, deal_stage: 'screening' });
+      expect(validateUWFile(parsed).stage_readiness.scope).toBe(true);
+      expect(codes(parsed, 'DQ-06').map(i => i.section)).toEqual([section]);
+      expect(codes(parsed, 'CLS-03')).toEqual([]);
+    });
+});
+
 describe('validateUWFile — CC-14 property section missing (RFC 0028)', () => {
   it('warns when a deal record has no property section, and never blocks', () => {
     const parsed = file({});

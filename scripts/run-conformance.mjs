@@ -380,7 +380,7 @@ function runDocuments() {
     const issuePairs = [...new Map(
       (validation.issues ?? []).map((i) => [`${i.code} ${i.severity}`, { code: i.code, severity: i.severity }])
     ).values()].sort((a, b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity));
-    const actualValidationStr = `${JSON.stringify({ overall_status: validation.overall_status, issues: issuePairs, ...dealFlagPairs(validation) }, null, 2)}\n`;
+    const actualValidationStr = `${JSON.stringify({ overall_status: validation.overall_status, stage_readiness: validation.stage_readiness, issues: issuePairs, ...dealFlagPairs(validation) }, null, 2)}\n`;
     const expectedValidationPath = join(expectedDir, `${id}.validation.json`);
 
     if (UPDATE) {
