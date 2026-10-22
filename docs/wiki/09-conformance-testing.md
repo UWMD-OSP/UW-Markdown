@@ -127,7 +127,7 @@ model provider (`starter-agent/l0a-scope-deterministic`,
 `starter-agent-replay/l6-risk-rating/{sections,document}`). RFC 0112 retired
 the layer-profile contract check (`starter-agent-profile/consumer-profile-contract`)
 and module fixture `reject/02-agent-layer-malformed` with its schema-parity
-twin, and added `reject/20-agent-layers-unknown-member` with its twin. The index now holds **1,226** reference checks and **397**
+twin, and added `reject/20-agent-layers-unknown-member` with its twin. The index now holds **1,233** reference checks and **397**
 portable CLI projections:
 
 | Owner | Reference | Portable |
@@ -136,12 +136,12 @@ portable CLI projections:
 | verifier | 816 | 328 |
 | module | 76 | 1 |
 | integrity | 32 | 14 |
-| representations | 142 | 0 |
+| representations | 150 | 0 |
 | portfolio | 14 | 0 |
 | sensitivity | 5 | 0 |
 | stochastic | 7 | 0 |
-| starter-products | 102 | 37 |
-| **Total** | **1,226** | **397** |
+| starter-products | 101 | 37 |
+| **Total** | **1,233** | **397** |
 
 A case testing something §II.2 lists as a Verifier requirement is a Verifier
 case, even when it needs an expression evaluator: those keep
@@ -298,7 +298,7 @@ Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs all 1,226 indexed checks across its suites, and most of what has been added
+runs all 1,233 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, invariants asserted with no baseline at all. The portable

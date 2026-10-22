@@ -18,12 +18,12 @@ describe content; they do not confer a tier claim.
 | Verifier | 816 | 328 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
-| Representations | 142 | 0 |
+| Representations | 150 | 0 |
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
-| Starter products | 102 | 37 |
-| **Total** | **1,226** | **397** |
+| Starter products | 101 | 37 |
+| **Total** | **1,233** | **397** |
 
 ## How to self-certify
 
