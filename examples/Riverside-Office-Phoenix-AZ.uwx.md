@@ -689,37 +689,41 @@ Financial-validity engine run over the sections above.
       "superseded": false
     }
   },
-  "overall_status": "warnings",
+  "overall_status": "clean",
   "financial_validity": [
     {
-      "flag_id": "FV-001",
+      "flag_id": "FV-04",
       "metric": "dscr",
-      "value": 1.0256,
+      "value": 1.026,
       "threshold": {
         "type": "min",
         "min": 1.2,
         "max": null
       },
       "severity": "warning",
-      "message": "DSCR (1.0256x) is below the 1.20x warning threshold; passes the 1.0x error floor.",
-      "suppressed": false,
-      "suppress_reason": null
-    },
-    {
-      "flag_id": "FV-002",
-      "metric": "ltv",
-      "value": 0.65,
-      "threshold": {
-        "type": "max",
-        "min": null,
-        "max": 0.75
-      },
-      "severity": "pass",
-      "message": "LTV at 65.0% is within the 75% policy maximum.",
+      "message": "DSCR 1.026 at quick_metrics.dscr is below the warning threshold of 1.2",
       "suppressed": false,
       "suppress_reason": null
     }
   ],
-  "completeness": []
+  "completeness": [],
+  "cross_section_consistency": [],
+  "thresholds_used": {
+    "dscr_error_below": 1,
+    "dscr_warning_below": 1.2,
+    "ltv_warning_above": 0.75,
+    "ltv_error_above": 0.85,
+    "cap_rate_warning_below": 0.03,
+    "cap_rate_warning_above": 0.15,
+    "vacancy_warning_below": 0.02,
+    "vacancy_warning_above": 0.4,
+    "opex_ratio_warning_below": 0.2,
+    "opex_ratio_warning_above": 0.7,
+    "irr_warning_below": 0.05,
+    "irr_warning_above": 0.4,
+    "annual_rent_growth_warning_above": 0.08,
+    "equity_multiple_warning_below": 1,
+    "equity_multiple_warning_above": 5
+  }
 }
 ```

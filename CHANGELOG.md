@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Regenerate the stored §4.17 `validation` sections of the six examples and
+  fixtures from a fresh `uwmd validate` (owner ruling, 2026-10-21): they now show
+  `clean` with the Format §5.2 deal flags in `financial_validity[]`, completeness
+  and cross-section entries from the current findings, and the thresholds used.
+  Hand-written `policy_flags` and `human_review_items` are kept. The
+  `02-full-multifamily` parse baseline follows.
+
 - Implement accepted RFC 0108: Format §4.17's stored `validation` section uses
   the validation result's vocabulary. `overall_status` is
   `clean | warnings | errors | blocking`; `completeness[].severity` is
