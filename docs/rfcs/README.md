@@ -141,6 +141,7 @@ and how it gets accepted.
 | [0114](./0114-area-measurement-standard.md) | Record the area measurement standard behind per-area metrics | accepted | format, protocol, core, conformance |
 | [0115](./0115-portable-verifier-cases.md) | Portable conformance subcommands for every Verifier obligation | accepted | protocol, conformance, core |
 | [0116](./0116-stage-readiness.md) | Stage readiness by class section, a scope minimum in Format fields, and present meaning stated | accepted | format, protocol, core, conformance, tooling |
+| [0119](./0119-non-positive-noi-cross-checks.md) | Compare NOI by absolute difference when it is zero or negative (CC-05, CC-06) | draft | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
