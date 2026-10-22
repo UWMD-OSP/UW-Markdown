@@ -1,5 +1,5 @@
 {
-  "source": "agent/L6-01",
+  "source": "agent/risk-rater",
   "resolution": "asset_class_default",
   "override_resolution": "user_input",
   "src_codes": []

@@ -27,7 +27,7 @@ validation result is §5.6, and Parts VI and VII are the starter
 Module manifests refuse `agent_layers` as an unknown member (`PROTO-MOD-055`
 to `-060` retired and reserved), and `agent-host` left the capability
 vocabulary. Core drops the layer registry and its builders, `uwmd layers`,
-`agents/L0b-prompt.md` and the layer-profile check (1,233 indexed checks,
+`agents/L0b-prompt.md` and the layer-profile check (1,235 indexed checks,
 starter products 101, 397 portable). Examples and fixtures drop
 `pipeline_state` and take neutral agent ids.
 

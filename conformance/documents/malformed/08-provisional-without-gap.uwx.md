@@ -65,8 +65,8 @@ section references it. Validator MUST emit `DQ-01` (warning).
     "provenance": {
       "source": "system/uwmd",
       "resolution": "asset_class_default",
-      "actor": "agent/L0a",
-      "agent_id": "agent/L0a",
+      "actor": "agent/scope-reviewer",
+      "agent_id": "agent/scope-reviewer",
       "agent_version": "1.0.0",
       "timestamp": "2026-01-15T10:00:00Z",
       "notes": null

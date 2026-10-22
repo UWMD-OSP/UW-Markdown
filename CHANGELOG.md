@@ -542,7 +542,13 @@ protocol, and each package each carry an independent semver).
   **Conformance:** the `starter-agent-profile/consumer-profile-contract` check
   and module fixture `reject/02-agent-layer-malformed` are retired; new
   `reject/20-agent-layers-unknown-member` shows the refusal; capability tokens
-  are re-signed for the neutral subject `agent/underwriter.inst-A`.
+  are re-signed for the neutral subject `agent/underwriter.inst-A`; examples,
+  fixtures and the download templates drop `pipeline_state`, layer agent ids
+  become neutral ids (`agent/rent-roll-extractor`, `agent/market-analyst`,
+  `agent/risk-rater`, ...) with `agent_id` following, and layer prose in the
+  Parkview records is restated. The documents baselines for
+  `02-full-multifamily` and `04-scope-only` were regenerated with
+  `scripts/regen-conformance.mjs --suite=documents`; no financial value moved.
 
 ### Fixed
 
