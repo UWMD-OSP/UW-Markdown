@@ -199,7 +199,7 @@
     {
       "name": "python",
       "argv": [
-        "C:\\Users\\jared\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "<python>",
         "-B",
         "<repo>\\experiments\\numerical-0088\\cancellation-accuracy\\python_graph.py",
         "<scratch>\\python.json"
@@ -220,7 +220,7 @@
       "argv": [
         "node",
         "--experimental-loader",
-        "file:///C:/Users/jared/.codex/worktrees/numeric-0088-lane/UW%20Markdown/experiments/numerical-0088/impact/hook.mjs",
+        "file:///<repo>/experiments/numerical-0088/impact/hook.mjs",
         "<repo>\\experiments\\numerical-0088\\cancellation-accuracy\\run.mjs",
         "<scratch>\\baseline.json"
       ],
@@ -231,7 +231,7 @@
       "argv": [
         "node",
         "--experimental-loader",
-        "file:///C:/Users/jared/.codex/worktrees/numeric-0088-lane/UW%20Markdown/experiments/numerical-0088/impact/hook.mjs",
+        "file:///<repo>/experiments/numerical-0088/impact/hook.mjs",
         "<repo>\\experiments\\numerical-0088\\cancellation-accuracy\\run.mjs",
         "<scratch>\\candidate.json"
       ],

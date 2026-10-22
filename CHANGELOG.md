@@ -29,6 +29,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Scrub leftovers for public launch (cleanup phase D, owner ruling 2026-10-22):
+  the `experiments/numerical-0088` evidence manifests record `<repo>` and
+  `<python>` instead of machine-local absolute paths, with every pinned digest of
+  a changed file repinned; the authored standalone kit's README describes the kit
+  without owner process narrative.
 - Fix #489: `render --format csv` quotes and escapes fields per RFC 4180, so a
   comma or quote in a value no longer shifts the columns. The text columns that
   were always quoted stay quoted, with embedded quotes doubled.

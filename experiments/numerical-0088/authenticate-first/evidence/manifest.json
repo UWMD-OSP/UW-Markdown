@@ -12,7 +12,7 @@
   "command": [
     "node",
     "--experimental-loader",
-    "file:///C:/Users/jared/.codex/worktrees/numeric-0088-lane/UW%20Markdown/experiments/numerical-0088/authenticate-first/loader.mjs",
+    "file:///<repo>/experiments/numerical-0088/authenticate-first/loader.mjs",
     "--test-reporter=tap",
     "--test",
     "<repo>\\experiments\\numerical-0088\\authenticate-first\\proposal.test.mjs"

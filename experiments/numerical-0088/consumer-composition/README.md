@@ -78,7 +78,7 @@ Python methods pass; verifier build and focused Biome pass. The16 compressed
 execution artifacts retain11,224,017 raw bytes, including all candidate/host/
 baseline outputs, full Python records, primitive calls, returned-source transforms
 and command stderr/stdout. Manifest SHA256:
-`971f14a5de0ed6bedf19bd7c0a5767e3f434abe330d1c8d82b88dd6495059b20`.
+`1267f57b7b87898e217a78f577e9fbf190255a9216bf64b7ede397983dff4c77`.
 
 ```sh
 npm run build --workspace=@uwmd/verify

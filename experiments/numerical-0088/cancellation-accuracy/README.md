@@ -53,7 +53,7 @@ numerical operation, mathematical reference or expected answer was changed.
 The capture at `4573db257fc315ea2b4b311dab58ac54b9f9b6b7` / tree
 `2d4019c5f4fdc99449facc3fc0e54a7dc9881dcd` records CPython 3.12.3,
 Windows AMD64 and Node 24.14.1 / V8 13.6.233.17-node.44. Manifest SHA-256 is
-`e09b52ac510542ad77830bc36e33d9cabbfd99e595660f4cb02bbb02c0b54352`.
+`c51f42016d76fea22c2de86767c72979daaf1135aed5dc418a0b670685d4d24c`.
 Sixteen compressed artifacts preserve 591583 original raw bytes, including exact
 real rational certificates, separate ideal-power traces, 200 complete candidate
 operation rows in **each** JS/Python graph execution, all actual builtin/evaluator/

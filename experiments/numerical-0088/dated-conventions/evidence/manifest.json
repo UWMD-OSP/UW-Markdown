@@ -169,7 +169,7 @@
       "command": [
         "node",
         "--experimental-loader",
-        "file:///C:/Users/jared/.codex/worktrees/numeric-0088-lane/UW%20Markdown/experiments/numerical-0088/impact/hook.mjs",
+        "file:///<repo>/experiments/numerical-0088/impact/hook.mjs",
         "<repo>\\experiments\\numerical-0088\\dated-conventions\\boundary.mjs"
       ],
       "exit": 0
@@ -179,7 +179,7 @@
       "command": [
         "node",
         "--experimental-loader",
-        "file:///C:/Users/jared/.codex/worktrees/numeric-0088-lane/UW%20Markdown/experiments/numerical-0088/impact/hook.mjs",
+        "file:///<repo>/experiments/numerical-0088/impact/hook.mjs",
         "<repo>\\experiments\\numerical-0088\\dated-conventions\\boundary.mjs"
       ],
       "exit": 0

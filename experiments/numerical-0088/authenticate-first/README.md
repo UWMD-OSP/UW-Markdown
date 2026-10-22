@@ -58,7 +58,7 @@ The four execution artifacts retain65,625 raw bytes: current/proposed complete
 receipt/results/phase/backend rows, real signatures/public key, exact source and
 proposal digests, TAP output and stderr. All271 executed source/dist/test/fixture
 identities match before and after this one current execution. Manifest SHA256:
-`f0e290f0db546f854be79188752c635ef5a5a1d3188f8ed85d6daec5778f00af`. No old numerical or receipt matrix is rerun.
+`1a7a918f011131f80e5db6c96f5db32784cefdcc9fd37b533ff5361376ac6894`. No old numerical or receipt matrix is rerun.
 
 ```sh
 npm run build --workspace=@uwmd/verify

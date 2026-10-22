@@ -16,9 +16,9 @@
     "conformance/receipts/issue/01-uwx-multifamily/deal.uwx.md": "7988e4679a0a21e156ce5ae88eb0cb05abbcd9427a6adf449df1b754598d573e",
     "experiments/numerical-0088/composed-receipts/capture.py": "9dbe58ec67ccee4264ddb821397b13e919b8706c8a60da2b9625a695ed3f6f60",
     "experiments/numerical-0088/composed-receipts/check.mjs": "d3bcc3edb26f04e7c9b4b9f39d4056560e77b184954cb644313fd02b633f1d2c",
-    "experiments/numerical-0088/composed-receipts/inputs.json": "71278e3f32c791193ecd6b53c03be972db9edf9c99aa6fc3ea078b5a5ed8f3b9",
+    "experiments/numerical-0088/composed-receipts/inputs.json": "ed6c6284ca72c7f39c75fb1c6ef5300d063ea2a6d03415770d9e2f4e7026786d",
     "experiments/numerical-0088/composed-receipts/probe.mjs": "dc551a0b8544f8a1c7a9d3fab34c1d38f94f785160fca00081b2d93eaafb0c5c",
-    "experiments/numerical-0088/financial-trajectories/evidence/manifest.json": "53a79745035278e22f01322d7f851293762a41f1e1e7dad1cb1a9efd11d22c08",
+    "experiments/numerical-0088/financial-trajectories/evidence/manifest.json": "ceeba51bd8dcab6384ec47d8bf35e1cf7ceaa3d582ca5b4f27ac173accbdd883",
     "experiments/numerical-0088/financial-trajectories/evidence/python.json.gz": "8d474b780b8cf23ee8e7f4f67fff20ba17049b151f69c4e270f48a50143abfd7",
     "experiments/numerical-0088/financial-trajectories/inputs.json": "1e78c5ad9e26ac4ee7ece9f7153931db9828155773b7c08c77cb0b15c9f93145",
     "experiments/numerical-0088/impact/financial-evidence/baseline.financial.json": "7be6073869deb69b8b8836266934e53bd9f1d7b4df21f8c022ddaca308c32999",
@@ -221,7 +221,7 @@
       "argv": [
         "node",
         "--experimental-loader",
-        "file:///C:/Users/jared/.codex/worktrees/numeric-0088-lane/UW%20Markdown/experiments/numerical-0088/impact/hook.mjs",
+        "file:///<repo>/experiments/numerical-0088/impact/hook.mjs",
         "<repo>\\experiments\\numerical-0088\\composed-receipts\\probe.mjs"
       ],
       "exit": 0
@@ -231,7 +231,7 @@
       "argv": [
         "node",
         "--experimental-loader",
-        "file:///C:/Users/jared/.codex/worktrees/numeric-0088-lane/UW%20Markdown/experiments/numerical-0088/impact/hook.mjs",
+        "file:///<repo>/experiments/numerical-0088/impact/hook.mjs",
         "<repo>\\experiments\\numerical-0088\\composed-receipts\\probe.mjs"
       ],
       "exit": 0
@@ -241,7 +241,7 @@
   "actual_candidate_controls": 19,
   "finite_baseline_loader_unmodified_equivalent": true,
   "finite_candidate_receipt_equal_to_unmodified": true,
-  "input_sha256": "71278e3f32c791193ecd6b53c03be972db9edf9c99aa6fc3ea078b5a5ed8f3b9",
+  "input_sha256": "ed6c6284ca72c7f39c75fb1c6ef5300d063ea2a6d03415770d9e2f4e7026786d",
   "raw_artifacts": [
     {
       "path": "baseline.events.jsonl.gz",
