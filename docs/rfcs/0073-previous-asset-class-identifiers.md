@@ -2,7 +2,7 @@
 rfc: 0073
 title: Previous identifiers for module-declared asset classes
 status: draft
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-10-04
 affects:
   - protocol-spec
@@ -30,12 +30,12 @@ fixture or version change.
 
 ### Demonstrated consumer
 
-Issue [#263](https://github.com/UWMD-OSP/UW-Markdown/issues/263) (StackUW
-`UPSTREAM-023`). StackUW produces signed `.uwx.md` records and has retired the
+Issue [#263](https://github.com/UWMD-OSP/UW-Markdown/issues/263), an adopter
+report. The adopter produces signed `.uwx.md` records and has retired the
 product domain its reverse-DNS ids were built from. It wants future releases
 under the current domain's namespace, and documents written under the old ids
-should stay readable through a path the protocol defines rather than a
-StackUW-only alias table.
+should stay readable through a path the protocol defines rather than an
+adopter-only alias table.
 
 ### Current behavior
 
@@ -329,7 +329,7 @@ for today's identical-`id` case also lands, closing the gap the review found.
   resolvable on every host (review F3) and needs no release. The choice is
   whether declared equivalence (reporting, one identity for grouping, no drift
   between duplicates) is worth a Protocol minor and a field that pre-RFC hosts
-  refuse. The recommendation is to keep this RFC `draft` until StackUW
+  refuse. The recommendation is to keep this RFC `draft` until the adopter
   answers the review's three reporter questions. Accept it if a class id
   actually moves and a consumer needs the ids treated as one; otherwise
   withdraw it and document dual declaration.

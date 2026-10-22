@@ -2,7 +2,7 @@
 rfc: 0097
 title: Refuse invalid selected institution configuration before validation
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-19
 affects:
   - format-spec
@@ -22,22 +22,12 @@ automatic sidecar still leaves validation defaults in force. A selected invalid
 file never becomes successful validation under defaults or partially applied
 overrides. Define two typed errors, deterministic preflight/transport and an
 atomic three-key adapter. No new financial threshold, formula or comparison
-rule is introduced. The owner accepted this contract on2026-10-19 at4a31eb3c;
-synchronized implementation follows on Issue354.
-
-Prior drafting authority,2026-10-19, quoted verbatim:
-
-> Proceed with the refusal-contract RFC draft I approved: validate refuses a selected unreadable or malformed institution config with exact typed transport; missing automatic sidecars still use defaults; no new financial thresholds; drafting only.
-
-Owner acceptance,2026-10-19, quoted verbatim:
-
-> RFC 0097 (#396 at 4a31eb3c) is accepted as drafted: VAL-INSTITUTION-CONFIG-UNREADABLE and -MALFORMED as operation errors with error-only JSON and exit 1, one explicitly selected path or the lexical sidecar with no merging or fallback, the strict JSON profile as written, atomic admission of the three flat overrides, missing automatic sidecars still default. Mark ready, merge on green, then implement in TS and Python together on the #354 lane.
+rule is introduced. **Accepted by the owner, 2026-10-19.** See
+[Resolution](#resolution).
 
 This RFC is separate from accepted payload admission RFC0096 and the Python
 complete-validation WIP. Discovery stays parse-only until its complete capability
-gate passes. The acceptance PR396 changed only documentation. The synchronized
-implementation below changes runtime/types/schema and adds governed controls;
-release state and advertised capabilities remain unchanged.
+gate passes.
 
 ## Motivation and independently verified evidence
 
@@ -85,8 +75,7 @@ conformance requirements, not claims of already executed refusals.
 
 ## Accepted contract
 
-The owner accepted all requirements in this section at4a31eb3c. Synchronized
-implementation remains required. This is a selected-config operation failure,
+The owner accepted all requirements in this section. This is a selected-config operation failure,
 not an additional document validation finding or generic schema-error code.
 
 ### Selection and operation boundary
@@ -150,7 +139,7 @@ profile choices, not inherited JSON MUSTs or reuse of document JCS admission.
 [RFC8259 section4](https://www.rfc-editor.org/rfc/rfc8259.html#section-4)
 recommends unique names; [section8.1](https://www.rfc-editor.org/rfc/rfc8259.html#section-8.1)
 permits parsers to ignore a BOM. They do not themselves select this stricter
-configuration profile. The owner accepted these stated choices at4a31eb3c.
+configuration profile. The owner accepted these stated choices.
 The root MUST be an object, not null or an array.
 
 The recognized carrier is an own `validation_overrides` member. Absence means
@@ -334,17 +323,6 @@ permission behavior from an ineffective chmod on another platform. Tests never
 rewrite the source/config under assessment. These named vectors are required implementation controls,
 not claims of executed fixtures in this docs-only acceptance.
 
-The owner accepted the final text at4a31eb3c on2026-10-19 after independent
-semantic review. Scope, code uniqueness, selection/absence and precedence,
-unknown-data and public-type boundaries, atomic application, receipt exclusion
-and testable transport were reviewed. Reviewed-head CI39222835814 passed all17
-ordinary jobs: https://github.com/UWMD-OSP/UW-Markdown/actions/runs/39222835814 .
-Final administrative acceptance-head review and CI are recorded in PR396;
-merge SHA and exact-main CI are recorded in NOW.md. Before runtime activation:
-synchronized TS/Python/spec/schema/type/operation-error documentation, attributed
-conformance controls, independent material-claim verification and green exact-head
-and exact-main CI. Validation capability promotion remains a separate full gate.
-
 ## Reference implementation
 
 Reconcile the held TS institution adapter/CLI tests and Python private helper
@@ -381,12 +359,22 @@ No model-generation, workflow, display or metric implementation work is included
 | Application and order | Atomic whole-config admission; explicit fixed primary-error precedence |
 | APIs/receipts | Pure caller maps remain separate; no receipt config loading or identity/count changes |
 
-The owner accepted all six dispositions above at4a31eb3c. No numerical
-convention is unresolved or selected here. Synchronized implementation still
-requires independent review and green exact-head/main CI. RFC0096 and
-RFCs0085/0089/0092 retain their own ownership and acceptance states.
+The owner accepted all six dispositions above. No numerical convention is
+unresolved or selected here. RFC0096 and RFCs0085/0089/0092 retain their own
+ownership and acceptance states.
 
-## Implementation disposition
+## Resolution
+
+Accepted by the owner, 2026-10-19, in
+[#396](https://github.com/UWMD-OSP/UW-Markdown/pull/396), with the six
+dispositions in [Accepted decisions from owner review](#accepted-decisions-from-owner-review):
+
+> RFC 0097 (#396 at 4a31eb3c) is accepted as drafted: VAL-INSTITUTION-CONFIG-UNREADABLE and -MALFORMED as operation errors with error-only JSON and exit 1, one explicitly selected path or the lexical sidecar with no merging or fallback, the strict JSON profile as written, atomic admission of the three flat overrides, missing automatic sidecars still default. Mark ready, merge on green, then implement in TS and Python together on the #354 lane.
+
+Implemented in TypeScript and Python in
+[#398](https://github.com/UWMD-OSP/UW-Markdown/pull/398). Release state and
+advertised capabilities are unchanged; validation capability promotion remains
+a separate full gate.
 
 The TypeScript private file adapter and CLI implement strict admission, atomic
 three-key mapping, exact config errors and lexical selection. The existing
@@ -425,8 +413,7 @@ checks the error-only outer object, ProtocolError schema, pointer presence/absen
 ordinary-result exclusion, exact exit and source/config preservation. Portable
 cases reuse the existing comparator. Separate runtime/actual CLI controls assess
 permission/link/race and internal failures, non-JSON/aggregate transport, caller
-map isolation and receipt exclusion. PR evidence distinguishes executed proof
-from pending exact-head/platform/complete-capability gates.
+map isolation and receipt exclusion.
 
 ## Prior art
 

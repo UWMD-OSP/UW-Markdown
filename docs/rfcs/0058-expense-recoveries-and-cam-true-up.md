@@ -4,7 +4,7 @@ title: 'Expense recoveries and the CAM true-up'
 status: implemented
 accepted: 2026-09-16
 implemented: 2026-09-16
-author: claude
+author: UWMD maintainers
 created: 2026-09-16
 depends_on:
   - 0034

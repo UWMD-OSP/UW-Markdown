@@ -2,7 +2,7 @@
 rfc: 0087
 title: Define the basis for hospitality revenue reconciliation
 status: draft
-author: codex (Phase 2 financial verification proposal)
+author: UWMD maintainers
 created: 2026-10-15
 affects:
   - format-spec
@@ -103,7 +103,7 @@ cost. Authority-specific bridges address adopter needs while requiring evidence
 that the current public accounting schedules do not fully supply. None is
 selected or represented as an owner-approved convention.
 
-## Integrator recommendation for owner review — 2026-10-15
+## Recommended direction for owner review — 2026-10-15
 
 **Proposed direction, not an accepted decision:** prefer explicit comparability
 assertions, with a separate observation-rounding bridge where justified. Keep

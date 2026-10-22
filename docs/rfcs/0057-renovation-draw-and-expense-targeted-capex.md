@@ -3,7 +3,7 @@ rfc: 0057
 title: 'The renovation draw, and capex that buys an expense reduction'
 status: implemented
 accepted: 2026-09-16
-author: claude
+author: UWMD maintainers
 created: 2026-09-16
 depends_on:
   - 0041
