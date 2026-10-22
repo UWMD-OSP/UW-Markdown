@@ -6,7 +6,7 @@
 import type ExcelJS from 'exceljs';
 import { PERIOD_EXPORT_MARKER } from './custom-calculations.js';
 import type { WorkbookLayout } from './layout.js';
-import { SUBTOTAL_RANGES } from './layout.js';
+import { SUBTOTAL_RANGES, SUBTOTAL_STATUS } from './layout.js';
 import { getLayoutForAssetClass } from './layouts.js';
 import { MIXED_USE_PROPERTY_PATHS, mixedUseName } from './mixed-use.js';
 import { readWorkbookContract } from './mcpSheet.js';
@@ -44,7 +44,8 @@ export interface WorkbookImport {
   contract: WorkbookContract | null;
   /**
    * Partial section content suitable for a Tier-2 section edit. _meta and
-   * formula-derived totals are intentionally absent.
+   * formula-derived totals are intentionally absent; a stated subtotal the
+   * workbook retains as an editable input is included.
    */
   sections: Record<string, Record<string, unknown>>;
 }
@@ -133,7 +134,50 @@ function namedCell(wb: ExcelJS.Workbook, name: string): ExcelJS.Cell {
   return cell;
 }
 
-function assertSubtotalRows(wb: ExcelJS.Workbook, layout: WorkbookLayout): void {
+type SubtotalForm =
+  | { kind: 'live' }
+  | { kind: 'missing' }
+  | { kind: 'retained'; value: number };
+
+function isNaError(value: ExcelJS.CellValue): boolean {
+  return !!value && typeof value === 'object' && 'error' in value && value.error === '#N/A';
+}
+
+/**
+ * Classify a subtotal cell as one of the three forms toWorkbook() writes
+ * (#484): the exact live formula; `#N/A` beside the missing-subtotal status; or
+ * a finite stated subtotal beside the retained-input status. Anything else (a
+ * different formula, a value typed over a formula, a value typed over `#N/A`, a
+ * formula typed over a stated value, a deleted status) is an altered subtotal
+ * and refuses. A null `formula` means
+ * the exporter writes no live formula for this cell.
+ */
+function subtotalForm(cell: ExcelJS.Cell, formula: string | null, label: string): SubtotalForm {
+  const found = formulaAt(cell);
+  const status = cell.worksheet.getCell(cell.row, 3).value;
+  // The exporter writes status text only beside a non-formula subtotal, so a
+  // live formula beside one replaced a stated value and refuses.
+  if (found !== null) {
+    if (found === formula && (status === null || status === undefined)) return { kind: 'live' };
+  } else {
+    const value = cell.value;
+    if (status === SUBTOTAL_STATUS.missing && isNaError(value)) return { kind: 'missing' };
+    if (status === SUBTOTAL_STATUS.retained && typeof value === 'number' && Number.isFinite(value)) {
+      return { kind: 'retained', value };
+    }
+  }
+  throw new WorkbookImportError(
+    'WORKBOOK-IMPORT-SUBTOTAL',
+    `Workbook subtotal "${label}" has been altered.`,
+  );
+}
+
+/**
+ * Check the operating-statement subtotal rows and return the stated subtotals
+ * the workbook retains as editable inputs. Live formulas are formula-derived and
+ * never imported; `#N/A` carries no value.
+ */
+function readSubtotalRows(wb: ExcelJS.Workbook, layout: WorkbookLayout): Array<{ path: string; value: number }> {
   const sheet = wb.getWorksheet('Operating Statement');
   if (!sheet) {
     throw new WorkbookImportError(
@@ -150,28 +194,31 @@ function assertSubtotalRows(wb: ExcelJS.Workbook, layout: WorkbookLayout): void 
   const opexRow = expenseLast + 1;
   const noiRow = opexRow + 2;
   const subtotals = [
-    { label: 'Effective Gross Income', row: egiRow, formula: `SUM(B${incomeFirst}:B${incomeLast})`, name: SUBTOTAL_RANGES.egi },
-    { label: 'Total Operating Expenses', row: opexRow, formula: `SUM(B${expenseFirst}:B${expenseLast})`, name: SUBTOTAL_RANGES.opex },
-    { label: 'Net Operating Income', row: noiRow, formula: `B${egiRow}-B${opexRow}`, name: SUBTOTAL_RANGES.noi },
+    { label: 'Effective Gross Income', row: egiRow, formula: `SUM(B${incomeFirst}:B${incomeLast})`, name: SUBTOTAL_RANGES.egi, path: 'income.effective_gross_income' },
+    { label: 'Total Operating Expenses', row: opexRow, formula: `SUM(B${expenseFirst}:B${expenseLast})`, name: SUBTOTAL_RANGES.opex, path: 'expenses.total_operating_expenses' },
+    { label: 'Net Operating Income', row: noiRow, formula: `B${egiRow}-B${opexRow}`, name: SUBTOTAL_RANGES.noi, path: 'net_operating_income' },
   ];
 
+  const retained: Array<{ path: string; value: number }> = [];
   for (const subtotal of subtotals) {
-    const label = sheet.getCell(`A${subtotal.row}`).value;
-    const formula = formulaAt(sheet.getCell(`B${subtotal.row}`));
-    if (label !== subtotal.label || formula !== subtotal.formula) {
+    if (sheet.getCell(`A${subtotal.row}`).value !== subtotal.label) {
       throw new WorkbookImportError(
         'WORKBOOK-IMPORT-SUBTOTAL',
         `Workbook subtotal "${subtotal.label}" has been altered.`,
       );
     }
+    const cell = sheet.getCell(`B${subtotal.row}`);
+    const form = subtotalForm(cell, subtotal.formula, subtotal.label);
+    if (form.kind === 'retained') retained.push({ path: subtotal.path, value: form.value });
     const rangeCell = namedCell(wb, subtotal.name);
-    if (rangeCell !== sheet.getCell(`B${subtotal.row}`)) {
+    if (rangeCell !== cell) {
       throw new WorkbookImportError(
         'WORKBOOK-IMPORT-SUBTOTAL',
         `Workbook subtotal named range "${subtotal.name}" does not point to ${subtotal.label}.`,
       );
     }
   }
+  return retained;
 }
 
 function hasName(wb: ExcelJS.Workbook, name: string): boolean {
@@ -230,9 +277,16 @@ function fromMixedUseWorkbook(wb: ExcelJS.Workbook, layout: WorkbookLayout): Rec
   }
 
   const consolidated = namedCell(wb, mixedUseName('noi_model.net_operating_income'));
-  if (formulaAt(consolidated) !== noiNames.join('+')) {
-    throw new WorkbookImportError('WORKBOOK-IMPORT-SUBTOTAL',
-      'Workbook subtotal "Property Net Operating Income" has been altered.');
+  const label = 'Property Net Operating Income';
+  if (noiNames.length > 0) {
+    if (formulaAt(consolidated) !== noiNames.join('+')) {
+      throw new WorkbookImportError('WORKBOOK-IMPORT-SUBTOTAL', `Workbook subtotal "${label}" has been altered.`);
+    }
+  } else {
+    // No component block: the exporter states the source NOI (or #N/A) the
+    // single-statement way, and a formula there is an alteration (#484).
+    const form = subtotalForm(consolidated, null, label);
+    if (form.kind === 'retained') setPath(sectionFor(sections, 'noi_model'), 'net_operating_income', form.value);
   }
   return sections;
 }
@@ -287,7 +341,7 @@ export function fromWorkbook(wb: ExcelJS.Workbook): WorkbookImport {
   // statement, so it reads its own named inputs (#411).
   if (layout.mixedUse) return { asset_class: assetClass, contract: contract ?? null, sections: fromMixedUseWorkbook(wb, layout) };
 
-  assertSubtotalRows(wb, layout);
+  const retainedSubtotals = readSubtotalRows(wb, layout);
 
   const sections: Record<string, Record<string, unknown>> = {};
   for (const input of layout.namedInputs) {
@@ -314,6 +368,10 @@ export function fromWorkbook(wb: ExcelJS.Workbook): WorkbookImport {
     setPath(section, `expenses.${line.path}`, scalarNumberOrNull(operatingStatement.getCell(`B${expenseRow}`), line.label));
     expenseRow++;
   }
+
+  // A stated subtotal the exporter retained as an editable input (a totals-only
+  // record, or the exact-decimal fallback) is user-editable, so it imports.
+  for (const { path, value } of retainedSubtotals) setPath(sectionFor(sections, 'noi_model'), path, value);
 
   return { asset_class: assetClass, contract: contract ?? null, sections };
 }

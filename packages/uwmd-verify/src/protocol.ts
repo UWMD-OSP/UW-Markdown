@@ -23,7 +23,6 @@ import type {
   DealStage,
   FinancialThresholds,
   ParsedUWFile,
-  PipelineStatus,
   UWBlock,
   UWMeta,
   UWMetaPatch,
@@ -136,7 +135,6 @@ export type ViewerCapability =
   | 'calc-cash-flow'
   /** Reads and validates `.uwportfolio.json` sidecars (§XV, RFC 0015). */
   | 'portfolio-relationships'
-  | 'agent-host'
   | 'module-load'
   /** Verifies `_meta.integrity.signature` on blocks (§V.11.5, RFC 0010). */
   | 'signing'
@@ -348,7 +346,7 @@ export type { CanonicalSourceTag } from './types.js';
  * field actor-only: `manual`, or `<namespace>/<id>` where the namespace is a
  * member of this list and the id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. (The
  * RFC's draft pattern was lowercase-only, which rejected its own worked
- * example `agent/L6-01` and every Bancroft layer id — corrected as errata.)
+ * example and every mixed-case agent id — corrected as errata.)
  * Resolution methods (the {@link SOURCE_TAGS} vocabulary) belong in
  * `_meta.provenance.resolution`.
  *
@@ -1047,7 +1045,6 @@ export interface ModuleManifest extends ModuleConformanceRequirements {
   thresholds?: Partial<FinancialThresholds>;
   view_models?: SectionViewModel[];
   ui?: Record<string, unknown>;     // free-form, host-specific
-  agent_layers?: ModuleAgentLayerDecl[];
   depends_on?: { id: string; version: string }[];
   /**
    * Custom asset classes this module introduces (§X.2, RFC 0003).
@@ -1167,13 +1164,6 @@ export interface ModuleValidationDecl {
   severity: ValidationSeverity;
   message: string;
   rule: string;                     // safe-expression returning boolean
-}
-
-export interface ModuleAgentLayerDecl {
-  id: string;
-  reads: string[];
-  writes: string[];
-  prompt_template: string;
 }
 
 export interface ModuleLoadResult {
@@ -2468,7 +2458,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'SRC-01', severity: 'error',
     title: 'Unrecognized actor source',
     description: '_meta.provenance.source is not `manual` or a `<namespace>/<id>` pair with a registered actor namespace (Format §2.6, RFC 0031). Always an error.',
-    remediation: 'Rewrite _meta.provenance.source as `manual` or `<namespace>/<id>` using a registered namespace (agent, document, system, institution) — e.g. `agent:L0-01` becomes `agent/L0-01`.',
+    remediation: 'Rewrite _meta.provenance.source as `manual` or `<namespace>/<id>` using a registered namespace (agent, document, system, institution) — e.g. `agent:rent-roll-extractor` becomes `agent/rent-roll-extractor`.',
     spec_ref: 'UW_FORMAT_SPEC.md §2.6',
   },
   {
@@ -2620,7 +2610,6 @@ export type {
   DealStage,
   FinancialThresholds,
   ParsedUWFile,
-  PipelineStatus,
   UWBlock,
   UWMeta,
   ValidationMessage,

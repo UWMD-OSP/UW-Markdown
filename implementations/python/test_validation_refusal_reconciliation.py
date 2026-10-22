@@ -73,7 +73,8 @@ class RefusalReconciliationTests(unittest.TestCase):
             schema = json.loads((ROOT/"spec/schemas/lease-recovery-terms.schema.json").read_text(encoding="utf-8"))
             schema["properties"]["pro_rata_share"]["maximum"] = .5
             (provider/"lease-recovery-terms.schema.json").write_text(json.dumps(schema), encoding="utf-8")
-            with patch("uwmd_validation_optional_shapes._SCHEMAS", provider):
+            with patch("uwmd_validation_optional_shapes.spec_schema",
+                       lambda name: json.loads((provider/name).read_text(encoding="utf-8"))):
                 _, result = self.assess(self.recoveries([dict(recovery_terms=dict(method="net", pro_rata_share=2))]))
             findings = result["section_assessment"]["lease_recoveries"]["shape_findings"]
             self.assertEqual([f["field"] for f in findings], ["tenants[0].recovery_terms.pro_rata_share"])

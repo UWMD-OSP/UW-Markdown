@@ -14,15 +14,6 @@ asset_subtype: "suburban"
 loan_type: "bridge"
 scenario: "value_add"
 
-pipeline_state:
-  L0_ingestion:    "complete"
-  L1_screening:    "complete"
-  L2_underwriting: "complete"
-  L4_structuring:  "in_progress"
-  L5_compliance:   "pending"
-  L6_risk:         "pending"
-  L7_assembly:     "pending"
-
 status: "in_progress"
 deal_stage: "full_underwrite"
 recommendation: "pending"

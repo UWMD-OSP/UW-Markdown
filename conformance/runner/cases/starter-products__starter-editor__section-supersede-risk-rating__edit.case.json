@@ -12,11 +12,11 @@
     "--actor",
     "risk-rating-agent",
     "--source",
-    "agent/L6",
+    "agent/risk-rater",
     "--confidence",
     "medium",
     "--agent-id",
-    "L6-risk-rating",
+    "risk-rater",
     "--agent-version",
     "0.2.0"
   ],

@@ -38,7 +38,6 @@ uwmd <command> [args]
 | `uwmd export <file.uw.md>` | Write a digested, model-lossless `.uw.json` sibling |
 | `uwmd formats` | List registered machine representations |
 | `uwmd convert <file> --to uw-json\|uw-xml\|uw-csv-bundle` | Convert Markdown, verified JSON/XML, or normalized CSV ZIP bundles |
-| `uwmd layers` | List the Bancroft layer registry (takes no file; the CLI runs no agent) |
 | `uwmd manifest` | Print the implementation manifest JSON: core, Protocol and Format versions, and capabilities (the `@uwmd/verify` version goes to stderr) |
 
 `uwmd --version` (or `-V`) prints the @uwmd/core, @uwmd/verify, Protocol and

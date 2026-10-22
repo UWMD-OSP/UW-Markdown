@@ -100,6 +100,77 @@ def cash_source_issues(payload):
     return issues
 
 
+_DAY_COUNTS = ("actual/365f", "actual/360", "30/360us")
+_KINDS = ("acquisition", "operating", "capex", "debt_service", "refinance", "disposition", "other")
+
+
+def cash_flow_findings(payload):
+    """Format §4.26 CF-01/02/03 for one validated cash_flow_series block.
+
+    Returns ordered (code, field, message). CF-01 is exactly the §4.26 row
+    grammar: a real date, a finite amount and the closed day_count/kind
+    vocabularies. Other schema shape (labels, unknown members, metadata) is
+    not a CF-01 condition; RDB binding admission keeps cash_source_issues.
+    One finding per defect: a row outside the grammar is not also out of order.
+    """
+    content = payload if isinstance(payload, dict) else {}
+    findings = []
+    day_count = content.get("day_count")
+    if day_count is not None and day_count not in _DAY_COUNTS:
+        findings.append(("CF-01", "day_count", "day_count must be a registered convention"))
+    rows = content.get("series")
+    if not isinstance(rows, list) or not rows:
+        findings.append(("CF-02", "series", "series must be a non-empty array of dated flows"))
+        return findings
+    previous, positive, negative = None, False, False
+    for index, row in enumerate(rows):
+        field = "series[" + str(index) + "]"
+        row = row if isinstance(row, dict) else {}
+        date, amount, kind = row.get("date"), row.get("amount"), row.get("kind")
+        if not calendar_date(date):
+            findings.append(("CF-01", field + ".date", "date is not a real ISO-8601 calendar day (YYYY-MM-DD)"))
+            previous = None
+        else:
+            if previous is not None and date < previous:
+                findings.append(("CF-02", field + ".date", "dates must be non-decreasing"))
+            previous = date
+        if not finite(amount):
+            findings.append(("CF-01", field + ".amount", "amount must be a finite signed number"))
+        else:
+            positive, negative = positive or amount > 0, negative or amount < 0
+        if kind is not None and kind not in _KINDS:
+            findings.append(("CF-01", field + ".kind", "kind is not a registered flow kind"))
+    metrics = content.get("stated_metrics")
+    if isinstance(metrics, dict) and metrics.get("xirr") is not None and not (positive and negative):
+        findings.append(("CF-03", "stated_metrics.xirr", "a stated xirr needs both a negative and a positive amount"))
+    return findings
+
+
+def binding_series_valid(payload):
+    """Protocol V.12 / Format HDG-08: the selected series a replacement binds.
+
+    A legal day_count and a nonempty ordered series of closed rows (date,
+    amount, kind, label) with real dates, finite amounts, registered kinds
+    and string-or-null labels. Section-level members are not inspected.
+    """
+    content = payload if isinstance(payload, dict) else {}
+    if content.get("day_count") is not None and content["day_count"] not in _DAY_COUNTS:
+        return False
+    rows = content.get("series")
+    if not isinstance(rows, list) or not rows:
+        return False
+    previous = ""
+    for row in rows:
+        if (not isinstance(row, dict) or any(key not in ("date", "amount", "kind", "label") for key in row)
+                or not calendar_date(row.get("date")) or not finite(row.get("amount"))
+                or row["date"] < previous
+                or row.get("kind") is not None and row["kind"] not in _KINDS
+                or row.get("label") is not None and not isinstance(row["label"], str)):
+            return False
+        previous = row["date"]
+    return True
+
+
 def calendar_period(text, cadence):
     try:
         key = parse_period_selector(text)

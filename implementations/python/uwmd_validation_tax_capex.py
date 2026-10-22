@@ -105,28 +105,43 @@ def tax_rules(ledger):
                     issue("TAX-05", "abatement.schedule", "Abatement schedule must be nonempty")
                 else:
                     previous, full_previous, matched = None, None, None
+                    # TAX-07 reads the schedule only once it is admitted: every
+                    # row an object with a selector and finite amounts, one
+                    # increasing granularity, and a nondecreasing freeze.
+                    admitted = kind in ("exemption", "freeze", "pilot", "phase_in", "credit")
                     for index, row in enumerate(rows):
                         path = "abatement.schedule[" + str(index) + "]"
                         if not isinstance(row, dict):
                             issue("TAX-05", path, "Schedule row must state a period")
+                            admitted = False
                             continue
                         identity = _period(row.get("period"))
                         if identity is None or previous is not None and (identity[0] != previous[0] or identity <= previous):
                             issue("TAX-05", path + ".period", "Periods must be one kind, increasing and unique")
+                            admitted = False
                         if identity is not None:
                             previous = identity
                         full, abated = row.get("full_tax"), row.get("abated_tax")
+                        if not finite(full) or not finite(abated):
+                            admitted = False
                         if not finite(full) or not finite(abated) or not 0 <= abated <= full:
                             issue("TAX-06", path, "Tax amounts must satisfy zero <= abated <= full")
                         if kind == "freeze" and finite(full):
                             if full_previous is not None and full < full_previous:
                                 issue("TAX-06", path + ".full_tax", "Freeze full-tax amounts must be nondecreasing")
+                                admitted = False
                             full_previous = full
-                        if row.get("period") == abatement.get("stabilized_period"):
+                        if matched is None and row.get("period") == abatement.get("stabilized_period"):
                             matched = row
-                    if abatement.get("stabilized_period") is not None:
-                        if matched is None or not _money_equal(line.get("value"), matched.get("abated_tax")):
-                            issue("TAX-07", "abatement.stabilized_period", "Stabilized tax must name a schedule row and equal its abated amount")
+                    # Format §4.5: "when stabilized_period is stated"; a stated
+                    # null is not stated. A selector naming no row is reported at
+                    # the selector; a disagreeing stated tax at the stated value.
+                    stabilized = abatement.get("stabilized_period")
+                    if admitted and stabilized is not None:
+                        if not isinstance(stabilized, str) or matched is None:
+                            issue("TAX-07", "abatement.stabilized_period", "Stabilized period must name a schedule row")
+                        elif finite(line.get("value")) and not _money_equal(line["value"], matched.get("abated_tax")):
+                            issue("TAX-07", "value", "Stated tax must equal the stabilized period's abated tax")
         if terminal:
             if not isinstance(line.get("in_exit_noi"), bool):
                 issue("TAX-08", "in_exit_noi", "Terminal tax must disclose whether it is in exit NOI")

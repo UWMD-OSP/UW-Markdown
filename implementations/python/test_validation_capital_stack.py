@@ -70,11 +70,16 @@ class CapitalStackAdmissionTests(unittest.TestCase):
     def test_component_field_prefix_and_independent_error_order(self):
         raw = property_source() + well_formed("components",
             retail=dict(component_class="retail", net_operating_income=1,
-                        capital_stack=dict(point_in_time="stabilization", tranches=[tranche(position="1", amount=-1)])),
+                        capital_stack=dict(point_in_time="stabilization", tranches=[tranche(position="1", amount="-1")])),
             office=dict(component_class="office", net_operating_income=1))
         self.assertEqual(findings(self.assess(raw)[1]), [
             ("CS-01", "components", "retail.capital_stack.tranches[0].position"),
             ("CS-01", "components", "retail.capital_stack.tranches[0].amount")])
+        # Format §4.24 CS-01 asks for a stated numeric amount; a negative one is
+        # not a CS-01 finding (the reference agrees, #425).
+        raw = raw.replace(b'"amount": "-1"', b'"amount": -1')
+        self.assertEqual(findings(self.assess(raw)[1]), [
+            ("CS-01", "components", "retail.capital_stack.tranches[0].position")])
 
     def test_split_component_findings_are_typed_independent_and_ordered(self):
         body = tranche(accrual="split", cash_rate=None, accrued_rate=False)
@@ -175,7 +180,7 @@ class CapitalStackAdmissionTests(unittest.TestCase):
                     self.assertEqual(set(report["stage_readiness"].values()), {True, False})
                     self.assertEqual(path.read_bytes(), raw)
         manifest, status = main(["manifest"])
-        self.assertEqual((status, manifest["capabilities"], manifest["profiles"]), (0, ["parse", "calc-evaluate"], []))
+        self.assertEqual((status, manifest["capabilities"], manifest["profiles"]), (0, ["parse", "calc-evaluate", "validate"], []))
 
 
 if __name__ == "__main__":

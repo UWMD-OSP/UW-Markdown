@@ -91,7 +91,7 @@ const OP: EditOperation = {
 
 const CTX: EditContext = {
   actor: 'agent instance A',
-  source: 'agent/L2.inst-A',
+  source: 'agent/underwriter.inst-A',
   capability_token: 'the-token',
 };
 
@@ -141,7 +141,7 @@ describe('the async gate', () => {
     const seen: CapabilityVerifyContext[] = [];
     const parsed = parseUWFile(FILE);
     await applyEditAsync(FILE, parsed, OP, CTX, undefined, { capabilityVerifier: accepting(seen) });
-    expect(seen).toEqual([{ deal_id: 'DEAL-CAP-01', section: 'noi_model', stage: 'screening', op: 'section_supersede', source: 'agent/L2.inst-A' }]);
+    expect(seen).toEqual([{ deal_id: 'DEAL-CAP-01', section: 'noi_model', stage: 'screening', op: 'section_supersede', source: 'agent/underwriter.inst-A' }]);
   });
 
   it('names _frontmatter for frontmatter ops', async () => {

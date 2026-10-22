@@ -32,7 +32,7 @@ leaves every NOI, DSCR, and IRR to the calculation engine.
 
 The agent host is a starter product, not part of the standard
 ([RFC 0078](/about/rfcs/0078-protocol-is-verification)). These rules come from
-the non-normative [AI agent host guide](/starter/ai-host), and the reference
+the non-normative [agent writers guide](/starter/ai-host), and the reference
 toolkit's generic writers apply them. Rule 3 binds every tool, and the
 standard keeps its provenance rules (append or supersede, host-owned `_meta`).
 The reference toolkit runs no agent: your host runs its own model and writes
@@ -47,7 +47,7 @@ the result through `writeAgentBlock` or `uwmd edit`. See
 3. [Format specification](/spec/format) for document syntax and semantics.
 4. [Protocol specification](/spec/protocol) for Reader and Verifier requirements
    and optional verification profiles; the [starter guide](/starter/ai-host)
-   describes the agent layer and writer conventions.
+   describes the writer conventions and context profiles.
 5. [Schemas](/spec/schemas/) and [conformance fixtures](/conformance/) for implementation testing.
 6. [`llms-full.txt`](/llms-full.txt) for the expanded link map.
 

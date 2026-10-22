@@ -2,10 +2,11 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import ExcelJS from 'exceljs';
-import { parseUWFile, blockPayload, evaluateCalc, emitCalcExcelFormula, quantizeDecimal } from '@uwmd/core';
+import { parseUWFile, blockPayload, evaluateCalc, emitCalcExcelFormula } from '@uwmd/core';
 import { toWorkbook } from './toWorkbook.js';
 import { getLayoutForAssetClass } from './layouts.js';
 import { buildNamedRangeMap } from './layout.js';
+import { evaluateExcelFormula, isXlError } from '../../../test/excel-formula.mjs';
 const root = resolve(__dirname, '../../..');
 function named(wb: ExcelJS.Workbook, name: string): number | string | null {
   const range = wb.definedNames.getRanges(name).ranges[0]!;
@@ -14,13 +15,9 @@ function named(wb: ExcelJS.Workbook, name: string): number | string | null {
   return typeof value === 'number' || typeof value === 'string' ? value : null;
 }
 function runFormula(formula: string, values: Record<string, number | string | null>): number | null {
-  let text = formula.replace(/<>""/g, '!==null').replace(/=""/g, '===null').replace(/""/g, 'null')
-    .replace(/<>/g, '!==').replace(/(?<![<>!=])=(?!=)/g, '===');
-  for (const [name, value] of Object.entries(values).sort((a,b) => b[0].length-a[0].length)) text = text.replace(new RegExp(`\\b${name}\\b`,'g'), typeof value === 'string' ? JSON.stringify(value) : String(value));
-  // Text cells (an enum such as dc_power.billing) compare as quoted strings.
-  expect(/^[0-9.eE +*/(),!<>=\-nullIFROUNDORAND]+$/.test(text.replace(/"[a-z_]*"/g, '')), text).toBe(true);
-  return new Function('IF','ROUND','OR','AND', `return (${text});`)((test: boolean, yes: unknown, no: unknown)=>test?yes:no,quantizeDecimal,
-    (...tests: boolean[]) => tests.some(Boolean), (...tests: boolean[]) => tests.every(Boolean)) as number | null;
+  // Excel semantics for the emitted subset; an error cell fails the toBe below.
+  const result = evaluateExcelFormula(formula, values);
+  return isXlError(result) ? null : result as number | null;
 }
 for (const [cls,file] of [['data_center','Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md'],['manufactured_housing','Desert-Palms-MHC-Apache-Junction-AZ.uwx.md']] as const) {
   describe(`${cls} complete workbook starter`,()=> {
