@@ -29,13 +29,6 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
-- Implement accepted RFC 0116: stage readiness requires stated non-null content
-  and is cumulative; scope uses the class primary size or valuation price.
-  Missing data-center capacity and manufactured-housing sites are screening
-  readiness gaps (`DQ-06`), with `CLS-03` retired. Init copies the supplied
-  address and class into property. TypeScript and Python share the contract;
-  portable document cases now pin all seven readiness values.
-
 - Scrub leftovers for public launch (cleanup phase D, owner ruling 2026-10-22):
   the `experiments/numerical-0088` evidence manifests record `<repo>` and
   `<python>` instead of machine-local absolute paths, with every pinned digest of
@@ -637,6 +630,13 @@ protocol, and each package each carry an independent semver).
   packages and retires prelaunch artifact-retention/compatibility work; RFC and
   verification gates remain, with no numerical/design acceptance or publication.
   Reconcile live contributor/version/roadmap and agent-retirement guidance.
+
+- Implement accepted RFC 0116: stage readiness requires stated non-null content
+  and is cumulative; scope uses the class primary size or valuation price.
+  Missing data-center capacity and manufactured-housing sites are screening
+  readiness gaps (`DQ-06`), with `CLS-03` retired. Init copies the supplied
+  address and class into property. TypeScript and Python share the contract;
+  portable document cases now pin all seven readiness values.
 
 ### Removed
 

@@ -650,10 +650,9 @@ export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
 
 /**
  * Per-class adjustments to the base stage lists (format spec §5.1 class
- * overlays, RFC 0029). Exhaustive by design: only `land` and `mixed_use`
- * diverge structurally — every other class reuses the base sections with
- * class-appropriate payloads (hospitality's `rent_roll` carries
- * keys/ADR/segmentation), so reuse needs no entry here.
+ * overlays, RFC 0029/0116). Land exempts and mixed-use substitutes sections;
+ * data-center capacity and manufactured-housing sites supplement screening
+ * onward. Other classes reuse the base sections with class-specific payloads.
  *
  * `exempt` removes a requirement outright; `substitute` replaces it with
  * another section that is then *required* in its place.
@@ -799,9 +798,6 @@ function buildStageContract(): readonly StageContractEntry[] {
 
   return Object.freeze(rows.map((r) => Object.freeze(r)));
 }
-
-/** The merged stage registry. Derived once at module init — see
- *  {@link StageContractEntry}. */
 
 /**
  * The sections a declared stage requires of a document of the given asset
