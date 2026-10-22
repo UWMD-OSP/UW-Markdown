@@ -24,6 +24,7 @@
     "gen-metric-dictionary": "node scripts/gen-metric-dictionary.mjs",
     "validate-schemas": "node scripts/validate-schemas.mjs",
     "verify-packages": "node scripts/verify-packages.mjs",
+    "verify-python-validation-parity": "node --test scripts/compare-python-validation.test.mjs && node scripts/compare-python-validation.mjs",
     "verify-lockfile": "node scripts/verify-lockfile.mjs",
     "verify-versions": "node scripts/verify-versions.mjs",
     "verify-indexes": "node --test scripts/docs-site-sources.test.mjs scripts/spec-refs.test.mjs scripts/agent-guidance.test.mjs && node scripts/verify-indexes.mjs",

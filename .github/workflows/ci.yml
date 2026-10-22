@@ -360,6 +360,10 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Compare Python and reference SOURCE diagnostics across the tracked corpus
+        if: matrix.node == 20
+        run: npm run verify-python-validation-parity
+
       - name: Run the language-agnostic driver against the reference CLI
         # Not a replacement for the suite above: this drives the tier fixtures
         # through the §II.6a CLI protocol, which is what a non-TypeScript

@@ -9,6 +9,7 @@ from uwmd_binding_sources import finite
 from uwmd_builtin_field_homes import removed_hospitality_fields
 from uwmd_expressions import parse_expression
 from uwmd_numeric import quantize
+from uwmd_calc import _binary as _calc_binary
 from uwmd_spec_data import metric_dictionary, schema as spec_schema
 from uwmd_periods import select_period_row, PeriodError
 from uwmd_validation_selection import current_blocks, select_section, field
@@ -119,12 +120,7 @@ def _evaluate(node, resolve):
         return left and right if operator == "&&" else left or right
     right = _evaluate(node[3], resolve)
     if operator in ("==", "!="):
-        if left is None or right is None:equal = left is None and right is None
-        elif finite(left) and finite(right):equal = left == right
-        elif isinstance(left, bool) and isinstance(right, bool) or isinstance(left, str) and isinstance(right, str):equal = left == right
-        elif isinstance(left, dict) and isinstance(right, dict) or isinstance(left, list) and isinstance(right, list):equal = left is right
-        else:raise _OperationError("CALC-TYPE-001", "Equality operands have incompatible types")
-        return equal if operator == "==" else not equal
+        return _calc_binary(operator, left, right)
     if left is None or right is None:return None
     left, right = _number(left), _number(right)
     if operator == "+":return _number(left + right)
@@ -228,17 +224,17 @@ def builtin_rules(ledger):
             prior[definition["id"]] = value
         except _OperationError as error:
             prior[definition["id"]] = None
-            ledger.issue("MOD-CALC-ERROR", "error", "", definition["id"], "Builtin calculation cannot evaluate from the stated operands",
+            ledger.issue("MOD-CALC-ERROR", "error", "", "", "Builtin calculation cannot evaluate from the stated operands",
                          value={"code":error.code})
     for code, severity, formula in _RULES[asset]:
         try:
             value = _evaluate(parse_expression(formula), _resolver(document, prior, {}))
             if value is False:
-                ledger.issue(code, severity, "", code, "Stated class facts violate the registered assertion")
+                ledger.issue(code, severity, "", "", "Stated class facts violate the registered assertion")
             elif value is not None and not isinstance(value, bool):
                 raise _OperationError("CALC-TYPE-001","Registered assertion must return boolean or null")
         except _OperationError as error:
-            ledger.issue("MOD-RULE-ERROR", "error", "", code, "Builtin rule cannot evaluate from the stated operands",
+            ledger.issue("MOD-RULE-ERROR", "error", "", "", "Builtin rule cannot evaluate from the stated operands",
                          value={"code":error.code})
     if asset == "hospitality":
         metrics = select_section(document, "hotel_metrics")
@@ -253,4 +249,4 @@ def builtin_rules(ledger):
         a = field(prop.block.parsed.value,prop_key) if prop.block is not None else None
         b = field(other.block.parsed.value,other_key) if other.block is not None else None
         if finite(a) and finite(b) and a != b:
-            ledger.issue(code,"error",section,other_key,"Stated property size and class size disagree")
+            ledger.issue(code,"error","","","Stated property size and class size disagree")
