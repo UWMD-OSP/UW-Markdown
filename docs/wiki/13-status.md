@@ -18,6 +18,12 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**uwmd.org is hosted on Cloudflare Workers (2026-10-21).** The owner moved the
+site to the Worker `uwmd-org` after #391 merged and disconnected Vercel. The
+repository's Vercel configuration (`vercel.json`, `scripts/vercel-ignore-build.sh`)
+is removed; `tools/docs-site/README.md` describes the Cloudflare host and its
+project settings.
+
 **Stored validation sections regenerated (owner ruling 2026-10-21 evening).**
 The six examples and fixtures that state a §4.17 `validation` section now store
 what a fresh `uwmd validate` reports, not the renamed old run: `clean`, the deal
@@ -2051,5 +2057,6 @@ core/CLI 3.0.0 with Stable Protocol 3.0.0.
 
 The owner-directed `codex/site-cloudflare-migration` branch contains direction C
 first, then Workers static-asset configuration. `tools/docs-site/README.md` gives
-the exact build, watch-path and owner project/cutover settings. Vercel stays in
-place; this preparation does not change credentials, DNS or active hosting.
+the exact build, watch-path and project settings. Merged in #391; the owner
+then moved uwmd.org to the Cloudflare Worker `uwmd-org` and disconnected Vercel,
+and the Vercel configuration was removed from the repository.

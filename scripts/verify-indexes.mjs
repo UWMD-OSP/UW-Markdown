@@ -122,7 +122,7 @@ if (linkedRfcs.length > 0) {
 
 // ── 2b. RFC frontmatter must be parseable YAML ───────────────────────────────
 // The site copies each RFC verbatim, so an unquoted plain scalar carrying a
-// `: ` sequence is a YAML error that surfaces only as a failed Vercel build.
+// `: ` sequence is a YAML error that surfaces only as a failed docs-site build.
 // RFC 0051's title ("hurdle_mode: \"any\"") was the first to hit it.
 
 for (const rfc of copiedRfcs) {

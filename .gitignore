@@ -15,7 +15,6 @@ coverage/
 # members and DO commit their own lockfiles for reproducible installs.
 packages/*/package-lock.json
 
-.vercel
 .env*
 *.tgz
 

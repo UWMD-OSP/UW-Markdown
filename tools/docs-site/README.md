@@ -1,7 +1,9 @@
 # UW Markdown — documentation site
 
 [VitePress](https://vitepress.dev) build of the spec, protocol, schemas,
-conformance corpus, and project documents.
+conformance corpus, and project documents. It is published at
+[uwmd.org](https://www.uwmd.org) by the Cloudflare Worker `uwmd-org`
+(static assets only; see [Hosting](#hosting-cloudflare-workers)).
 
 ## How it works
 
@@ -45,14 +47,16 @@ sidebar and generated titles use the same sources. Package details live on
 Versions. The Downloads "on npm" list uses the newest CHANGELOG generation marked
 `### Released`, through `scripts/release-packages.mjs`.
 
-## Cloudflare Workers static hosting
+## Hosting (Cloudflare Workers)
 
-The repository-root `wrangler.jsonc` serves the VitePress output as static assets.
-There is no Worker script or SPA fallback: unknown routes return VitePress's
-`404.html` with HTTP 404. Existing Vercel configuration stays in place until the
-owner cuts over the host; adding this configuration does not deploy anything.
+uwmd.org is served by the Cloudflare Worker `uwmd-org`. The repository-root
+`wrangler.jsonc` serves the VitePress output as static assets. There is no Worker
+script or SPA fallback: unknown routes return VitePress's `404.html` with HTTP
+404. Cloudflare is the only host; there is no other deployment configuration in
+the repository.
 
-From the repository root, use the Node version in `.nvmrc`:
+To reproduce the production build and check routing locally, from the repository
+root, use the Node version in `.nvmrc`:
 
 ```bash
 npm ci
@@ -71,15 +75,17 @@ Wrangler is an explicitly pinned CLI command; no new application dependency or
 package version is introduced. The docs-site GitHub workflow builds and tests
 local Workers routing without credentials or a deployment.
 
-### Owner project setup and cutover
+### Project settings
 
-Create a Workers Git project for `UWMD-OSP/UW-Markdown` with these settings:
+The Workers Git project for `UWMD-OSP/UW-Markdown` is owner-managed: account
+access, Git authorization, the custom domains and DNS are the owner's. Its
+settings, which this table should mirror:
 
 | Setting | Value |
 | --- | --- |
 | Worker name | `uwmd-org` (must match `wrangler.jsonc`) |
 | Root directory | Repository root (`/`) |
-| Initial build branch | `codex/site-cloudflare-migration` |
+| Production branch | `main` |
 | Build variable | `SKIP_DEPENDENCY_INSTALL=1` |
 | Build command | `npm ci && npm --prefix tools/docs-site ci && npm --prefix tools/web-editor ci && npm --prefix tools/docs-site run build:cloudflare` |
 | Deploy command | `npx --yes wrangler@4.151.1 deploy` |
@@ -95,12 +101,10 @@ containing at least 3,000 files or 20 commits. Other build inputs, including
 trigger it under the owner's selected policy; manually trigger a build when
 those inputs need publishing.
 
-The owner supplies account/Git authorization and creates the project. Validate
-the provided preview URL, including `/`, `/spec/format`, `/editor/`, downloads,
-`/llms.txt`, and an unknown path returning 404, before attaching `uwmd.org` and
-`www.uwmd.org` and changing DNS. The existing canonical `www.uwmd.org` links stay
-unchanged. The owner controls the final build branch and DNS/cutover timing;
-Vercel configuration and deployment remain until that cutover is complete.
+`uwmd.org` and `www.uwmd.org` are attached to the Worker; canonical links use
+`www.uwmd.org`. When checking a preview or a fresh deployment, cover `/`,
+`/spec/format`, `/editor/`, the downloads, `/llms.txt`, and an unknown path
+returning 404 (`test:cloudflare` checks the same routes locally).
 
 Reference: [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/),
 [watch paths](https://developers.cloudflare.com/workers/ci-cd/builds/build-watch-paths/),

@@ -18,8 +18,9 @@ and wiring it in is a launch-day step for the owner.
 Do these in one PR, after the 5.0.0 packages are published, so every link
 resolves the moment the site deploys.
 
-1. **Validator page.** Add `npm --prefix tools/web-editor run build:validator`
-   to `vercel.json`'s `buildCommand`. Then, in
+1. **Validator page.** Add `npm --prefix ../web-editor run build:validator` to
+   the `build:cloudflare` script in `tools/docs-site/package.json` (the
+   Cloudflare Workers build). Then, in
    `tools/docs-site/scripts/prepare-public.mjs`, copy
    `tools/web-editor/dist-validator` to `public/validate`, as it copies the
    editor to `public/editor`. The page is served at `/validate/` (its Vite
