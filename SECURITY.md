@@ -29,7 +29,7 @@ re-send the report — your message may have been lost.
 **In scope** — issues we will treat as security vulnerabilities:
 
 - `@uwmd/core` (parser, validator, renderer, calc engine, editor,
-  agent host, CLI). Anything in `packages/uwmd-core/`.
+  block writers, CLI). Anything in `packages/uwmd-core/`.
 - The reference web viewer in `tools/web-viewer/`.
 - The conformance runner (`scripts/run-conformance.mjs`) and the
   schema validator (`scripts/validate-schemas.mjs`).

@@ -21,8 +21,20 @@ const COMPILER_OPTIONS: ts.CompilerOptions = {
   noEmit: true,
 };
 
-/** Declaration exports of a module as `name:value|type`, as the fixture records them. */
+/**
+ * Declaration exports of a module as `name:value|type`. Memoized per file: each
+ * call builds a whole TypeScript program, and several tests read one entry.
+ */
+const declarationCache = new Map<string, string[]>();
 function declarations(file: string): string[] {
+  const cached = declarationCache.get(file);
+  if (cached) return cached;
+  const result = computeDeclarations(file);
+  declarationCache.set(file, result);
+  return result;
+}
+
+function computeDeclarations(file: string): string[] {
   const program = ts.createProgram([file], COMPILER_OPTIONS);
   const checker = program.getTypeChecker();
   const source = program.getSourceFile(file);
@@ -69,6 +81,68 @@ describe.each(ENTRIES)('@uwmd/core $name entry', ({ name, core, verify, file }) 
     expect(overridden.sort()).toEqual([...OVERRIDES].sort());
     for (const key of OVERRIDES) expect(typeof coreExports[key], key).toBe('function');
   });
+});
+
+// The toolkit hosts no agents (the execution half of the Bancroft removal).
+// These names left both entries on purpose; the layer registry, its context and
+// prompt builders, and the generic writers stay until RFC 0112 decides them.
+const REMOVED_RUNTIME = [
+  'runBancroftAgent',
+  'runBancroftAgentStreaming',
+  'WRITE_UW_SECTION_TOOL',
+  'WRITE_MULTIPLE_SECTIONS_TOOL',
+  'MULTI_SECTION_LAYERS',
+  'AgentProviderError',
+  'createAnthropicProvider',
+  'createReplayProvider',
+  'createRecordingProvider',
+  'parseAgentCassette',
+  'agentRequestFingerprint',
+  'CASSETTE_VERSION',
+];
+const REMOVED_TYPES = [
+  'BancroftRunOptions',
+  'BancroftRunResult',
+  'ProgressEvent',
+  'ToolOutput',
+  'AgentProvider',
+  'AgentRequest',
+  'AgentCompletion',
+  'AgentToolCall',
+  'AgentToolSchema',
+  'AgentMessage',
+  'AnthropicProviderOptions',
+  'AgentCassette',
+  'RecordedExchange',
+  'RecordingProvider',
+  'AgentHostCapability',
+];
+const RETAINED_RUNTIME = {
+  index: ['writeAgentBlock', 'writeErrorEntry', 'buildMeta', 'buildContext', 'buildAgentContext', 'buildAgentPrompt', 'isContextReady', 'getLayerDependencies', 'BANCROFT_LAYERS'],
+  browser: ['writeAgentBlock', 'writeErrorEntry', 'buildMeta', 'buildAgentContext', 'buildAgentPrompt', 'isContextReady', 'getLayerDependencies', 'BANCROFT_LAYERS'],
+} as const;
+const RETAINED_TYPES = {
+  index: ['AgentOutput', 'RunOptions', 'RunResult', 'ContextProfile', 'BuildContextOptions', 'ContextResult', 'AgentContext', 'BancroftPrompt', 'LayerDefinition'],
+  browser: ['AgentOutput', 'RunOptions', 'RunResult', 'AgentContext', 'BancroftPrompt', 'LayerDefinition'],
+} as const;
+
+describe.each(ENTRIES)('@uwmd/core $name entry without agent execution', ({ name, core, file }) => {
+  const names = (list: readonly string[]) => list.map((n) => n.split(':')[0]);
+
+  it('exports none of the removed execution runtime names', () => {
+    expect(REMOVED_RUNTIME.filter((n) => n in core)).toEqual([]);
+  });
+
+  it('declares none of the removed execution names, value or type', () => {
+    const declared = new Set(names(declarations(file)));
+    expect([...REMOVED_RUNTIME, ...REMOVED_TYPES].filter((n) => declared.has(n))).toEqual([]);
+  }, 60_000);
+
+  it('keeps the generic writers, the context builders and the layer registry', () => {
+    expect(missing(RETAINED_RUNTIME[name], Object.keys(core))).toEqual([]);
+    const declared = names(declarations(file));
+    expect(missing(RETAINED_TYPES[name], declared)).toEqual([]);
+  }, 60_000);
 });
 
 describe('@uwmd/core entries', () => {

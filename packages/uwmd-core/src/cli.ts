@@ -83,7 +83,6 @@ import { compact, diff } from './compactor.js';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
 import { render } from './renderer.js';
 import { renderReportHtml } from './report.js';
-import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit, applyEditAsync } from './editor.js';
 import type { EditContext, EditResult } from './editor.js';
 import type { CapabilityVerifier } from './starter-protocol.js';
@@ -101,8 +100,7 @@ import { cmdPortfolioValidate, cmdPortfolioEdges } from './cli-portfolio.js';
 import { evaluateCalc } from './calc-display.js';
 import { parseCalculationContext } from './calculation-context.js';
 import { parseCashFlowVerificationArgs, verifyCashFlowDocument } from './cli-cash-flows.js';
-import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from './context.js';
-import { runBancroftAgent } from './agents/bancroft.js';
+import { BANCROFT_LAYERS } from './context.js';
 import type { RenderFormat, RenderTier } from './renderer.js';
 import { buildContext } from './context-profiles.js';
 import type { ContextProfile } from './context-profiles.js';
@@ -355,9 +353,8 @@ async function loadOptionalSigning<T>(usedBy: string): Promise<T> {
 /**
  * Build the `verifyChain` options from `--signing --keystore=<path>`.
  *
- * `@uwmd/signing` is reached by dynamic import and declared as an optional peer
- * - the same arrangement `@anthropic-ai/sdk` gets. `@uwmd/core` must not take a
- * crypto dependency to satisfy a flag most invocations never pass, and the
+ * `@uwmd/signing` is reached by dynamic import and declared as an optional
+ * peer. `@uwmd/core` must not take a crypto dependency to satisfy a flag most invocations never pass, and the
  * layering invariant (core depends on no sibling package) forbids a static
  * import outright.
  */
@@ -1445,7 +1442,7 @@ function withResolved(
   return resolution.document;
 }
 
-// Top-level async wrapper so `run --live` can use await
+// Top-level async wrapper so commands can await
 (async () => {
 switch (command) {
   case 'parse':
@@ -1539,119 +1536,6 @@ switch (command) {
       process.stdout.write(`${result.content}\n`);
       if (result.estimatedTokens) process.stderr.write(`(~${result.estimatedTokens} tokens)\n`);
     }
-    break;
-  }
-
-  case 'run': {
-    if (!positional[0]) {
-      console.error('Usage: uwmd run <file> --agent <agent_id> [--section <id>] [--context-only] [--output <file>]');
-      process.exit(1);
-    }
-    const agentId = flags['agent'] as string | undefined;
-    if (!agentId) { console.error('--agent <agent_id> is required (e.g. --agent L1, --agent L2-CRE-11)'); process.exit(1); }
-    const fileContent = readFile(positional[0]);
-    const parsedFile = parseUWFile(fileContent);
-    const ctx = buildAgentContext(parsedFile, agentId);
-
-    if (flags['context-only']) {
-      // Print the context that would be sent to the agent — useful for debugging
-      console.log(`\n─── Agent: ${agentId} — ${ctx.layer.name} ───`);
-      console.log(`Reads: ${ctx.layer.reads.join(', ') || 'all'}`);
-      console.log(`Writes: ${ctx.layer.writes.join(', ')}`);
-      console.log(`Sections available: ${Object.keys(ctx.sections).join(', ')}`);
-      console.log(`Missing required: ${ctx.missingRequired.join(', ') || 'none'}`);
-      console.log(`Missing optional: ${ctx.missingOptional.join(', ') || 'none'}`);
-      console.log(`Blocking flags: ${ctx.blockingFlags.join(', ') || 'none'}`);
-      console.log(`Context ready: ${isContextReady(ctx)}`);
-      console.log(`\n── Chat context (~${ctx.chatTokenEstimate} tokens) ──\n`);
-      console.log(ctx.chatContext);
-      break;
-    }
-
-    if (flags['prompt']) {
-      // Print the system prompt + user message that would be sent to Claude
-      const { systemPrompt, userMessage, outputSchemaDescription } = buildAgentPrompt(ctx);
-      console.log('=== SYSTEM PROMPT ===\n');
-      console.log(systemPrompt);
-      console.log('\n=== OUTPUT SCHEMA ===\n');
-      console.log(outputSchemaDescription);
-      console.log('\n=== USER MESSAGE ===\n');
-      console.log(userMessage);
-      break;
-    }
-
-    if (!isContextReady(ctx)) {
-      console.error(`Cannot run ${agentId}: context not ready.`);
-      if (ctx.blockingFlags.length) console.error(`  Blocking flags: ${ctx.blockingFlags.join(', ')}`);
-      if (ctx.missingRequired.length) console.error(`  Missing required sections: ${ctx.missingRequired.join(', ')}`);
-      process.exit(1);
-    }
-
-    // --live: actually call Claude and write the result back to the file
-    if (flags['live']) {
-      const apiKey = (flags['api-key'] as string | undefined) ?? process.env['ANTHROPIC_API_KEY'];
-      if (!apiKey) {
-        console.error('--live requires ANTHROPIC_API_KEY env var or --api-key flag');
-        process.exit(1);
-      }
-      console.log(`\nRunning ${agentId} — ${ctx.layer.name} against ${basename(positional[0])}`);
-      console.log(`Model: ${(flags['model'] as string | undefined) ?? 'claude-sonnet-4-6'}\n`);
-
-      const result = await runBancroftAgent(fileContent, agentId, {
-        apiKey,
-        model: flags['model'] as string | undefined,
-        userInstructions: flags['instructions'] as string | undefined,
-        onProgress: (evt) => {
-          const icons: Record<string, string> = { context_built: '●', calling_claude: '⟳', parsing_output: '◆', writing_block: '✎', complete: '✓', error: '✗' };
-          console.log(`  ${icons[evt.stage] ?? '·'} [${evt.stage}] ${evt.message}`);
-        },
-      });
-
-      if (!result.success) {
-        console.error(`\nAgent failed: ${result.error}`);
-        process.exit(1);
-      }
-
-      const outPath = flags['output'] ? resolve(flags['output'] as string) : resolve(positional[0]);
-      writeFileSync(outPath, result.updatedContent, 'utf-8');
-      console.log(`\nWrote: ${result.sectionsWritten.join(', ')} → ${basename(outPath)}`);
-      console.log(`Tokens: ${result.tokensUsed.input} in / ${result.tokensUsed.output} out | ${result.durationMs}ms`);
-      break;
-    }
-
-    // When --section and --json-input are provided, write a block from stdin
-    const sectionId = flags['section'] as string | undefined;
-    if (sectionId && flags['json-input']) {
-      const jsonInput = readFile(flags['json-input'] as string);
-      let blockContent: Record<string, unknown>;
-      try {
-        blockContent = JSON.parse(jsonInput) as Record<string, unknown>;
-      } catch (err) {
-        console.error(`Could not parse JSON input: ${err}`);
-        process.exit(1);
-      }
-
-      const runResult = writeAgentBlock(fileContent, parsedFile, { sectionId, content: blockContent }, {
-        agentId,
-        actor: 'system',
-        inputSections: ctx.layer.reads,
-      });
-
-      const outPath = flags['output'] ? resolve(flags['output'] as string) : resolve(positional[0]);
-      writeFileSync(outPath, runResult.content, 'utf-8');
-      console.log(`Wrote ${sectionId} v${runResult.newBlock.version} to ${basename(outPath)} [${runResult.supersededPriorBlock ? 'superseded prior' : 'new section'}]`);
-      break;
-    }
-
-    // No JSON input — print instructions for how to use this command
-    console.log(`\nAgent: ${agentId} — ${ctx.layer.name}`);
-    console.log(`Context ready: ${isContextReady(ctx)}\n`);
-    console.log('To write a block from agent output:');
-    console.log(`  uwmd run ${positional[0]} --agent ${agentId} --section <id> --json-input <output.json> [--output <file>]`);
-    console.log('\nTo inspect the context this agent would receive:');
-    console.log(`  uwmd run ${positional[0]} --agent ${agentId} --context-only`);
-    console.log('\nTo view the system + user prompts:');
-    console.log(`  uwmd run ${positional[0]} --agent ${agentId} --prompt`);
     break;
   }
 
@@ -2079,7 +1963,14 @@ switch (command) {
     break;
   }
 
-  default:
+  default: {
+    // No command, or an explicit request for help, prints the command list.
+    // Any other word is not a command and is refused before any file is read,
+    // so a retired or misspelled command (`uwmd run`) never exits 0.
+    if (command !== undefined && !['--help', '-h', 'help'].includes(command)) {
+      console.error(`uwmd: unknown command '${command}'. Run 'uwmd --help' for the command list.`);
+      process.exit(1);
+    }
     console.log(`
 uwmd — UW Markdown underwriting file toolkit
 
@@ -2096,7 +1987,6 @@ Commands:
                                Authenticate a semantic snapshot without computing financials
                                (RFC 0084, via the optional @uwmd/signing package)
   render   <file>              Render to output format (see --format)
-  run      <file>              Invoke a Bancroft agent (see --agent)
   edit     <file> <op.json>    Apply an EditOperation (Tier-2)
   compact  <file>              Strip superseded blocks
   diff     <file-a> <file-b>  Compare two files section by section
@@ -2124,7 +2014,7 @@ Commands:
   portfolio validate|edges      Validate a .uwportfolio.json sidecar, or list its entity edges (RFC 0015)
   manifest                     Print this implementation's ImplementationManifest (conformance protocol; @uwmd/verify version on stderr)
   --version, -V                Print the @uwmd/core, @uwmd/verify, Protocol and Format versions
-  layers                       List Bancroft agent layers
+  layers                       List the Bancroft layer registry (runs no agent)
 
 Options (each command accepts only the flags listed for it; an unknown flag exits 1 before any work runs):
   --output <path>    Output file path (compact, init; init refuses an existing file)
@@ -2162,10 +2052,6 @@ Options (each command accepts only the flags listed for it; an unknown flag exit
   --scenario <s>     A standard business plan or reverse-DNS extension (init)
   --asset-subtype <s> Descriptive subtype; build_to_rent on multifamily (init)
   --tier <t>         screener | analyst (init)
-  --live             Actually call Claude (run command)
-  --api-key <k>      Anthropic API key (run --live, or use ANTHROPIC_API_KEY)
-  --model <m>        Claude model (run --live, default: claude-sonnet-4-6)
-  --instructions <i> Extra instructions for the agent (run --live)
   --actor <n>        Actor name for the edit (edit, default: system)
   --source <s>       _meta.provenance.source pattern (edit, default: manual)
   --agent-id <id>    Agent identifier when source is agent/* (edit)
@@ -2173,6 +2059,7 @@ Options (each command accepts only the flags listed for it; an unknown flag exit
   --confidence <c>   Confidence level for new block: high|medium|low (edit)
 `);
     process.exit(0);
+  }
 }
 })().catch(err => {
   // A typed refusal (a parse error such as UNSUPPORTED_FORMAT_VERSION, or any

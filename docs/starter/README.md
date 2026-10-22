@@ -38,7 +38,7 @@ here.
   tool needs only `@uwmd/core`, and a verifier needs only `@uwmd/verify`.
 - **Still tested.** Starter checks remain blocking CI checks, owned by this
   guide and tagged `starter-products` in the [runtime corpus index](../../conformance/corpus-index.json).
-  `starter/editor/`, `starter/agent/`,
+  `starter/editor/`, the `starter/agent/` layer-profile check,
   refinement, rendering, defaults/cascade and other product assertions carry
   no Protocol conformance claim. Run `npm run conformance -- --starter-products`
   after building. Reports keep these outcomes separate from Reader, Verifier
@@ -53,7 +53,7 @@ here.
 | Former §II.2 Tier 2 — Editor, §V.1 Round-trip preservation, §V.5 Multi-variant edits, §V.6 Frontmatter update rules | [Editing](editing.md) | D3 |
 | §V.7 Fallback cascade (with §V.7.1), §V.8 Asset-class default tables | [Defaults and the fallback cascade](defaults-and-cascade.md) | D4 |
 | §VIII.2b Stated period inputs in refinement, §VIII.2c Contextual workbook bindings | [Refinement and workbook bindings](refinement-and-workbooks.md) | D4, D6 |
-| Former §II.4 Tier 4 — Agent Host, §IX AI Host Contract | [AI agent host](ai-host.md) | D3 |
+| §IX AI Host Contract (layer registry, context, writers; the toolkit hosts no agents) | [AI agent host](ai-host.md) | D3 |
 | §XIV Capability tokens | [Capability tokens](capability-tokens.md) | D10 |
 
 ## What stayed in the Protocol
