@@ -18,6 +18,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #409: the UWX -> Lite projection omits a stated `null` under a
+  unit-bearing field (land's `valuation.going_in_cap_rate`) and reports it in
+  `omitted_paths`, so the projection compiles back; a failed Lite compile in the
+  CLI is a typed refusal (`UWLiteBridgeError`, exit 1, no stack trace).
+
 - Scrub RFC records for public launch: every RFC's `author` is now `UWMD maintainers`;
   the owner's personal name, private adopter identifiers, branch names and
   private-repository references leave RFC prose; owner and phase logs collapse
