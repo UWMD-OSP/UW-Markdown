@@ -16,6 +16,12 @@ seam, Anthropic adapter, record/replay cassettes, `AgentHostCapability`,
 An unknown command exits 1 before any I/O. The generic writers,
 `buildContext` and `uwmd edit` attribution stay.
 
+**RFC 0118 implemented (owner acceptance and extension, 2026-10-22).**
+The validator checks declared stage, tier, status and recommendation vocabularies
+in TypeScript and Python. Invalid non-null values produce field-specific errors;
+readiness remains independent. Five invalid-value document fixtures pin Reader
+admission and Verifier refusal. Current positive fixture statuses use in_progress.
+
 **RFC 0116 implemented (owner acceptance, 2026-10-22 second set).** Stage
 readiness now requires a stated non-null leaf and is cumulative. Scope reads the
 class primary size or valuation price; mixed-use uses a component size. Missing
