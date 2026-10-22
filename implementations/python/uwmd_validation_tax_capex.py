@@ -129,7 +129,7 @@ def tax_rules(ledger):
                         if not finite(full) or not finite(abated):
                             admitted = False
                         if not finite(full) or not finite(abated) or not 0 <= abated <= full:
-                            issue("TAX-06", path, "Tax amounts must satisfy zero <= abated <= full")
+                            issue("TAX-06", path + (".full_tax" if not finite(full) or full < 0 else ".abated_tax"), "Tax amounts must satisfy zero <= abated <= full")
                         if kind == "freeze" and finite(full):
                             if full_previous is not None and full < full_previous:
                                 issue("TAX-06", path + ".full_tax", "Freeze full-tax amounts must be nondecreasing")
