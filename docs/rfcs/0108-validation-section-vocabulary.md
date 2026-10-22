@@ -15,6 +15,12 @@ affects:
 > Origin: owner ruling of 2026-10-21 (4): align
 > the §4.17 `validation` vocabulary with the CLI result before 5.0. It changes a
 > section's closed vocabulary, so it is normative.
+>
+> **Owner ruling, 2026-10-21 evening** (Jared: "Accept your RFC 0108 mapping of
+> "blocking" completeness items to error; no blocking_flags added."). In the
+> corpus, a stored `completeness[]` item with the retired severity `blocking`
+> becomes `error`, and no `blocking_flags` entry is added: the items name what a
+> later stage requires, and the records are not halted.
 
 ## Summary
 
