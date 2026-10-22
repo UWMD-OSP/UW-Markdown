@@ -132,7 +132,7 @@ added `receipts/verify/13-rule-set-mismatch`. RFC 0115 re-owned the 13
 pack-based receipt verifications as starter checks, added their 13 pack-less
 Verifier twins (`verify/<id> [pack-less]`) and generated 160 portable Verifier
 cases from existing fixtures. RFC 0086 added the `cross-checks` suite (six
-`CC-17` records) and two `price_per_commissioned_kw` statement-home cases. The index now holds **1,257** reference checks and **557**
+`CC-17` records) and two `price_per_commissioned_kw` statement-home cases. The index now holds **1,257** reference checks and **571**
 portable CLI projections:
 
 | Owner | Reference | Portable |
