@@ -2170,89 +2170,75 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
     }
   },
   "_notes": null,
-  "overall_status": "warnings",
+  "overall_status": "clean",
   "financial_validity": [
     {
-      "flag_id": "FV-001",
-      "metric": "dscr",
-      "value": 1.109,
-      "threshold": {
-        "type": "min",
-        "min": 1.2,
-        "max": null
-      },
-      "severity": "warning",
-      "message": "DSCR (1.109x) is below the 1.20x warning threshold. Deal passes the 1.0x error floor but has limited cushion in amortizing years. Consider requesting 24-month IO period.",
-      "suppressed": false,
-      "suppress_reason": null
-    },
-    {
-      "flag_id": "FV-002",
+      "flag_id": "FV-09",
       "metric": "ltv",
       "value": 0.7,
       "threshold": {
         "type": "max",
         "min": null,
-        "max": 0.75
+        "max": 0.69
       },
-      "severity": "info",
-      "message": "LTV at 70.0% is at policy maximum but within range.",
+      "severity": "warning",
+      "message": "LTV 0.7 at quick_metrics.ltv is above the warning threshold of 0.69",
+      "suppressed": false,
+      "suppress_reason": null
+    },
+    {
+      "flag_id": "FV-09",
+      "metric": "ltv",
+      "value": 0.7,
+      "threshold": {
+        "type": "max",
+        "min": null,
+        "max": 0.69
+      },
+      "severity": "warning",
+      "message": "LTV 0.7 at debt_structure.sizing_metrics.ltv is above the warning threshold of 0.69",
+      "suppressed": false,
+      "suppress_reason": null
+    },
+    {
+      "flag_id": "FV-03",
+      "metric": "debt_yield",
+      "value": 0.0787,
+      "threshold": {
+        "type": "min",
+        "min": 0.08,
+        "max": null
+      },
+      "severity": "warning",
+      "message": "Debt yield 0.0787 at quick_metrics.debt_yield is below the warning threshold of 0.08",
+      "suppressed": false,
+      "suppress_reason": null
+    },
+    {
+      "flag_id": "FV-03",
+      "metric": "debt_yield",
+      "value": 0.0787,
+      "threshold": {
+        "type": "min",
+        "min": 0.08,
+        "max": null
+      },
+      "severity": "warning",
+      "message": "Debt yield 0.0787 at debt_structure.sizing_metrics.debt_yield is below the warning threshold of 0.08",
       "suppressed": false,
       "suppress_reason": null
     }
   ],
   "completeness": [
     {
-      "section": "due_diligence",
-      "field": "appraisal.received",
-      "required_for_stage": "credit_approval",
-      "severity": "error",
-      "message": "Appraisal not yet received. Required before credit approval."
-    },
-    {
-      "section": "due_diligence",
-      "field": "environmental.phase1_received",
-      "required_for_stage": "credit_approval",
-      "severity": "error",
-      "message": "Phase I environmental not yet received."
-    },
-    {
-      "section": "risk_assessment",
-      "field": "composite_score",
-      "required_for_stage": "credit_approval",
-      "severity": "error",
-      "message": "L6 risk rating agents have not run. Required before credit submission."
-    },
-    {
-      "section": "borrower_sponsor",
-      "field": "financial_summary.all_figures_verified",
-      "required_for_stage": "credit_approval",
-      "severity": "warning",
-      "message": "Borrower financial statements unverified. CPA letter required before credit approval."
-    }
-  ],
-  "cross_section_consistency": [
-    {
-      "flag_id": "CC-05",
-      "sections_involved": [
-        "noi_model",
-        "debt_structure"
-      ],
-      "description": "NOI used for DSCR calculation verified against noi_model.net_operating_income",
+      "section": "preliminary_sizing",
+      "field": null,
+      "required_for_stage": "\"full_underwrite\"",
       "severity": "info",
-      "field_a": {
-        "section": "noi_model",
-        "field": "net_operating_income",
-        "value": 396635
-      },
-      "field_b": {
-        "section": "debt_structure",
-        "field": "sizing_metrics.dscr_underwritten",
-        "value": 1.109
-      },
-      "variance": null
+      "message": "DQ-06: full_underwrite requires preliminary_sizing; section is missing."
     }
   ],
+  "cross_section_consistency": [],
   "policy_flags": [],
   "human_review_items": [
     "DSCR at amortizing is 1.109x — discuss 24mo IO with lender",
@@ -2261,8 +2247,8 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
   ],
   "thresholds_used": {
     "dscr_error_below": 1,
-    "dscr_warning_below": 1.2,
-    "ltv_warning_above": 0.75,
+    "dscr_warning_below": 1.108,
+    "ltv_warning_above": 0.69,
     "ltv_error_above": 0.85,
     "cap_rate_warning_below": 0.03,
     "cap_rate_warning_above": 0.15,
