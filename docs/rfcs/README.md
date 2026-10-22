@@ -112,7 +112,7 @@ and how it gets accepted.
 | [0082](./0082-borrower-underwriting-profile.md) | A borrower-underwriting document profile for a loan to an operating company | draft | format, protocol, core, conformance, tooling |
 | [0083](./0083-verify-package-split.md) | Split `@uwmd/verify`, the reference implementation of the standard, out of `@uwmd/core` | implemented | core, conformance, tooling |
 | [0084](./0084-document-signature-binding.md) | Bind a document snapshot without discarding signed block attribution | implemented | protocol, core, conformance, tooling |
-| [0086](./0086-data-center-purchase-price-authority.md) | Resolve data-center purchase-price authority and summary binding | draft | format, protocol, core, conformance, tooling |
+| [0086](./0086-data-center-purchase-price-authority.md) | One purchase-price authority for data-center metrics, with the summary cross-checked | accepted | format, protocol, core, conformance, tooling |
 | [0087](./0087-hospitality-revenue-reconciliation.md) | Define the basis for hospitality revenue reconciliation | draft | format, protocol, core, conformance, tooling |
 | [0088](./0088-pin-financial-numerical-procedures.md) | Resolve financial power and transcendental reproducibility | accepted | protocol, core, conformance |
 | [0090](./0090-provenance-actor-admission.md) | Admit required provenance actors with an explicit diagnostic | accepted | format, protocol, core, conformance, tooling |
@@ -139,6 +139,7 @@ and how it gets accepted.
 | [0112](./0112-remove-bancroft-vocabulary.md) | Remove the Bancroft layer vocabulary from the standard | accepted | format, protocol, core, conformance, tooling |
 | [0113](./0113-paid-room-nights.md) | Define hospitality occupied room nights as paid room nights sold | accepted | format, conformance |
 | [0114](./0114-area-measurement-standard.md) | Record the area measurement standard behind per-area metrics | accepted | format, protocol, core, conformance |
+| [0115](./0115-portable-verifier-cases.md) | Portable conformance subcommands for every Verifier obligation | accepted | protocol, conformance, core |
 | [0119](./0119-non-positive-noi-cross-checks.md) | Compare NOI by absolute difference when it is zero or negative (CC-05, CC-06) | draft | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
