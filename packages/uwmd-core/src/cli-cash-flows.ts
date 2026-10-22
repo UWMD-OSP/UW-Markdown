@@ -45,9 +45,9 @@ export function parseCashFlowVerificationArgs(args: string[]) {
   return { file, variant, json };
 }
 
-export function verifyCashFlowDocument(source: string, variant?: string): { exitCode: 0 | 1; report: CashFlowVerificationReport } {
+export function verifyCashFlowDocument(source: string | ReturnType<typeof parseUWFile>, variant?: string): { exitCode: 0 | 1; report: CashFlowVerificationReport } {
   let parsed: ReturnType<typeof parseUWFile>;
-  try { parsed = parseUWFile(source, { strict: true }); }
+  try { parsed = typeof source === 'string' ? parseUWFile(source, { strict: true }) : source; }
   catch (error) { refuse(`Cannot parse source: ${error instanceof Error ? error.message : String(error)}`, 'source'); }
   const block = periodSection(parsed, section,
     variant === undefined ? {} : { sectionVariants: { [section]: variant } });

@@ -8,9 +8,9 @@
 // where <input> is the file name without its .uwx.md extension. Errors
 // go to stderr with a non-zero exit code; success prints the output path.
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { resolve, dirname, basename, extname, join } from 'node:path';
-import { parseUWFile } from '@uwmd/core';
+import { loadUWSourceFile } from '@uwmd/core';
 import type { RenderTier } from '@uwmd/core';
 import { generateReport, BrowserNotFoundError } from './index.js';
 
@@ -111,8 +111,7 @@ export async function main(argv: readonly string[]): Promise<number> {
     return 2;
   }
 
-  const raw = await readFile(args.input, 'utf8');
-  const parsed = parseUWFile(raw);
+  const parsed = (await loadUWSourceFile(args.input)).parsed;
 
   try {
     const result = await generateReport(parsed, {

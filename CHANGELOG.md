@@ -33,6 +33,10 @@ protocol, and each package each carry an independent semver).
   tracked structured corpus, including finding counts and precise field paths.
   Add a read-only cross-implementation CI check; advertised capabilities stay
   grounded in the portable conformance driver.
+
+- Fix #488: reading CLI commands and Excel load registered UWX, Lite, JSON,
+  XML and CSV bundle sources through one decoder. Source writers refuse
+  unsupported representations explicitly; document signatures remain UWX-only.
 - Use an obviously fictional editor address and neutral reviewed-example naming;
   retain neighborhood/area names and the RFC 0006 Marriott reference.
 - Fix #516's four reference departures: null tax/hedge terms are unstated,

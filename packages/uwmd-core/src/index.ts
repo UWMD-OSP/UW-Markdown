@@ -16,6 +16,7 @@
 // shadows the `export *`.
 
 export * from '@uwmd/verify';
+export { loadUWSourceFile, loadEditableUWXFile, type LoadedUWSource } from './source-file.js';
 
 // Receipts issued through core name `@uwmd/core` as their issuer (RFC 0083).
 export { issueReceipt } from './receipt-engine.js';
