@@ -29,6 +29,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Reconcile the Mesa and Sundance examples with runtime validation: retain
+  Mesa's documented review conditions and store its warnings, and describe
+  Sundance's horizontal development under the standard development scenario.
+
 - Fix #494: an unknown `render --format` is a typed refusal
   (`UNSUPPORTED_RENDER_FORMAT`, exit 1, no stack trace), and `uwmd --help` no
   longer advertises flags removed by #412 and lists `init --zip`.
