@@ -24,11 +24,19 @@ repository's Vercel configuration (`vercel.json`, `scripts/vercel-ignore-build.s
 is removed; `tools/docs-site/README.md` describes the Cloudflare host and its
 project settings.
 
+**Implemented RFC0110 — the stored deal flag's `band` (owner acceptance 2026-10-21, D2 and D3).**
+[RFC0110](../rfcs/0110-financial-validity-entry-band.md): a §4.17
+`financial_validity[]` entry carries `band: "error" | "warning"` in place of
+`severity`, `metric` includes `ltc`, and an entry that crosses no band is not
+recorded. Spec and corpus only; nothing reads the section. Sixteen hand-written
+sections held only `pass` entries and now store `[]`; every changed record's
+stored flags equal a fresh validate's `deal_flags`.
+
 **Stored validation sections regenerated (owner ruling 2026-10-21 evening).**
 The six examples and fixtures that state a §4.17 `validation` section now store
 what a fresh `uwmd validate` reports, not the renamed old run: `clean`, the deal
 flags in `financial_validity[]` (`flag_id` the FV code, the band in `severity`
-until draft RFC 0110), completeness from `DQ-04`/`DQ-06`, cross-section entries
+until RFC 0110), completeness from `DQ-04`/`DQ-06`, cross-section entries
 from `CC-*` issues, and the thresholds used. `policy_flags` and
 `human_review_items` are kept: validation does not produce them. Record 24 is
 regenerated with its adjacent institution config; fixture 57, which the reader
