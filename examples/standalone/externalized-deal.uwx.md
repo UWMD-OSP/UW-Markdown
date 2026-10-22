@@ -6,6 +6,8 @@ deal_name: Parkview Standalone Kit — Inline
 asset_class: multifamily
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Parkview Standalone Kit — Inline Record
 
 The rent roll is carried in one record in this form.

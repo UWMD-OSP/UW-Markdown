@@ -51,6 +51,8 @@ source_documents:
   - "mesa_gateway_appraisal_2026.pdf"
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Mesa Gateway Data Center — Mesa, AZ
 
 > **Deal ID:** uw_2026_dc7q4m1 | **Scenario:** Stabilized Acquisition | **Status:** In Progress  
@@ -77,7 +79,7 @@ Mesa Gateway is a 10 MW (critical IT) wholesale data center in the Elliot Road T
     "section": "deal_context",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T08:20:00Z",
@@ -117,7 +119,7 @@ Square footage is the **building** footprint, carried so that a fallback reader 
     "section": "property",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T08:40:00Z",
@@ -163,7 +165,7 @@ Two in-place tenants on wholesale leases, rent quoted per kW-month and carried h
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T09:10:00Z",
@@ -285,7 +287,7 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense an
     "provenance": {
       "source": "system/extractor",
       "resolution": "ai_extracted",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T11:00:00Z",
@@ -327,7 +329,7 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense an
     "section": "debt_structure",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T10:45:00Z",
@@ -427,7 +429,7 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense an
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T11:00:00Z",
@@ -487,7 +489,7 @@ Loan sizing against the three standard constraints. The governing test is LTV; t
     "section": "preliminary_sizing",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T10:40:00Z",
@@ -545,7 +547,7 @@ Mesa Gateway Holdings LLC, a single-asset borrower controlled by one sponsor ent
     "section": "borrower_sponsor",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T11:00:00Z",
@@ -595,7 +597,7 @@ East Valley wholesale fundamentals as of 2026-08. Rent is quoted per kW-month; t
     "section": "market_analysis",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T09:30:00Z",
@@ -647,7 +649,7 @@ Every figure is in **kW** — capacity is quoted in MW and rent in $/kW-month, a
     "section": "dc_capacity",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T09:00:00Z",
@@ -688,7 +690,7 @@ Metered pass-through: tenants pay their own metered power at cost, so the landlo
     "section": "dc_power",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T09:05:00Z",
@@ -725,7 +727,7 @@ Weighted-average contracted rent of $150/kW-month on the 11,000 kW contracted, a
     "section": "dc_revenue",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-09-09T09:15:00Z",

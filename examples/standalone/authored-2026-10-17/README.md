@@ -8,7 +8,7 @@ and exact-head CI; no version, release or publication is authorized.
 
 ## Identities and provenance
 
-Author: `codex/standalone-kit-2026-10-17`; authored at `2026-10-17T21:34:15Z`.
+Author: `analyst`; authored at `2026-10-17T21:34:15Z`.
 Canonical provenance source: `system/standalone-kit`. Each block's `notes` records
 its deliberate review/lifecycle decision below; narrative review_status and flags
 are not a source for these decisions. All blocks are new revision-1 heads.

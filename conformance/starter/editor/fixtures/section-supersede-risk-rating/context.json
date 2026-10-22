@@ -1,5 +1,5 @@
 {
-  "actor": "bancroft-l6",
+  "actor": "risk-rating-agent",
   "source": "agent/L6",
   "agentId": "L6-risk-rating",
   "agentVersion": "0.2.0",

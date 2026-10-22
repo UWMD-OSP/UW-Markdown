@@ -4,6 +4,8 @@ document_profile: source-note-v1
 document_id: note:standalone:2026-10-17:transcription
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Parkview — Rent Roll Review Note
 
 This newly authored fictional note demonstrates a transcription observation;
@@ -17,7 +19,7 @@ its packaged source is an illustrative stand-in. It is not a rent-roll row and i
     "section": "deal_context",
     "provenance": {
       "source": "system/standalone-kit",
-      "actor": "codex/standalone-kit-2026-10-17",
+      "actor": "analyst",
       "timestamp": "2026-10-17T21:34:15Z",
       "notes": "Human review is required to compare this illustrative transcription with an actual source; revision 1 is the current block of a new note."
     },
