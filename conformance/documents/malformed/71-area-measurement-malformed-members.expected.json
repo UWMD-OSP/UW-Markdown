@@ -1,0 +1,8 @@
+{
+  "description": "A non-string `edition` and an unknown member (`basis`) in `property.area_measurement` are SIZE-02 (Format §5.5, RFC 0114).",
+  "must_parse": true,
+  "expected_codes": [
+    "SIZE-02"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md §5.5 (RFC 0114)"
+}

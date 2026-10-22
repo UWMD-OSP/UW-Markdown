@@ -60,7 +60,33 @@ def _stated(payload, path):
         yield f"{head}.{tail}", value
 
 
+AREA_MEASUREMENT_STANDARDS = ("boma", "ipms", "rebny", "rics", "other")
+
+
+def _area_measurement_problems(value):
+    """SIZE-02 (RFC 0114): closed standard, optional string edition and note, nothing else."""
+    if value is None:
+        return []
+    if not isinstance(value, dict):
+        return [("area_measurement", "must be an object")]
+    problems = []
+    if not isinstance(value.get("standard"), str) or value.get("standard") not in AREA_MEASUREMENT_STANDARDS:
+        problems.append(("area_measurement.standard", "must be one of " + ", ".join(AREA_MEASUREMENT_STANDARDS)))
+    for member in ("edition", "note"):
+        if member in value and not isinstance(value[member], str):
+            problems.append((f"area_measurement.{member}", "must be a string"))
+    for member in value:
+        if member not in ("standard", "edition", "note"):
+            problems.append((f"area_measurement.{member}", "is not a member of area_measurement"))
+    return problems
+
+
 def size_rules(ledger):
+    for block in current_blocks(ledger.document, "property"):
+        body = block.parsed.value
+        if isinstance(body, dict) and "area_measurement" in body:
+            for field, problem in _area_measurement_problems(body["area_measurement"]):
+                ledger.issue("SIZE-02", "error", "property", field, f"property.{field} {problem}")
     for section, table in SIZE_CONTRACT.items():
         for block in current_blocks(ledger.document, section):
             for path, kind in table.items():
