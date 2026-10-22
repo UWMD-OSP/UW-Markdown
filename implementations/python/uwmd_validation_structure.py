@@ -97,13 +97,13 @@ def composition_rules(ledger):
         entries = {k: v for k, v in payload.items() if not k.startswith("_")}
         admitted = {k: v for k, v in entries.items() if k in allowed}
         if len(admitted) < 2:
-            ledger.issue("MU-01", "error", "components", "", "Mixed-use requires at least two admissible uses")
+            ledger.issue("MU-01", "error", "components", "components", "Mixed-use requires at least two admissible uses")
         for key, value in entries.items():
             if key not in allowed:
                 ledger.issue("MU-02", "error", "components", key, "Component class is not an admitted income class")
                 continue
             if not isinstance(value, dict) or value.get("component_class") != key:
-                ledger.issue("MU-03", "error", "components", key, "Component class must equal its map key")
+                ledger.issue("MU-03", "error", "components", key + ".component_class", "Component class must equal its map key")
             if not isinstance(value, dict):
                 continue
             if not finite(value.get("net_operating_income")):
@@ -112,7 +112,7 @@ def composition_rules(ledger):
                 ledger.issue("MU-06", "error", "components", key + ".debt_structure", "Use component capital_stack for separately stated financing")
             if isinstance(value.get("capital_stack"), dict):
                 _stack(ledger, value["capital_stack"], "components", key + ".capital_stack")
-        if any(isinstance(v, dict) and v.get("allocation_pct") is not None for v in admitted.values()):
+        if document.frontmatter.value.get("asset_class") == "mixed_use" and any(isinstance(v, dict) and v.get("allocation_pct") is not None for v in admitted.values()):
             allocations = [v.get("allocation_pct") if isinstance(v, dict) else None for v in admitted.values()]
             total = 0.0
             valid = all(_unit(v) for v in allocations)

@@ -161,7 +161,7 @@ def cross_checks(ledger, *, defer_summaries=False):
             .005, section="stress_tests", path="base_case.exit_cap_rate")
     due, valuation = read("CC-08", "due_diligence", preferred_key="appraisal"), read("CC-08", "valuation")
     compare("CC-08", number(due, "appraisal.appraised_value", "appraised_value"),
-            number(valuation, "appraised_value"), 1000, section="valuation", path="appraised_value")
+            number(valuation, "appraised_value"), 1000, section="due_diligence", path="appraisal.appraised_value")
     d, stress = read("CC-09", "debt_structure", preferred_role="senior"), read("CC-09", "stress_tests")
     compare("CC-09", number(stress, "base_case.annual_debt_service"), number(d, "annual_debt_service"),
             500, section="stress_tests", path="base_case.annual_debt_service")
@@ -176,7 +176,7 @@ def cross_checks(ledger, *, defer_summaries=False):
     ledger.cover("CC-11", component_presence, reason="section_absent" if not component_presence else None,
                  detail="Components section is absent")
     if component_presence and fm.get("asset_class") != "mixed_use":
-        ledger.issue("CC-11", "error", "components", "", "Components are only admitted for mixed-use records")
+        ledger.issue("CC-11", "error", "components", "asset_class", "Components are only admitted for mixed-use records")
     # CC-12 (Format §5.3) as the reference applies it: only under mixed use,
     # over admissible components, every one stating a numeric NOI, within $1.
     c, n = read("CC-12", "components"), read("CC-12", "noi_model")
@@ -206,9 +206,12 @@ def cross_checks(ledger, *, defer_summaries=False):
                 ledger.issue("CC-12", "error", "noi_model", "net_operating_income",
                              "Property NOI must equal the sum of component NOIs", value=abs(total - property_noi))
     profile = fm.get("document_profile")
-    nondeal = profile is not None and profile != "deal-record-v1"
+    nondeal = profile is not None and profile != "deal-underwriting-v1"
     property_blocks = active_blocks(document, "property")
-    if nondeal:
+    if current_blocks(document, "x_uw_lite_source"):
+        ledger.cover("CC-13", reason="not_applicable", detail="compiled UW Lite summary")
+        ledger.cover("CC-14", reason="not_applicable", detail="compiled UW Lite summary")
+    elif nondeal:
         ledger.cover("CC-13", reason="not_applicable", detail="Non-deal document profile")
         ledger.cover("CC-14", reason="not_applicable", detail="Non-deal document profile")
     else:

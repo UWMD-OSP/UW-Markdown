@@ -309,7 +309,7 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
                 ledger.issue("DQ-06", "info", section, "", "Declared stage requires this section")
         if stage == "scope" and not selected.externalized:
             for path in _scope_missing_fields(prop, document):
-                ledger.issue("DQ-04", "error", "property", path, "Scope-stage required field is absent")
+                ledger.issue("DQ-04", "error", "" if "|" in path else "property", path, "Scope-stage required field is absent")
     if now is None:
         instant = datetime.now(timezone.utc)
     elif isinstance(now, datetime):

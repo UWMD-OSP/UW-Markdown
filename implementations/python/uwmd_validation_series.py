@@ -13,7 +13,7 @@ def series_rules(ledger):
     for (section, series), entry in PERIOD_SERIES.items():
         for block in current_blocks(document, section):
             for problem in inspect_period_series(block.parsed.value, section, series).issues:
-                ledger.issue(problem.code, problem.severity, section, problem.pointer, problem.message,
+                ledger.issue(problem.code, problem.severity, section, series, problem.message,
                              value={"variant": dict(block.attributes).get("variant")})
     # VIII.2a explicitly specifies a STATIC default-selection kind check. It is
     # not an evaluator verdict and includes every syntactic conditional branch.
