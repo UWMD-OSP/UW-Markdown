@@ -79,10 +79,10 @@ describe('document source accounting', () => {
     await expect(resolveDocumentSigningSubject(source)).rejects.toBeInstanceOf(DocumentSigningError);
   });
   it('binds equivalent quoted and unquoted string keys to the same semantic subject', async () => {
-    const plain = SOURCE.replace('deal_name:', 'custom_label: kept\npipeline_state:\n  L0: complete\ndeal_name:');
+    const plain = SOURCE.replace('deal_name:', 'custom_label: kept\nreview_state:\n  step_a: complete\ndeal_name:');
     expect(await resolveDocumentSigningSubject(SOURCE.replace('deal_name:', 'a:b: kept\ndeal_name:')))
       .toEqual(await resolveDocumentSigningSubject(SOURCE.replace('deal_name:', '"a:b": kept\ndeal_name:')));
-    const quoted = plain.replace('custom_label:', '"custom_label":').replace('pipeline_state:', "'pipeline_state':").replace('  L0:', '  "L0":');
+    const quoted = plain.replace('custom_label:', '"custom_label":').replace('review_state:', "'review_state':").replace('  step_a:', '  "step_a":');
     expect(await resolveDocumentSigningSubject(quoted)).toEqual(await resolveDocumentSigningSubject(plain));
   });
   it.each([

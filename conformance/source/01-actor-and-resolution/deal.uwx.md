@@ -10,18 +10,18 @@ deal_stage: screening
 
 # Actor and resolution round-trip independently
 
-A block written by agent L6-01 from the asset-class default table carries both
+A block written by a risk-rating agent from the asset-class default table carries both
 facts, and neither substitutes for the other.
 
-```json uw:section=property source=agent/L6-01 ts=2026-08-31T00:00:00Z v=1 confidence=medium
+```json uw:section=property source=agent/risk-rater ts=2026-08-31T00:00:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "property",
     "provenance": {
-      "source": "agent/L6-01",
+      "source": "agent/risk-rater",
       "resolution": "asset_class_default",
       "actor": "system",
-      "agent_id": "L6-01",
+      "agent_id": "risk-rater",
       "agent_version": "1.0.0",
       "timestamp": "2026-08-31T00:00:00Z",
       "notes": null

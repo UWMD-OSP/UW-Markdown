@@ -45,11 +45,11 @@ describe('generateBlankUWFile', () => {
     expect(parsed.frontmatter.asset_class).toBe('multifamily');
     expect(parsed.frontmatter.deal_stage).toBe('screening');
     expect(parsed.frontmatter.tier).toBe('screener');
-    expect(parsed.frontmatter.pipeline_state?.L0_ingestion).toBe('pending');
+    expect(Object.hasOwn(parsed.frontmatter, 'pipeline_state')).toBe(false);
     expect(parsed.frontmatter.scenario).toBeNull();
   });
 
-  it('writes a supplied scenario into the frontmatter (Format §6.7)', () => {
+  it('writes a supplied scenario into the frontmatter (starter CLI reference §6.7)', () => {
     // `uwmd init --scenario` was documented but dropped: the template
     // hardcoded `scenario: null`.
     const parsed = parseUWFile(

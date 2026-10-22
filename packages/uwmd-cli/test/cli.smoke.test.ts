@@ -245,12 +245,12 @@ describe('uwmd CLI', () => {
     it('exits non-zero and points at the failing declaration', async () => {
       const r = await runCli([
         'modules', 'validate',
-        moduleFixture('reject', '02-agent-layer-malformed.module.json'),
+        moduleFixture('reject', '06-calc-unknown-key.module.json'),
       ]);
       expect(r.status).toBe(1);
       // The pointer is what makes the output actionable.
-      expect(r.stdout).toContain('agent_layers[0].prompt_template');
-      expect(r.stdout).toContain('PROTO-MOD-060');
+      expect(r.stdout).toContain('calculations[0].bogus');
+      expect(r.stdout).toContain('PROTO-MOD-064');
     });
 
     it('lists the registry that a set of manifests forms', async () => {
@@ -261,11 +261,11 @@ describe('uwmd CLI', () => {
         '--json',
       ]);
       expect(r.status).toBe(0);
+      expect(JSON.parse(r.stdout).modules[0]).not.toHaveProperty('agent_layers');
       expect(JSON.parse(r.stdout).modules).toEqual([
         expect.objectContaining({
           id: 'org.uwmd.full-surface',
           calculations: 1,
-          agent_layers: 1,
           asset_classes: ['multifamily', 'student_housing'],
         }),
       ]);
@@ -688,6 +688,36 @@ describe('uwmd CLI', () => {
         expect(r.stderr).toContain('--scenario must be one of');
         expect(r.stderr).toContain(message);
         expect(existsSync(resolve(temp, 'new-deal.uwx.md'))).toBe(false);
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
+    // Issue #492: init wrote any --asset-class, --stage or --tier it was given.
+    it.each([
+      [['--asset-class', 'bogus'], '--asset-class must be one of', "got 'bogus'"],
+      [['--stage', 'bogus'], '--stage must be one of', "got 'bogus'"],
+      [['--tier', 'bogus'], '--tier must be one of screener, analyst', "got 'bogus'"],
+      [['--stage'], '--stage must be one of', 'got no value'],
+    ])('init %j refuses an out-of-vocabulary value and writes nothing', async (extra, rule, message) => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-bad-vocab-'));
+      try {
+        const r = await spawnCli(process.execPath, [CLI_BIN, 'init', ...extra], { encoding: 'utf8', cwd: temp });
+        expect(r.status).toBe(1);
+        expect(r.stderr).toContain(rule);
+        expect(r.stderr).toContain(message);
+        expect(existsSync(resolve(temp, 'new-deal.uwx.md'))).toBe(false);
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
+    it('init accepts a namespaced custom asset class', async () => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-custom-class-'));
+      try {
+        const r = await spawnCli(process.execPath, [CLI_BIN, 'init', '--asset-class', 'com.example.specialty_facility'], { encoding: 'utf8', cwd: temp });
+        expect(r.status).toBe(0);
+        expect(readFileSync(resolve(temp, 'new-deal.uwx.md'), 'utf8')).toContain('asset_class: com.example.specialty_facility');
       } finally {
         rmSync(temp, { recursive: true, force: true });
       }

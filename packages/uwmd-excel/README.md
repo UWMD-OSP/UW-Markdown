@@ -24,22 +24,38 @@ layouts and optional features add their own sheets:
 
 ## Calc-integrity contract
 
-The eight derived metrics ship as **formulas**, not pre-computed numbers:
+The eight derived metrics ship as **formulas**, not pre-computed numbers. Their
+expressions over the named ranges are:
 
-| Metric         | Formula                                            |
-| -------------- | -------------------------------------------------- |
-| Cap Rate       | `=noi/purchase_price`                              |
-| LTV            | `=loan_amount/purchase_price`                      |
-| DSCR           | `=noi/annual_debt_service`                         |
-| Debt Yield     | `=noi/loan_amount`                                 |
-| Price / Unit   | `=purchase_price/total_units`                      |
-| Loan / Unit    | `=loan_amount/total_units`                         |
-| Loan / SqFt    | `=loan_amount/total_nra_sqft`                      |
-| Cash-on-Cash   | `=(noi-annual_debt_service)/equity_sponsor`        |
+| Metric         | Expression                                                       |
+| -------------- | ---------------------------------------------------------------- |
+| Cap Rate       | `noi/purchase_price`                                             |
+| LTV            | `loan_amount/(underwritten_value, else purchase_price)`          |
+| DSCR           | `noi/annual_debt_service`                                        |
+| Debt Yield     | `noi/loan_amount`                                                |
+| Price / Unit   | `purchase_price/total_units`                                     |
+| Loan / Unit    | `loan_amount/total_units`                                        |
+| Loan / SqFt    | `loan_amount/total_nra_sqft`                                     |
+| Cash-on-Cash   | `(levered_cash_flow_y1, else noi-annual_debt_service)/equity_total` |
 
 Exported expressions follow `MULTIFAMILY_PACK` (exported by `@uwmd/verify` and
 `@uwmd/core`) and retain the existing reporting quantum. Native spreadsheet
 recalculation is a separate numerical execution, subject to the limits below.
+
+Each cell holds `ROUND(expression, round_to)`, and a missing input gives what
+`evaluateCalc` gives: where the calc engine's result is null, the cell is
+`#N/A`, never a fabricated zero or `#VALUE!` (#487). The inputs whose absence
+makes the metric null are tested once, outside `ROUND`:
+
+```
+=IF(OR(ISBLANK(noi),ISBLANK(purchase_price)),NA(),ROUND((noi/purchase_price),6))
+```
+
+Any other input reads as `NA()` where it is used when its cell is blank, a
+`null` branch is `NA()`, and a null test such as `underwritten_value != null`
+is `NOT(OR(ISBLANK(underwritten_value),ISNA(underwritten_value)))`. Excel reads
+a blank cell as zero, so a formula without these guards would turn a missing
+input into a number the engine never computes.
 
 ### Native recalculation limits (accepted RFC 0088)
 
@@ -98,7 +114,13 @@ Layouts cover all twelve builtin classes: multifamily, office, retail,
 industrial, self-storage, hospitality, senior housing, student housing, land,
 data center, manufactured housing and mixed-use. `fromWorkbook` and
 `--import` recover editable section fragments from supported converter workbooks;
-apply those through the starter editor (`applyEdit`) to preserve provenance. Extended custom
+apply those through the starter editor (`applyEdit`) to preserve provenance.
+Import accepts each statement subtotal in the form the exporter wrote it: the
+live formula (never imported), a retained stated subtotal beside its status text
+(imported as the editable input it is), or `#N/A` beside its status text (nothing
+imported). Any other subtotal, such as a value typed over a formula, refuses with
+`WORKBOOK-IMPORT-SUBTOTAL`. A mixed-use record with no component block states its
+property NOI the same way instead of an empty consolidation formula. Extended custom
 calculation workbooks explicitly refuse reverse import. `@uwmd/excel` is in
 the release workflow from 0.9.14, which pairs with `@uwmd/core` 3.0.0. The
 deprecated `0.3.0` on the registry is a stray 2026-08-16 hand publish pinned

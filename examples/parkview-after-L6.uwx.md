@@ -14,15 +14,6 @@ asset_subtype: "garden_style"
 loan_type: "permanent"
 scenario: "stabilized_acquisition"
 
-pipeline_state:
-  L0_ingestion:    "complete"
-  L1_screening:    "complete"
-  L2_underwriting: "complete"
-  L4_structuring:  "complete"
-  L5_compliance:   "in_progress"
-  L6_risk:         "complete"
-  L7_assembly:     "pending"
-
 status: "in_progress"
 deal_stage: "full_underwrite"
 recommendation: "pending"
@@ -306,14 +297,14 @@ As of April 1, 2026. 45 of 48 units occupied (93.75% physical occupancy). Three 
 | 2BR/2BA | 24 | 975 | $1,225 | $1,275 | $50 | 95.8% (23/24) |
 | **Total** | **48** | **863** | **$1,138** | **$1,188** | **$50** | **93.8%** |
 
-```json uw:section=rent_roll source=agent/L0-01 ts=2026-04-24T10:12:00Z v=1 confidence=high
+```json uw:section=rent_roll source=agent/rent-roll-extractor ts=2026-04-24T10:12:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "rent_roll",
     "provenance": {
-      "source": "agent/L0-01",
+      "source": "agent/rent-roll-extractor",
       "actor": "system",
-      "agent_id": "L0-01",
+      "agent_id": "rent-roll-extractor",
       "agent_version": "1.0.0",
       "timestamp": "2026-04-24T10:12:00Z",
       "notes": "Parsed from parkview_rent_roll_apr2026.xlsx. 48 unit records found, 0 parse errors."
@@ -459,14 +450,14 @@ T-12 through December 2025. Prepared by property management company, not CPA-cer
 | **Total OpEx** | **($228,344)** | **($234,301)** | | |
 | **NOI** | **$412,096** | **$396,635** | | |
 
-```json uw:section=operating_statement variant=t12 source=agent/L0-02 ts=2026-04-24T10:18:00Z v=1 confidence=medium
+```json uw:section=operating_statement variant=t12 source=agent/statement-extractor ts=2026-04-24T10:18:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "operating_statement",
     "provenance": {
-      "source": "agent/L0-02",
+      "source": "agent/statement-extractor",
       "actor": "system",
-      "agent_id": "L0-02",
+      "agent_id": "statement-extractor",
       "agent_version": "1.0.0",
       "timestamp": "2026-04-24T10:18:00Z",
       "notes": "Management company-prepared. Management fee at 10% of EGI is 450bps above market benchmark. Recommend requesting trailing 24-month statements and utility bills."
@@ -1309,14 +1300,14 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
 
 The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter market with vacancy below the Phoenix metro average. Rent growth has moderated from 2021–2022 peaks but remains positive at ~3% annually. New supply pipeline is concentrated in the Scottsdale and Tempe corridors — not meaningful competition at this price point. Cap rates for B-class multifamily in this submarket have stabilized in the 5.25–5.75% range after the 2023–2024 correction.
 
-```json uw:section=market_analysis source=agent/L2-CRE-07 ts=2026-04-24T12:30:00Z v=1 confidence=medium
+```json uw:section=market_analysis source=agent/market-analyst ts=2026-04-24T12:30:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "market_analysis",
     "provenance": {
-      "source": "agent/L2-CRE-07",
+      "source": "agent/market-analyst",
       "actor": "system",
-      "agent_id": "L2-CRE-07",
+      "agent_id": "market-analyst",
       "agent_version": "1.0.0",
       "timestamp": "2026-04-24T12:30:00Z",
       "notes": "Market data from web search; Mesquite Market Data feed not connected. Recommend Mesquite Market Data validation before credit committee."
@@ -1739,7 +1730,7 @@ Due diligence in process. Appraisal and Phase I ordered. Title commitment receiv
 
 ## Risk Assessment {#risk_assessment}
 
-*Pending — L6 agents not yet run. Preliminary assessment below based on analyst review.*
+*Pending — risk rating not yet run. Preliminary assessment below based on analyst review.*
 
 The deal presents a moderate risk profile. The asset is stabilized with no significant deferred maintenance, in a functionally strong submarket with positive demand fundamentals. The primary structural risk is the tight amortizing DSCR (1.11x) — a 10% revenue decline would breach the 1.0x floor, leaving no debt service coverage cushion in a stress scenario. The management transition risk during the first 6-12 months post-close is the most likely near-term operational challenge.
 
@@ -1753,7 +1744,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
       "agent_id": "user",
       "agent_version": null,
       "timestamp": "2026-04-24T14:00:00Z",
-      "notes": "Run L6 agents before credit committee submission."
+      "notes": "Run the risk rating before credit committee submission."
     },
     "quality": {
       "confidence": "low",
@@ -1769,7 +1760,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
       "superseded": true
     }
   },
-  "_notes": "PRELIMINARY — not suitable for credit submission. Run full L6 agent chain.",
+  "_notes": "PRELIMINARY — not suitable for credit submission. Run the full risk rating.",
   "scoring_model_version": null,
   "component_scores": {
     "property": {
@@ -1866,14 +1857,14 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
 
 ## Compliance {#compliance}
 
-```json uw:section=compliance source=agent/L5-01 ts=2026-04-24T13:00:00Z v=1 confidence=high
+```json uw:section=compliance source=agent/compliance-reviewer ts=2026-04-24T13:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "compliance",
     "provenance": {
-      "source": "agent/L5-01",
+      "source": "agent/compliance-reviewer",
       "actor": "system",
-      "agent_id": "L5-01",
+      "agent_id": "compliance-reviewer",
       "agent_version": "1.0.0",
       "timestamp": "2026-04-24T13:00:00Z",
       "notes": null
@@ -2021,7 +2012,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
       "unit": "dollar",
       "source": "agent_computed",
       "source_detail": "Maricopa County transfer reassessment: 70% of $7,200,000 purchase price × 1.15% = $57,960",
-      "agent": "L2-CRE-02",
+      "agent": "noi-adjuster",
       "timestamp": "2026-04-24T11:05:00Z",
       "confidence": "medium",
       "is_overridden": false,
@@ -2039,7 +2030,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
       "unit": "pct",
       "source": "market_data",
       "source_detail": "Mesquite Market Data Q1 2026 Phoenix submarket rent growth 2.9%; rounded to 3%",
-      "agent": "L2-CRE-07",
+      "agent": "market-analyst",
       "timestamp": "2026-04-24T12:30:00Z",
       "confidence": "medium",
       "is_overridden": false,
@@ -2565,14 +2556,14 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
 ---
 
 
-```json uw:section=risk_assessment source=agent/L6 ts=2026-04-25T17:56:42.213Z v=2 confidence=medium
+```json uw:section=risk_assessment source=agent/risk-rater ts=2026-04-25T17:56:42.213Z v=2 confidence=medium
 {
   "_meta": {
     "section": "risk_assessment",
     "provenance": {
-      "source": "agent/L6",
+      "source": "agent/risk-rater",
       "actor": "system",
-      "agent_id": "L6",
+      "agent_id": "risk-rater",
       "agent_version": "1.0.0",
       "timestamp": "2026-04-25T17:56:42.212Z",
       "notes": null
@@ -2720,7 +2711,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "category": "data",
       "severity": "medium",
       "description": "Stress test results are entirely null across all scenarios (base, mild, moderate, severe). Cannot quantitatively assess downside DSCR or IRR outcomes. This is a pipeline data gap, not an underwriting judgment.",
-      "mitigant": "Stress test section must be completed and reviewed before final credit approval. Flag for L5/L7 pipeline resolution."
+      "mitigant": "Stress test section must be completed and reviewed before final credit approval. Flag for compliance and assembly resolution."
     },
     {
       "id": "KR-08",
@@ -2776,7 +2767,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
     "blocking_flags": [],
     "conditions_outstanding": 7,
     "ready_for_l7_assembly": false,
-    "l7_gate_note": "L7 assembly should not proceed until COND-01 through COND-07 are resolved, stress test section is populated, and sponsor data is on file. Deal is conditionally approvable — not unconditionally approvable at this stage."
+    "l7_gate_note": "Assembly should not proceed until COND-01 through COND-07 are resolved, stress test section is populated, and sponsor data is on file. Deal is conditionally approvable — not unconditionally approvable at this stage."
   }
 }
 ```
@@ -2872,7 +2863,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "entry_id": "e004",
       "timestamp": "2026-04-24T10:12:00Z",
       "event_type": "agent_run",
-      "agent_or_actor": "agent:L0-01",
+      "agent_or_actor": "agent:rent-roll-extractor",
       "section_affected": "rent_roll",
       "status": "success",
       "input_sections": [],
@@ -2894,7 +2885,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "entry_id": "e005",
       "timestamp": "2026-04-24T10:18:00Z",
       "event_type": "agent_run",
-      "agent_or_actor": "agent:L0-02",
+      "agent_or_actor": "agent:statement-extractor",
       "section_affected": "operating_statement",
       "status": "success",
       "input_sections": [],
@@ -2994,7 +2985,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "entry_id": "e009",
       "timestamp": "2026-04-24T12:30:00Z",
       "event_type": "agent_run",
-      "agent_or_actor": "agent:L2-CRE-07",
+      "agent_or_actor": "agent:market-analyst",
       "section_affected": "market_analysis",
       "status": "success",
       "input_sections": [
@@ -3064,7 +3055,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "entry_id": "log_1777139802215_rita",
       "timestamp": "2026-04-25T17:56:42.213Z",
       "event_type": "agent_run",
-      "agent_or_actor": "L6",
+      "agent_or_actor": "risk-rater",
       "section_affected": "risk_assessment",
       "status": "success",
       "input_sections": [
@@ -3108,7 +3099,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
 ---
 
 *uw_2026_a3f9b1 | Parkview Apartments — Glendale, AZ | v1.1 format | Generated 2026-04-24*  
-*Pipeline status: L0–L4 complete, L5 in progress, L6–L7 pending. Not ready for credit submission.*
+*Pipeline status: ingestion through structuring complete, compliance in progress, risk rating and assembly pending. Not ready for credit submission.*
 
 ## Preliminary Sizing
 

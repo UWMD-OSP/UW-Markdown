@@ -50,8 +50,8 @@ describe('REFERENCE_IMPLEMENTATION_MANIFEST', () => {
   });
 
   it('does not claim agent hosting, which the toolkit no longer performs', () => {
-    // The `agent-host` capability stays in the Protocol vocabulary for other
-    // hosts to declare; this implementation runs no agent, so it must not.
+    // RFC 0112 removed the `agent-host` capability from the vocabulary; this
+    // implementation runs no agent, so it cannot claim it either.
     expect(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities).not.toContain('agent-host');
   });
 });

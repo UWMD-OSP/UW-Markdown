@@ -775,7 +775,8 @@ describe('toWorkbook — deal-level multifamily cash-on-cash', () => {
     expect(wb.definedNames.getRanges('equity_sponsor').ranges).toEqual([]);
     const ws = wb.getWorksheet('Underwriting')!;
     const cell = ws.getCell(`B${rowByLabel(ws).get(decl.label)}`);
-    expect(cell.value).toMatchObject({ formula: expect.stringContaining('ROUND(IF((equity_total="")') });
+    // A missing equity input is #N/A, never "" (ROUND("") is #VALUE!; #487).
+    expect(cell.value).toMatchObject({ formula: expect.stringContaining('ROUND(IF(OR(ISBLANK(equity_total),ISNA(equity_total)),NA(),') });
     let formula = emitExcelFormula(decl.formula, { namedRanges: buildNamedRangeMap(MULTIFAMILY_LAYOUT) });
     const values = { equity_total: namedNumber(wb, 'equity_total'), levered_cash_flow_y1: namedNumber(wb, 'levered_cash_flow_y1'),
       noi: 1_300_000, annual_debt_service: namedNumber(wb, 'annual_debt_service') };

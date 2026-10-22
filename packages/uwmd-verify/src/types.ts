@@ -14,8 +14,6 @@ export interface CrossCheckResolutionEvidence {
 
 export type ConfidenceLevel = 'high' | 'medium' | 'low';
 
-export type PipelineStatus = 'complete' | 'in_progress' | 'pending' | 'skipped' | 'failed';
-
 export type ValidationSeverity = 'error' | 'warning' | 'info';
 
 /** Why a §5.3 cross-check was not evaluated (RFC 0037). */
@@ -54,7 +52,7 @@ export type DealStage =
 /**
  * Source tags surface where a value came from. Producers stamp
  * `_meta.provenance.source` with a value drawn from this union or an institution-defined pattern (e.g.
- * 'agent/L6-01', 'document/rent_roll'). Free-form strings remain valid for
+ * 'agent/risk-rater', 'document/rent_roll'). Free-form strings remain valid for
  * forward compat; this union enumerates the canonical values.
  *
  * **RFC 0031 split the field.** `_meta.provenance.source` is actor-only
@@ -109,7 +107,7 @@ export type SourceTag =
  * config." Producers needing a generic fallback SHOULD use
  * `system_default` instead.
  *
- * Actor patterns (`manual`, `agent/L6-01`, `document/rent_roll`, …) are a
+ * Actor patterns (`manual`, `agent/risk-rater`, `document/rent_roll`, …) are a
  * separate vocabulary — see `ACTOR_NAMESPACES` / `parseActorSource` in
  * `protocol.ts`.
  */
@@ -419,16 +417,6 @@ export interface UWBlock<T extends Record<string, unknown> = Record<string, unkn
 
 // ─── Frontmatter ──────────────────────────────────────────────────────────────
 
-export interface UWPipelineState {
-  L0_ingestion?: PipelineStatus;
-  L1_screening?: PipelineStatus;
-  L2_underwriting?: PipelineStatus;
-  L4_structuring?: PipelineStatus;
-  L5_compliance?: PipelineStatus;
-  L6_risk?: PipelineStatus;
-  L7_assembly?: PipelineStatus;
-}
-
 export interface UWQuickMetrics {
   purchase_price?: number | null;
   loan_amount?: number | null;
@@ -473,7 +461,6 @@ export interface UWFrontmatter {
   loan_type?: string | null;
   /** Single business plan (§2.2b), independent of product, program and hold strategy. */
   scenario?: UWScenarioId | null;
-  pipeline_state?: UWPipelineState;
   status?: string;
   deal_stage?: DealStage;
   recommendation?: string | null;

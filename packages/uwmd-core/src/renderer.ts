@@ -2,7 +2,7 @@ import { hasBlockShape } from './block-kind.js';
 // .uw.md renderer — converts a ParsedUWFile to output formats
 // Formats: json | csv | chat | summary
 // PDF and DOCX require dedicated external rendering pipelines.
-// Spec: UW_FORMAT_SPEC.md §6.4
+// Guide: docs/starter/cli.md §6.4 (non-normative starter CLI reference, RFC 0112)
 
 import {
   type ParsedUWFile,
@@ -473,13 +473,6 @@ LAST MODIFIED: ${fm.last_modified ?? 'n/a'}`);
 Purchase Price: ${money(qm.purchase_price)} | Loan: ${money(qm.loan_amount)} | Equity: ${money(qm.equity_required)}
 NOI (UW): ${money(qm.noi_underwritten)} | DSCR: ${val(qm.dscr)}x | LTV: ${pct(qm.ltv)}
 Cap Rate: ${pct(qm.cap_rate)} | Debt Yield: ${pct(qm.debt_yield)} | IRR (levered): ${pct(qm.irr_projected)}`);
-
-  // ── Pipeline state ─────────────────────────────────────────────────────────
-  if (fm.pipeline_state) {
-    const ps = fm.pipeline_state as Record<string, string>;
-    sections.push(`## PIPELINE STATE
-${Object.entries(ps).map(([k, v]) => `${k}: ${v}`).join(' | ')}`);
-  }
 
   // ── Flags ──────────────────────────────────────────────────────────────────
   if ((fm.flags as string[] | undefined)?.length || (fm.blocking_flags as string[] | undefined)?.length) {

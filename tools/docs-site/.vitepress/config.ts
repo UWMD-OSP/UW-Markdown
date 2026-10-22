@@ -124,7 +124,7 @@ export default defineConfig({
             items: [
               { text: 'Building with AI', link: '/ai/' },
               { text: 'Bounded agent skills', link: '/ai/skills' },
-              { text: 'AI agent host', link: '/starter/ai-host' },
+              { text: 'Agent writers and context profiles', link: '/starter/ai-host' },
             ],
           },
         ],
@@ -213,7 +213,7 @@ export default defineConfig({
             { text: 'Bounded agent skills', link: '/ai/skills' },
             { text: 'MCP binding', link: '/spec/mcp' },
             { text: 'HTTP binding', link: '/spec/http' },
-            { text: 'AI agent host guide', link: '/starter/ai-host' },
+            { text: 'Agent writers and context profiles', link: '/starter/ai-host' },
           ],
         },
         {
@@ -269,8 +269,10 @@ export default defineConfig({
             { text: 'Editing', link: '/starter/editing' },
             { text: 'Defaults and the cascade', link: '/starter/defaults-and-cascade' },
             { text: 'Refinement and workbooks', link: '/starter/refinement-and-workbooks' },
-            { text: 'AI agent host', link: '/starter/ai-host' },
+            { text: 'Agent writers and context profiles', link: '/starter/ai-host' },
             { text: 'Capability tokens', link: '/starter/capability-tokens' },
+            { text: 'CLI reference', link: '/starter/cli' },
+            { text: 'Renderer reference', link: '/starter/rendering' },
           ],
         },
         {
@@ -301,7 +303,6 @@ export default defineConfig({
             { text: 'Editor starter checks', link: '/conformance/starter-editor' },
             { text: 'Calculation fixtures', link: '/conformance/calc' },
             { text: 'Refinement starter checks', link: '/conformance/starter-refinement' },
-            { text: 'Layer-profile starter check', link: '/conformance/starter-agent' },
             { text: 'Language-agnostic runner', link: '/conformance/runner' },
           ],
         },

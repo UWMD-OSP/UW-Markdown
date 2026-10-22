@@ -129,6 +129,19 @@ export const SUBTOTAL_RANGES = {
   noi: 'noi',
 } as const;
 
+/**
+ * Column-C status text the exporter writes beside a subtotal that is not a live
+ * formula. Reverse import accepts a non-formula subtotal only beside the status
+ * text for its form, so a value typed over a written formula still refuses
+ * (#484). Internal to this package; not exported from the package index.
+ */
+export const SUBTOTAL_STATUS = {
+  /** The cell holds `#N/A`: the source subtotal is absent. */
+  missing: 'Unavailable: source subtotal is missing.',
+  /** The cell holds the stated source subtotal as an editable numeric input. */
+  retained: 'Source input: detail edits do not recalculate this subtotal.',
+} as const;
+
 /** Excel format keyed by a calc pack's unit string. */
 export function excelFormatFor(unit: string | undefined): DerivedMetric['format'] {
   if (unit === 'kW') return 'decimal';

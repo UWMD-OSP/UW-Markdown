@@ -6,20 +6,63 @@ Format and Protocol. It uses Python's standard library and has no Node runtime,
 external packages, hosted services, production fixture lookup, or TypeScript
 translation. No PyPI name, supported Python floor or publication is decided.
 
-**Certified 2026-10-20 (Issue #354):** the discovery manifest claims the
-**Reader tier** and the capabilities `parse` and `calc-evaluate`. CI proves the
-claim with the RFC 0004 runner on Windows, Linux and macOS: every Reader and
-`calc-evaluate` case passes, and the only skipped cases are the `validate` ones.
-`validate` is **not claimed yet**: the command passes all 140 portable validate
-cases, but an independent differential review found it diverging from the
-reference on lawful documents outside the corpus (#425), and the claim waits
-for those divergences to be fixed or dispositioned. It does **not** claim the
-Verifier tier. Protocol §II.2 also
-requires metric-dictionary reproduction, the stated-figure verifiers (cash
-flows/IRR, property cash-flow assembly, waterfalls) and receipt verification,
-which this implementation does not provide (§II.5: publish capabilities rather
-than round up). No signature, receipt or optional-profile capability is claimed.
-Statements below that discovery "stays parse-only" are dated checkpoint history.
+**Certified 2026-10-21 (Issue #354):** the discovery manifest claims the
+**Reader tier** and the capabilities `parse`, `calc-evaluate` and `validate`.
+CI proves the claim with the RFC 0004 runner on Windows, Linux and macOS:
+`--tier verifier --no-skip` selects every Reader and Verifier portable case
+(17 parse, 110 calc, 144 validate, 28 reserve-account and 46 reserve-draw), and
+every one must pass with no skip. It does **not** claim the Verifier tier, and
+the manifest keeps `tier: reader`. Protocol §II.2 also requires, and this
+implementation does not provide (§II.5: publish capabilities rather than round
+up):
+
+- provenance policy POL-01/POL-02 (Protocol §V.3);
+- metric-dictionary reproduction at every bound statement home (§II.2.2);
+- the stated-figure verifiers: calendar cash flows (§VIII.9.1–9.4), lease-up
+  schedules (Format §4.25), capital-stack sizing (Format §4.24), waterfall
+  allocation (§VIII.10) and property cash-flow assembly (§VIII.9.6);
+- receipt verification (§II.2.4, UW Receipt §5).
+
+No signature, receipt or optional-profile capability is claimed. Statements
+below that discovery "stays parse-only" or that `validate` is unadvertised are
+dated checkpoint history.
+
+### `validate` claim — 2026-10-21
+
+**Spec data.** `validate` reads the normative schemas and the metric
+dictionary from the standard's `spec/` directory, through the one resolver in
+`uwmd_spec_data.py`. Set `UWMD_SPEC_DIR` to that directory to run this
+implementation outside a checkout; unset, it is the checkout's `../../spec`. A
+missing file is an internal error (exit 2) naming the path and the variable.
+Nothing is copied into this directory, so there is no second copy to drift.
+
+**The #425 differences.** Each one now equals the reference, or follows the
+Format where the Format decides against the reference. The synthetic records in
+`test_validation_reference_alignment.py` pin the reference's codes, severities,
+fields and counts for each.
+
+| Item | Now | Authority |
+|---|---|---|
+| CF-01 | Only §4.26's row grammar: real date, finite amount, closed `day_count` and `kind`. Label type, unknown members and `_meta` are not CF-01. | Format §4.26 |
+| HDG-08 | One finding at the failing reference member: `cash_flow_ref` (values), `.variant` (no exact current variant), `.row_index` (series/row). The bound series must have closed rows; section-level members and stated metrics are not read (V.12 step 3). CF findings stay with the CF rules in `validate` and are exposed beside HDG-08 in the V.12 result. | Format §4.7, Protocol §V.12 step 3 ("legal row shapes") and §V.12.2 |
+| CS-02 | A stated `null` rate is not a rate, on common equity or elsewhere. | Spec silent on null; schema admits null; matches reference |
+| CS-WATERFALL-UNSUPPORTED | Ten marker keys, one finding per key at the stack or tranche. | Spec names concepts, not keys; matches reference |
+| CS-01 | The four required members (one finding per member, also for a non-object tranche) and the two uniqueness rules. No finding for an absent `tranches`, a negative amount, an `accrual` outside the vocabulary or non-integer month terms. | Format §4.24 names only these; matches reference |
+| CC-05 / CC-06 / CC-07 | `noi_used_for_dscr` fallback; NOI ≤ 0 skipped as `field_absent`; `annual_cash_flows[0].noi` is the CC-06 field; `dcf.exit_cap_rate` fallback. A malformed first carrier falls through to the next. | Format §5.3 fixes the tolerance only; matches reference |
+| CC-01 | `totals.gross_potential_rent` is the rent-roll fallback carrier, not `gross_potential_rent_annual`. | Spec silent; matches reference |
+| CC-15 | A base or default scenario that is not eligible (a `component` role) is `variant_unresolvable`; no other scenario is chosen. Drift is divided by the absolute NOI. | Format §5.3 ("roles cannot choose another scenario") |
+| WF-02 / WF-03 | A non-array `series` raises neither WF-03 nor WF-15 (it is CF-02's defect); WF-03 and an unresolved WF-02 report `cash_flow_ref.variant`. | Spec silent; matches reference |
+| TAX-07 | Read only from an admitted schedule; an unnamed period at `abatement.stabilized_period`, a disagreeing stated tax at `value`; an unstated tax is not compared. A `null` `stabilized_period` is not stated. | Format §4.5; null: Format over the reference |
+| DQ-05 | `last_checked` is read as ECMAScript `Date.parse` reads it: date-only is UTC midnight, a date-time without an offset is local time (`uwmd_instant.py`). | Format §4.22 silent; matches reference |
+| HDG-01 | One finding per stated defect at its member, plus the group finding for a partial terms group; HDG-03 at `rate_type`. Unknown hedge members and the counterparty type are not HDG-01. | Format §4.7's HDG-01 list |
+
+**Still different from the reference** (outside the #425 list; corpus-wide
+comparison of 811 documents, 113 differ): field paths for PS-01/PS-02 pointers,
+WF-01, TAX-01/05/06, CAPX, REC, RSV, LSE, MU-01 and the builtin-class `CC-*`
+rules; the count of WF-01 findings (the reference reports more than one per
+ladder); CC-08's section; three MHC type cases where Python adds
+`MOD-RULE-ERROR`; and UW Lite sources, which Python does not read as a
+representation.
 The adapter reads structured Format 3.0 Markdown and separately verifies stated
 reserve accounts, explicit reserve-draw plans and replacement-funding commitments.
 It also executes accepted expressions through the read-only `calc` command.

@@ -8,6 +8,17 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Python (#354): the independent implementation now claims `validate` beside
+  `parse` and `calc-evaluate`, still at the Reader tier. CI runs the portable
+  Verifier-tier corpus with `--no-skip` on three OSes, so all 144 validate cases
+  must pass. `validate` reads spec data through one resolver, with
+  `UWMD_SPEC_DIR` to run outside a checkout. The #425 differences are closed:
+  CF-01 is the §4.26 row grammar only, HDG-08 reports the failing reference
+  member, HDG-01 reports each stated member, CS-01/CS-02/CS-WATERFALL-UNSUPPORTED
+  follow §4.24 and the reference, CC-01/05/06/07/15, WF-02/03, TAX-07 and DQ-05
+  read the reference's carriers and skips. A `null` `stabilized_period` stays
+  unstated (Format §4.5). No TypeScript, spec, schema or conformance change.
+
 - Prepare Cloudflare Workers static hosting for the refreshed docs site, with a
   pinned Node runtime, asset headers, real 404 responses and owner-configured
   docs-only build watch paths. Vercel remains unchanged pending owner cutover.
@@ -21,6 +32,31 @@ protocol, and each package each carry an independent semver).
 - Fix #489: `render --format csv` quotes and escapes fields per RFC 4180, so a
   comma or quote in a value no longer shifts the columns. The text columns that
   were always quoted stay quoted, with embedded quotes doubled.
+
+- Fix #487: an exported workbook gives the calc engine's outcome when an input
+  is missing. `emitCalcExcelFormula` renders null as `#N/A`: a blank named input
+  reads as `NA()`, a null branch is `NA()` instead of `""` (which made
+  `ROUND("")` `#VALUE!`), null tests are `ISNA`-based, and the inputs whose
+  absence nulls a metric are tested once outside `ROUND`. Init records no longer
+  show a fabricated 0 (hospitality total room revenue, data-center facility load
+  and rent revenue, manufactured-housing rent potentials) or `#DIV/0!`/`#VALUE!`
+  where the engine gives null, and populated examples show `#N/A` instead of
+  `#VALUE!` for their three null metrics; every metric with a value is
+  unchanged. Pack formulas are unchanged.
+
+- Fix #484: `uwmd-excel --import` (`fromWorkbook`) accepts every subtotal form
+  the exporter writes: the live formula, a retained stated subtotal beside its
+  status text (now imported as the editable input it is), and the documented
+  `#N/A` for a missing subtotal. Workbooks exported from `uwmd init` records and
+  totals-only `noi_model` records import again; a different formula, a value
+  typed over a formula or over `#N/A`, or a formula typed over a retained value
+  still refuses with `WORKBOOK-IMPORT-SUBTOTAL`. A mixed-use record with no
+  component block now states its property NOI (or `#N/A`) instead of writing an
+  empty consolidation formula.
+
+- Fix #492 (init part): `uwmd init` refuses an `--asset-class`, `--stage` or
+  `--tier` outside its vocabulary and writes nothing; a namespaced custom asset
+  class (Format §2.2a) is still admitted.
 
 - Implement accepted RFC 0113: hospitality `rent_roll.occupied_room_nights` is
   paid room nights sold in the period `rooms_revenue` covers (complimentary and
@@ -515,6 +551,44 @@ protocol, and each package each carry an independent semver).
   `writeErrorEntry`, `buildMeta`), `buildContext` and `uwmd edit
   --agent-id/--agent-version`. An unknown command, `uwmd run` included, now
   exits 1 before any file I/O instead of printing the help text with exit 0.
+
+- Implement RFC 0112: remove the Bancroft layer vocabulary from the standard.
+  **Format:** §1.2 no longer names a required producer tool; §1.3 is deleted;
+  frontmatter `pipeline_state` and its L3 rule are removed (workflow position
+  stays in `status` and `deal_stage`; a record that still carries the member
+  reads it as an ordinary unknown key, D4); the 29 Part IV "Written by" lines
+  are removed, and the eight that carried a source rule become **Source rules**
+  lines that bind any non-user source (D3); spec examples use neutral agent ids
+  (`agent/risk-rater`) under the unchanged `agent/<id>` source with `agent_id`
+  and `agent_version` (D2); §6.8's producer rules move into new §3.6 (items
+  2-5 as MUST, item 7 as SHOULD; items 1, 6 and 8 dropped, D5); Part VI's
+  validation result moves to new §5.6, and Parts VI and VII move to the
+  non-normative starter [CLI reference](docs/starter/cli.md) (without
+  `uwmd run`) and [renderer reference](docs/starter/rendering.md) (D6).
+  **Protocol and schemas (lockstep):** module manifests drop `agent_layers`,
+  `ModuleAgentLayerDecl` and `prompt_template`, so a manifest that declares
+  `agent_layers` is refused as an unknown member (`PROTO-MOD-064`);
+  `PROTO-MOD-055` to `PROTO-MOD-060` are retired and reserved (D7); §II.4,
+  `ViewerCapability` and `ImplementationManifest.capabilities` drop
+  `agent-host`; the glossary drops "Layer". **Libraries:** `@uwmd/core`
+  removes `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`,
+  `isContextReady`, `getLayerDependencies`, the `AgentContext`,
+  `BancroftPrompt` and `LayerDefinition` types, `uwmd layers` (now an unknown
+  command), `agents/L0b-prompt.md`, `RunOptions.updatePipelineState`, the
+  chat render's pipeline-state block, the `summary` context profile's
+  `pipeline_state` member and `init`'s `pipeline_state` scaffold;
+  `@uwmd/verify` removes `UWPipelineState`, `PipelineStatus` and
+  `ModuleAgentLayerDecl`. The generic writers and `buildContext` stay.
+  **Conformance:** the `starter-agent-profile/consumer-profile-contract` check
+  and module fixture `reject/02-agent-layer-malformed` are retired; new
+  `reject/20-agent-layers-unknown-member` shows the refusal; capability tokens
+  are re-signed for the neutral subject `agent/underwriter.inst-A`; examples,
+  fixtures and the download templates drop `pipeline_state`, layer agent ids
+  become neutral ids (`agent/rent-roll-extractor`, `agent/market-analyst`,
+  `agent/risk-rater`, ...) with `agent_id` following, and layer prose in the
+  Parkview records is restated. The documents baselines for
+  `02-full-multifamily` and `04-scope-only` were regenerated with
+  `scripts/regen-conformance.mjs --suite=documents`; no financial value moved.
 
 ### Fixed
 
