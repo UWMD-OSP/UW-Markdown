@@ -48,6 +48,23 @@ describe('UW CSV Bundle 1.0', () => {
       issue.code === 'META-01' && issue.message.includes('first member'))).toEqual([]);
   });
 
+  it('preserves prototype-named content members while keeping metadata first', async () => {
+    const extended = structuredClone(envelope);
+    const block = extended.sections['valuation'] as { content: Record<string, unknown> };
+    Object.defineProperty(block.content, '__proto__', {
+      value: { csv_member: true }, enumerable: true, configurable: true,
+    });
+    const decoded = await decodeUWCSVBundle(await encodeUWCSVBundle(extended));
+    const content = (decoded.sections['valuation'] as { content: Record<string, unknown> }).content;
+    expect(Object.keys(content)[0]).toBe('_meta');
+    expect(Object.hasOwn(content, '__proto__')).toBe(true);
+    expect(content['__proto__']).toEqual({ csv_member: true });
+    expect(Object.hasOwn(content, 'csv_member')).toBe(false);
+    expect(Object.getPrototypeOf(content)).toBe(Object.prototype);
+    expect(Object.prototype).not.toHaveProperty('csv_member');
+    expect(areEnvelopesEquivalent(decoded, extended)).toBe(true);
+  });
+
   it('creates deterministic ZIP bytes and decodes them safely', async () => {
     const first = await encodeUWCSVZip(envelope);
     const second = await encodeUWCSVZip(envelope);

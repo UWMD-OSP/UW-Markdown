@@ -365,11 +365,14 @@ export async function decodeUWCSVBundle(
     if (!isRecord(annotation) || !isRecord(meta) || !isRecord(content)) {
       throw new UWCSVError('CSV_BLOCK_SHAPE', `${blockRef} scopes must decode as objects.`);
     }
+    // CSV scopes have no authored JSON member order. Spread defines own data
+    // members without invoking prototype setters; keep metadata first and let
+    // the dedicated meta scope remain authoritative.
+    const orderedContent = { _meta: meta, ...content };
+    orderedContent._meta = meta;
     const block: UWEnvelopeBlock = {
       annotation: annotation as unknown as UWEnvelopeBlock['annotation'],
-      // CSV scopes have no authored JSON member order. Reconstruct Format's
-      // canonical metadata first, keeping the meta scope authoritative.
-      content: Object.assign({ _meta: meta }, content, { _meta: meta }),
+      content: orderedContent,
       ...(proseByBlock.has(blockRef) ? { prose: proseByBlock.get(blockRef) } : {}),
     };
     assignBlock(envelope, row, block);
