@@ -301,7 +301,7 @@ export default defineConfig({
             { text: 'Editor starter checks', link: '/conformance/starter-editor' },
             { text: 'Calculation fixtures', link: '/conformance/calc' },
             { text: 'Refinement starter checks', link: '/conformance/starter-refinement' },
-            { text: 'Agent starter checks', link: '/conformance/starter-agent' },
+            { text: 'Layer-profile starter check', link: '/conformance/starter-agent' },
             { text: 'Language-agnostic runner', link: '/conformance/runner' },
           ],
         },

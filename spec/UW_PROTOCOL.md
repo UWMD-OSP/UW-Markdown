@@ -4190,7 +4190,7 @@ A module MUST NOT load unless its requires_protocol range is satisfied by 4.1.0 
 
 The normative size registry and its selection rules now live in the
 [metric dictionary](metrics/README.md#primary-size-selection), specifically
-`size_intensives` in `spec/metrics/builtin.json` (RFC 0078 Phase 2).
+`size_intensives` in `spec/metrics/builtin.json` (RFC 0078).
 `SIZE_INTENSIVES` / `getSizeIntensive()` remain executable mirrors. The
 registry originated in RFC 0027 at protocol 1.6.0 (called §XI in that RFC).
 
@@ -4352,7 +4352,7 @@ For the tier and each profile you claim:
 
 ## Appendix C — Conformance corpus index
 
-See [`conformance/README.md`](../conformance/README.md). Content directories contain fixtures and expected outputs with explicit target ownership (RFC 0081 Phase 5);
+See [`conformance/README.md`](../conformance/README.md). Content directories contain fixtures and expected outputs with explicit target ownership (RFC 0081);
 directory membership is not a normative signal (§II.6).
 
 
@@ -4365,7 +4365,7 @@ helpers. It is intended to be read end-to-end as a learning
 artifact. Its view models and formatters are starter-product display,
 not part of the standard. A worked Verifier example, a consumer that
 checks a document with only the metric dictionary and an expression
-evaluator, is in [`conformance/metrics/`](https://github.com/UWMD-OSP/UW-Markdown/tree/main/conformance/metrics) (RFC 0078 Phase 2).
+evaluator, is in [`conformance/metrics/`](https://github.com/UWMD-OSP/UW-Markdown/tree/main/conformance/metrics) (RFC 0078).
 
 ## Appendix E — Worked example: authoring a third-party specialty module
 

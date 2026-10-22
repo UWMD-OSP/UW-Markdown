@@ -2,38 +2,34 @@
 
 > **Non-normative starter-product guidance (RFC 0078). Not part of the standard.**
 >
-> This page moved verbatim from [UW Protocol](../../spec/UW_PROTOCOL.md) §IX,
-> and from the retired Tier-4 Agent Host requirements (Protocol 2.x §II.4),
-> under [RFC 0078](../rfcs/0078-protocol-is-verification.md) (D3). Section
-> numbers and headings are kept so existing references still find the text;
-> relative links were re-based to this directory and nothing else changed.
-> The requirement keywords below (MUST, SHOULD, MAY) describe how the
-> reference starter products behave and what a tool must do to stay
-> compatible with them. They are not conformance requirements of the
-> standard, and a conforming Reader or Verifier owes none of them.
+> This page moved from [UW Protocol](../../spec/UW_PROTOCOL.md) §IX under
+> [RFC 0078](../rfcs/0078-protocol-is-verification.md) (D3). Section numbers
+> are kept so existing references still find the text. The requirement
+> keywords below (MUST, SHOULD, MAY) describe how the reference starter
+> products behave and what a tool must do to stay compatible with them. They
+> are not conformance requirements of the standard, and a conforming Reader or
+> Verifier owes none of them.
 
-### II.4 Agent Host
-
-A Tier-4 Agent Host MUST satisfy all Tier-3 requirements, and additionally:
-
-1. Honor the `BANCROFT_LAYERS` dependency graph: layer L depends on
-   inputs from earlier layers; the host MUST NOT run L until its
-   dependencies are satisfied (§IX.1).
-2. Validate every agent tool call against `WRITE_UW_SECTION_TOOL` or
-   `WRITE_MULTIPLE_SECTIONS_TOOL` before applying.
-3. Strip any `_meta` and `_notes` the agent included inside
-   `section_data` and substitute the canonical `_meta` constructed by
-   the host (§IX.4).
-4. Append a `pipeline_log` entry for every successful agent invocation.
+**The reference toolkit hosts no agents.** `@uwmd/core` and the `uwmd` CLI run
+no model, ship no provider adapter or tool schema, and have no `uwmd run`
+command. What remains is the Bancroft layer registry (`BANCROFT_LAYERS`), its
+context and prompt builders (`buildAgentContext`, `buildAgentPrompt`,
+`isContextReady`, `getLayerDependencies`), the context profiles
+(`buildContext`), and the generic writers (`writeAgentBlock`,
+`writeErrorEntry`). Any host that runs its own agents writes their records
+through those writers or through the edit API (`applyEdit`, `uwmd edit
+--agent-id/--agent-version`); the format's provenance, supersede and
+pipeline-log rules apply to it exactly as to any other producer.
 
 ## IX. AI Host Contract
 
 ### IX.1 Layer DAG
 
-`BANCROFT_LAYERS` (`context.ts`) is the normative layer dependency
+`BANCROFT_LAYERS` (`context.ts`) is the reference layer dependency
 graph for v1. Each layer declares its `reads` (sections it needs as
 input) and `writes` (sections it produces). A host MUST satisfy all
-`reads` before invoking a layer.
+`reads` before invoking a layer; `isContextReady()` and
+`getLayerDependencies()` answer that from a parsed file.
 
 The seven canonical layers are L0 (ingestion), L1 (screening), L2
 (underwriting), L4 (structuring), L5 (compliance), L6 (risk), L7
@@ -47,38 +43,22 @@ deal frontmatter, the relevant `reads` sections (canonical blocks
 only — superseded blocks excluded), validation issues affecting those
 sections, and the layer's prompt template.
 
-### IX.3 Tool schemas
-
-Two normative tool schemas are exported from
-`packages/uwmd-core/src/agents/schemas.ts`:
-
-- `WRITE_UW_SECTION_TOOL` — single-section writes.
-- `WRITE_MULTIPLE_SECTIONS_TOOL` — batched writes for layers that
-  produce multiple sections (see `MULTI_SECTION_LAYERS`).
-
-Tool calls that fail validation against these schemas MUST be
-rejected; the host MAY surface the failure to the agent for retry.
-
 ### IX.4 _meta substitution
 
 Agents may include `_meta` and `_notes` inside `section_data`. The
 host MUST strip both keys from the agent payload and substitute the
 canonical `_meta` constructed via `buildMeta()`. This prevents agents
-from forging provenance.
+from forging provenance. The host passes that `_meta` to
+`writeAgentBlock()`, which also drops any `_role` or `_overrides` the payload
+carries.
 
 ### IX.5 Pipeline log
 
 Every successful layer invocation MUST append a `pipeline_log` entry
 with `timestamp`, `agent_or_actor`, `event_type`, and `status`.
 Failures MUST also be logged, with `status: "failed"` and an error
-string.
-
-### IX.6 Shape assertions for tests
-
-Because LLM outputs are nondeterministic, the Tier-4 conformance
-fixtures use JSON Schema shape assertions rather than byte-equality.
-A run is considered conformant if the post-run file shape matches
-the expected schema and the `pipeline_log` entry was appended.
+string. `writeAgentBlock()` appends the success entry and
+`writeErrorEntry()` the failure entry.
 
 ### IX.7 Context Profiles
 
@@ -137,9 +117,8 @@ the true tokenizer cost (typical drift ±5% on `.uwx.md` content).
 
 Each Bancroft layer declares a `consumed_profile` field in
 `BANCROFT_LAYERS`. A host MUST request that profile (and only that
-profile) when preparing the layer's input context. Conformance Tier-4
-verifies the declaration via the
-`consumer-profile-contract` fixture.
+profile) when preparing the layer's input context. The starter
+`consumer-profile-contract` check verifies the declaration.
 
 For canonical v1 layers the declared profiles are:
 

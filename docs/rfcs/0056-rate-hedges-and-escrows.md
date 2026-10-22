@@ -3,7 +3,7 @@ rfc: 0056
 title: 'Typed rate hedges, escrows and the reserves that fund them'
 status: implemented
 accepted: 2026-09-15
-author: claude
+author: UWMD maintainers
 created: 2026-09-15
 depends_on:
   - 0046

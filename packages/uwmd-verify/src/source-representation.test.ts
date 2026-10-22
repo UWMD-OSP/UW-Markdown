@@ -64,4 +64,35 @@ describe('detectUWSourceRepresentation', () => {
       /SOURCE_REPRESENTATION_AMBIGUOUS/,
     );
   });
+
+  // Issue #408: a Lite → UWX conversion keeps the Lite source, anchors and all,
+  // as a JSON string in x_uw_lite_source. That is data inside a fence, not a
+  // Lite marker in the Markdown.
+  const KEPT_LITE = [
+    UWX.trimEnd(),
+    '```json uw:section=x_uw_lite_source',
+    JSON.stringify({ _meta: {}, markdown: LITE }),
+    '```',
+    '',
+  ].join('\n');
+
+  it('reads Lite anchors inside a UWX fence body as data', () => {
+    for (const lineBreak of ['\n', '\r\n']) {
+      const source = KEPT_LITE.replaceAll('\n', lineBreak);
+      expect(detectUWSourceRepresentation(source, 'deal.uwx.md').representation).toBe(
+        'uwx-markdown',
+      );
+      expect(detectUWSourceRepresentation(source, 'deal.md').representation).toBe('uwx-markdown');
+      expect(
+        detectUWSourceRepresentation(source, 'deal.uwx.md', 'uwx-markdown').representation,
+      ).toBe('uwx-markdown');
+    }
+  });
+
+  it('still finds a Lite marker in prose outside the fences', () => {
+    const source = `${KEPT_LITE}\n- Loan: $1 <!-- uw:debt.loan_amount -->\n`;
+    expect(() => detectUWSourceRepresentation(source, 'deal.md')).toThrow(
+      /SOURCE_REPRESENTATION_AMBIGUOUS/,
+    );
+  });
 });

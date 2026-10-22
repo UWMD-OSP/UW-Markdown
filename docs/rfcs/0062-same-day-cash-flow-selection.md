@@ -4,7 +4,7 @@ title: Permit same-day cash-flow rows while refusing ambiguous selectors
 status: implemented
 accepted: 2026-09-24
 implemented: 2026-10-02
-author: codex
+author: UWMD maintainers
 created: 2026-09-24
 affects:
   - format-spec
@@ -25,14 +25,11 @@ date in the same series resolves normally. The four other registered series
 keep their existing duplicate rules.
 
 This is an accepted normative reconciliation, not an implementation bug fix.
-**Accepted by Jared on 2026-09-24.** Protocol **2.17.1 — normative errata**
-remains the owner-selected version. The reference implementation, protocol
-mirrors and conformance were integrated on canonical `main` at `e49eb43` and
-**shipped in core/CLI 2.14.0** (Protocol 2.18.0, which includes these errata),
-published from the `v2.14.0` tag on 2026-10-02. Status is `implemented`. No
-schema or public type changes.
+**Implemented; released in core/CLI 2.14.0** as Protocol **2.17.1 — normative
+errata** (shipped within Protocol 2.18.0). No schema or public type changes.
+See [Resolution](#resolution).
 
-The owner explicitly accepted legal, separate same-day cash-flow rows without
+The accepted contract is: legal, separate same-day cash-flow rows without
 PS-02; deterministic refusal of selectors matching multiple rows; selectable
 unique dates; unchanged duplicate-period protection for other registered series;
 and no numeric row-index syntax or other calc-grammar expansion.
@@ -54,8 +51,8 @@ The released requirements conflict:
   selectors retain duplicate-date ambiguity. RFC 0045 / §VIII.9.6 retains
   separate property cash components and source-index bindings.
 
-The [completed-corpus review](../reviews/2026-09-24-completed-golden-corpus-validation.md)
-demonstrated the interaction. No private data is needed to reproduce it:
+A private validation corpus demonstrated the interaction. No private data is
+needed to reproduce it:
 `conformance/property-cash-flow-assembly/valid-same-day` assembles successfully
 but its source document emits three `PS-02` errors.
 `conformance/cash-flow/verify-same-day-flows/case.json` verifies successfully;
@@ -142,9 +139,10 @@ RFC 0061 was editorial (labels only); core 2.6.1 restored an existing required
 behavior without changing the protocol; RFC 0036 introduced normative behavior
 with a protocol minor. None determined this released contradiction. The
 CHANGELOG's older “Versioning” anchor referenced by VERSIONS does not currently
-exist. The task paused for an owner choice rather than inventing policy.
+exist. The version treatment was therefore an owner decision rather than an
+inferred policy.
 
-**Jared chose Protocol 2.17.1 as normative errata**, rather than 2.18.0 as a
+**The owner chose Protocol 2.17.1 as normative errata**, rather than 2.18.0 as a
 normative feature change. This explicitly acknowledges both the changed PS-02
 verdict and unique-date resolver behavior; it does not claim byte-identical
 results or automatic compatibility with both contradictory old requirements.
@@ -152,14 +150,7 @@ This is a narrow errata precedent, not blanket authority to put new protocol
 features into patches.
 
 The executable constant, checked protocol labels, current source matrix and
-receipt-issuance protocol labels move together to 2.17.1. VERSIONS and the
-Unreleased changelog distinguish this accepted, unreleased source contract from published
-core/CLI 2.13.0 and Protocol 2.17.0. Format remains 2.0. The errata
-implementation made no package-version, dependency, lockfile, tag or
-publication change. The 2.14.0 candidate, merged to `main` by PR #218, repins
-packages for the combined 2.18.0 contract; it shipped from the `v2.14.0` tag
-on 2026-10-02. The version
-choice preceded the owner's separate acceptance recorded above.
+receipt-issuance protocol labels move together to 2.17.1. Format remains 2.0.
 
 ## Conformance impact
 
@@ -226,26 +217,6 @@ focused tests before the full repository gates and independent new-fixture
 execution. Existing financial algorithms, tolerances and Excel formulas do
 not change.
 
-### Prepared implementation verification
-
-The new period tests first recorded six failures against the old behavior;
-after reconciliation, 289 focused tests pass. Full workspace tests pass:
-2,451 across 138 files. Default conformance passes 591 checks (including the
-two new scenarios); the focused cash-flow/assembly suites pass 43. All three
-profiles pass (161 checks, 67 declared capability skips). Schema validation
-passes 46 compilations and the emitted-code guard passes 221 checks.
-
-Build, test typechecking, lint, index/version/package/lockfile/release guards
-and the documentation build pass. The two new scenarios were also executed
-independently: clean same-day document and verified metrics, repeated-date
-refusal, unique-date success, missing-date null, unchanged rows; the DCF
-negative control retains PS-02 and both duplicate/unique selector refusals.
-The new positive document also passes the existing CLI validator (exit 0).
-An initial duplicate test import detected by lint/typechecking was corrected;
-the final checks and the edited test file pass. No schema or financial math
-changed. Verification alone did not confer acceptance; the owner's separate
-decision is recorded above. These results do not constitute a release.
-
 ## Alternatives considered
 
 1. **Merge/net same-day rows:** destroys component identity, provenance and
@@ -267,10 +238,26 @@ decision is recorded above. These results do not constitute a release.
 
 ## Unresolved questions
 
-None for this reconciliation. Jared accepted the normative resolution, and
-the 2.17.1 errata version is settled. It shipped in core/CLI 2.14.0 on
-2026-10-02 and is `implemented`. Terminal settlement, reserve
+None for this reconciliation. The owner accepted the normative resolution, and
+the 2.17.1 errata version is settled. Terminal settlement, reserve
 rollforward, levered assembly and any other protocol feature are excluded.
+
+## Resolution
+
+- **Status.** Accepted 2026-09-24; implemented and released 2026-10-02 in
+  core/CLI 2.14.0. The errata are Protocol 2.17.1 (see
+  [Version treatment selected by the owner](#version-treatment-selected-by-the-owner)),
+  shipped within Protocol 2.18.0 together with RFC 0063. Format remains 2.0.
+  No schema or public type changed.
+- **Decided.** The contract under [Proposed change](#proposed-change), as
+  summarized in [Summary](#summary).
+- **Implementing PRs.** The 2.14.0 package generation merged in
+  [#218](https://github.com/UWMD-OSP/UW-Markdown/pull/218); the portable-driver
+  tier-3 cases (see [Conformance impact](#conformance-impact)) landed in
+  [#235](https://github.com/UWMD-OSP/UW-Markdown/pull/235).
+- **Verification.** The new period tests failed against the old behavior and
+  pass after reconciliation. The DCF negative control retains PS-02 and both
+  duplicate/unique selector refusals. No schema or financial math changed.
 
 ## Prior art
 

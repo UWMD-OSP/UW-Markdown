@@ -14,8 +14,8 @@ affects:
 # RFC 0038: Tax basis on stated return metrics
 
 > **Status note.** Accepted and implemented 2026-09-09 under owner-led
-> governance, in the same change as this document. Raised by underwriter.cc
-> as UPSTREAM-006 (2026-09-02) while repairing an app bug in which a levered
+> governance, in the same change as this document. Raised by an adopter
+> (2026-09-02) while repairing an app bug in which a levered
 > IRR that was after-tax sat beside an unlevered IRR that was pre-tax, and
 > the difference read as leverage.
 
@@ -109,7 +109,7 @@ edits above.
   fields for a distinction that is a property of the model run, not of one
   output, and it would allow the exact mixed-basis document this RFC exists
   to make expressible-as-wrong.
-- **Ride the units registry** (UPSTREAM-004 ask 6). Deferred, not rejected:
+- **Ride the units registry** (an earlier adopter request). Deferred, not rejected:
   a basis is a property of a value, like a unit, and a future vocabulary
   artifact may absorb it. The field name and values here are chosen to
   survive that move unchanged.

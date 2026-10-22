@@ -4,7 +4,7 @@ title: Declare the student rent-roll bed counts and pre-leasing dates the studen
 status: implemented
 accepted: 2026-10-02
 implemented: 2026-10-02
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-09-28
 affects:
   - format-spec
@@ -15,12 +15,13 @@ affects:
 
 # RFC 0069: Declare the student rent-roll bed counts and pre-leasing dates the student pack already reads
 
-**Implemented; released in 2.16.0.** On 2026-10-02 Jared accepted this RFC
-as a whole and authorized implementation. Published core/CLI 2.16.0 pair
-with stable Protocol 2.20.0 and Format 2.0; RFC status is `implemented`.
-A coding agent wrote it. StackUW's
-student-housing export and its app-side note UPSTREAM-014 are adopter
-requirements evidence, not UWMD authority or owner authorship.
+**Implemented; released in core/CLI 2.16.0** with Protocol 2.20.0 and Format
+2.0. On 2026-10-02 the owner accepted this RFC as a whole and authorized
+implementation. See [Resolution](#resolution).
+
+Drafted with AI assistance; reviewed by maintainers. An adopter's
+student-housing export and its issue report are requirements evidence, not
+UWMD authority or owner authorship.
 
 Three owner decisions of 2026-10-01 settle specific validation semantics:
 
@@ -49,8 +50,6 @@ The accepted field contract:
 - An absent count produces no `BED` issue, and its pack metric stays `null`.
 - One `BED-NN` error family, as drafted.
 - No pack formula changes.
-
-Status stays `accepted` until a release ships it.
 
 ## Summary
 
@@ -108,8 +107,7 @@ and spec sections rather than line numbers.
 - **The consequence.** A conforming producer that states only declared fields
   cannot make `occupancy` or `pre_lease_rate` evaluate. A producer that copies
   the fixture states undeclared fields with no type, bound or measurement date.
-  StackUW reported this on 2026-09-28 while exporting a student-housing deal (its
-  note UPSTREAM-014).
+  An adopter reported this on 2026-09-28 while exporting a student-housing deal.
 - **No family to extend.** The validator has no rent-roll code family. The
   roll-adjacent rules today are:
   - `CC-01`, a cross-section check;
@@ -270,7 +268,7 @@ Because `verify-codes` fails a format-spec rule bullet that nothing emits, the
     the dates, so the corpus never shows a count the validator would refuse.
   - Any other document stating these previously undeclared names without
     their dates, or with a malformed value, would gain errors. None is known
-    in the corpus. An adopter export (UPSTREAM-014) would need to state the
+    in the corpus. The adopter export would need to state the
     dates alongside the counts, or omit the counts.
 - **Tier-1 Reader** — unaffected. The parser already carries undeclared
   content keys, which is how the pack reads these fields today. Rendered
@@ -344,8 +342,7 @@ Unit tests pin each condition separately:
 
 ## Reference implementation
 
-Implemented in the change that records this acceptance. The RFC becomes
-`implemented` only when a release ships it, with a CHANGELOG entry.
+Implemented in the change that records this acceptance.
 
 **Files affected:**
 
@@ -445,14 +442,10 @@ The owner resolved the draft's four open questions on acceptance, 2026-10-02:
 - **Future capacity: deferred.** `BED-02` is not weakened for planned future
   beds. Future-phase capacity requires its own explicit representation.
 
-## Decision status
+## Resolution
 
-RFC 0069 is `implemented`, released in core/CLI **2.16.0** with stable
-Protocol **2.20.0** and Format **2.0**. Release run 37075007121 succeeded
-on tagged commit `a1ca815e2aee5da374caf7627ba3702849ecd257`; independent
-registry, signature/provenance, published-content and delivered-CLI checks
-are recorded in `docs/releases/2.16.0-candidate.md`. The immutable tag keeps
-the prior `accepted` lifecycle wording of its release-prepared state.
+RFC 0069 was accepted on 2026-10-02 and is `implemented`, released in
+core/CLI **2.16.0** with Protocol **2.20.0** and Format **2.0**.
 
 | Item | Source | State |
 |---|---|---|

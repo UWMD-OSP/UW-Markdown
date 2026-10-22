@@ -8,6 +8,18 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Agent execution removed from the toolkit (owner decision, 2026-10-21).**
+`@uwmd/core` and the CLI host no agents: the runner, tool schemas, provider
+seam, Anthropic adapter, record/replay cassettes, `AgentHostCapability`,
+`uwmd run` and core's `agent-host` manifest claim are gone, with the
+`@anthropic-ai/sdk` peer and the four starter checks that needed an agent run
+(1,226 indexed checks now, starter products 102). An unknown command exits 1
+before any I/O. Kept until draft RFC 0112 removes the layer vocabulary:
+`BANCROFT_LAYERS`, the context/prompt builders, `uwmd layers` and the
+layer-profile check (Format §2.2 `pipeline_state` names its keys after the
+layers, and §6.3 still describes `uwmd run`). The generic writers,
+`buildContext` and `uwmd edit` attribution stay.
+
 **Python certified — Issue #354 (2026-10-20).** The independent Python
 implementation's manifest claims the Reader tier plus `calc-evaluate`; CI runs the
 portable Verifier-tier corpus on three OSes and allows only the unclaimed

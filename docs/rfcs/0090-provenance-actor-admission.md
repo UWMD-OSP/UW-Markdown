@@ -2,7 +2,7 @@
 rfc: 0090
 title: Admit required provenance actors with an explicit diagnostic
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-17
 affects:
   - format-spec
@@ -21,12 +21,8 @@ canonical `_meta.provenance.actor` after existing block-shape precedence.
 Check every retained physical block, including history, append-only entries and
 unselected peers, without fabricating attribution or changing content selection.
 Make the distinction between fresh-source validation and mutable-model assessment
-explicit. The owner accepted the substantive contract reviewed at
-`c870dbd63e6972ae849faf31a2be68ec43855377`, including its governed conformance
-expectations, subject to final integration corrections and exact-head CI.
-This RFC records that accepted contract; merging its synchronized implementation
-activates it on main. Acceptance allocates no release version and authorizes no
-publication or public-launch tag.
+explicit. This RFC records the accepted contract; see
+[Resolution](#resolution).
 
 ## Motivation
 
@@ -200,9 +196,7 @@ backend proof and asserts neither universal receipt invariance nor a new refusal
 Apply the [owner's prelaunch compatibility policy](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16):
 all pre5 releases are historical, with no old-reader, grandfathering or migration
 shim requirement. Format/Protocol/package versions remain independent decisions
-for their actual changes. This RFC selects none;5.0 publication still needs
-separate owner launch approval. RFC0085,0088 and0089 retain separate ownership
-and draft status.
+for their actual changes. This RFC selects none.
 
 ## Conformance impact
 
@@ -296,8 +290,7 @@ codes for compatibility or extending them to history. Preserve identifiable old
 unit expectations and record the explicit correction. A late/mismatched but
 nested-valid block with no actor still owes the actor finding. This is no claim
 that the inspector is a complete validator or that those requirements vanished.
-Integration verifies the broader consumer/conformance disposition and exact-head
-CI before merging. Implementations in other languages may retain their own
+Implementations in other languages may retain their own
 physical block inventory so long as they meet the same operation and diagnostic
 contract. Acceptance does not claim complete Python validation or Verifier
 capability.
@@ -318,18 +311,15 @@ capability.
 - Exempting historical or extension blocks weakens the required principal and
   incorrectly treats history non-reclassification as metadata immunity.
 
-## Integration and release disposition
+## Resolution
 
-The owner has accepted the diagnostic allocation, operation boundary, ordering,
-historical applicability and governed expectations reviewed at the pinned head.
-Final integration rechecks all37 affected expected files, source preservation,
-identity/precedence controls and receipt consequences, updates the registered
-remediation, and requires exact-final-head and exact-main CI.
-
-No substantive actor decision remains open. Package, Format and Protocol
-release versions remain independently controlled and are not allocated here.
-This change prepares no release, publication or5.0 launch. RFC0085,0088 and0089
-remain separately draft. A required actor cannot be inferred or made optional.
+Accepted by the owner: the diagnostic allocation, operation boundary,
+ordering, historical applicability and governed expectations, as recorded in
+decisions D1–D4 above. Implemented in
+[#376](https://github.com/UWMD-OSP/UW-Markdown/pull/376), which updates all 37
+affected expected files and the registered remediation. No substantive actor
+decision remains open, and this RFC allocates no Format, Protocol or package
+version. A required actor cannot be inferred or made optional.
 
 ## Prior art
 

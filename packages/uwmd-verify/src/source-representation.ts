@@ -57,6 +57,10 @@ function structuredUnderLiteName(): UWSourceRepresentationError {
 const UWX_FENCE = /^\`\`\`json[ \t]+uw:section=\S+/m;
 const LITE_VERSION = /^uw_lite_version\s*:/m;
 const LITE_FIELD_ANCHOR = /<!--[ \t]*uw:[A-Za-z0-9_.-]+(?:[ \t]+.*?)?[ \t]*-->/;
+// A whole UWX structured fence: its info line, its JSON body and its closing
+// fence. Lite markers are Markdown prose, so text inside a fence body (such as
+// the Lite source a conversion keeps in `x_uw_lite_source`) is never one.
+const UWX_FENCED_BLOCK = /^\`\`\`json[ \t]+uw:section=[^\r\n]*(?:\r\n|\r|\n)[\s\S]*?^\`\`\`[ \t]*$/gm;
 
 /**
  * Detect the two Markdown source representations without interpreting financial
@@ -73,7 +77,8 @@ export function detectUWSourceRepresentation(
 ): UWSourceDetection {
   const normalizedName = fileName?.toLowerCase();
   const hasUWXContent = UWX_FENCE.test(content);
-  const hasLiteContent = LITE_VERSION.test(content) || LITE_FIELD_ANCHOR.test(content);
+  const prose = hasUWXContent ? content.replace(UWX_FENCED_BLOCK, '') : content;
+  const hasLiteContent = LITE_VERSION.test(prose) || LITE_FIELD_ANCHOR.test(prose);
 
   if (hasUWXContent && hasLiteContent) {
     throw new UWSourceRepresentationError(

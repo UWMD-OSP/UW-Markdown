@@ -3,7 +3,7 @@
 // prints.
 //
 // It names this package (`org.uwmd.core`, `CORE_VERSION`) and claims starter
-// capabilities (editing, rendering, agent hosting), so it lives with the starter
+// capabilities (editing, rendering), so it lives with the starter
 // toolkit rather than in `@uwmd/verify` (RFC 0083). The `ImplementationManifest`
 // type and the tier/profile vocabularies it uses are normative and come from
 // `@uwmd/verify`.
@@ -34,9 +34,10 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
   version: CORE_VERSION,
   protocol_version: PROTOCOL_VERSION,
   format_version: FORMAT_VERSION,
-  // RFC 0078: a Verifier with every optional profile. Editing, rendering and
-  // agent hosting stay claimed as capabilities: they are starter-product
-  // claims now (§II.4), still exercised by their fixtures.
+  // RFC 0078: a Verifier with every optional profile. Editing and rendering
+  // stay claimed as capabilities: they are starter-product claims now (§II.4),
+  // still exercised by their fixtures. The toolkit hosts no agents, so it does
+  // not claim the `agent-host` capability the vocabulary still defines.
   tier: 'verifier',
   profiles: Object.freeze([...CONFORMANCE_PROFILES]) as ConformanceProfile[],
   capabilities: Object.freeze([
@@ -55,7 +56,6 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
     'calc-sensitivity',
     'calc-cash-flow',
     'portfolio-relationships',
-    'agent-host',
     'module-load',
     // Both are gated on the optional @uwmd/signing package being installed.
     // Claimed here because the reference *implementation* is the pair: core
