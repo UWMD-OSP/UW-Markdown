@@ -8,6 +8,9 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Fix direct verify-packages invocation on Windows: resolve npm-cli.js and run
+  it through Node rather than executing npm.cmd. Add direct Windows CI coverage.
+
 - CSV decoding preserves own prototype-named content members while reconstructing
   metadata first, so valid envelopes retain their semantic digest.
 
