@@ -33,6 +33,64 @@ protocol, and each package each carry an independent semver).
   comma or quote in a value no longer shifts the columns. The text columns that
   were always quoted stay quoted, with embedded quotes doubled.
 
+- Implement accepted RFC 0086 (owner, 2026-10-22): `valuation.purchase_price`
+  is the one purchase-price authority. **Affected metric:
+  `price_per_commissioned_kw`** (data center) is now
+  `valuation.purchase_price / dc_capacity.critical_it_load_kw` (it read
+  `quick_metrics.purchase_price`); `round_to`, unit and null semantics are
+  unchanged, and it is null when the valuation states no price, with no
+  fallback to the frontmatter copy. `price_per_kw` is unchanged. The dictionary,
+  its generated mirror and the data-center pack change together; the Excel
+  data-center layout drops the `quick_purchase_price` input no formula reads,
+  so the workbook divides the `purchase_price` named range. New cross-check
+  `CC-17` (Format §5.3, error, every asset class): frontmatter
+  `quick_metrics.purchase_price` must match `valuation.purchase_price` within
+  $100, with CC-10's tolerance, severity and coverage, and CC-16 when the
+  valuation does not resolve. It joins `CROSS_CHECK_RULE_IDS` and
+  `BUILTIN_REMEDIATIONS`, so coverage reports sixteen checks; Python adds it
+  too. When two valuation blocks both claim `primary`, the builtin-class check
+  now reports `MOD-CALC-ERROR` for `price_per_commissioned_kw`, as the
+  evaluator refuses `price_per_kw` there. Conformance: a new `cross-checks`
+  suite (six records: prices agree, $101 over, $100 boundary, frontmatter price
+  null, no valuation, unresolved valuation), each pinning its issues and its
+  CC-17 coverage in twelve portable cases, and two `price_per_commissioned_kw`
+  statement-home cases (statement-home edits may now target the frontmatter).
+  The variants table in `spec/metrics/README.md` records the check. No example
+  or fixture changes value: every data-center record states equal prices.
+
+- Implement accepted RFC 0115 (owner, 2026-10-22, as drafted, including D2
+  and D4): every Verifier obligation has one portable conformance subcommand,
+  one capability flag and generated cases. Protocol §II.6a.1 adds
+  `verify-metrics`, `verify-cash-flows`, `verify-property-cash-flows`,
+  `verify-waterfall`, `verify-capital-stack`, `verify-lease-up` and
+  `verify-receipt <receipt.json> <file>` beside the two reserve verifiers;
+  §II.6a.2 fixes their exit contract (a failed verification exits 1, an
+  unverifiable or absent subject exits 0; the reserve verifiers keep theirs).
+  §II.2 item 3 names the capital-stack and lease-up verifiers. New
+  `ViewerCapability` flags `verify-metrics`, `verify-cash-flows`,
+  `verify-property-cash-flows`, `verify-waterfall`, `verify-capital-stack`,
+  `verify-lease-up`, `verify-receipts`, `verify-reserve-accounts` and
+  `verify-reserve-draws` (`VERIFIER_OBLIGATION_CAPABILITIES`); a Verifier tier
+  claim requires all of them (§II.5, enforced by the manifest schema) and the
+  reference manifest claims them. Reserve cases now require their own flag,
+  not `calc-evaluate`, and the `RDB` family is owned by `verify-reserve-draws`.
+  `@uwmd/verify` adds `verifyWaterfallDocument`, `verifyCapitalStackDocument`
+  and `verifyLeaseUpDocument` and the `SectionVerificationReport` types;
+  `protocol.ts` re-exports each verifier's result type, and new schemas
+  `stated-metrics-report`, `section-verification-report` and
+  `receipt-verification` mirror them. The reference CLI renames
+  `assemble-property` to `verify-property-cash-flows` (no alias), keeps `verify`
+  as the combined command, and `verify-cash-flows` reports an absent section or
+  no stated metric as `not_applicable` and exits 0 for unverifiable (was 3).
+  The generator emits 160 new portable Verifier cases (557 in all); bare-payload
+  fixtures and statement-home edits are restated as documents under
+  `conformance/runner/derived/`. Receipts (D4): the portable case is the
+  pack-less check, `verify/<id> [pack-less]` in the corpus index, with
+  `expected-verdict-pack-less.json` where the pack changes the outcome; the
+  pack-based checks are re-owned as starter checks. `runner.py` adds the
+  `verdict-codes` and `statement-states` comparisons and three projections.
+  The Python implementation claims the two reserve flags it implements; CI
+  allows skips only for the seven unclaimed RFC 0115 flags.
 - Implement accepted RFC 0111 (owner, 2026-10-21, including D4): a record is
   verified under the rule set its declared Format version names. New Protocol
   §XII.5 defines a rule set (Format validation rules and §5.2 bands, the

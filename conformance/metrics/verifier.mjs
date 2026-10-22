@@ -65,11 +65,28 @@ export function readLiteSections(root) {
  * RFC 0099 statement homes: apply a case's edits to a builtin example and
  * verify the result with the dictionary's own bindings. An edit is scoped to
  * the last block of its section that contains the text, so an identical token
- * elsewhere in the document is left alone.
+ * elsewhere in the document is left alone. The section `frontmatter` scopes an
+ * edit to the YAML frontmatter (RFC 0086: a drifted summary price).
  */
 export function verifyStatementHome(root, testCase) {
+  const dictionary = JSON.parse(readFileSync(join(root, 'spec/metrics/builtin.json'), 'utf8'));
+  return verifyStatedMetrics(parseUWFile(statementHomeSource(root, testCase)), { dictionary });
+}
+
+/**
+ * The edited example a statement-home case verifies. The portable driver's
+ * case generator writes this same text as the case's document (RFC 0115), so
+ * the reference runner and the portable driver check one source.
+ */
+export function statementHomeSource(root, testCase) {
   let source = readFileSync(join(root, 'examples', testCase.example), 'utf8').replaceAll('\r\n', '\n');
   for (const { section, find, replace } of testCase.edits) {
+    if (section === 'frontmatter') {
+      const start = source.indexOf(find);
+      if (!source.startsWith('---\n') || start < 0 || start > source.indexOf('\n---', 3)) throw new Error(`${testCase.name}: the frontmatter does not contain ${JSON.stringify(find)}`);
+      source = source.slice(0, start) + replace + source.slice(start + find.length);
+      continue;
+    }
     const blocks = [...source.matchAll(new RegExp(`^\`\`\`json uw:section=${section}\\b[^\\n]*\\n([\\s\\S]*?)\\n\`\`\``, 'gm'))]
       .filter(m => m[1].includes(find));
     const block = blocks.at(-1);
@@ -77,8 +94,7 @@ export function verifyStatementHome(root, testCase) {
     const start = block.index + block[0].indexOf(find, block[0].indexOf('\n'));
     source = source.slice(0, start) + replace + source.slice(start + find.length);
   }
-  const dictionary = JSON.parse(readFileSync(join(root, 'spec/metrics/builtin.json'), 'utf8'));
-  return verifyStatedMetrics(parseUWFile(source), { dictionary });
+  return source;
 }
 
 export function verifyExamples(root) {

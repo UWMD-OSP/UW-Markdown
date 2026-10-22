@@ -64,11 +64,14 @@ def main(arguments):
         return {"id": "org.uwmd.python", "name": "Independent Python structured reader foundation",
                 "version": "0.0.0-dev", "format_version": "3.0", "protocol_version": "4.1.0",
                 # Certified by the RFC 0004 runner (Issue #354): the Reader tier
-                # plus calc-evaluate and validate, each proven case by case with
-                # no skip. Not the Verifier tier: metric reproduction, the
-                # stated-figure verifiers, POL-01/02 and receipts are absent
+                # plus calc-evaluate, validate and the two reserve verifiers it
+                # implements (RFC 0115 flags), each proven case by case. Not the
+                # Verifier tier: metric reproduction, the other stated-figure
+                # verifiers, POL-01/02 and receipts are absent, so their
+                # verify-* flags are unclaimed and those cases skip
                 # (Protocol II.2/II.5: publish capabilities, do not round up).
-                "tier": "reader", "capabilities": ["parse", "calc-evaluate", "validate"],
+                "tier": "reader", "capabilities": ["parse", "calc-evaluate", "validate",
+                                                   "verify-reserve-accounts", "verify-reserve-draws"],
                 "profiles": []}, 0
     if arguments and arguments[0] == "resolve":
         # Existing accepted spelling only; no invented validate resolution flag.

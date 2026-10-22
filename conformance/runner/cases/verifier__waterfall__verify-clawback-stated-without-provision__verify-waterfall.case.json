@@ -1,0 +1,25 @@
+{
+  "id": "verifier__waterfall__verify-clawback-stated-without-provision__verify-waterfall",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-waterfall"
+  ],
+  "command": "verify-waterfall",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/runner/derived/waterfall/verify-clawback-stated-without-provision",
+  "expect": {
+    "kind": "verdict-codes",
+    "file": "conformance/waterfall/verify-clawback-stated-without-provision/expected.json",
+    "project": "section-verification",
+    "fields": [
+      "verdict",
+      "expected_code"
+    ],
+    "exit_code": 0
+  }
+}

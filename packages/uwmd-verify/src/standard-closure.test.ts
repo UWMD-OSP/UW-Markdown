@@ -38,6 +38,8 @@ const STANDARD_MODULES: readonly string[] = Object.freeze([
   'cash-flow-series.ts', 'lease-up.ts', 'lease-up-cash-flows.ts', 'property-cash-flows.ts',
   'waterfall.ts', 'reserve-accounts.ts', 'reserve-draw-bindings.ts', 'replacement-funding.ts',
   'capital-stack.ts', 'property-cash-flow-inputs.ts',
+  // Document-level section verifiers behind the portable subcommands (RFC 0115)
+  'section-verification.ts',
   // Calculation
   'calc/index.ts', 'calc/parser.ts', 'calc/evaluator.ts', 'calc/builtins.ts', 'calc/errors.ts',
   'calc/quantize.ts', 'calc/day-count.ts', 'calc/dependencies.ts', 'calc/dated-flows.ts',

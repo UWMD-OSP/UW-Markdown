@@ -198,7 +198,7 @@ class ExpressionTests(unittest.TestCase):
     def test_discovery_claims_reader_tier_and_certified_capabilities(self):
         manifest, status = main(["manifest"])
         self.assertEqual(status, 0)
-        self.assertEqual(manifest["capabilities"], ["parse", "calc-evaluate", "validate"])
+        self.assertEqual(manifest["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
         self.assertEqual(manifest["profiles"], [])
         # Certified Reader tier (#354); never the Verifier tier (Protocol II.2/II.5).
         self.assertEqual(manifest["tier"], "reader")

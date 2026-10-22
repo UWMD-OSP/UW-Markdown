@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { Ajv2020 } from 'ajv/dist/2020.js';
 import { CalcError } from '@uwmd/verify';
 import { parseCashFlowVerificationArgs, verifyCashFlowDocument } from './cli-cash-flows.js';
 
@@ -19,9 +20,10 @@ describe('cash-flow verification CLI boundary', () => {
     expect(source).toBe(before);
   });
   it('distinguishes no claims from a successful metric comparison', () => {
+    // RFC 0115 (§II.6a.2): nothing to check is not_applicable and exits 0.
     for (const stated_metrics of [undefined, null, {}, { xirr: null }])
       expect(verifyCashFlowDocument(doc({ ...specimen, stated_metrics }))).toMatchObject({
-        exitCode: 3, report: { status: 'no_stated_metrics', checked_metrics: [], verification: null },
+        exitCode: 0, report: { status: 'not_applicable', checked_metrics: [], verification: null },
       });
   });
   it('preserves zero claims and the default day-count convention', () => {
@@ -34,9 +36,9 @@ describe('cash-flow verification CLI boundary', () => {
     expect(verifyCashFlowDocument(doc({ ...specimen, stated_metrics: { total_net: 1 } })))
       .toMatchObject({ exitCode: 1, report: { status: 'failed', verification: { issues: [{ code: 'CF-METRIC-DISAGREES' }] } } });
     expect(verifyCashFlowDocument(doc({ ...specimen, stated_metrics: { xnpv: { rate: 0.06 } } })))
-      .toMatchObject({ exitCode: 3, report: { status: 'unverifiable' } });
+      .toMatchObject({ exitCode: 0, report: { status: 'unverifiable' } });
     expect(verifyCashFlowDocument(doc({ series: [{ date: '2026-01-01', amount: 100 }], stated_metrics: { moic: 1 } })))
-      .toMatchObject({ exitCode: 3, report: { status: 'unverifiable' } });
+      .toMatchObject({ exitCode: 0, report: { status: 'unverifiable' } });
   });
   it('selects exact variants and refuses unresolved variants', () => {
     const source = FRONTMATTER + block(specimen, 'a') + block({ ...specimen, stated_metrics: { total_net: 1 } }, 'b');
@@ -72,7 +74,9 @@ describe('cash-flow verification CLI boundary', () => {
     const source = FRONTMATTER + block({ ...specimen, stated_metrics: { total_net: 1 } }, 'base', ' superseded=true') +
       block(specimen, 'base');
     expect(verifyCashFlowDocument(source, 'base').exitCode).toBe(0);
-    expect(() => verifyCashFlowDocument(FRONTMATTER + block(specimen, 'base', ' superseded=true'), 'base')).toThrow(CalcError);
+    // Only a superseded block: the section has no current block, so nothing is checked (RFC 0115).
+    expect(verifyCashFlowDocument(FRONTMATTER + block(specimen, 'base', ' superseded=true'), 'base'))
+      .toMatchObject({ exitCode: 0, report: { status: 'not_applicable', verification: null } });
   });
   it.each(['verify-all-metrics', 'verify-procedure-refuses', 'verify-moic-no-outflows',
     'verify-same-day-flows', 'verify-stated-xirr-disagrees'])('preserves the existing %s conformance outcome', name => {
@@ -86,6 +90,25 @@ describe('cash-flow verification CLI boundary', () => {
   it('refuses malformed JSON and missing sections', () => {
     expect(() => verifyCashFlowDocument('\n```json uw:section=cash_flow_series\n{broken\n```')).toThrow(CalcError);
     expect(() => verifyCashFlowDocument('# No cash flows')).toThrow(CalcError);
+  });
+  it('reports a readable document without the section as not applicable (RFC 0115)', () => {
+    // §II.6a.2: an absent subject checks nothing and exits 0.
+    expect(verifyCashFlowDocument(`${FRONTMATTER}# No cash flows\n`)).toEqual({ exitCode: 0, report: {
+      section: 'cash_flow_series', variant: null, status: 'not_applicable', checked_metrics: [], verification: null } });
+  });
+});
+
+describe('cash-flow verification report schema (RFC 0115)', () => {
+  const validate = new Ajv2020({ strict: false }).compile(JSON.parse(readFileSync(
+    new URL('../../../spec/schemas/section-verification-report.schema.json', import.meta.url), 'utf8')));
+  it('matches section-verification-report.schema.json for every outcome', () => {
+    for (const source of [doc(), doc({ ...specimen, stated_metrics: { total_net: 1 } }),
+      doc({ ...specimen, stated_metrics: { xnpv: { rate: 0.06 } } }), doc({ ...specimen, stated_metrics: null }),
+      `${FRONTMATTER}# No cash flows
+`]) {
+      const { report } = verifyCashFlowDocument(source);
+      expect(validate(report), JSON.stringify(validate.errors)).toBe(true);
+    }
   });
 });
 
