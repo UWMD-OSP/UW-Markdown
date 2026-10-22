@@ -16,6 +16,13 @@ seam, Anthropic adapter, record/replay cassettes, `AgentHostCapability`,
 An unknown command exits 1 before any I/O. The generic writers,
 `buildContext` and `uwmd edit` attribution stay.
 
+**RFC 0117 implemented (owner acceptance, 2026-10-22 second set).** The
+component schema's three count and two area/capacity fields now participate in
+SIZE-01 on each admitted slot, in TypeScript and Python. The eight mixed-use
+per-size dictionary metrics reject a negative denominator as unverifiable.
+Negative, zero, positive and fractional controls cover the boundary; formulas
+and rounding are unchanged.
+
 **Implemented RFC 0086 — one purchase-price authority (owner acceptance 2026-10-22).**
 [RFC 0086](../rfcs/0086-data-center-purchase-price-authority.md) closes #343
 M04 and #493: `price_per_commissioned_kw` now reads `valuation.purchase_price`

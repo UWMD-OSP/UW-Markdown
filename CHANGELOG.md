@@ -631,6 +631,12 @@ protocol, and each package each carry an independent semver).
   verification gates remain, with no numerical/design acceptance or publication.
   Reconcile live contributor/version/roadmap and agent-retirement guidance.
 
+- Implement accepted RFC 0117: extend SIZE-01 to the five declared component
+  size fields on every admitted mixed-use slot; the eight component per-size
+  metrics refuse negative size denominators as unverifiable. TypeScript and
+  Python validators share the table. Formulas, quantization and lawful sizes
+  are unchanged.
+
 ### Removed
 
 - Remove Bancroft agent execution from `@uwmd/core` and the `uwmd` CLI (owner

@@ -15,7 +15,7 @@ describe content; they do not confer a tier claim.
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
 | Reader | 32 | 17 |
-| Verifier | 827 | 502 |
+| Verifier | 834 | 505 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
 | Representations | 150 | 0 |
@@ -23,7 +23,7 @@ describe content; they do not confer a tier claim.
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
 | Starter products | 114 | 37 |
-| **Total** | **1,257** | **571** |
+| **Total** | **1,264** | **574** |
 
 ## How to self-certify
 
