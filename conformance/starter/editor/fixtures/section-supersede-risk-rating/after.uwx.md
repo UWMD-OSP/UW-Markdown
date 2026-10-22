@@ -26,7 +26,7 @@ created_by: "test-fixture"
     "section": "risk_assessment",
     "provenance": {
       "source": "agent/L6",
-      "actor": "bancroft-l6",
+      "actor": "risk-rating-agent",
       "agent_id": "L6-risk-rating",
       "agent_version": "0.1.0",
       "timestamp": "<volatile>",
@@ -61,7 +61,7 @@ created_by: "test-fixture"
     "section": "risk_assessment",
     "provenance": {
       "source": "agent/L6",
-      "actor": "bancroft-l6",
+      "actor": "risk-rating-agent",
       "agent_id": "L6-risk-rating",
       "agent_version": "0.2.0",
       "timestamp": "<volatile>",

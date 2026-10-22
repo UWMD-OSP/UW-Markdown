@@ -117,7 +117,7 @@ describe('issueReceipt', () => {
   it('records RFC0090 actor errors without inventing a receipt refusal', async () => {
     const original = await parkview();
     // Disposable input only: the authored fixture and historical receipts stay intact.
-    const actorAbsent = original.replace('      "actor": "jared",\n', '');
+    const actorAbsent = original.replace('      "actor": "analyst",\n', '');
     expect(actorAbsent).not.toBe(original);
     const options = { filename: PARKVIEW, issued_at: ISSUED_AT };
     const before = await issueReceipt(original, options);

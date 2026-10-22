@@ -10,6 +10,8 @@ governing_documents:
   - source:anchor-lease
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Anchor Tenant — Lease Abstract
 
 This is a descriptive abstract of one executed lease. It preserves the source

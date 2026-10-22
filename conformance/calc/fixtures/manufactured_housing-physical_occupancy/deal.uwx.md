@@ -28,7 +28,7 @@ reader, while `property.total_units` is unstated to avoid a wrong denominator.
   "_meta": {
     "section": "property",
     "provenance": {
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T12:00:00Z",
@@ -67,7 +67,7 @@ reader, while `property.total_units` is unstated to avoid a wrong denominator.
   "_meta": {
     "section": "valuation",
     "provenance": {
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T12:00:00Z",
@@ -111,7 +111,7 @@ reader, while `property.total_units` is unstated to avoid a wrong denominator.
   "_meta": {
     "section": "noi_model",
     "provenance": {
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T12:00:00Z",
@@ -159,7 +159,7 @@ reader, while `property.total_units` is unstated to avoid a wrong denominator.
   "_meta": {
     "section": "debt_structure",
     "provenance": {
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T12:00:00Z",
@@ -190,7 +190,7 @@ reader, while `property.total_units` is unstated to avoid a wrong denominator.
   "_meta": {
     "section": "mhc_sites",
     "provenance": {
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T12:00:00Z",
@@ -227,7 +227,7 @@ reader, while `property.total_units` is unstated to avoid a wrong denominator.
     "section": "sources_uses",
     "provenance": {
       "source": "manual",
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T00:00:00Z",
