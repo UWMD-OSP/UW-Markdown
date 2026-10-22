@@ -91,7 +91,7 @@ is unchanged. Missing-input/type/refusal cases remain controls.
 | `Sonoran-Self-Storage-Peoria-AZ.uwx.md` | 13 | 0 | 0 |
 | `Sundance-Ranch-Land-Buckeye-AZ.uwx.md` | 7 | 0 | 0 |
 | `market-data/Phoenix-Multifamily-2026-Q2.uwx.md` | 0 | 0 | 0 |
-| `parkview-after-L6.uwx.md` | 9 | 0 | 0 |
+| `parkview-reviewed.uwx.md` | 9 | 0 | 0 |
 | `standalone/externalized-deal.uwx.md` | 1 | 0 | 0 |
 | `standalone/inline-deal.uwx.md` | 1 | 0 | 0 |
 | `standalone/package/records/externalized-deal.uwx.md` | 1 | 0 | 0 |

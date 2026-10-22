@@ -275,7 +275,7 @@ shipped validator tables, all seven stages).
   scan characterized it.
 - **All 12 worked examples fail `full_underwrite` readiness.** The modal
   gap is `validation` + `borrower_sponsor` + `preliminary_sizing` +
-  `market_analysis`; `Parkview-Apts-Glendale-AZ` and `parkview-after-L6`
+  `market_analysis`; `Parkview-Apts-Glendale-AZ` and `parkview-reviewed`
   miss only `preliminary_sizing`.
 - Consequence for severities: an error `CC-14` refuses 28 files; a warning
   `DQ-06` puts every shipped example in `warnings`. The proposal's
