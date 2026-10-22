@@ -18,6 +18,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #497 (erratum): the Format §4.1 `property.asset_class` example lists all
+  twelve builtin classes, adding `data_center` and `manufactured_housing` as the
+  frontmatter list (§2.2) and RFC 0080 already do.
+
 - Fix #409: the UWX -> Lite projection omits a stated `null` under a
   unit-bearing field (land's `valuation.going_in_cap_rate`) and reports it in
   `omitted_paths`, so the projection compiles back; a failed Lite compile in the
