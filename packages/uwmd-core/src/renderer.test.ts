@@ -351,6 +351,21 @@ describe('render — size intensives (RFC 0027)', () => {
     expect(cells[headers.indexOf('total_units')]).toBe('');
   });
 
+  // Issue #489: a comma or quote in a text field shifted every later column.
+  it('csv escapes commas and quotes so the row keeps one field per header', () => {
+    const parsed = parseUWFile(officeDoc);
+    parsed.frontmatter.deal_name = 'Test "Q" Deal';
+    parsed.frontmatter.city = 'Mesa, North';
+    const [headerLine, rowLine] = render(parsed, { format: 'csv' }).content.split('\n');
+    expect(rowLine).toContain('"Test ""Q"" Deal"');
+    expect(rowLine).toContain(',"Mesa, North",');
+    // RFC 4180 split: commas outside quotes separate fields.
+    const cells = rowLine!.match(/("([^"]|"")*"|[^,]*)(,|$)/g)!.slice(0, -1).map((c) => c.replace(/,$/, ''));
+    const headers = headerLine!.split(',');
+    expect(cells).toHaveLength(headers.length);
+    expect(cells[headers.indexOf('asset_class')]).toBe('office');
+  });
+
   it('csv states the multifamily size as total_units, value unchanged', () => {
     const parsed = parseUWFile(officeDoc.replace('asset_class: office', 'asset_class: multifamily')
       .replace('"rentable_square_feet": 42500', '"total_units": 48'));
