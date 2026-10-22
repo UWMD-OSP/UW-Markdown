@@ -10,7 +10,7 @@ state: "TX"
 zip: "78704"
 asset_class: hospitality
 deal_stage: screening
-status: under_review
+status: in_progress
 recommendation: pending
 quick_metrics:
   purchase_price: 34000000

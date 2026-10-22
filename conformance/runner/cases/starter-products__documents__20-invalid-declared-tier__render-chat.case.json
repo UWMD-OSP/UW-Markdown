@@ -1,0 +1,20 @@
+{
+  "id": "starter-products__documents__20-invalid-declared-tier__render-chat",
+  "target": "starter-products",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "20-invalid-declared-tier.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/20-invalid-declared-tier.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

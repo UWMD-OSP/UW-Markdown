@@ -1,0 +1,20 @@
+{
+  "id": "starter-products__documents__23-non-string-declared-stage__render-summary",
+  "target": "starter-products",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "23-non-string-declared-stage.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/23-non-string-declared-stage.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

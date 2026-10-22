@@ -10,7 +10,7 @@ state: "AZ"
 zip: "85281"
 asset_class: student_housing
 deal_stage: screening
-status: under_review
+status: in_progress
 recommendation: pending
 flags: []
 blocking_flags: []

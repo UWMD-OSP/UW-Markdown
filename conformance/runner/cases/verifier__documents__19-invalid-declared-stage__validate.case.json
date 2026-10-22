@@ -1,0 +1,20 @@
+{
+  "id": "verifier__documents__19-invalid-declared-stage__validate",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "19-invalid-declared-stage.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/19-invalid-declared-stage.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 1
+  }
+}
