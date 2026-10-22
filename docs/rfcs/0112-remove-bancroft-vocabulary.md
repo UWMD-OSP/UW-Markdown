@@ -14,7 +14,7 @@ affects:
 
 # RFC 0112: Remove the Bancroft layer vocabulary from the standard
 
-> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0112 (#474) accepted as drafted, including D2: keep the generic agent/<id> source with agent_id and agent_version.").
+> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0112 (#474) accepted as drafted, including D2: keep the generic `agent/<id>` source with `agent_id` and `agent_version`.").
 > Origin: owner decision D1 of 2026-10-12
 > ("Remove Bancroft entirely. Don't move it."), carried out as phase C of the
 > public cleanup brief on the owner's instruction of 2026-10-21. The starter
