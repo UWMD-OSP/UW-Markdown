@@ -6397,6 +6397,31 @@
       "target": "starter-products"
     },
     {
+      "suite": "documents",
+      "scenario": "malformed/72-component-negative-area",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/73-component-fractional-count",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-component-retail-size-negative",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-component-retail-size-zero",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-component-retail-size-positive",
+      "target": "verifier"
+    },
+    {
       "suite": "cross-checks",
       "scenario": "cc-noi-01-negative-equal",
       "target": "verifier"

@@ -189,6 +189,75 @@
         { "path": "valuation.price_per_kw", "state": "verified" }
       ],
       "failed": 1
+    },
+    {
+      "name": "component-retail-size-negative",
+      "example": "Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "frontmatter",
+          "find": "flags: []",
+          "replace": "quick_metrics:\n  retail_price_psf: 123.00\nflags: []"
+        },
+        {
+          "section": "components",
+          "find": "\"nra_sqft\": 18000",
+          "replace": "\"nra_sqft\": -1"
+        }
+      ],
+      "expect": [
+        {
+          "path": "quick_metrics.retail_price_psf",
+          "state": "unverifiable"
+        }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "component-retail-size-zero",
+      "example": "Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "frontmatter",
+          "find": "flags: []",
+          "replace": "quick_metrics:\n  retail_price_psf: 123.00\nflags: []"
+        },
+        {
+          "section": "components",
+          "find": "\"nra_sqft\": 18000",
+          "replace": "\"nra_sqft\": 0"
+        }
+      ],
+      "expect": [
+        {
+          "path": "quick_metrics.retail_price_psf",
+          "state": "unverifiable"
+        }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "component-retail-size-positive",
+      "example": "Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "frontmatter",
+          "find": "flags: []",
+          "replace": "quick_metrics:\n  retail_price_psf: 123.00\nflags: []"
+        },
+        {
+          "section": "components",
+          "find": "\"nra_sqft\": 18000",
+          "replace": "\"nra_sqft\": 18000"
+        }
+      ],
+      "expect": [
+        {
+          "path": "quick_metrics.retail_price_psf",
+          "state": "failed"
+        }
+      ],
+      "failed": 1
     }
   ]
 }

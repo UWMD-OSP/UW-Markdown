@@ -74,7 +74,7 @@ A loss of $272,000 restated as $299,200 is caught under any of the three.
 
 Records with NOI ≤ 0 whose
 restatements differ by more than the tolerance gain a CC-05 or CC-06 warning.
-Warnings do not change a verdict or exit code. No record with positive NOI
+The findings retain existing warning severity and CLI exit behavior. No record with positive NOI
 changes outcome.
 
 ## Conformance impact
