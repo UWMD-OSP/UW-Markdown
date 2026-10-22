@@ -177,7 +177,7 @@ export function formatNull(opts?: NullOptions): string {
 // without currency symbols, percent signs, or ratio suffixes.
 
 /** Format a percent for CSV: raw decimal × 100 with N digits, empty on null. */
-export function formatPercentCsv(value: unknown, decimals = 4): string {
+export function formatPercentCsv(value: unknown, decimals = 2): string {
   const n = toFiniteNumber(value);
   if (n === null) return '';
   return (n * 100).toFixed(decimals);

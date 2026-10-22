@@ -237,7 +237,7 @@ asset_class: multifamily
     expect(result.format).toBe('csv');
     expect(headerLine).toContain('deal_id,deal_name,address');
     expect(rowLine).toContain('TEST-MIN-001,"Minimal Screening Fixture","100 Test Lane"');
-    expect(rowLine).toContain('10000000,7500000,2500000,600000,1.25,75.0000');
+    expect(rowLine).toContain('10000000,7500000,2500000,600000,1.250,75.00');
   });
 
   it('renders a markdown summary with validation and readiness sections', () => {
