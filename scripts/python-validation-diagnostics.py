@@ -27,7 +27,10 @@ async def main():
                 {key: issue.get(key) or "" for key in ("code", "severity", "section", "field")}
                 for issue in result["issues"]]}
         except Exception as error:
-            output[name] = {"error": {"code": getattr(error, "code", "INTERNAL:" + type(error).__name__)}}
+            code = getattr(error, "code", None)
+            if not isinstance(code, str) or not code:
+                raise
+            output[name] = {"error": {"code": code}}
     json.dump(output, sys.stdout, ensure_ascii=True)
 
 

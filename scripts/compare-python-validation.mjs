@@ -10,7 +10,10 @@ import { detectUWSourceRepresentation, validateUWFile } from '../packages/uwmd-v
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export function diagnosticProjection(result) {
   if (!result || typeof result !== 'object') throw new TypeError('Missing diagnostic result');
-  if (result.error) return { error: result.error.code ?? 'UNALLOCATED_ERROR' };
+  if (result.error) {
+    if (typeof result.error.code !== 'string' || !result.error.code) throw new TypeError('Unallocated diagnostic failure');
+    return { error: result.error.code };
+  }
   if (!Array.isArray(result.issues)) throw new TypeError('Missing diagnostic list');
   return result.issues.map(issue => [issue.code ?? '', issue.severity ?? '', issue.section ?? '', issue.field ?? ''])
     .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b), 'en'));
@@ -42,7 +45,8 @@ async function main() {
         detectUWSourceRepresentation(raw, file);
         reference = validateUWFile(raw);
       } catch (error) {
-        reference = { error: { code: error.code ?? `INTERNAL:${error.name}` } };
+        if (typeof error.code !== 'string') throw error;
+        reference = { error: { code: error.code } };
       }
       if (!diagnosticsAgree(reference, python[file])) {
         differences++;

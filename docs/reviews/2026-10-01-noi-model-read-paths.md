@@ -109,7 +109,7 @@ every example. After it, the chat NOI block renders:
 | Example | GPR | Vacancy (rate) | Other | EGI | OpEx | NOI | Ratio |
 |---|---|---|---|---|---|---|---|
 | Agave-Court (multifamily) | $4,600,000 | $276,000 (n/a) | $234,000 | $4,420,000 | $1,820,000 | $2,600,000 | n/a |
-| Parkview / parkview-after-L6 (multifamily) | $655,200 | $45,864 (7.00%) | $21,600 | $630,936 | $234,301 | $396,635 | 0.3713 |
+| Parkview / parkview-reviewed (multifamily) | $655,200 | $45,864 (7.00%) | $21,600 | $630,936 | $234,301 | $396,635 | 0.3713 |
 | Riverside (office) | $935,000 | n/a (n/a) | $12,000 | $682,550 | $382,550 | $300,000 | n/a |
 | Mill-Ave-Commons (student) | $6,480,000 | $356,400 (n/a) | $42,000 | $6,603,600 | $3,238,144 | $3,365,456 | n/a |
 | Sonoran (self-storage) | $1,080,000 | n/a (n/a) | $18,000 | $1,053,000 | $381,000 | $672,000 | n/a |
@@ -126,7 +126,7 @@ cell is a stated figure or `n/a`; none is derived.
 
 | Finding | Examples | Classification |
 |---|---|---|
-| Multifamily `noi_model` matches §4.5 | Parkview, parkview-after-L6, Agave-Court | conforming (Agave omits optional `rate_applied` and `expense_ratio`) |
+| Multifamily `noi_model` matches §4.5 | Parkview, parkview-reviewed, Agave-Court | conforming (Agave omits optional `rate_applied` and `expense_ratio`) |
 | A §4.5-named line stated as a bare number where §4.5 states an object (`vacancy_credit_loss`, `other_income`, and expense lines such as `insurance`, `utilities`, `repairs_maintenance`) | every non-multifamily example except Roosevelt-Row | worked-example drift |
 | `noi_per_sf` where §4.5 names `noi_per_sqft` | Riverside, Cactus-Crossing, Ironwood, Mesa-Gateway | worked-example drift |
 | A §4.5 line under another name: `vacancy_loss`, `economic_vacancy_loss` (§4.5 `vacancy_credit_loss`); `property_taxes` (`real_estate_taxes`); `management_fee` (`management_fees`); `general_admin` (`administrative`) | all non-multifamily classes | ambiguous: drift or class vocabulary (owner decision 1) |

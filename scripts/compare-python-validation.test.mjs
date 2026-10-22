@@ -11,4 +11,5 @@ test('diagnostic parity preserves duplicates and fields while ignoring order and
   assert.equal(diagnosticsAgree({ error: { code: 'SOURCE_CONTENT_MISMATCH' } }, { issues: [] }), false);
   assert.equal(diagnosticsAgree({ error: { code: 'SOURCE_CONTENT_MISMATCH' } }, { error: { code: 'OTHER' } }), false);
   assert.throws(() => diagnosticProjection(undefined), /Missing/);
+  assert.throws(() => diagnosticProjection({ error: {} }), /Unallocated/);
 });

@@ -22,6 +22,6 @@ export const GALLERY: readonly GalleryExample[] = Object.entries(SOURCES)
     deal_name: field(source, 'deal_name'),
     source,
   }))
-  // parkview-after-L6 is the Parkview record after a later pipeline stage, not another class.
-  .filter((example) => example.asset_class !== '' && example.file !== 'parkview-after-L6.uwx.md')
+  // parkview-reviewed is the reviewed Parkview record, not another class.
+  .filter((example) => example.asset_class !== '' && example.file !== 'parkview-reviewed.uwx.md')
   .sort((a, b) => a.asset_class.localeCompare(b.asset_class) || a.file.localeCompare(b.file));

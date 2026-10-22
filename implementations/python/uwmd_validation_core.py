@@ -1,7 +1,6 @@
 """Independent validation orchestration state and accepted basic Format rules.
 
-No declared validate capability: the orchestrator is being completed against
-all owning families before CLI/discovery promotion. Source is never rewritten.
+SOURCE and MODEL operations remain separate. Source is never rewritten.
 """
 import copy
 from datetime import datetime, timezone
