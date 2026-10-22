@@ -72,9 +72,9 @@ class ValidationFamilyTests(unittest.TestCase):
             for code in expected["expected_codes"]:
                 self.assertGreaterEqual(selected_codes(result,("CS-",)).count(code),expected["min_occurrences"])
 
-    def test_61_unchanged_builtin_source_validation_projections_not_financial_cases(self):
+    def test_builtin_class_source_validation_projections_not_financial_cases(self):
         paths=sorted((ROOT/"conformance/builtin-classes").glob("*/expected.json"))
-        self.assertEqual(len(paths),61)
+        self.assertEqual(len(paths),63)
         for path in paths:
             with self.subTest(case=path.parent.name):
                 source=path.parent/"deal.uwx.md"; raw=source.read_bytes()
@@ -87,7 +87,7 @@ class ValidationFamilyTests(unittest.TestCase):
                 self.assertEqual(parsed,before)
                 self.assertEqual(source.read_bytes(),raw)
         # expected_calcs are intentionally NOT asserted here. This is only the
-        # validator projection, not 61 complete builtin financial-case passes.
+        # validator projection, not 63 complete builtin financial-case passes.
 
     def test_decoded_api_mhc_rules_use_missing_null_zero_and_stated_types(self):
         body=dict(total_sites=2,occupied_sites=1,park_owned_homes=0,
