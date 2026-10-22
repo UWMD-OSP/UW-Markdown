@@ -101,7 +101,7 @@ export function checkReplacementFundingStructure(
     const payloads = sectionBlocks(parsed.sections.debt_structure).map(blockPayload);
     if (payloads.some((p) => deepGet(p, at) != null)) out.funding = 'invalid';
     // A strike-only hedge never triggers a selection check (RFC 0081 §7).
-    if (payloads.some((p) => { const h = deepGet(p, 'rate_hedge'); return h != null && (!record(h) || ['notional', 'index', 'effective_date', 'expiration_date', 'post_expiration_assumption'].some(k => Object.hasOwn(h, k))); }))
+    if (payloads.some((p) => { const h = deepGet(p, 'rate_hedge'); return h != null && (!record(h) || ['notional', 'index', 'effective_date', 'expiration_date', 'post_expiration_assumption', 'replacement_funding'].some(k => h[k] != null)); }))
       return refuse('a stated rate_hedge requires unambiguous property-level debt selection');
     return out;
   }
@@ -110,7 +110,7 @@ export function checkReplacementFundingStructure(
   if (hedge == null) return out;
   // A hedge without its terms group or replacement funding needs no cash-side
   // selection (RFC 0081 §7).
-  if (record(hedge) && !['notional', 'index', 'effective_date', 'expiration_date', 'post_expiration_assumption', 'replacement_funding'].some(k => Object.hasOwn(hedge, k))) return out;
+  if (record(hedge) && !['notional', 'index', 'effective_date', 'expiration_date', 'post_expiration_assumption', 'replacement_funding'].some(k => hedge[k] != null)) return out;
   // RFC 0076 D3: ESC-04 needs the cash side for a hedge with stated terms.
   // The debt-only rules, HDG-07 here, still run first.
   const sourcesRefused =
@@ -148,6 +148,13 @@ export function checkReplacementFundingStructure(
   if (sourcesRefused) return done();
   if (funding.mode === 'escrow') return out;
   const ref = funding.cash_flow_ref as Record<string, unknown>;
+  const sources = sectionBlocks(parsed.sections.cash_flow_series).filter(
+    (b) => b.annotation.variant === ref.variant && !b.annotation.superseded && !b.meta.lifecycle?.superseded
+  );
+  // Protocol §V.12.3: a named source that cannot resolve takes precedence,
+  // including when another reference value is malformed.
+  if (typeof ref.variant === 'string' && ref.variant.length > 0 && sources.length !== 1)
+    out.unresolvable = true;
   if (
     typeof ref.variant !== 'string' ||
     ref.variant.length === 0 ||
@@ -162,9 +169,6 @@ export function checkReplacementFundingStructure(
     );
     return out;
   }
-  const sources = sectionBlocks(parsed.sections.cash_flow_series).filter(
-    (b) => b.annotation.variant === ref.variant && !b.annotation.superseded && !b.meta.lifecycle?.superseded
-  );
   if (sources.length !== 1) {
     out.unresolvable = true;
     issue(

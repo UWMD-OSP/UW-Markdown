@@ -932,7 +932,7 @@ function checkAbatement(
 
   // TAX-07: the stabilized snapshot ties to one named period of the schedule.
   const stabilized = a['stabilized_period'];
-  if (stabilized === undefined) return;
+  if (stabilized == null) return;
   if (typeof stabilized !== 'string') {
     taxIssue(issues, 'TAX-07', section, `${base}.stabilized_period`,
       'TAX-07: stabilized_period must be a period selector naming a schedule entry', stabilized);
@@ -2653,12 +2653,11 @@ function checkLeaseUpSchedule(parsed: ParsedUWFile, issues: ValidationMessage[],
   // within LEASE_UP_STABILIZED_TOLERANCE. Tolerance-checked, not exact: the
   // trajectory endpoint and the stabilized-year projection are two different
   // models of stabilization (RFC 0008).
-  // CC-15 reads the base variant ONLY (RFC 0008: non-base variants are
-  // exempt by design — a downside is supposed to disagree). So the §5.3
-  // lone-variant fallback does not apply here, and a map with no base or
-  // default is `not_applicable`, not unresolvable: nothing was silenced.
+  // Format §5.3 falls back to default or a sole variant when base is absent.
+  // Multiple non-base scenarios remain exempt; roles cannot choose one.
   const base = isVariantMap(entry)
-    ? ((entry as Record<string, UWBlock>)['base'] ?? (entry as Record<string, UWBlock>)['default'])
+    ? ((entry as Record<string, UWBlock>)['base'] ?? (entry as Record<string, UWBlock>)['default']
+      ?? (Object.keys(entry).length === 1 ? Object.values(entry)[0] as UWBlock : undefined))
     : (entry as UWBlock);
   if (base && hasBlockRole(base)) {
     const r = resolveRoleBlock(base, 'lease_up_schedule');
