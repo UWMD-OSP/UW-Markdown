@@ -28,6 +28,10 @@ protocol, and each package each carry an independent semver).
   component block now states its property NOI (or `#N/A`) instead of writing an
   empty consolidation formula.
 
+- Fix #492 (init part): `uwmd init` refuses an `--asset-class`, `--stage` or
+  `--tier` outside its vocabulary and writes nothing; a namespaced custom asset
+  class (Format §2.2a) is still admitted.
+
 - Implement accepted RFC 0113: hospitality `rent_roll.occupied_room_nights` is
   paid room nights sold in the period `rooms_revenue` covers (complimentary and
   house-use nights excluded; package nights that include the room count as
