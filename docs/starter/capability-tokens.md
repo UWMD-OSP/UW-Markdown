@@ -50,7 +50,7 @@ Claims:
 | Claim | Meaning |
 |---|---|
 | `iss` | Coordinator identity (informational). |
-| `sub` | The actor being authorized — a **valid §2.6 actor source** (`manual` or `<namespace>/<id>`). Instance identity lives inside the id segment (`agent/L2.instance-abc-123`); a `sub` outside the grammar is `malformed`. |
+| `sub` | The actor being authorized — a **valid §2.6 actor source** (`manual` or `<namespace>/<id>`). Instance identity lives inside the id segment (`agent/underwriter.instance-abc-123`); a `sub` outside the grammar is `malformed`. |
 | `aud` | MUST be `uwmd-edit`. |
 | `deal` | Binds to the file's frontmatter `deal_id`. |
 | `sections` | Section ids the token may write; frontmatter ops use the reserved name `_frontmatter`, pipeline-log appends `pipeline_log`. Absent = unconstrained. |

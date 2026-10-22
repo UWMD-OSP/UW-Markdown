@@ -13,15 +13,6 @@
     "asset_subtype": "garden_style",
     "loan_type": "permanent",
     "scenario": "stabilized_acquisition",
-    "pipeline_state": {
-      "L0_ingestion": "complete",
-      "L1_screening": "complete",
-      "L2_underwriting": "complete",
-      "L4_structuring": "complete",
-      "L5_compliance": "in_progress",
-      "L6_risk": "pending",
-      "L7_assembly": "pending"
-    },
     "status": "in_progress",
     "deal_stage": "full_underwrite",
     "recommendation": "pending",
@@ -260,9 +251,9 @@
       "meta": {
         "section": "rent_roll",
         "provenance": {
-          "source": "agent/L0-01",
+          "source": "agent/rent-roll-extractor",
           "actor": "system",
-          "agent_id": "L0-01",
+          "agent_id": "rent-roll-extractor",
           "agent_version": "1.0.0",
           "timestamp": "2026-04-24T10:12:00Z",
           "notes": "Parsed from parkview_rent_roll_apr2026.xlsx. 48 unit records found, 0 parse errors."
@@ -387,9 +378,9 @@
         "meta": {
           "section": "operating_statement",
           "provenance": {
-            "source": "agent/L0-02",
+            "source": "agent/statement-extractor",
             "actor": "system",
-            "agent_id": "L0-02",
+            "agent_id": "statement-extractor",
             "agent_version": "1.0.0",
             "timestamp": "2026-04-24T10:18:00Z",
             "notes": "Management company-prepared. Management fee at 10% of EGI is 450bps above market benchmark. Recommend requesting trailing 24-month statements and utility bills."
@@ -1177,9 +1168,9 @@
       "meta": {
         "section": "market_analysis",
         "provenance": {
-          "source": "agent/L2-CRE-07",
+          "source": "agent/market-analyst",
           "actor": "system",
-          "agent_id": "L2-CRE-07",
+          "agent_id": "market-analyst",
           "agent_version": "1.0.0",
           "timestamp": "2026-04-24T12:30:00Z",
           "notes": "Market data from web search; Mesquite Market Data feed not connected. Recommend Mesquite Market Data validation before credit committee."
@@ -1592,7 +1583,7 @@
           "agent_id": "user",
           "agent_version": null,
           "timestamp": "2026-04-24T14:00:00Z",
-          "notes": "Run L6 agents before credit committee submission."
+          "notes": "Run the risk rating before credit committee submission."
         },
         "quality": {
           "confidence": "low",
@@ -1704,9 +1695,9 @@
       "meta": {
         "section": "compliance",
         "provenance": {
-          "source": "agent/L5-01",
+          "source": "agent/compliance-reviewer",
           "actor": "system",
-          "agent_id": "L5-01",
+          "agent_id": "compliance-reviewer",
           "agent_version": "1.0.0",
           "timestamp": "2026-04-24T13:00:00Z",
           "notes": null
@@ -1848,7 +1839,7 @@
             "unit": "dollar",
             "source": "agent_computed",
             "source_detail": "Maricopa County transfer reassessment: 70% of $7,200,000 purchase price × 1.15% = $57,960",
-            "agent": "L2-CRE-02",
+            "agent": "noi-adjuster",
             "timestamp": "2026-04-24T11:05:00Z",
             "confidence": "medium",
             "is_overridden": false,
@@ -1866,7 +1857,7 @@
             "unit": "pct",
             "source": "market_data",
             "source_detail": "Mesquite Market Data Q1 2026 Phoenix submarket rent growth 2.9%; rounded to 3%",
-            "agent": "L2-CRE-07",
+            "agent": "market-analyst",
             "timestamp": "2026-04-24T12:30:00Z",
             "confidence": "medium",
             "is_overridden": false,
@@ -2150,7 +2141,7 @@
           "entry_id": "e004",
           "timestamp": "2026-04-24T10:12:00Z",
           "event_type": "agent_run",
-          "agent_or_actor": "agent:L0-01",
+          "agent_or_actor": "agent:rent-roll-extractor",
           "section_affected": "rent_roll",
           "status": "success",
           "input_sections": [],
@@ -2172,7 +2163,7 @@
           "entry_id": "e005",
           "timestamp": "2026-04-24T10:18:00Z",
           "event_type": "agent_run",
-          "agent_or_actor": "agent:L0-02",
+          "agent_or_actor": "agent:statement-extractor",
           "section_affected": "operating_statement",
           "status": "success",
           "input_sections": [],
@@ -2272,7 +2263,7 @@
           "entry_id": "e009",
           "timestamp": "2026-04-24T12:30:00Z",
           "event_type": "agent_run",
-          "agent_or_actor": "agent:L2-CRE-07",
+          "agent_or_actor": "agent:market-analyst",
           "section_affected": "market_analysis",
           "status": "success",
           "input_sections": [

@@ -537,6 +537,44 @@ protocol, and each package each carry an independent semver).
   --agent-id/--agent-version`. An unknown command, `uwmd run` included, now
   exits 1 before any file I/O instead of printing the help text with exit 0.
 
+- Implement RFC 0112: remove the Bancroft layer vocabulary from the standard.
+  **Format:** §1.2 no longer names a required producer tool; §1.3 is deleted;
+  frontmatter `pipeline_state` and its L3 rule are removed (workflow position
+  stays in `status` and `deal_stage`; a record that still carries the member
+  reads it as an ordinary unknown key, D4); the 29 Part IV "Written by" lines
+  are removed, and the eight that carried a source rule become **Source rules**
+  lines that bind any non-user source (D3); spec examples use neutral agent ids
+  (`agent/risk-rater`) under the unchanged `agent/<id>` source with `agent_id`
+  and `agent_version` (D2); §6.8's producer rules move into new §3.6 (items
+  2-5 as MUST, item 7 as SHOULD; items 1, 6 and 8 dropped, D5); Part VI's
+  validation result moves to new §5.6, and Parts VI and VII move to the
+  non-normative starter [CLI reference](docs/starter/cli.md) (without
+  `uwmd run`) and [renderer reference](docs/starter/rendering.md) (D6).
+  **Protocol and schemas (lockstep):** module manifests drop `agent_layers`,
+  `ModuleAgentLayerDecl` and `prompt_template`, so a manifest that declares
+  `agent_layers` is refused as an unknown member (`PROTO-MOD-064`);
+  `PROTO-MOD-055` to `PROTO-MOD-060` are retired and reserved (D7); §II.4,
+  `ViewerCapability` and `ImplementationManifest.capabilities` drop
+  `agent-host`; the glossary drops "Layer". **Libraries:** `@uwmd/core`
+  removes `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`,
+  `isContextReady`, `getLayerDependencies`, the `AgentContext`,
+  `BancroftPrompt` and `LayerDefinition` types, `uwmd layers` (now an unknown
+  command), `agents/L0b-prompt.md`, `RunOptions.updatePipelineState`, the
+  chat render's pipeline-state block, the `summary` context profile's
+  `pipeline_state` member and `init`'s `pipeline_state` scaffold;
+  `@uwmd/verify` removes `UWPipelineState`, `PipelineStatus` and
+  `ModuleAgentLayerDecl`. The generic writers and `buildContext` stay.
+  **Conformance:** the `starter-agent-profile/consumer-profile-contract` check
+  and module fixture `reject/02-agent-layer-malformed` are retired; new
+  `reject/20-agent-layers-unknown-member` shows the refusal; capability tokens
+  are re-signed for the neutral subject `agent/underwriter.inst-A`; examples,
+  fixtures and the download templates drop `pipeline_state`, layer agent ids
+  become neutral ids (`agent/rent-roll-extractor`, `agent/market-analyst`,
+  `agent/risk-rater`, ...) with `agent_id` following, and layer prose in the
+  Parkview records is restated. The documents baselines for
+  `02-full-multifamily` and `04-scope-only` were regenerated with
+  `scripts/regen-conformance.mjs --suite=documents`; no financial value moved.
+
 ### Fixed
 
 - Enforce accepted RFC0081's single hospitality field homes with CLS-04:

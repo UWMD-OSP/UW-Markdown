@@ -4,7 +4,6 @@ import { describe, it, expect } from 'vitest';
 import { parseUWFile, getSection, buildMeta as standardBuildMeta } from '@uwmd/verify';
 import { writeAgentBlock, writeErrorEntry, buildMeta } from './runner.js';
 import { resolveValue } from './cascade.js';
-import { buildAgentContext, isContextReady, BANCROFT_LAYERS } from './context.js';
 
 // ─── Shared fixture ───────────────────────────────────────────────────────────
 
@@ -19,14 +18,6 @@ city: "Phoenix"
 state: "AZ"
 zip: "85001"
 asset_class: multifamily
-pipeline_state:
-  L0_ingestion: complete
-  L1_screening: pending
-  L2_underwriting: pending
-  L4_structuring: pending
-  L5_compliance: pending
-  L6_risk: pending
-  L7_assembly: pending
 status: draft
 deal_stage: screening
 recommendation: null
@@ -144,7 +135,7 @@ describe('writeAgentBlock', () => {
   it('drops an agent-written _overrides so model output cannot forge a human override (invariant 5)', () => {
     const parsed = parseUWFile(MINIMAL_FILE);
     const content = {
-      _meta: buildMeta('property', 1, { source: 'agent/L1', agentId: 'L1', confidence: 'medium' }),
+      _meta: buildMeta('property', 1, { source: 'agent/screener', agentId: 'screener', confidence: 'medium' }),
       total_units: 999,
       _overrides: [{ path: 'total_units', resolution: 'user_override', source: 'manual', reason: 'overridden' }],
     };
@@ -159,7 +150,7 @@ describe('writeAgentBlock', () => {
   it('writes a new section block and produces a parseable file', () => {
     const parsed = parseUWFile(MINIMAL_FILE);
     const newContent = {
-      _meta: buildMeta('screening', 1, { source: 'agent:L1', agentId: 'L1', confidence: 'medium' }),
+      _meta: buildMeta('screening', 1, { source: 'agent:screener', agentId: 'screener', confidence: 'medium' }),
       _notes: null,
       status: 'proceed',
       recommendation: 'proceed_to_underwrite',
@@ -212,12 +203,12 @@ describe('writeAgentBlock', () => {
   it('appends a pipeline_log entry', () => {
     const parsed = parseUWFile(MINIMAL_FILE);
     const newContent = {
-      _meta: buildMeta('market_analysis', 1, { source: 'agent:L2', agentId: 'L2', confidence: 'medium' }),
+      _meta: buildMeta('market_analysis', 1, { source: 'agent:underwriter', agentId: 'underwriter', confidence: 'medium' }),
       market_vacancy: 0.05,
     };
 
     const result = writeAgentBlock(MINIMAL_FILE, parsed, { sectionId: 'market_analysis', content: newContent }, {
-      agentId: 'L2-01',
+      agentId: 'underwriter',
       durationMs: 1234,
       notes: 'Phoenix West submarket analysis',
     });
@@ -228,7 +219,7 @@ describe('writeAgentBlock', () => {
     const lastLog = reparsed.pipeline_log[reparsed.pipeline_log.length - 1];
     const entries = (lastLog.content as Record<string, unknown>)['entries'] as unknown[];
     const lastEntry = entries[entries.length - 1] as Record<string, unknown>;
-    expect(lastEntry['agent_or_actor']).toBe('L2-01');
+    expect(lastEntry['agent_or_actor']).toBe('underwriter');
     expect(lastEntry['section_affected']).toBe('market_analysis');
     expect(lastEntry['duration_ms']).toBe(1234);
   });
@@ -270,7 +261,7 @@ describe('writeAgentBlock', () => {
 
     // Write v2 — should supersede v1
     const v2 = {
-      _meta: buildMeta('property', 2, { source: 'agent:L1-01', agentId: 'L1-01', confidence: 'high' }),
+      _meta: buildMeta('property', 2, { source: 'agent:screener', agentId: 'screener', confidence: 'high' }),
       total_units: 24,
       year_built: 1995,
       asset_class: 'multifamily',
@@ -288,65 +279,6 @@ describe('writeAgentBlock', () => {
     const current = getSection(reparsed, 'property');
     expect(current?.meta.lifecycle?.revision).toBe(2);
     expect(reparsed.superseded['property']?.length).toBe(1);
-  });
-});
-
-// ─── buildAgentContext tests ──────────────────────────────────────────────────
-
-describe('buildAgentContext', () => {
-  it('builds correct context for L1 screening layer', () => {
-    const parsed = parseUWFile(MINIMAL_FILE);
-    const ctx = buildAgentContext(parsed, 'L1');
-    expect(ctx.layer.id).toBe('L1');
-    expect(ctx.layer.writes).toContain('screening');
-    expect(ctx.sections['property']).toBeDefined();
-    expect(ctx.chatContext).toBeTruthy();
-  });
-
-  it('reports missing required sections for L2 when rent_roll absent', () => {
-    const parsed = parseUWFile(MINIMAL_FILE);
-    // L2 requires property + rent_roll; minimal file has property but not rent_roll
-    const ctx = buildAgentContext(parsed, 'L2');
-    expect(ctx.missingRequired).toContain('rent_roll');
-    expect(ctx.missingRequired).not.toContain('property'); // property is present
-  });
-
-  it('isContextReady returns false for L2 when rent_roll missing', () => {
-    const parsed = parseUWFile(MINIMAL_FILE);
-    const ctx = buildAgentContext(parsed, 'L2');
-    expect(isContextReady(ctx)).toBe(false);
-  });
-
-  it('isContextReady returns true for L1 with minimal file (only requires property)', () => {
-    const parsed = parseUWFile(MINIMAL_FILE);
-    // L1 only requires property; minimal file has it
-    const ctx = buildAgentContext(parsed, 'L1');
-    expect(ctx.missingRequired).not.toContain('property');
-    expect(isContextReady(ctx)).toBe(true);
-  });
-
-  it('isContextReady returns false when blocking_flags are present', () => {
-    const fileWithBlock = MINIMAL_FILE.replace('blocking_flags: []', 'blocking_flags:\n  - "ofac_match"');
-    const parsed = parseUWFile(fileWithBlock);
-    const ctx = buildAgentContext(parsed, 'L1');
-    expect(isContextReady(ctx)).toBe(false);
-  });
-});
-
-// ─── BANCROFT_LAYERS completeness ─────────────────────────────────────────────
-
-describe('BANCROFT_LAYERS', () => {
-  it('has entries for L0, L1, L2, L4, L5, L6, L7', () => {
-    const ids = BANCROFT_LAYERS.map(l => l.id);
-    for (const id of ['L0', 'L1', 'L2', 'L4', 'L5', 'L6', 'L7']) {
-      expect(ids).toContain(id);
-    }
-  });
-
-  it('each layer has a non-empty writes array', () => {
-    for (const layer of BANCROFT_LAYERS) {
-      expect(layer.writes.length).toBeGreaterThan(0);
-    }
   });
 });
 

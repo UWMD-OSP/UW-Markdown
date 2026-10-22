@@ -14,15 +14,6 @@ asset_subtype: "midrise"
 loan_type: "permanent"
 scenario: "stabilized_acquisition"
 
-pipeline_state:
-  L0_ingestion:    "complete"
-  L1_screening:    "complete"
-  L2_underwriting: "complete"
-  L4_structuring:  "complete"
-  L5_compliance:   "pending"
-  L6_risk:         "pending"
-  L7_assembly:     "pending"
-
 status: "in_progress"
 deal_stage: "screening"
 recommendation: "pending"

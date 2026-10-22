@@ -53,7 +53,7 @@
     {
       "category": "edit",
       "code": "PROTO-EDIT-001",
-      "message": "Cannot replace section 'risk_assessment' \u2014 source 'agent/L6-01' has supersede_on_edit:true. Use kind=section_supersede instead.",
+      "message": "Cannot replace section 'risk_assessment' \u2014 source 'agent/risk-rater' has supersede_on_edit:true. Use kind=section_supersede instead.",
       "pointer": "sections.risk_assessment",
       "remediation": "Issue a section_supersede operation."
     },

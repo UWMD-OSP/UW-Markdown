@@ -21,7 +21,7 @@ AssetClass = 'multifamily' | 'office' | 'retail' | 'industrial' | 'self_storage'
 ```
 
 `SourceTag` is the canonical-tag union *plus* `(string & {})` — long-form
-patterns like `agent/L6-01`, `document/rent_roll`, `import:file.pdf` are valid.
+patterns like `agent/risk-rater`, `document/rent_roll`, `import:file.pdf` are valid.
 The cascade-resolved short tags are: `user_override`, `user_input`,
 `investor_profile`, `market_data`, `asset_class_default`, `global_default`,
 `system_default` (see `CASCADE_ORDER` in `starter-protocol.ts`).
@@ -101,7 +101,7 @@ interface UWFrontmatter {
   // UWScenarioId stays open for namespaced extensions and legacy reads;
   // Scenario enumerates the eight standard business plans.
   loan_type?: string | null; scenario?: UWScenarioId | null;
-  pipeline_state?: UWPipelineState; status?: string;
+  status?: string;
   deal_stage?: DealStage; recommendation?: string | null;
   quick_metrics?: UWQuickMetrics;
   flags?: string[]; blocking_flags?: string[];
@@ -112,8 +112,9 @@ interface UWFrontmatter {
 }
 ```
 
-`UWPipelineState` keys: `L0_ingestion`, `L1_screening`, `L2_underwriting`,
-`L4_structuring`, `L5_compliance`, `L6_risk`, `L7_assembly` (each `PipelineStatus`).
+A record that still carries the retired `pipeline_state` member reads it as
+an ordinary unknown key under the index signature; nothing reads it
+(RFC 0112 D4).
 
 `UWQuickMetrics` (frontmatter snapshot — kept in sync with section data via CC-NN
 checks): `purchase_price`, `loan_amount`, `noi_underwritten`, `dscr`, `ltv`,

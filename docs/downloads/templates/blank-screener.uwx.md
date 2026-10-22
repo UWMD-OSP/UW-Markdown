@@ -14,15 +14,6 @@ asset_subtype: null
 loan_type: null
 scenario: null
 
-pipeline_state:
-  L0_ingestion: pending
-  L1_screening: pending
-  L2_underwriting: pending
-  L4_structuring: pending
-  L5_compliance: pending
-  L6_risk: pending
-  L7_assembly: pending
-
 status: draft
 deal_stage: screening
 recommendation: null

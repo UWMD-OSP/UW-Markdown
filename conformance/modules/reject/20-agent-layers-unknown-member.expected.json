@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-064"
+  ],
+  "why": "RFC 0112 removed agent_layers from the module manifest. A manifest that still declares it is refused as an unknown member; the codes that validated layers (PROTO-MOD-055 to PROTO-MOD-060) are retired and reserved."
+}

@@ -40,8 +40,10 @@ const STARTER_PAGES = [
   ['editing.md', 'Starter products: editing'],
   ['defaults-and-cascade.md', 'Starter products: defaults and the fallback cascade'],
   ['refinement-and-workbooks.md', 'Starter products: refinement and workbook bindings'],
-  ['ai-host.md', 'Starter products: AI agent host'],
+  ['ai-host.md', 'Starter products: agent writers and context profiles'],
   ['capability-tokens.md', 'Starter products: capability tokens'],
+  ['cli.md', 'Starter products: CLI reference'],
+  ['rendering.md', 'Starter products: renderer reference'],
 ];
 
 const COPIES = [
@@ -70,7 +72,6 @@ const COPIES = [
   { from: 'conformance/documents/README.md',    to: 'conformance/documents.md', title: 'Reader and validation fixtures' },
   { from: 'conformance/starter/editor/README.md',    to: 'conformance/starter-editor.md', title: 'Editor starter checks' },
   { from: 'conformance/calc/README.md', to: 'conformance/calc.md', title: 'Calculation fixtures' },
-  { from: 'conformance/starter/agent/README.md', to: 'conformance/starter-agent.md', title: 'Layer-profile starter check' },
   { from: 'conformance/starter/refinement/README.md', to: 'conformance/starter-refinement.md', title: 'Refinement starter checks' },
   { from: 'conformance/runner/README.md',           to: 'conformance/runner.md', title: 'Language-agnostic runner' },
 
@@ -213,7 +214,8 @@ const NORMALIZED_LINK_MAP = new Map([
   ['conformance/tier-1-reader/README.md', '/conformance/documents'],
   ['conformance/tier-2-editor/README.md', '/conformance/starter-editor'],
   ['conformance/tier-3-calc-host/README.md', '/conformance/calc'],
-  ['conformance/tier-4-agent-host/README.md', '/conformance/starter-agent'],
+  // The layer-profile starter check left with the layer registry (RFC 0112).
+  ['conformance/tier-4-agent-host/README.md', '/conformance/'],
 
   // Historical RFC/release filenames (RFC 0081 §2), not redirects.
   ['UW_FORMAT_SPEC_v1.md', '/spec/format'],
@@ -293,7 +295,7 @@ const NORMALIZED_LINK_MAP = new Map([
   ['conformance/documents/README.md', '/conformance/documents'],
   ['conformance/starter/editor/README.md', '/conformance/starter-editor'],
   ['conformance/calc/README.md', '/conformance/calc'],
-  ['conformance/starter/agent/README.md', '/conformance/starter-agent'],
+  ['conformance/starter/agent/README.md', '/conformance/'],
   ['starter/refinement/README.md', '/conformance/starter-refinement'],
   ['conformance/starter/refinement/README.md', '/conformance/starter-refinement'],
   ['conformance/runner/README.md', '/conformance/runner'],

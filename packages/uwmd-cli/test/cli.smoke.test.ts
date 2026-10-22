@@ -245,12 +245,12 @@ describe('uwmd CLI', () => {
     it('exits non-zero and points at the failing declaration', async () => {
       const r = await runCli([
         'modules', 'validate',
-        moduleFixture('reject', '02-agent-layer-malformed.module.json'),
+        moduleFixture('reject', '06-calc-unknown-key.module.json'),
       ]);
       expect(r.status).toBe(1);
       // The pointer is what makes the output actionable.
-      expect(r.stdout).toContain('agent_layers[0].prompt_template');
-      expect(r.stdout).toContain('PROTO-MOD-060');
+      expect(r.stdout).toContain('calculations[0].bogus');
+      expect(r.stdout).toContain('PROTO-MOD-064');
     });
 
     it('lists the registry that a set of manifests forms', async () => {
@@ -261,11 +261,11 @@ describe('uwmd CLI', () => {
         '--json',
       ]);
       expect(r.status).toBe(0);
+      expect(JSON.parse(r.stdout).modules[0]).not.toHaveProperty('agent_layers');
       expect(JSON.parse(r.stdout).modules).toEqual([
         expect.objectContaining({
           id: 'org.uwmd.full-surface',
           calculations: 1,
-          agent_layers: 1,
           asset_classes: ['multifamily', 'student_housing'],
         }),
       ]);
