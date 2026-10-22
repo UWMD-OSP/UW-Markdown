@@ -18,6 +18,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #489: `render --format csv` quotes and escapes fields per RFC 4180, so a
+  comma or quote in a value no longer shifts the columns. The text columns that
+  were always quoted stay quoted, with embedded quotes doubled.
+
 - Fix #408: a Lite -> UWX conversion now reads back. Source detection looked
   for Lite anchors anywhere in the text, so the Lite source a conversion keeps in
   `x_uw_lite_source` made every converted file `SOURCE_REPRESENTATION_AMBIGUOUS`.
