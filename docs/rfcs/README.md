@@ -117,6 +117,7 @@ and how it gets accepted.
 | [0088](./0088-pin-financial-numerical-procedures.md) | Resolve financial power and transcendental reproducibility | accepted | protocol, core, conformance |
 | [0090](./0090-provenance-actor-admission.md) | Admit required provenance actors with an explicit diagnostic | accepted | format, protocol, core, conformance, tooling |
 | [0091](./0091-required-metadata-booleans.md) | Allocate the two required metadata boolean diagnostics | accepted | format, protocol, core, conformance, tooling |
+| [0092](./0092-pro-forma-verification-profile.md) | Verify stated pro forma identities under declared conventions | draft | format, protocol, core, conformance |
 | [0093](./0093-metadata-shape-diagnostics.md) | Close three metadata-shape diagnostic gaps | accepted | format, protocol, core, conformance, tooling |
 | [0094](./0094-present-invalid-metadata-leaves.md) | Allocate three present-invalid metadata leaf diagnostics | accepted | format, protocol, core, conformance, tooling |
 | [0095](./0095-optional-metadata-and-provenance-references.md) | Allocate bounded optional metadata and provenance-reference diagnostics | accepted | format, protocol, core, conformance, tooling |
