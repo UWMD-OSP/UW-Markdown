@@ -90,7 +90,7 @@ describe('parseUWLite', () => {
       path: 'acquisition.purchase_price',
       value: 12_500_000,
       unit: 'USD',
-      range: { line: 7 },
+      range: { line: 8 },
     });
     expect(parsed.fields[1]).toMatchObject({
       value: 0.055,

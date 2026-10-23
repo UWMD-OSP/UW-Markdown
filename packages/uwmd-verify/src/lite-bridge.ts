@@ -7,7 +7,6 @@ import type {
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import { assertLiteRuleSet, type ParsedUWLite, type UWLiteFieldNode, type UWLiteScalar } from './lite.js';
 import { isBlockedSegment } from './parser.js';
-import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 import { buildMeta } from './metadata.js';
 import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
 import type { UWFrontmatter } from './types.js';
@@ -15,7 +14,6 @@ import type { UWFrontmatter } from './types.js';
 // The bridge emits Format 3.0 bare blocks for every class (RFC 0081 D12). A
 // Lite must explicitly state its kept uw_version (RFC 0124); no financial value is
 // inferred.
-const UW_LITE_BRIDGE_FORMAT_VERSION = SUPPORTED_FORMAT_VERSIONS[0];
 
 export const UW_LITE_BRIDGE_PROFILE = 'deal-summary-v1' as const;
 export const UW_LITE_SOURCE_EXTENSION = 'x_uw_lite_source' as const;
@@ -336,7 +334,7 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
     ok: true,
     envelope: {
       envelope_version: '1.0',
-      format_version: UW_LITE_BRIDGE_FORMAT_VERSION,
+      format_version: frontmatter.uw_version,
       frontmatter,
       sections,
       pipeline_log: [],
@@ -352,6 +350,7 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
 export function projectUWEnvelopeToLite(
   envelope: UWDocumentEnvelope,
 ): UWLiteProjectionResult {
+  assertLiteRuleSet(envelope.frontmatter);
   const lines = [
     '---',
     `uw_lite_version: ${UW_LITE_REPRESENTATION_VERSION}`,
@@ -598,7 +597,7 @@ function setPath(target: Record<string, unknown>, path: string[], value: unknown
 }
 
 function projectFrontmatter(frontmatter: UWFrontmatter): string[] {
-  const keys = ['deal_id', 'deal_name', 'created', 'last_modified', 'asset_class', 'created_by'];
+  const keys = ['uw_version', 'deal_name', 'created', 'last_modified', 'asset_class', 'created_by'];
   return keys.flatMap((key) => {
     const value = frontmatter[key];
     return value === undefined ? [] : [`${key}: ${serializeYamlScalar(value)}`];

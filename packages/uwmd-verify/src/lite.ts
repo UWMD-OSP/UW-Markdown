@@ -89,7 +89,7 @@ const FIELD =
 const ATTRIBUTE = /([A-Za-z][A-Za-z0-9_-]*)=("[^"]*"|'[^']*'|[^\s]+)/g;
 
 /** RFC 0124: representation version never supplies a financial rule set. */
-export function assertLiteRuleSet(frontmatter: ParsedUWLite['frontmatter']): string {
+export function assertLiteRuleSet(frontmatter: Readonly<Record<string, unknown>>): string {
   const declared = frontmatter.uw_version;
   if (declared !== SUPPORTED_FORMAT_VERSIONS[0]) throw unsupportedFormatVersionError(declared);
   return declared;
