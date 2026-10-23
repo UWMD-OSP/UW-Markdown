@@ -846,9 +846,9 @@ fixed test clock. CI runs it on Node 20 with the existing Python runtime. This
 is development evidence alongside the portable CLI driver; messages, evidence
 payloads, issue order, institution configuration and tier claims are outside it.
 
-## Draft RFC 0123
+## RFC 0123
 
-[Recompute dictionary-defined receipt results without a starter pack](../rfcs/0123-dictionary-receipt-recomputation.md) is pending owner review. Its proposed controls are not current conformance requirements.
+Accepted on 2026-10-22: dictionary receipt assertions are recomputed without packs after authentication, with honest named-pack coverage indeterminacy.
 
 RFC 0123 authenticates before dictionary receipt recomputation. Missing packs
 expose the actual recomputed stated subset, with honest coverage indeterminacy;

@@ -266,7 +266,8 @@ def project(actual, name: str | None):
         if isinstance(actual.get("error"), dict):
             return {"refused_code": actual["error"].get("code")}
         return {"verdict": actual.get("verdict"),
-                "codes": sorted({i.get("code") for i in actual.get("issues", [])})}
+                "codes": sorted({i.get("code") for i in actual.get("issues", [])}),
+                "recomputed_ids": sorted(r["calc_id"] for r in actual.get("recomputed", []))}
     if name == "property-cash-flow-assembly":
         # RFC 0115: a PropertyCashFlowAssembly, or its CALC-CF-ASSEMBLY refusal,
         # reduced to the fields the assembly baselines name.
