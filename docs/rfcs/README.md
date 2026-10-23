@@ -112,6 +112,7 @@ and how it gets accepted.
 | [0082](./0082-borrower-underwriting-profile.md) | A borrower-underwriting document profile for a loan to an operating company | draft | format, protocol, core, conformance, tooling |
 | [0083](./0083-verify-package-split.md) | Split `@uwmd/verify`, the reference implementation of the standard, out of `@uwmd/core` | implemented | core, conformance, tooling |
 | [0084](./0084-document-signature-binding.md) | Bind a document snapshot without discarding signed block attribution | implemented | protocol, core, conformance, tooling |
+| [0085](./0085-compaction-provenance-evidence.md) | Keep full records as verification subjects and remove destructive compaction | accepted | format, protocol, core, conformance, tooling |
 | [0086](./0086-data-center-purchase-price-authority.md) | One purchase-price authority for data-center metrics, with the summary cross-checked | accepted | format, protocol, core, conformance, tooling |
 | [0087](./0087-hospitality-revenue-reconciliation.md) | Define the basis for hospitality revenue reconciliation | draft | format, protocol, core, conformance, tooling |
 | [0088](./0088-pin-financial-numerical-procedures.md) | Resolve financial power and transcendental reproducibility | accepted | protocol, core, conformance |

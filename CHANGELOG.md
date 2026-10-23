@@ -16,6 +16,8 @@ protocol, and each package each carry an independent semver).
   OpEx, including negative results; bind the existing NOI field without adding
   land cap rate or DSCR. Packs/workbooks mirror the dictionary identity.
 
+- Implement accepted RFC 0085 C+D: full-record exports retain supplied history; remove record compaction and history-stripping model options. Missing declared predecessors fail INT-01; permitted manual replacements start null-parent roots.
+
 - Implement accepted RFC 0120: preserve applicable existing CF findings from the exact selected replacement-funding source.
 - Implement accepted RFC 0121: bound CS-01 to required tranche members and identities, preserving independent code owners.
 - Implement accepted RFC 0122: strict calendar/offset DQ-05 instants and typed invalid-clock refusal.

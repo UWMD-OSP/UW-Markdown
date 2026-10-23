@@ -6765,6 +6765,16 @@
       "suite": "metrics",
       "scenario": "statement-home-land-carry-noi-missing-opex",
       "target": "verifier"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/10-missing-declared-parent",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/11-null-parent-root",
+      "target": "integrity"
     }
   ]
 }

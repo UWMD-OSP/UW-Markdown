@@ -69,7 +69,7 @@ A `.uwx.md` file solves this by being structured enough for machines while stayi
 
 **Dual representation.** Every section carries both prose (human-readable narrative, tables) and a structured JSON data block (machine-parseable). Either layer can stand alone; together they are the complete record.
 
-**Append-only by default.** Tools and agents add to the file — they do not rewrite existing sections. History is preserved inline. A compact operation removes superseded blocks when the file is ready to archive.
+**Append-only by default.** Tools and agents add to the file — they do not rewrite existing sections. History is preserved inline. A full record retains all supplied history. Analytical views are not records and MUST NOT be presented as verified full records (RFC 0085).
 
 **Provenance on every block.** Every data block carries a `_meta` object that records who wrote it, when, with what confidence, and whether it requires human review. No fact in the file is anonymous.
 
@@ -697,7 +697,7 @@ When an agent or tool updates a section, it:
 
 This means the file grows; history is always recoverable. The canonical current value of any section is the **last block** where `_meta.lifecycle.superseded === false` for that `uw:section`.
 
-A compact operation strips superseded blocks and leaves only current versions.
+Full-record export retains superseded blocks. Read-only export and render do not append authority or pipeline events (RFC 0085).
 
 ### 2.8 Multi-Variant Sections
 
@@ -3288,7 +3288,7 @@ implementation reads the section's contents).
     {
       "entry_id": "string",
       "timestamp": "ISO8601",
-      "event_type": "file_created | agent_run | user_edit | wizard_input | engine_run | render | import | export | validation | compact | note | flag_raised | flag_cleared | human_review | approval",
+      "event_type": "file_created | agent_run | user_edit | wizard_input | engine_run | render | import | export | validation | note | flag_raised | flag_cleared | human_review | approval",
       "agent_or_actor": "string",
       "section_affected": null,
       "status": "success | partial | failed | skipped | pending",
@@ -4729,7 +4729,7 @@ Example:
 uw_2026_a3f9b1_1234-main-st-phoenix-az_20260424.uwx.md
 ```
 
-Versioned snapshots (before compact):
+Versioned snapshots (with supplied history):
 ```
 uw_2026_a3f9b1_1234-main-st-phoenix-az_20260424_v3.uwx.md
 ```

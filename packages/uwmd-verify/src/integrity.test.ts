@@ -405,3 +405,22 @@ describe('JCS block signature error boundaries', () => {
     await expect(verifyChain(makeFile({ property: block }), { signatureVerifier: { verify: async () => { throw error; } } })).rejects.toBe(error);
   });
 });
+
+describe('RFC 0085 retained root boundary', () => {
+  it.each([null, undefined])('accepts a root with parent %s at any revision', async (parent_hash) => {
+    const root = makeBlock('property', { total_units: 24 }, { lifecycle: { revision: 9 }, integrity: { parent_hash } });
+    await stampHash(root);
+    expect(await verifyChain(makeFile({ property: root }))).toMatchObject({ ok: true, chains_verified: 1, chains_with_hashes: 1 });
+  });
+  it('refuses a declared absent predecessor while still checking signatures and content', async () => {
+    const root = makeBlock('property', { total_units: 24 }, { integrity: { parent_hash: 'a'.repeat(64), signature: SIG } });
+    await stampHash(root);
+    const result = await verifyChain(makeFile({ property: root }));
+    expect(result).toMatchObject({ ok: false, chains_verified: 0, chains_with_hashes: 1, signatures_present: 1 });
+    expect(result.issues).toEqual(expect.arrayContaining([expect.objectContaining({ code: 'INT-01', severity: 'error' })]));
+    expect(result.issues.some(i => i.code === 'INT-04')).toBe(false);
+    root.content.total_units = 25;
+    const tampered = await verifyChain(makeFile({ property: root }));
+    expect(tampered.issues.map(i => i.code)).toEqual(expect.arrayContaining(['INT-01', 'INT-04', 'INT-07']));
+  });
+});

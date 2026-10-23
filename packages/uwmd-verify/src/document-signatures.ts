@@ -144,7 +144,7 @@ export async function resolveDocumentSigningSubject(source: string): Promise<Doc
       if (seen.has(key)) throw new DocumentSigningError(`Duplicate active selection key ${key}.`);
       seen.add(key);
     }
-    const envelope = toUWEnvelope(parsed, { includeSuperseded: true });
+    const envelope = toUWEnvelope(parsed);
     const projected = envelopeBlocks(envelope);
     const counts = new Map<Record<string, unknown>, number>();
     for (const content of projected) counts.set(content, (counts.get(content) ?? 0) + 1);

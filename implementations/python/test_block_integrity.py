@@ -59,7 +59,7 @@ class BlockIntegrityTests(unittest.TestCase):
         files=sorted((ROOT/"conformance/signing/blocks").glob("*/deal.uwx.md"))
         files += [ROOT/"conformance/documents/malformed/04-broken-chain.uwx.md",
                   ROOT/"conformance/starter/editor/fixtures/parent-hash-stamp/before.uwx.md"]
-        self.assertEqual(len(files),11)
+        self.assertEqual(len(files),13)
         for path in files:
             with self.subTest(fixture=path):
                 original=path.read_bytes()
@@ -122,16 +122,17 @@ class BlockIntegrityTests(unittest.TestCase):
         self.assertTrue(result["ok"])
         self.assertEqual((result["blocks_hashed"],result["chains_with_hashes"]),(2,1))
         self.assertEqual([b["superseded"] for b in result["blocks"]],[True,False])
-        # A valid replace may discard the predecessor; no new orphan/root-parent
-        # refusal is inferred from a non-null parent on the retained first block.
+        # RFC 0085: the declared missing predecessor fails independently of its hash.
         root=verify(parse(HEADER+second))
-        self.assertTrue(root["ok"])
-        self.assertEqual(root["issues"],[])
+        self.assertFalse(root["ok"])
+        self.assertEqual([i["code"] for i in root["issues"]],["INT-01"])
+        replacement,_=stamped("property",{"value":2},parent=None)
+        self.assertTrue(verify(parse(HEADER+replacement))["ok"])
         self.assertEqual(root["blocks"][0]["computed_hash"],h2)
         # The unchanged schema explicitly admits empty parent text. Preserve it
         # lexically; it is not null when an actual predecessor hash is compared.
         blank=second.replace(('"parent_hash": "'+h1+'"').encode(),b'"parent_hash": ""')
-        self.assertTrue(verify(parse(HEADER+blank))["ok"])
+        self.assertFalse(verify(parse(HEADER+blank))["ok"])
         linked=verify(parse(HEADER+first+blank))
         self.assertEqual([i["code"] for i in linked["issues"]],["INT-01"])
         self.assertEqual(linked["issues"][0]["actual"],"")

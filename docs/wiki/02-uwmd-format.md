@@ -164,8 +164,8 @@ two checks for the presence of `'content'`/`'annotation'` on the entry (see
 - **Replace** (in place): the block is overwritten. Used for `manual` edits.
 
 Which one applies is decided by `BUILTIN_EDIT_POLICIES` (`protocol.ts`) matching
-the block's `_meta.provenance.source`. The `compactor.ts` `compact()` produces a "live view"
-by dropping superseded blocks; `diff()` compares two files section-by-section.
+the block's `_meta.provenance.source`. Full-record export retains supplied superseded blocks (RFC 0085). Analytical
+views are separate from the full record.
 
 ## Cross-section consistency (CC-NN)
 

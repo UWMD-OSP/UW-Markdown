@@ -70,9 +70,9 @@ The `--tier screener` flag renders only the Tier 1 sections. The `--tier analyst
 credit memo PDFs ([renderer reference](rendering.md)) come from the separate
 `uwmd-report` tool (`@uwmd/report`); no DOCX renderer exists.
 
-### 6.5 `uwmd compact <file>`
+### 6.5 Full-record history
 
-Removes all blocks where `_meta.lifecycle.superseded === true`. Preserves the pipeline log. Outputs the compacted file. Appends a `compact` entry to the pipeline log.
+Record export and conversion retain all supplied superseded blocks. Analytical context and render views may omit history, but are not full records and do not inherit source verification. Read-only commands leave authority and the pipeline log unchanged (RFC 0085).
 
 ### 6.6 `uwmd diff <file_a> <file_b>`
 

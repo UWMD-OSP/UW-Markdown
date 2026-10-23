@@ -1,0 +1,8 @@
+{
+  "description": "RFC 0085 signed root boundary; signature remains independently valid.",
+  "keystore": "../keys/keystore.json",
+  "ok": true,
+  "signatures_present": 1,
+  "signatures_verified": 1,
+  "expected_codes": []
+}
