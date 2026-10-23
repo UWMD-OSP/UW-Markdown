@@ -293,3 +293,45 @@ describe('RFC 0070 canonical snapshot controls', () => {
     }
   });
 });
+describe('RFC 0120 exact selected-source diagnostics', () => {
+  it.each(['bad-date', 'bad-amount', 'bad-kind', 'bad-order', 'empty-series'])('preserves selected %s findings exactly', async name => {
+    const parsed = parseUWFile(source(name));
+    const expected = validateUWFile(parsed).issues.filter(i => i.code.startsWith('CF-'));
+    const result = await verifyReplacementFundingBindings(parsed);
+    expect(result.state).toBe('unverifiable');
+    expect('structural_issues' in result && result.structural_issues.filter(i => i.code.startsWith('CF-'))).toEqual(expected);
+  });
+  it('preserves multiplicity and selected CF-03 beside a malformed reference', async () => {
+    const parsed = parseUWFile(source('outright-payment'));
+    const selected = sectionBlocks(parsed.sections.cash_flow_series)[0]!;
+    const content = selected.content as Record<string, unknown>;
+    (content.series as Array<Record<string, unknown>>)[0]!.date = '2028-02-30';
+    (content.series as Array<Record<string, unknown>>)[0]!.amount = 'invalid';
+    content.stated_metrics = { xirr: 0.1 };
+    const debt = sectionBlocks(parsed.sections.debt_structure)[0]!;
+    const hedge = (debt.content as { rate_hedge: { replacement_funding: { cash_flow_ref: { row_index: unknown } } } }).rate_hedge;
+    hedge.replacement_funding.cash_flow_ref.row_index = -1;
+    const expected = validateUWFile(parsed).issues.filter(i => i.code.startsWith('CF-'));
+    const result = await verifyReplacementFundingBindings(parsed);
+    expect(expected.map(i => i.code)).toEqual(['CF-01', 'CF-01', 'CF-03']);
+    expect('structural_issues' in result && result.structural_issues.filter(i => i.code.startsWith('CF-'))).toEqual(expected);
+  });
+  it('excludes malformed unselected and superseded physical sources', async () => {
+    const parsed = parseUWFile(source('outright-payment'));
+    const selected = sectionBlocks(parsed.sections.cash_flow_series)[0]!;
+    const other = structuredClone(selected);
+    other.annotation.variant = 'other';
+    (other.content as Record<string, unknown>).series = [];
+    parsed.sections.cash_flow_series = { 'cap-cash': selected, other };
+    const old = structuredClone(other); old.annotation.variant = 'cap-cash';
+    parsed.superseded.cash_flow_series = [old];
+    expect(validateUWFile(parsed).issues.some(i => i.code === 'CF-02')).toBe(true);
+    expect((await verifyReplacementFundingBindings(parsed)).state).toBe('verified');
+  });
+  it('does not project CF findings when the exact source cannot resolve', async () => {
+    const parsed = parseUWFile(source('missing-source'));
+    const result = await verifyReplacementFundingBindings(parsed);
+    expect(result).toMatchObject({ state: 'unverifiable', reason: 'unresolvable_source' });
+    expect('structural_issues' in result && result.structural_issues.some(i => i.code.startsWith('CF-'))).toBe(false);
+  });
+});

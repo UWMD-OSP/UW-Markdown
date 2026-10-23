@@ -262,11 +262,11 @@ class ReplacementFundingTests(unittest.TestCase):
             self.assertIn("HDG-08",codes(result))
             self.assertEqual(any(c.startswith("CF-") for c in codes(result)),cf)
             self.assertEqual(result["replacement_funding_verification"]["reason"],"invalid_structure")
-        # A stated xirr without a sign change is CF-03 in validation, but a
-        # metric is outside the binding (V.12 step 3), as in the reference.
+        # RFC 0120 preserves selected CF-03 as a structural prerequisite;
+        # numerical agreement of a stated metric remains outside the binding.
         signs=alter(document,2,lambda p:p.update(stated_metrics={"xirr":0.1}))
-        self.assertEqual(codes(report(signs)),[])
-        self.assertEqual(verify(signs)["state"],"verified")
+        self.assertEqual(codes(report(signs)),["CF-03"])
+        self.assertEqual(verify(signs)["state"],"unverifiable")
         validation=asyncio.run(validate_document(signs,now="2026-10-16T00:00:00Z"))
         self.assertEqual([i["code"] for i in validation["errors"]],["CF-03"])
         good=alter(document,2,lambda p:p.update(stated_metrics={"xnpv":{"rate":0.1,"value":123}}))
@@ -316,6 +316,23 @@ class ReplacementFundingTests(unittest.TestCase):
         self.assertEqual(untouched,before)
         result["context"]["currency_code"]="GBP"
         self.assertEqual(verify(untouched)["context"]["currency_code"],"USD")
+
+
+    def test_rfc0120_selected_findings_even_beside_invalid_reference(self):
+        doc = case()
+        index = next(i for i,b in enumerate(doc.source.blocks) if b.section == "cash_flow_series")
+        doc = alter(doc, index, lambda p: p.update(stated_metrics=dict(xirr=0.1)))
+        doc = change_hedge(doc, lambda h: h["replacement_funding"]["cash_flow_ref"].update(row_index=-1))
+        result = verify(doc)
+        self.assertEqual(result["reason"], "invalid_structure")
+        self.assertEqual([i["code"] for i in result["structural_issues"] if i["code"].startswith("CF-")], ["CF-03"])
+
+    def test_rfc0120_selected_cf_multiplicity(self):
+        doc = case()
+        index = next(i for i,b in enumerate(doc.source.blocks) if b.section == "cash_flow_series")
+        doc = alter(doc, index, lambda p: p["series"][0].update(date="2028-02-30", amount="invalid"))
+        result = verify(doc)
+        self.assertEqual([i["code"] for i in result["structural_issues"] if i["code"].startswith("CF-")], ["CF-01", "CF-01"])
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Implement accepted RFC 0120: preserve applicable existing CF findings from the exact selected replacement-funding source.
 - Implement accepted RFC 0122: strict calendar/offset DQ-05 instants and typed invalid-clock refusal.
 
 - Apply the public/private paperwork policy and enforce the tracked-content

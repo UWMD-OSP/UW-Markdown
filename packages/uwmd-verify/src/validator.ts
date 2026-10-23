@@ -2811,6 +2811,13 @@ function checkCashFlowContent(
   }
 }
 
+/** Existing single-source CF diagnostics with the same annotations as validation. */
+export function cashFlowContentFindings(content: Record<string, unknown>, variant: string): ValidationMessage[] {
+  const issues: ValidationMessage[] = [];
+  checkCashFlowContent(content, variant, issues);
+  return issues.map(enrichWithRemediation);
+}
+
 function checkCashFlowSeries(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   const entry = parsed.sections['cash_flow_series'];
   if (!entry) return;
