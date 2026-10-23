@@ -2923,6 +2923,7 @@ export type ReplacementFundingVerificationResult =
       state: 'unverifiable';
       reason: 'invalid_structure' | 'unresolvable_source' | 'crypto_unavailable';
       context: ReplacementFundingBindingContext | null;
+      /** RFC 0120: applicable HDG/ESC/CUR and exact selected-source CF findings; preserve multiplicity. */
       structural_issues: readonly ValidationMessage[];
       issues: readonly [];
     }

@@ -6,5 +6,9 @@
     "state": "unverifiable",
     "reason": "invalid_structure",
     "codes": []
-  }
+  },
+  "structural_codes": [
+    "CF-01",
+    "HDG-08"
+  ]
 }
