@@ -1838,11 +1838,21 @@
     "rule_set": "3.0",
     "asset_class": "land",
     "counts": {
-      "verified": 7,
+      "verified": 8,
       "failed": 0,
       "unverifiable": 0
     },
     "evidence": [
+      {
+        "id": "land_carry_noi",
+        "path": "noi_model.net_operating_income",
+        "stated": -272000,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": -272000,
+        "comparison": -272000,
+        "comparison_decimals": 0
+      },
       {
         "id": "price_per_acre",
         "path": "valuation.price_per_acre",
