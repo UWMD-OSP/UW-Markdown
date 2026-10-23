@@ -16,7 +16,7 @@ const out=[];
 function probe(name,expected,fn){try{const actual=fn();out.push({name,expected,actual,pass:actual===expected});}catch(e){out.push({name,expected,actual:'refused',error:e.message,pass:expected==='refused'});}}
 async function ap(name,expected,fn){try{const actual=await fn();out.push({name,expected,actual,pass:actual===expected});}catch(e){out.push({name,expected,actual:'refused',error:e.message,pass:expected==='refused'});}}
 const meta=id=>({section:id,provenance:{source:'manual',actor:'synthetic',timestamp:'2026-10-23T00:00:00Z'},quality:{confidence:'high',human_review_required:false},lifecycle:{revision:1,superseded:false}});
-const block=(id,variant)=>({annotation:{section:id,...(variant!==undefined?{variant}:{})},content:{_meta:meta(id),marker:1}});
+const block=(id,variant)=>{if(id===undefined)id='x_probe';return {annotation:{section:id,...(variant!==undefined?{variant}:{})},content:{_meta:meta(id),marker:1}};};
 const fresh=()=>({envelope_version:'2.0',format_version:'3.0',frontmatter:{uw_version:'3.0',deal_id:'synthetic-independent-review',deal_name:'Synthetic independent review'},sections:{},pipeline_log:[],custom_calculations:[],custom_scenarios:[],extensions:{},superseded:{}});
 const base=fresh();base.extensions.x_probe={mode:'single',block:block()};
 const refresh=files=>{const manifest=JSON.parse(files['manifest.json']);for(const f of manifest.files){const b=Buffer.from(files[f.path]);f.bytes=b.length;f.sha256=`sha256:${createHash('sha256').update(b).digest('hex')}`;}files['manifest.json']=JSON.stringify(manifest);return files;};
@@ -25,7 +25,7 @@ const hash=v=>`sha256:${createHash('sha256').update(stable(v)).digest('hex')}`;
 
 // Pure independently constructed model, all source payloads authored here.
 const fm='---\nuw_version: "3.0"\ndeal_id: "synthetic-independent-review"\ndeal_name: "Synthetic independent review"\n---\n\n';
-const fence=(id,value,variant,history,role,revision=1)=>{const b=block(id,variant);b.content.marker=value;b.content._meta.lifecycle={revision,superseded:history};if(role)b.content._role=role;return {source:`\`\`\`json uw:section=${id}${variant===undefined?'':` variant=${variant}`}${history?' superseded=true':''}${revision!==1?` v=${revision}`:''}\n${JSON.stringify(b.content)}\n\`\`\`\n\n`,block:{...b,annotation:{...b.annotation,...(history?{superseded:true}:{}),...(revision!==1?{v:revision}:{})}}};};
+const fence=(id,value,variant,history,role,revision=1)=>{if(history===undefined)history=false;const b=block(id,variant);b.content.marker=value;b.content._meta.lifecycle={revision,superseded:history};if(role)b.content._role=role;return {source:`\`\`\`json uw:section=${id}${variant===undefined?'':` variant=${variant}`}${history?' superseded=true':''}${revision!==1?` v=${revision}`:''}\n${JSON.stringify(b.content)}\n\`\`\`\n\n`,block:{...b,annotation:{...b.annotation,...(history?{superseded:true}:{}),...(revision!==1?{v:revision}:{})}}};};
 for(const id of ['x_probe','property','pipeline_log','custom_calculations','custom_scenarios']){
   for(const pattern of ['AHA','AAH','equal','revision','only-history']){
     const rows=pattern==='AHA'?[fence(id,1),fence(id,2,undefined,true),fence(id,3)]:pattern==='AAH'?[fence(id,1),fence(id,3),fence(id,2,undefined,true)]:pattern==='equal'?[fence(id,1),fence(id,1)]:pattern==='revision'?[fence(id,1,undefined,false,undefined,9),fence(id,2)]:[fence(id,1,undefined,true)];

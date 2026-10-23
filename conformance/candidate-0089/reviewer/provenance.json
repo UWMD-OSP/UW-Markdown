@@ -15,12 +15,13 @@
     {
       "file": "review-probes.mjs",
       "original_sha256": "b718cf3668316745f3162e2ba34964f8dd312f07ea5644629ac4c9adecaa875b",
-      "adapted_sha256": "a4dbcd12fdacb07f85c9918a5a4914f9a45993c75afe1d60ccf29fba74f88698",
+      "adapted_sha256": "29420525443ac73451e8ce4ff218dcb65882e815d0be001d9ae4a7fc8e8b4237",
       "changes": [
         "LF normalization",
         "relative import/input locations",
         "cache output locations and directory creation only",
-        "Mechanical Biome template/declaration style transformations; expected values and routing/ZIP algorithms unchanged"
+        "Mechanical Biome template/declaration style transformations; expected values and routing/ZIP algorithms unchanged",
+        "Original non-final default parameters retained as equivalent undefined checks in function bodies; an unsafe lint rewrite was detected by rerun and corrected before push"
       ]
     },
     {
