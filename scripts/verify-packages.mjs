@@ -6,11 +6,10 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { RELEASE_PACKAGES } from './release-packages.mjs';
+import { npmInvocation } from './npm-invocation.mjs';
 
 const ts = createRequire(new URL('../packages/uwmd-core/package.json', import.meta.url))('typescript');
-const npmCli = process.env.npm_execpath;
-const npmCommand = npmCli ? process.execPath : (process.platform === 'win32' ? 'npm.cmd' : 'npm');
-const npmPrefix = npmCli ? [npmCli] : [];
+const { command: npmCommand, prefix: npmPrefix } = npmInvocation();
 
 function packedFiles(workspace) {
   const output = execFileSync(
