@@ -120,6 +120,48 @@ test('F3 declared-empty slots cannot overlap populated descendants before digest
   }
 });
 
+test('F2 XML 1.0 characters, declarations and exactly-once attribute/namespace references', () => {
+  const model = structuredClone(empty);
+  model.outer = { '': ['\0', '\ufffe', '\uffff', 'literal &quot; and &#0;', 'A & B'] };
+  const xml = encodeXML(model); const expected = preimage(model);
+  const positives = [
+    ['original', xml],
+    ['type-decimal-reference', xml.replace('type="object"', 'type="&#111;bject"')],
+    ['type-hex-reference', xml.replace('type="object"', 'type="&#x6f;bject"')],
+    ['namespace-reference', xml.replace('https://uwmd.org', 'https:&#47;&#47;uwmd.org')],
+    ['attribute-reference', xml.replace('&quot;', '&#34;')],
+    ['declaration', `<?xml version="1.0" encoding="UTF-8"?>${xml}`],
+    ['declaration-equality-spaces', `<?xml version = '1.0' encoding = 'utf-8' standalone = 'yes' ?>${xml}`],
+    ['declaration-bom-crlf', `\ufeff<?xml\r\nversion='1.0'?>\r\n${xml}\r\n`],
+  ];
+  const token = `"${model.frontmatter.deal_id}"`;
+  const negatives = [
+    ...['&#0;', '&#x0;', '&#xD800;', '&#xFFFE;', '&#xFFFF;', '&#x110000;', '&#X41;', '&unknown;', '&amp'].map(reference =>
+      [`illegal-reference-${reference}`, xml.replace(token, `"${model.frontmatter.deal_id}${reference}"`)]),
+    ['uppercase-VERSION', `<?xml VERSION="1.0"?>${xml}`],
+    ['uppercase-XML', `<?XML version="1.0"?>${xml}`],
+    ['unsupported-XML-version', `<?xml version="1.1"?>${xml}`],
+    ['declaration-quote-mismatch', `<?xml version="1.0'?>${xml}`],
+    ['declaration-missing-space', `<?xml version="1.0"encoding="UTF-8"?>${xml}`],
+    ['declaration-invalid-standalone', `<?xml version="1.0" standalone="true"?>${xml}`],
+    ['declaration-after-space', ` <?xml version="1.0"?>${xml}`],
+    ['literal-NUL', xml.replace('type="object"', 'type="object\0"')],
+    ['literal-noncharacter', xml.replace(token, `"${model.frontmatter.deal_id}\ufffe"`)],
+    ['hidden-unknown-attribute', xml.replace('type="object"', 'type="object" __proto__="hidden"')],
+  ];
+  for (const [name, text] of positives) {
+    assert.equal(preimage(decodeXML(text)), expected, name);
+    pythonCases.xml.push({ name, text, accepted: true, preimage: expected });
+    observations.push({ finding: 'F2', name, accepted: true });
+  }
+  for (const [name, text] of negatives) {
+    assert.notEqual(text, xml, name);
+    assert.throws(() => decodeXML(text), error => /XML/.test(error.message) && !/semantic digest/.test(error.message), name);
+    pythonCases.xml.push({ name, text, accepted: false });
+    observations.push({ finding: 'F2', name, accepted: false, layer: 'XML syntax/mapping before semantic digest' });
+  }
+});
+
 test('F5 all own descriptors are inspected without invoking getters or erasing hidden properties', () => {
   for (const onArray of [false, true]) for (const kind of ['undefined', 'function', 'accessor', 'json-data']) {
     const model = structuredClone(empty); let calls = 0;

@@ -1,5 +1,5 @@
-import { XMLParser, XMLValidator } from 'fast-xml-parser';
-import { check, unicode, readJSON, jcs, validateModel, stamp, VERSION, NAMESPACE } from './model.mjs';
+import { xmlTree } from './xml-tree.mjs';
+import { check, put, unicode, readJSON, jcs, validateModel, stamp, VERSION, NAMESPACE } from './model.mjs';
 
 export function lexical(value) {
   unicode(value);
@@ -64,7 +64,7 @@ function nodeInfo(node, inherited) {
       throw new TypeError('qualified mapping attribute');
     }
     check(!expandedAttributes.has(identity), 'duplicate expanded attribute');
-    expandedAttributes.add(identity); attrs[key] = value;
+    expandedAttributes.add(identity); put(attrs, key, value);
   }
   return { local, attrs, children: node[name], namespaces };
 }
@@ -89,15 +89,7 @@ const readString = token => {
 
 export function decodeXML(source) {
   check(Buffer.byteLength(source) <= 50 * 1024 * 1024, 'XML size limit');
-  check(!source.includes('<!'), 'XML declarations/entities/comments forbidden');
-  const withoutDeclaration = source.replace(/^\ufeff?<\?xml\s+version=["']1\.0["'](?:\s+encoding=["']UTF-8["'])?\s*\?>/i, '');
-  check(!withoutDeclaration.includes('<?'), 'XML processing instruction');
-  check(!/&(?!(?:amp|lt|gt|quot|apos|#[0-9]+|#x[0-9a-fA-F]+);)/.test(source), 'unknown XML entity');
-  check(XMLValidator.validate(source) === true, 'malformed XML');
-  const parser = new XMLParser({ preserveOrder: true, ignoreAttributes: false,
-    attributeNamePrefix: '', trimValues: false, parseTagValue: false, parseAttributeValue: false,
-    ignoreDeclaration: true, processEntities: true });
-  const roots = elements(parser.parse(source)); check(roots.length === 1, 'XML root cardinality');
+  const roots = xmlTree(source);
   const root = nodeInfo(roots[0], new Map([['xml', XML]]));
   check(root.local === 'document', 'XML root name');
   keys(root.attrs, ['envelope-version', 'format-version']);

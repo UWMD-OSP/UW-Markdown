@@ -303,7 +303,13 @@ def encode_xml(model):
 def decode_xml(text):
     need(len(text.encode('utf-8')) <= 50 * 1024 * 1024, 'XML size limit')
     need('<!' not in text, 'XML declaration/entity/comment')
-    rest = re.sub(r'^\ufeff?<\?xml\s+version=["\']1\.0["\'](?:\s+encoding=["\']UTF-8["\'])?\s*\?>', '', text, flags=re.I)
+    text = text.removeprefix('\ufeff')
+    declaration = r'''^<\?xml[ \t\r\n]+version[ \t\r\n]*=[ \t\r\n]*(?:"1\.0"|'1\.0')(?:[ \t\r\n]+encoding[ \t\r\n]*=[ \t\r\n]*(?:"[uU][tT][fF]-8"|'[uU][tT][fF]-8'))?(?:[ \t\r\n]+standalone[ \t\r\n]*=[ \t\r\n]*(?:"(?:yes|no)"|'(?:yes|no)'))?[ \t\r\n]*\?>'''
+    rest = text
+    if text.startswith('<?xml'):
+        match = re.match(declaration, text)
+        need(match is not None, 'XML malformed declaration')
+        rest = text[match.end():]
     need('<?' not in rest, 'XML processing instruction')
     root = ET.fromstring(text)
     need(root.tag == '{' + NS + '}document' and set(root.attrib) == {'envelope-version', 'format-version'}, 'XML root/attributes')
