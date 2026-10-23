@@ -117,9 +117,11 @@ See [starter guide §IV](starter/view-models.md#iv-view-models).
 ## Domain (CRE) terms
 
 ### Cap rate
-Capitalization rate. `cap_rate = NOI / value`. Expressed as a
-percent. The "going-in" cap rate uses purchase price; the "exit" cap
-rate uses projected sale value.
+Capitalization rate. The builtin `cap_rate` is the going-in purchase yield:
+`noi_model.net_operating_income / valuation.purchase_price`, as defined in the
+[metric dictionary](../spec/metrics/README.md). It is stored as a fraction and
+usually displayed as a percentage. Underwritten value and exit-cap assumptions
+are separate fields; they do not replace this metric's purchase-price basis.
 
 ### Cash-on-cash return
 Annual pre-tax cash flow divided by total cash equity invested. A
@@ -136,8 +138,9 @@ unlevered yield to the lender if they had to take the property back.
 Insensitive to interest rates.
 
 ### DSCR
-Debt Service Coverage Ratio. `dscr = NOI / annual_debt_service`. The
-canonical lender constraint. The current builtin is point-in-time;
+Debt Service Coverage Ratio. `dscr = NOI / annual_debt_service`. This
+builtin is point-in-time. Financial threshold bands describe the deal separately
+from record validity;
 deals with IO-burnoff structures should add a stress test for the
 amortizing period.
 
@@ -151,12 +154,15 @@ The gap between in-place rents and current market rents on the same
 units. Captured in the `rent_roll` section.
 
 ### LTV
-Loan-to-Value. `ltv = loan_amount / value`. Cross-checked against
-`debt_structure` and `valuation` sections by validator code `CC-02`.
+Loan-to-Value. The builtin divides stated loan amount by
+`valuation.underwritten_value`, using `valuation.purchase_price` only when the
+former is absent or null. Validator `CC-02` checks the corresponding stated
+ratio in `debt_structure` against `valuation`.
 
 ### NOI
 Net Operating Income. Effective gross income minus operating expenses,
-before debt service and capex. Computed in the `noi_model` section.
+before debt service and capex. The record states it in `noi_model`; deterministic
+producer code performs the computation.
 
 ### NPV
 Net Present Value. Sum of discounted cash flows. `npv()` in the
