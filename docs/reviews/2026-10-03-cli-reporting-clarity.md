@@ -1,6 +1,6 @@
 # CLI reporting clarity — implementation review
 
-Implemented and verified 2026-10-03 on `codex/cli-reporting-clarity`, based on
+Implemented and verified 2026-10-03 on `work/cli-reporting-clarity`, based on
 canonical remote `main` at `48fa108`. Implementation commit: `c41a07e`. This work is
 unreleased; published core/CLI remain 2.16.0, Protocol 2.20.0, Format 2.0.
 

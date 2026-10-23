@@ -316,7 +316,7 @@ not core gaps.
   by importing `@uwmd/core`, and a host that never sends a request need not
   install it — a missing SDK surfaces as `AGENT_PROVIDER_SDK_MISSING`, not a
   module-resolution error. Tests assert the absence of a static import in both
-  files and that the factory constructs without the SDK present. `BancroftRunOptions` gained
+  files and that the factory constructs without the SDK present. `retired agent hostRunOptions` gained
   `provider` (and `apiKey` became optional); supplying neither is a typed
   `AgentProviderError`.
 - **Recorded-replay Tier-4 conformance (T10):** `agents/providers/replay.ts`
@@ -324,7 +324,7 @@ not core gaps.
   `conformance/tier-4-agent-host/replay/` replays a cassette through the real
   runner, comparing the resulting document **byte for byte**. Runs in CI by
   default — no network, no API key. Determinism comes from
-  `BancroftRunOptions.now`: a constant clock freezes `_meta.timestamp`,
+  `retired agent hostRunOptions.now`: a constant clock freezes `_meta.timestamp`,
   collapses `duration_ms`, and makes the log-entry id derivable rather than
   random. Replay is strict, so a cassette doubles as a **prompt-drift
   detector** — see `conformance/tier-4-agent-host/replay/README.md`, including
@@ -827,7 +827,7 @@ issuance and verification are unchanged and remain the default path.
 > **2026-09-09:** RFC 0037 (cross-check resolution over variant maps + the
 > `ValidationResult.coverage` channel, `CC-16`) and RFC 0038
 > (`dcf.returns.tax_basis`, `RT-01`, `getReturnTaxBasis()`) implemented —
-> both raised by underwriter.cc as UPSTREAM-005 / UPSTREAM-006. Released
+> both raised by underwriter.cc as adopter report 005 / adopter report 006. Released
 > in 2.5.0. Later the same day, RFC 0036 (IRR-hurdled waterfall tiers,
 > `until_lp_irr`, the closed-form hurdle balance) implemented — protocol
 > 2.6.0, released the same day.

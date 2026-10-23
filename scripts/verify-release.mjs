@@ -1,3 +1,5 @@
+// Public proof: CHANGELOG, VERSIONS, GitHub Releases and npm provenance.
+// Preparation/evidence files are private and never inputs to this gate.
 // Verify that every version the CHANGELOG says was released actually was.
 //
 // The 1.4.0 release is why this exists. Every manifest was bumped, `CORE_VERSION`
@@ -23,7 +25,7 @@
 //   1. Every `## [X.Y.Z]` section carrying a `### Released` block has a matching
 //      `vX.Y.Z` tag, with no exception. `### Released` is written only by the
 //      post-publication reconciliation, after the tag exists, so the version
-//      being prepared never needs one. Until UPSTREAM-020 the current core
+//      being prepared never needs one. Until adopter report 020 the current core
 //      version was exempt, because its block went in before its tag. That
 //      exemption is gone, and with it the window in which `main` could claim a
 //      release that had no tag.

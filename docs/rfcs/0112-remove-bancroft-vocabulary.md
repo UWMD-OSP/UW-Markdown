@@ -1,6 +1,6 @@
 ---
 rfc: 0112
-title: Remove the Bancroft layer vocabulary from the standard
+title: Remove the retired agent host layer vocabulary from the standard
 status: accepted
 author: UWMD maintainers
 created: 2026-10-21
@@ -12,26 +12,26 @@ affects:
   - tooling
 ---
 
-# RFC 0112: Remove the Bancroft layer vocabulary from the standard
+# RFC 0112: Remove the retired agent host layer vocabulary from the standard
 
 > **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0112 (#474) accepted as drafted, including D2: keep the generic `agent/<id>` source with `agent_id` and `agent_version`.").
 > Origin: owner decision D1 of 2026-10-12
-> ("Remove Bancroft entirely. Don't move it."), carried out as phase C of the
+> ("Remove retired agent host entirely. Don't move it."), carried out as phase C of the
 > public cleanup brief on the owner's instruction of 2026-10-21. The starter
 > half, the agent runtime, providers and `uwmd run`, is removed separately
-> without an RFC: RFC 0078 already classes Bancroft agents as starter products.
+> without an RFC: RFC 0078 already classes retired agent host agents as starter products.
 > This RFC covers what the Format, the Protocol and the schemas still say about
-> Bancroft. It removes members that records and manifests carry, so it is
+> retired agent host. It removes members that records and manifests carry, so it is
 > normative.
 
 ## Summary
 
 The Format still describes one product's agent suite as if it were part of the
-standard. §1.3 maps Bancroft layers to sections. Frontmatter `pipeline_state`
+standard. §1.3 maps retired agent host layers to sections. Frontmatter `pipeline_state`
 has one key per layer and refers to `BANCROFT_LAYERS` in the reference library.
 The section registry's "Written by" lines name layer agents (`agent/L2-CRE-11`).
 Part VI specifies the reference CLI, including `uwmd run`, and §6.8 sets MUST
-rules for "any Bancroft agent". Part VII specifies the reference renderer's
+rules for "any retired agent host agent". Part VII specifies the reference renderer's
 outputs. Module manifests can declare `agent_layers` with a `prompt_template`.
 This RFC removes that vocabulary. Every rule that protects verification is kept
 in a form that applies to any producer. A record keeps saying *who* wrote each
@@ -42,7 +42,7 @@ block, but no longer *which layer of which product* did.
 - **The boundary test fails.** A lender verifying a record from any producer
   should need only the standard (RFC 0078). The Format today names a product's
   layer registry, its CLI and its renderer, and §1.2 says that "proprietary
-  tooling (Bancroft agents, uwmd CLI) is required to *generate* sections
+  tooling (retired agent host agents, uwmd CLI) is required to *generate* sections
   correctly."
 - **The product is gone.** The owner removed the agent suite (D1). Vocabulary that
   points at a removed runtime is dead weight that every independent
@@ -57,7 +57,7 @@ block, but no longer *which layer of which product* did.
 1. **Format §1.2.** Replace the "Toolchain-agnostic" sentence on proprietary
    tooling with: any producer that follows this specification can write
    sections, and no particular tool is required to write or read them.
-2. **Format §1.3** ("Relationship to the Bancroft Agent Suite") is deleted.
+2. **Format §1.3** ("Relationship to the retired agent host Agent Suite") is deleted.
 3. **Frontmatter `pipeline_state`** (Format §2.2) is removed with its layer keys
    and the L3 reservation (D4). Workflow position stays in `status` and
    `deal_stage`.
@@ -68,7 +68,7 @@ block, but no longer *which layer of which product* did.
    tranche `rate`, `amount` or a stated `sizing` value."
 5. **Provenance identities (D2).** The generic `agent/<id>` source namespace, its
    required `agent_id` and `agent_version`, and the free-form `actor` stay as
-   they are (Format §2.5–§2.6, Part III). Only the Bancroft layer ids leave the
+   they are (Format §2.5–§2.6, Part III). Only the retired agent host layer ids leave the
    spec's examples and prose (`agent/L6-01` becomes, for example,
    `agent/risk-rater`).
 6. **Format Part VI** (Toolchain Interface) moves to the non-normative starter
@@ -86,7 +86,7 @@ block, but no longer *which layer of which product* did.
    starter-product capability list and `ImplementationManifest.capabilities`,
    because no starter product hosts agents.
 10. **Reference library.** `BANCROFT_LAYERS`, the layer context, prompt and
-   readiness builders, `LayerDefinition`/`AgentContext`/`BancroftPrompt` and
+   readiness builders, `LayerDefinition`/`AgentContext`/`retired agent hostPrompt` and
    `uwmd layers` are removed with the vocabulary they implement. The generic
    writers (`writeAgentBlock`, `writeErrorEntry`, `buildMeta`) and generic
    `buildContext` stay.

@@ -1,9 +1,10 @@
 {
+  "_public_redaction_note": "Identity-bearing observations were redacted; this retained historical file is not release proof.",
   "scope": "Owner-requested bounded downstream-writer audit, current source and synthetic metadata/serialization probes; not live deployed-service proof. No downstream code changes.",
   "source_audit_sha256": "559d5a75da445999d66c4af3495ae1f5e686250868865e038671396dc2a2d0b0",
   "repositories": {
     "stackuw": {
-      "repository": "https://github.com/jaredmaxey/underwriter-app",
+      "repository": "[redacted private repository]",
       "head": "fea704ee6a2b4d01057f216880678445347c76fe",
       "tree": "00b5535539dda928eebba4a68cfa683e9bb0336f",
       "files": [
@@ -174,7 +175,7 @@
       "evidence": [
         "packages/uwmd-verify/src/metadata.ts36-70"
       ],
-      "consequence": "buildMeta emits review opts??false and superseded=false; init, host editor/supersede, Bancroft host, newpipeline log and Lite compilation use it. Valid typed fresh emissions avoid the candidate flags."
+      "consequence": "buildMeta emits review opts??false and superseded=false; init, host editor/supersede, retired agent host host, newpipeline log and Lite compilation use it. Valid typed fresh emissions avoid the candidate flags."
     },
     {
       "id": "UWMD-PATCH",

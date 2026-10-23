@@ -1,4 +1,5 @@
 {
+  "_public_redaction_note": "Identity-bearing observations were redacted; this retained historical file is not release proof.",
   "verified_at": "2026-10-11T18:43:02.100Z",
   "verification_date_local": "2026-10-11",
   "timezone": "America/Phoenix",
@@ -787,12 +788,12 @@
     ],
     "0.0.0-stage": {
       "published_at": "2026-10-11T17:00:53.390Z",
-      "publisher": "jaredmaxey",
+      "publisher": "[redacted public handle]",
       "files": 2
     },
     "0.2.9": {
       "published_at": "2026-10-11T17:01:49.075Z",
-      "publisher": "jaredmaxey",
+      "publisher": "[redacted public handle]",
       "integrity": "sha512-blB09hqfTCxCm2/iRMO4Z/bwMFeE38/Gxi90RlhXNx6Lm1c/JfkYpsQi2WJsqnp72+CBh5iwwiuAwkkefcAYzg==",
       "core_pin": "2.21.0",
       "gitHead": null,
