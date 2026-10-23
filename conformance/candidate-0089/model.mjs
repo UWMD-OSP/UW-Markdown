@@ -159,6 +159,8 @@ const envelopeBlock = block => ({ annotation: block.annotation, content: block.c
 /** Complete source projection, with exact occurrence accounting separate from selection. */
 export function projectSource(source) {
   const parsed = typeof source === 'string' ? parseUWFile(source) : source;
+  const parsedKeys = ['frontmatter', 'sections', 'prose', ...arrays, 'extensions', 'superseded', 'raw', 'candidatePhysicalBlocks'];
+  check(Object.keys(parsed).every(key => parsedKeys.includes(key)), 'unknown parsed outer member cannot borrow source attribution');
   const physical = parsed.candidatePhysicalBlocks ?? parsedPhysicalBlocks(parsed);
   check(physical.length || !Object.keys(parsed.extensions).length, 'missing physical source evidence');
   const known = ['annotation', 'meta', 'content', 'prose', 'rawJson', 'lineStart', 'lineEnd'];
