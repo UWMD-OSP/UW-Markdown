@@ -23,14 +23,35 @@ assertions, their derivation evidence and conventions; Verifiers report coverage
 RFC 0078 D1/D7 stand. The approved convention registry gains the owner's
 2026-10-17 addition, per-loan `ltv_basis`. **Draft, docs only:** no implementation,
 profile claim, schema, dictionary rule, diagnostic or receipt behavior activates.
-Numeric questions below require decisions before implementation.
+The owner's 2026-10-23 ruling resolves U3–U7 for the bounded admissions in
+section3a. U1/U9 and independent review remain gates before final acceptance.
+
+## Owner ruling — 2026-10-23, U3–U7
+
+Records declare conventions through the closed registry; each admitted option
+has one exact procedure. L1 admits end-timed periodic returns and explicitly
+dated flows, nominal annual/12 payment rates, full-term amortization after IO,
+debt yield on the loan at close, and year-1 after-capex CoC over initial equity.
+Beginning/mid-period timing, remaining-term amortization, current-balance debt
+yield, before-capex CoC and later-year CoC are outside L1. Registered vocabulary
+does not itself admit a financial procedure.
+
+`reserves_placement` is declared per record. NCF subtracts only reserves not
+already deducted above NOI. New identity comparison minima use the dictionary's
+unit quanta: dollars2, fractional rates6, multiples4. Existing dictionary and
+reused native identity contracts retain their own precision rules; there is no
+blanket epsilon. Land debt service remains the scope input below.
+
+The producer convention declaration supplies implementation evidence, not
+normative authority for every producer variant. Section3a records the admitted
+math and limits; the owner ruling does not accept this RFC or activate a profile.
 
 ## Land debt-service input — owner ruling, 2026-10-22 (fifth set)
 
 The owner directs that pass-4's land debt-service restatement gap is an input
 to this RFC and issue [#355](https://github.com/UWMD-OSP/UW-Markdown/issues/355),
-**not a separate debt-service RFC**. This records scope input; it accepts no U4
-or U7 convention and adds no land DSCR/cap-rate identity.
+**not a separate debt-service RFC**. This records scope input and adds no land
+DSCR/cap-rate identity. The later U3–U7 ruling does not expand this assertion.
 
 Sundance states `debt_structure.annual_debt_service` but no identified payment
 stream. A numeric summary is not evidence of its own derivation. The candidate
@@ -45,10 +66,11 @@ Recommendation: develop this assertion in U1's individually justified identity
 scope, with U9's unique-address/verdict/family coverage accounting. Keep debt
 schedule generation and unstated loan assumptions outside that assertion.
 `loan_amount * interest_rate` must not silently replace the missing stream: it
-would choose balance, accrual, timing and period conventions. Any new sum/order,
-comparison minimum or generated payment procedure remains gated by U4/U7 (and
-U3 where temporal alignment is needed). No default fee/balloon exclusion or zero
-payment is selected by this intake. Proposed controls include wrong summary,
+would choose balance, accrual, timing and period conventions. The later U3–U7
+resolution pins the bounded procedures below without admitting a generated land
+schedule. No default fee/balloon exclusion or zero
+payment is selected by this intake. The later U3–U7 resolutions constrain any
+admitted procedure; land's stated-stream requirement remains. Proposed controls include wrong summary,
 missing stream, mixed loan/period/variant, duplicated payments and explicit
 reserve-funded IO service. Keep #355 open.
 
@@ -57,14 +79,15 @@ Current-main coordination: RFC 0088's pinned primitives are accepted; RFCs
 selected-source CF findings, and RFC 0123 recomputes authenticated dictionary
 receipt claims without a starter pack. Reuse these contracts; none establishes
 a new debt-service identity, a schedule procedure or complete profile coverage.
-The independent Python Reader/Verifier now exists on main; this draft does not
-claim Python support for the unaccepted pro-forma profile.
+The independent Python implementation claims Reader plus selected calculation
+and verification capabilities, not the full Verifier tier or this unaccepted
+pro-forma profile.
 
 ## Motivation
 
-At main `cc5291fb6fbd8f22dfb57fc1993de8e2d8f3ee1f`, the normative
-[dictionary](../../spec/metrics/builtin.json) has 171 class-scoped calculations,
-89 distinct ids, and no IRR, NPV, equity-multiple, debt-service, amortization or
+At main `2168b504beb1b8a5446eec0f8347b61458054c6e`, the normative
+[dictionary](../../spec/metrics/builtin.json) has 173 class-scoped calculations,
+and no IRR, NPV, equity-multiple, debt-service, amortization or
 exit-value metric. Its single-period ratios, amounts and intensives do not bind
 a complete pro forma. Not every dictionary entry is literally a ratio.
 
@@ -99,7 +122,8 @@ Sources:
   [#357](https://github.com/UWMD-OSP/UW-Markdown/pull/357) own numerical procedures.
   RFC 0089 remains draft in [#368](https://github.com/UWMD-OSP/UW-Markdown/pull/368).
 - [#354](https://github.com/UWMD-OSP/UW-Markdown/issues/354) owns independent
-  Python verification; its current Reader/Verifier is not a pro-forma profile claim.
+  Python verification; its Reader and selected verification capabilities are
+  not a full Verifier-tier or pro-forma profile claim.
 
 ## Proposed change
 
@@ -205,14 +229,17 @@ lines, and loan choices in that loan's `debt_structure.pro_forma` declarations.
 per-line or per-loan choice. `debt_yield_basis` keeps its approved two-axis product.
 
 **Contested** labels practitioner disagreement in registry/documentation. It is
-not an invalidity verdict or permission to omit a choice. Conformance distinguishes
-at least two values of every contested entry.
+not an invalidity verdict or permission to omit a choice. The table is the
+registry vocabulary; section3a separately limits L1 admission. Only admitted
+options are executable, and unsupported declarations remain visible/refused.
+Paired positive fixtures apply when two options are admitted; a registered but
+out-of-L1 option gets a refusal control, never a fabricated positive fixture.
 
-| Group | Convention | Exact options | Scope |
+| Group | Convention | Registry vocabulary | Scope |
 |---|---|---|---|
 | Timeline | `period_basis` | `monthly` · `annual` | Monthly rows with annual roll-ups, or annual rows. |
 | Timeline | `first_period` | `full` · `stub` | Stub uses declared existing day count. |
-| Timeline | `cash_flow_timing` | `end` · `mid` · `beginning` | Discounting and IRR; U3. |
+| Timeline | `cash_flow_timing` | `end` · `dated` · `mid` · `beginning` | Owner adds explicit `dated`; only `end`/`dated` admitted to L1. |
 | Revenue | `growth_application` | `anniversary-step` · `calendar-step` · `monthly-compound` | Bound growth identity. |
 | Revenue | `growth_start` | `period-1` · `year-2` | Whether year-1 input is already grown. |
 | Revenue | `vacancy_base` **(contested)** | `gross-potential-rent` · `gross-potential-revenue` | Latter includes other income. |
@@ -220,21 +247,22 @@ at least two values of every contested entry.
 | Revenue | `occupancy_method` | `percent-of-base` · `stated-occupancy-path` | Explicit rate/base or authored path. |
 | Expenses | `line_class` | `fixed` · `per-unit` · `per-occupied-unit` · `per-sf` · `percent-of-egi` | Per expense line. |
 | Expenses | `management_fee_base` | `egi` · `egi-excluding-reimbursements` | Bound management line. |
-| NOI / NCF | `reserves_placement` **(contested)** | `below-noi` · `above-noi` | NCF ambiguity U5. |
+| NOI / NCF | `reserves_placement` **(contested)** | `below-noi` · `above-noi` | Per-record declaration; subtract only below-NOI reserves again at NCF. |
 | Debt | `payment_frequency` | `monthly` · `annual` | Per loan, amortization basis. |
 | Debt | `interest_accrual` | `30/360us` · `actual/360` · `actual/365f` | Exact VIII.9.1 procedures. |
-| Debt | `amortization_after_io` **(contested)** | `full-term` · `remaining-term` | Per loan; count arithmetic U4. |
+| Debt | `amortization_after_io` **(contested)** | `full-term` · `remaining-term` | Only `full-term` admitted to L1. |
 | Debt | `dscr_basis` **(contested)** | `noi` · `ncf` | Per loan. |
 | Debt | `dscr_debt_service` **(contested)** | `actual` · `amortizing-constant` | IO cash service versus amortizing-payment basis throughout. |
-| Debt | `debt_yield_basis` | (`noi` · `ncf`) × (`loan-at-close` · `balance-at-period`) | Both axes required; balance timing U4. |
+| Debt | `debt_yield_basis` | (`noi` · `ncf`) × (`loan-at-close` · `balance-at-period`) | Both axes required; L1 admits only `loan-at-close`. |
 | Debt | `ltv_basis` **(contested)** | `purchase-price` · `underwritten-value` · `total-project-cost` | **Owner addition, 2026-10-17; direct per-loan field.** |
 | Exit | `exit_noi_basis` | `forward-12` · `trailing-12` | Year N+1/next twelve months versus year N/final twelve. |
 | Exit | `exit_noi_measure` | `noi` · `ncf` | Measure bound to existing `exit_noi` target. |
 | Exit | `disposition_cost_base` | `gross-sale-price` | One admitted value. |
 | Returns | `irr_frequency` **(contested)** | `annual-periodic` · `monthly-compounded` · `xirr` | Annualize monthly m as `(1+m)^12-1`, never simple `m*12`. |
-| Returns | `cash_on_cash_numerator` | `before-capex` · `after-capex` | Components/equity denominator U6. |
+| Returns | `cash_on_cash_numerator` | `before-capex` · `after-capex` | Only year-1 `after-capex` over initial equity admitted to L1. |
 
-Exactly the approved refined registry's 22 conventions/options plus `ltv_basis`.
+The approved refined registry's 22 convention keys plus `ltv_basis`, with the
+owner's explicit dated-flow admission and L1 restrictions recorded above.
 The first-cut issue table's renamed choices and separate `exit_value` menu are
 superseded and are not restored here.
 
@@ -275,6 +303,134 @@ statement is not silently substituted for a different stack verb. Nothing is
 implemented here; downstream divergence is not resolved until implementation
 and actual adoption.
 
+### 3a. U3–U7 resolution — admitted procedures and boundaries
+
+The owner resolves these convention decisions on 2026-10-23. This is an
+admission ceiling for the initial profile, not acceptance of the entire section4
+inventory. U1 must still select its initial identity vocabulary. A record MUST
+declare each relevant registry choice and bind its actual inputs. A declaration
+outside the admitted procedure is unsupported/unverifiable, not an invitation
+to infer another convention from an asset class, producer or available fields.
+
+**U3 — timing.** End-timed annual-periodic flows have explicit CF0 at t0 and
+CFk at the end of full year k, k=1…N. Require `cash_flow_timing=end`,
+`period_basis=annual`, `first_period=full` and `irr_frequency=annual-periodic`
+for annual IRR. NPV accumulates `CFk / P(1+r,k)` from k=0 through N, left to
+right from +0; IRR uses that exact NPV and the accepted VIII.3 solver.
+CF0 is undiscounted. Do not replace P with a repeated-multiplication product.
+Mid/beginning timing and inferred day stubs are not admitted.
+
+For `cash_flow_timing=dated`, bind an explicit dated `cash_flow_series` and its
+declared day count. The producer's evidenced dated option is `actual/365f`:
+`t_i=actualDays(d0,d_i)/365`, d0 the first row's date. Reuse VIII.9.2's exact
+`amount_i * P(1+r,-t_i)` terms in original series order, and VIII.9.3 for XIRR
+with `irr_frequency=xirr`. Do not translate this to division by a positive
+power or shift an event to a year end. Other already accepted native series
+day counts remain native contracts; they are not additional producer-aligned
+L1 timing options in this draft. A missing date/anchor/day count is not supplied
+from a producer's default calendar.
+
+The evidenced monthly-compounded option is a separately bound lender stream,
+not an automatic deal-headline method. Require explicit full monthly periods
+with end-indexed flows and `irr_frequency=monthly-compounded`; loan funding is
+CF0, a stated month-m start draw belongs to CF(m−1), interest to CFm. Preserve
+those authored bindings. Solve VIII.3 monthly IRR m, then `P(1+m,12)-1` in that
+order. An annual deal stream cannot be relabelled to obtain this option.
+Unspecified growth anchors, academic/month-overlap proration, occupancy-to-loss
+conversions and revenue/expense variants in the broader inventory are outside
+initial L1; stated rows remain in coverage. No universal procedure is inferred
+from the existence of several different producer paths.
+
+**U4 — fixed-rate monthly mortgage.** Require declared monthly payment frequency,
+nominal annual rate r, original principal L, full amortization years A and
+explicit loan-relative IO boundary K. Compute `i=r/12`,
+`n=A*12`, required to be a positive integer, never `(A-IO_years)*12`.
+The producer rounds fractional month counts; this narrower L1 procedure admits
+whole-month amortization terms only. Basic L1 admits whole-year IO, K a
+nonnegative multiple of12
+months. For payment q=1…K interest-only applies; amortization starts at K+1.
+Refinance/takeout resets, within-year transitions, floating paths, draws,
+capitalized interest and cash sweeps need separately admitted procedures.
+
+At amortization start bind its opening principal B and fix the payment once:
+`PMT=B/n` if i=0, otherwise `(B*i)/(1-P(1+i,-n))`, in the written association.
+This reuses UWMD VIII.3's **positive** PMT convention, not a producer calc
+interface's signed PMT. The count is the full n after IO; it does not infer a
+loan-term extension, payoff or continuation beyond supplied schedule rows.
+For each monthly row, `I_q=B_open*i`; during IO `principal_q=0` and
+`payment_q=I_q`; afterward `principal_q=min(PMT-I_q,B_open)` and
+`payment_q=I_q+principal_q`. Then `B_close=B_open-principal_q` and the next
+opening equals that close. Interest, principal and payments are positive
+magnitudes subtracted from investor cash. Do not round monthly cash to cents.
+Annual service sums the explicitly bound actual payments left to right from
++0. A constant-payment sizing figure remains a distinct binding, never silently
+substituted for actual IO service. Named date-based loan accrual options in the
+registry are not established by r/12 and are outside this monthly procedure.
+
+Require finite nonnegative r/B, positive integer n and valid K for this new
+schedule identity; missing/null inputs are unverifiable, and invalid domains or
+nonfinite intermediate results retain typed arithmetic evidence. Do not import
+a producer helper's zero fallback for invalid principal/count. A supplied
+balloon/payoff binds explicitly to the post-scheduled-payment balance and its
+own payment; count it once, not again as scheduled principal. No maturity flow
+is generated. Land summary-to-stream intake retains its earlier scope and does
+not assert that land has this mortgage schedule.
+
+Debt yield declares both basis axes. For L1, denominator is the same selected
+loan's positive `loan_amount` at close, not a post/pre-payment balance or total
+commitment inferred from draws. Numerator is the explicitly bound stated
+period's NOI or admitted NCF, so `DY=selected_income/loan_at_close`; no
+stabilized-period fallback. Current-balance lender/covenant variants remain
+outside this admission. Existing point-in-time stack verbs stay separate.
+
+**U5 — reserve placement.** Require `reserves_placement` on each record; no
+asset-class/default inference. Bind each reserve component once with an
+explicit above/below allocation in the same scope/period/variant. A mixed record
+must bind separate components with their declarations, not collapse contradictory
+placements for the same cost. Let R_above be the ordered sum already included
+in OpEx and R_below the ordered sum not deducted above NOI; both start at +0.
+Then `NOI=(EGI-OpEx_excluding_reserves)-R_above` and
+`NCF=(((NOI-R_below)-TI)-LC)-capex`. Explicit zero is allowed; omission is not
+zero. An above-NOI reserve is never subtracted again from NOI. A duplicate
+component, unresolved allocation or missing bridge cannot verify. These are
+NOI/NCF arithmetic measures; they do not replace VIII.9.6/11's owner-cash and
+reserve-source membership rules. A reserve-funded expenditure/release needs
+its explicit native cash bridge; NCF alone is not complete owner cash.
+
+**U6 — CoC.** Only year1, `cash_on_cash_numerator=after-capex`, is admitted.
+Bind the signed year-1 levered operating-cash stream after TI/LC, reserves not
+already charged, capex, actual debt service and explicitly identified financing
+events. Exclude sale proceeds. Sum its bound signed components in declared
+order from +0, with each cash event once; require the bridge to the stated
+year-1 levered cash target rather than verifying by copying that target.
+Bind initial acquisition equity E and immediate repairs H without overlap;
+`initial_equity=E+H`, the magnitude of the corresponding initial equity outflow,
+and `CoC_1=cash_after_capex_1/initial_equity`, positive denominator required.
+No later contribution, cumulative-equity fallback or denominator restatement
+changes this initial base. Later-year and before-capex CoC are outside L1.
+Use the same explicit reserve placement/cash membership evidence as U5.
+
+**U7 — comparison and operation order.** New identities use minima m and
+reporting ceilings r equal to the existing dictionary **unit quanta**:
+`$`: m=r=2; `%` (stored fraction): m=r=6; `x`: m=r=4. These are decimal places,
+not $2/6%/4x error allowances. Apply VIII.5.1 directly to the unrounded result
+and original numeric token; no intermediate reporting rounding, double rounding,
+absolute/relative epsilon or solver-tolerance reuse. Existing dictionary-owned
+and reused native identities retain their exact current minima/ceilings and
+refusal rules; this ruling does not rewrite their contracts.
+
+The associations above are literal binary64 steps, with P the accepted RFC0088
+primitive. Sums preserve explicitly bound order. No reassociation, fused
+operation, alternate integer power or host pow is an equivalent procedure.
+Missing source precision/selection remains typed evidence; missing usable
+financial inputs cannot become zero. A finite comparable mismatch fails;
+unsupported procedures are unverifiable; reused solver and domain refusals
+retain their existing states. The producer declaration's running products,
+host-math seam and local 1e-* guards are evidence of adoption work still needed,
+not substitutes for this standard's procedure. Independent end-to-end composed
+procedure evidence remains an acceptance/readiness gate, not an unresolved
+choice of a new epsilon.
+
 ### 4. L1 identities and numerical admission
 
 L1 lists candidate stabilized-acquisition identities, initially fixed-rate debt.
@@ -289,12 +445,12 @@ source/line order left to right, and dependencies are explicit. No hidden iterat
 solves a circularity. Algebra alone is not a binary64 reassociation license.
 
 Precision: `M` = `$`, reporting r2; `R` = `%`, reporting r6; `X` = `x`, reporting
-r4, per VIII.5. These are reporting quanta, not new comparison tolerances.
+r4, per VIII.5. These are decimal reporting quanta, not epsilon allowances.
 Dictionary-bound DSCR/debt-yield/LTV/CoC reuse that class entry's actual minima
 and ceilings. Apply RFC 0079/VIII.5.1 once to the unrounded result at
 `d = min(max(source_decimals,m),r)`, half away from zero, retaining numeric tokens,
 trailing zeroes and exponents. No double rounding or relative epsilon.
-New identities require accepted comparison minima m (U7), not guessed floors.
+New identities use the owner-resolved unit-quanta minima in section3a (U7).
 Existing dated-series comparisons retain VIII.9.4's full reporting quantum when
 that verifier is reused.
 
@@ -304,27 +460,28 @@ that verifier is reused.
 | Vacancy, credit loss, EGI | GPR, other income, loss amounts/rates; selected vacancy/credit bases, occupancy | `GPRV = GPR+other_income`; `loss = rate*selected_base`; `EGI = GPRV-vacancy-credit_loss-concessions-loss_to_lease`. M; additive identity. Each deduction needs explicit binding/zero and no-double-count evidence. Occupancy-to-loss conversion U3. |
 | Expenses | Stated amount/rate and units/occupied units/SF, EGI/reimbursements; line class and fee base | Fixed reads authored amount; quantity line `expense = rate*quantity`; percentage `expense = rate*selected_EGI`; sum exact bound lines. M; algebra, scaling/growth U3. No fixed-label default amount. |
 | NOI | EGI, opex excluding reserves, reserve allocation; placement | `NOI = EGI-opex_excluding_reserves-R_above`, with explicit above-NOI allocation. M; additive identity, U5. |
-| NCF | NOI, reserves, TI, LC, capex | Registry's literal rule is `NCF = NOI-reserves-TI-LC-capex`; above-NOI reserves may already have been deducted. **U5 blocks that combination**; no silent alternate formula. M. |
-| Debt service | Loan/payment rates, amortization count, dates, IO state, opening principal; frequency/accrual/after-IO | IO `payment_q = interest_q`; amortizing payment uses `pmt(i_q,n_q,B_open)` (VIII.3). `DS_t = sum(payment_q)`; summary binds actual schedule. M; exact rate/count/unsigned-sign association U4. |
-| Interest/principal | Opening balance, annual rate, payment dates; accrual | Candidate `I_q = B_open*rate*yearfrac(d_previous,d_q,interest_accrual)`; `principal_q = payment_q-I_q`. M; VIII.9.1 pins yearfrac, but payment interaction/association U4. |
-| Balance/balloon | Opening/closing balance, draws, principal, payoff date | `B_close = B_open+draws-principal`; next opening equals prior close. Balloon binds designated outstanding balance, counted once, not again as scheduled principal. M; algebra, boundary U4. |
+| NCF | NOI, explicitly allocated reserves, TI, LC, capex | `NCF=(((NOI-R_below)-TI)-LC)-capex`; above-NOI reserves are already deducted. M; owner-resolved U5, section3a. |
+| Debt service | Fixed monthly rate, full count, explicit IO boundary and original principal | Fix PMT once at amortization start; follow section3a U4 for payments and left-to-right actual-payment sum. M; no implicit annual/daily accrual or generated land schedule. |
+| Interest/principal | Monthly opening balance, annual rate, explicit IO boundary | Admitted monthly mortgage uses `I_q=B_open*(r/12)` and the exact U4 payment/principal steps in section3a. M. Date-based accrual/stub variants are outside L1, not inferred from r/12. |
+| Balance/balloon | Opening/closing balance, principal, explicit payoff binding | L1 monthly mortgage uses `B_close=B_open-principal`; draws and other paths remain broader inventory only. A supplied balloon binds post-payment outstanding balance once under section3a U4. M. |
 | DSCR | NOI/NCF; actual service/amortizing constant; both DSCR choices | `DSCR_t = selected_income_t/selected_service_t`. X, existing dictionary precision; alternate income/constant semantics U4/U5. No silently substituted amortizing payment during IO. |
-| Debt yield | NOI/NCF; original loan/period balance; both basis axes | `DY_t = selected_income_t/selected_balance_t`. R, current dictionary precision; balance timing U4. |
+| Debt yield | NOI/NCF, loan at close; both declared basis axes | `DY_t=selected_income_t/loan_at_close`. R, current dictionary precision; U4 restricts L1 to loan-at-close, section3a. |
 | LTV | Selected loan and declared denominator | The three identities above. R, current LTV precision; missing basis refuses. |
 | Exit value/costs | Selected forward/trailing NOI/NCF, cap, gross sale, cost rate | `gross_sale = selected_income/cap`; `sale_cost = gross_sale*cost_rate`; `net_sale = gross_sale-sale_cost`. M; algebra. Forward input must be authored beyond the hold. No unapproved stated-price convention is introduced. |
 | Equity sale proceeds | Net sale, stated outstanding debt payoff | `net_proceeds_to_equity = net_sale-debt_payoff` under Format4.9/RFC0077's aggregate-equity/junior-debt boundary. Common-only proceeds keep separate fields. M; payoff timing U4. |
 | Unlevered/levered flows | Stated signed property cash, debt draws and positive interest/principal/fee magnitudes | `U_t = sum(bound property cash amounts)`; `E_t = U_t+debt_draws_t-interest_t-principal_t-financing_costs_t`. M; algebra with each acquisition/exit component once. Financing costs at t0 enter equity. Retain VIII.9.6 reserve/cash exclusions and explicit coverage; NCF is not automatically complete owner cash. |
 | IRR | Signed flows, exact timing/dates, frequency, existing series day count | Annual `irr(CF0,...,CFn)` via VIII.3/RFC0024; monthly `m=irr(monthly_flows)`, annual report `P(1+m,12)-1`; dated VIII.9.3 `xirr`. R; unchanged solver/refusals, timing U3, accepted RFC0088 primitives. No Newton polish/new tolerance. |
 | Equity multiple | Separate distributions D_t and contribution magnitudes C_t | `EM = sum(D_t)/sum(C_t)`. X; approved fixed rule/VIII.9 precedent. Do not net a same-period contribution/distribution or infer gross flows from a net row. Retain reused verifier's domain/refusal contract. |
-| CoC by year | Stated selected numerator components, explicit equity binding; numerator option | `CoC_t = selected_cash_numerator_t/stated_equity_denominator_t`. R, existing CoC precision; numerator bridge and annual denominator U6. No inferred cumulative-equity policy. |
-| NPV | CF0, later signed flows, discount rate, explicit timing exponents | `NPV = CF0+sum(t>0,CF_t/P(1+r,tau_t))`. M; CF0 undiscounted, unlike spreadsheet NPV's first supplied argument. End/full integer timing reuses VIII.3; other timing mappings U3. |
+| Year-1 CoC | After-capex signed cash bridge and explicit initial equity | `CoC_1=cash_after_capex_1/(E+H)`, exactly as section3a U6; R, existing dictionary CoC precision. Before-capex and later-year ratios are outside L1. |
+| NPV | Exact ordered annual or dated stream and rate | Periodic terms use `CFk/P(1+r,k)`; dated terms use `amount_i*P(1+r,-t_i)`, each accumulated from +0 as section3a U3 prescribes. M; never conflate the two binary64 procedures. |
 
 A supplied assumption or fixed line with no independent identity remains an
 input-only, unverifiable row. Reading/copying it cannot earn a verified count;
 a growth or build-up identity can verify its stated consequence.
 
-`P` means RFC0088's accepted `pinnedPow`, not a convenient host pow. New composed identities need governed operation order,
-domains/refusals and independent evidence before acceptance.
+`P` means RFC0088's accepted `pinnedPow`, not a convenient host pow. Section3a pins admitted composed operations/domains; independent end-to-end
+evidence and final initial-scope review still precede acceptance. The other
+inventory rows do not become executable by appearing in this table.
 
 ### 4a. U1 disposition — bounded initial identity scope
 
@@ -337,11 +494,11 @@ when one document states only a small subset.
 
 | Initial identity group | Exact existing authority and permitted binding | Boundary |
 |---|---|---|
-| Dated return/method binding | Format4.26 / Protocol VIII.9: `total_net`, `moic`, `xnpv`, `xirr` over one explicitly selected `cash_flow_series`, its ordered original rows, day count and (for XNPV) stated rate. | Bind a headline to that exact stream and metric; preserve the existing metric's complete domain, comparison quantum, solver/refusal and verdict rules. A levered/unlevered label alone selects no stream or financial behavior. |
+| Dated return/method binding | Format4.26 / Protocol VIII.9: `total_net`, `moic`, `xnpv`, `xirr` over one explicitly selected `cash_flow_series`, its ordered original rows, explicit day count (L1 admission actual/365f per section3a) and (for XNPV) stated rate. | Bind a headline to that exact stream and metric; preserve the existing metric's complete domain, comparison quantum, solver/refusal and verdict rules. A levered/unlevered label alone selects no stream or financial behavior. |
 | Point-in-time stack figures | Format4.24 / RFCs0026 and0033: the closed `coverage`, `blended_coverage`, `debt_yield_through`, `ltc_through`, `ltv_through`, `weighted_cost` vocabulary and exact `over`/`through`/`*` selector. | Reuse accepted stabilized stack service and source dependencies. This does not construct an actual loan schedule, impose that service on IO cash flows, or reinterpret stack LTV as per-loan LTV. |
 | Stated lease-up identities | Format4.25's period `net_cash_flow`, final `occupied_sf` and final `occupancy_rate`, using its current size context and signed components. | Reuse the existing verifier's quantum and missing-input behavior; do not invent an occupancy-to-rent-loss conversion or a stabilized annual extrapolation. |
 | Explicit per-loan LTV | The owner's three-option `debt_structure.ltv_basis` direction in section3, with the current LTV dictionary comparison precision. | One explicitly selected loan and chosen denominator; no fallback or new precision minimum. Other dictionary definitions and pending metric decisions are outside this work. |
-| Optional declared acquisition-ledger coverage | Existing explicit-coverage precedent in Protocol VIII.9.6 / RFC0045: inventory the producer's declared source rows and their explicit bindings/exclusions. | Account for membership and duplicates, not inferred completeness of the real transaction. Ledger monetary reconciliation is not a new accepted sum/rounding identity here; any new financial identity still needs its own governed procedure and U7 precision. |
+| Optional declared acquisition-ledger coverage | Existing explicit-coverage precedent in Protocol VIII.9.6 / RFC0045: inventory the producer's declared source rows and their explicit bindings/exclusions. | Account for membership and duplicates, not inferred completeness of the real transaction. Ledger monetary reconciliation requires its own enumerated procedure with section3a U7 precision; membership coverage alone is not arithmetic verification. |
 
 A pro forma target is not verified merely because the referenced native section
 has a verified headline: evaluate the same accepted identity against the actual
@@ -351,13 +508,15 @@ independent identity. If the selected method, target or timing is outside that
 accepted identity's domain, retain the statement as unverifiable; do not adapt
 it by new annualization, signs, cash assembly or model generation.
 
-Periodic headline IRR/NPV without an exact accepted comparison binding, monthly
-annualization, new income/expense bridges, loan schedules, exit derivations,
-reserve/NCF placement and annual CoC remain candidate entries. Their additional
-contracts await U3-U7 and the owner's forthcoming StackUW alignment evidence.
-Those gates do not authorize omitting such stated rows from coverage. U8 is
-resolved by accepted RFC0088 as recorded below; this does not resolve U3-U7 or
-accept this profile.
+The owner has resolved U3–U7 for section3a's bounded procedures. Those
+resolutions make the named contracts eligible for an explicit U1 scope decision;
+they do not automatically activate every candidate row. Recommendation: retain
+the bounded initial groups above; add each new periodic-return, monthly-loan,
+NCF or year-1 CoC identity only by explicit enumeration with its independent
+procedure evidence. Include the land summary-to-stated-stream assertion as that
+individually justified intake, without schedule generation or land DSCR/cap rate.
+Outside-scope statements remain visible as unverifiable, not omitted. U1 is an
+acceptance gate on this proposed membership, not a reopened numerical convention.
 
 ### 5. Determinism dependency — U8 resolved
 
@@ -378,10 +537,9 @@ admitted. No host-power fallback, competing integer-power procedure or
 log1p/expm1 stability rearrangement is authorized here.
 
 Closing the primitive dependency does not accept new composed profile identities.
-Their precise association, domains, refusal tables, comparison minima and
-independent financial evidence remain U3-U7 gates where applicable, especially
-U7. Do not treat RFC0088's primitive evidence as proof of an unaccepted profile
-procedure or change the initial U1 scope or U9 reporting contract.
+Section3a now records the owner-resolved admissions, associations and comparison
+minima. Independent composed-procedure evidence remains necessary; primitive
+evidence alone does not establish it or accept U1 scope or U9 reporting.
 
 ### 6. Verdicts, coverage, receipts
 
@@ -589,12 +747,16 @@ support. Proposed case groups, not files created here:
   target, missing-input unverifiable, explicit zero versus omission, typed/domain
   refusal and contradicted neighbor/headline evidence.
 - **Each convention:** every option plus missing/unknown declarations. Each
-  contested convention has a paired complete L1 fixture holding inputs fixed and
-  varying at least two values. LTV covers all three distinct denominators and
+  contested convention with two admitted options has paired complete L1 fixtures
+  holding inputs fixed and varying those options. A registered but out-of-L1
+  value has an unsupported-declaration control. LTV covers all three distinct denominators and
   absence of the selected denominator, proving no fallback.
-- **Timing/debt:** annual/monthly, full/stub, IO transition, both after-IO choices,
-  actual/constant DSCR, day-count edges, maturity payoff and balloon counted once,
-  after U3/U4 are resolved.
+- **Timing/debt:** end/dated, annual deal versus explicit monthly lender stream,
+  nominal/12, full-term after IO, loan-at-close DY, actual/constant DSCR bindings,
+  year-1 after-capex CoC, above/below NOI reserves and balloon counted once.
+  Missing/unknown declarations, mid/beginning, generic stubs, remaining-term,
+  current-balance DY and before-capex/later-year CoC do not verify. No generated
+  land schedule; preserve missing-payment-stream coverage.
 - **Precision/procedure:** RFC0079 token/quantum controls, governed IRR/refusals,
   integer/fractional/negative powers and row results against accepted RFC0088.
 
@@ -615,7 +777,8 @@ in this corpus. This is a plan, not a claim that a spreadsheet was executed.
 Plan only, inside `@uwmd/verify` under the optional profile (RFC0083). No code,
 projection package, model-generation function, AI agent or module manifest.
 
-1. Resolve numerical U3–U7, review U1/U9 and obtain final acceptance; synchronize
+1. Review U1/U9 and the owner-resolved U3–U7 admission boundaries, obtain the
+   independent review/evidence and final acceptance; synchronize
    Format/Protocol, class-scoped LTV dictionary entries, schemas, executable
    protocol mirror, profile/capability/target tables and conformance through
    reviewed implementation work.
@@ -653,34 +816,33 @@ whatever the document states and reports coverage, with no minimum L1 row set
 required to claim it. Counts by verdict and row family include rows stated with
 no defined identity. A thin document gets a thin coverage report, not a refusal.
 This follows Format 4.24's "stated and verified, never trusted" and the #355
-reframe. Only U2 is resolved by that owner decision; U1/U9 now have separate
-precedent-derived draft dispositions above. U3-U7 remain open; U8 is separately
-resolved below.
+reframe. That ruling resolves U2 only. U1/U9 have separate draft dispositions;
+U3–U7 are resolved by the 2026-10-23 ruling, and U8 separately below.
 
 **U8 — resolved, owner direction 2026-10-18.** RFC0088 is accepted on main at
 `8a646aa219620c143bb8439aa67cf010d9896a79`; section5 records the exact procedure,
 public exports and CI evidence. This closes only the numerical-primitive
-dependency. U1/U9 remain draft dispositions, and no U3-U7 convention is decided.
+dependency. It did not decide U3–U7; their later resolution is section3a.
+U1/U9 remain draft dispositions.
 
-## Unresolved questions
+## Remaining acceptance gates and recommendation
 
-U1/U9 are addressed by the draft dispositions above, subject to review. The
-remaining numerical questions below are acceptance gates, not choices for an
-implementer to guess. The owner will supply U3-U7 StackUW alignment evidence;
-this update does not decide them. U8 is resolved against accepted RFC0088. Reference
-code or spreadsheet practice alone does not decide a new financial convention.
+U3–U7 are resolved by the owner on 2026-10-23 within section3a's admissions.
+Their broader unadmitted variants are future identity work, not defaults for an
+implementer. U2/U8 remain resolved. This RFC stays **draft**.
 
-| ID | Kind | Required decision/evidence |
+| Gate | Current proposal / recommendation | Required before acceptance |
 |---|---|---|
-| U3 | **Numeric** | Pin calendar/anniversary anchors, stub proration/quantity-rate scaling, occupancy-to-loss arithmetic and discount exponents. `beginning`/`mid` with CF0 fixed at t0 cannot silently use integer-spaced `irr`: decide admitted combinations or govern the timed identity without changing the solver implicitly. |
-| U4 | **Numeric** | Pin nominal annual-to-payment rate, full/remaining amortization counts, IO boundary, payment/accrual interaction and unsigned PMT semantics; pre/post-payment balances for debt yield, balloon and exit. Current stabilized stack service/starter code is not a normative periodic schedule. |
-| U5 | **Numeric** | Reconcile above-NOI reserves with literal `NCF=NOI-reserves-TI/LC-capex`: subtract only reserves not already deducted, or intentionally define another measure? Also bind accrual versus owner cash under VIII.9.6/11. Do not choose or double count silently. |
-| U6 | **Numeric** | Pin before/after-capex CoC components and equity denominator across periods/later contributions. Existing Y1 fallback or cumulative-equity field does not define every year. No new registry option without approval. |
-| U7 | **Numeric** | Allocate new-identity comparison minima and freeze composed binary64 association/domain/refusal tables. Existing dictionary and reused series contracts stay authoritative; no guessed floor or blanket epsilon. |
+| U1 — initial identity membership | Accept section4a's bounded return/method bindings, native identities, explicit per-loan LTV and optional declared-ledger coverage. Enumerate additions individually; keep land summary-to-stated-stream intake, no generated land debt or land DSCR/cap rate. Do not activate the full section4 inventory. | Owner confirmation of the exact initial vocabulary, including which section3a procedures enter the first implementation. |
+| U9 — coverage/transport | Accept section6a's distinct assertion keys, relationship deduplication, independent inventory, three verdicts, failure precedence, authored family counts, deterministic order and read-only CLI0/1/2 proposal. Zero rows means zero assurance; no minimum-row refusal. No new receipt field. | Review adversarial ambiguity, duplicates, missing prerequisites, unselected/source-model mismatches and misleading coverage claims; confirm this proposed contract. |
+| Independent red-team and procedure evidence | Obtain an independent review before final acceptance. Review exact section3a math/admission, U1 boundary and U9 assurance; do not equate the producer declaration or green repository CI with independent financial evidence. | Clause-level counterexamples and dispositions, independently authored spreadsheet/composed-procedure comparisons, and independently implemented profile/transport evidence before claiming support. No review completion is asserted here. |
 
-The launch question is closed: this optional profile ships at 5.0.0 with
-everything else. RFC0085 provenance and RFC0089 subject work remain separately
-owned and are not accepted by this draft.
+The red-team is a recommendation for this RFC's final review; the separate
+owner-required RFC0089 red-team remains its own gate and is not completed or
+waived here. RFC0085 is implemented on current main. RFC0089 remains draft;
+this proposal does not activate its subject representation. The optional
+profile remains part of the approved5.0 launch scope, with no publication
+or release authorized by this draft update.
 
 ## Prior art
 
