@@ -1709,6 +1709,12 @@ metadata, searches rows or mutates input. Invalid helper arguments use a typed
 The verifier MUST capture an immutable snapshot before its first await, resolve
 the selected property-level hedge and exact source against that snapshot, and
 apply the same relevant structural prerequisites as the synchronous validator.
+Under RFC 0120, structural_issues MUST preserve applicable existing CF findings
+from the exact selected physical cash_flow_series source, including their code,
+severity, section, field and multiplicity. Exclude other variants, components,
+superseded blocks and unrelated deal findings; select by source identity, never
+by filtering all-document CF codes. The synchronous result and binding digest
+are unchanged. Unresolvable-source precedence remains unchanged.
 Relevant prerequisites are the funding rules, hedge facts needed for the binding,
 escrow conflict check, exact reference selection, selected series structure,
 payment semantics and currency validity. Unrelated financial validation findings
