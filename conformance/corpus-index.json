@@ -6680,6 +6680,21 @@
       "suite": "receipts",
       "scenario": "verify/21-dictionary-packless-refusal [pack-less]",
       "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "0121-four-members",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "0121-independent-owners",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "0121-component",
+      "target": "verifier"
     }
   ]
 }

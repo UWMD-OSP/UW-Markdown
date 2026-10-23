@@ -854,6 +854,21 @@ RFC 0120 preserves existing CF diagnostics for the exact selected replacement-
 funding source. Portable hedge controls assert structural code multiplicity;
 other variants and superseded blocks remain outside that bounded claim.
 
+## RFC 0121
+
+The owner accepted the bounded CS-01 contract on 2026-10-22. Required own members, identity constraints and independent code ownership are implemented and covered by paired controls.
+
+Accepted RFC 0121 fixes CS-01 diagnostic ownership at the four required own
+tranche members and identities, including builtin components. Other schema
+constraints retain their existing code owners; portable controls preserve counts.
+
+## RFC 0122
+
+The owner accepted the full strict DQ-05 grammar and typed clock refusal on 2026-10-22. TypeScript, Python and schema controls share the admitted instant vectors.
+
+RFC 0122 shares strict date/offset controls across TypeScript and Python; invalid
+supplied clocks refuse before returning findings, even when gaps are absent.
+
 ## RFC 0123
 
 Accepted on 2026-10-22: dictionary receipt assertions are recomputed without packs after authentication, with honest named-pack coverage indeterminacy.

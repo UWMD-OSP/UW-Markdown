@@ -3615,6 +3615,18 @@ A gap entry names a missing or low-quality field by `(section, field_path)` and 
 
 **Auto-maintenance.** When an editor (a starter product since RFC 0078, Protocol §II.4) is invoked with the `--maintain-gaps` flag, the editor runs `inferGaps()` after every successful write and either updates the existing `gaps` section or creates one. The auto-write is stamped `_meta.provenance.source: 'system/gaps-maintainer'` and `_meta.provenance.actor: 'system'` so it is filterable from human-authored entries.
 
+**DQ-05 instants (RFC 0122).** Admit calendar-valid YYYY-MM-DD at UTC midnight,
+or YYYY-MM-DDTHH:mm[:ss[.fraction]] with uppercase Z or signed +HH:mm/-HH:mm.
+Years are 0001–9999; hours 00–23, minutes/seconds 00–59, offset hours 00–23 and
+minutes 00–59. Fraction requires seconds and has 1–3 digits, right-padded to
+milliseconds. Missing seconds mean zero. Reject whitespace, unpadded fields,
+local-time or textual forms, day overflow, 24:00, leap seconds and trailing text.
+Invalid/absent last_checked adds no DQ-05; existing structural owners remain.
+Explicit clock strings use the same grammar; invalid supplied clocks refuse
+with category validate / PROTO-VALIDATION-CLOCK, even without gaps. The host's
+current instant remains the default; the strict older-than threshold remains
+14 days unless the existing institution override applies.
+
 **Validator codes.** A `provisional` block with no matching gap entry triggers `DQ-01`; a `partial` block with no `_overrides` triggers `DQ-03`; consuming a provisional block at a stage whose policy is `halt` triggers `DQ-02`; a stale entry (older than the institution's freshness threshold) triggers `DQ-05`. See Protocol §III.6a.
 
 ---
@@ -3724,7 +3736,13 @@ The section has two parts: an ordered **`tranches`** array and a **`sizing`** ar
 - The `capital_stack` section is OPTIONAL and asset-class independent. A document with no `capital_stack` behaves exactly as before this RFC; every single-loan metric is unchanged.
 - **The stack is one point in time** (*stated by [RFC 0033](../docs/rfcs/0033-capital-stack-point-in-time.md)*). The section states the capitalization contemporaneous with the operating year the sizing verbs read (`noi_model.net_operating_income`) — for a deal underwritten to stabilization, the stabilized (permanent) stack. Facilities that do not coexist at that point MUST NOT be stated as concurrent tranches: a construction loan and the permanent takeout that retires it are one senior position in time sequence, and stating both double-counts the senior capital and misstates every attachment point above it. A producer underwriting a ground-up development SHOULD emit the stabilized stack — the takeout senior plus the layers that survive into stabilization — and MUST NOT add the retired construction facility to it. A `bridge` tranche is unaffected: a deal underwritten *during* its bridge period states the bridge-period capitalization, which is the point in time its NOI describes. Phased stacks (construction → takeout, draw schedules, as-is/as-stabilized dual sizing) are deferred with the multi-period spine (RFC 0026 § D; RFC 0033).
 - A stack MUST state `point_in_time` as `closing` or `stabilization`; a stack that omits it or states any other value MUST be rejected (`CS-04`, RFC 0098). This is the point RFC 0033's one-point rule names, and the point `CC-03` reads its senior at.
-- Each tranche MUST state `id`, `class`, `position`, and `amount`; `id` and `position` MUST be unique within the section. A malformed or duplicate-keyed tranche MUST be rejected (`CS-01`).
+- Each tranche MUST state `id`, `class`, `position`, and `amount`; `id` and `position` MUST be unique within the section. For CS-01, malformed means a non-object tranche, a missing/null/wrongly typed
+  required own member, an id/class/position outside its existing domain, or
+  duplicate id/position. CS-01 MUST NOT stand for every tranche-schema failure
+  (RFC 0121). Coupon/class remains CS-02, split coupon CS-02b, point-in-time
+  CS-04, sizing CS-03 and waterfall attempts CS-WATERFALL-UNSUPPORTED; independent
+  owners still report their findings. The same boundary applies to an admitted
+  builtin component stack (§4.23).
 - Every debt tranche and every `preferred_equity` tranche MUST state a `rate`; a `common_equity` tranche MUST NOT (`CS-02`).
 - When a `capital_stack` is present, its `senior_debt` tranche MUST reconcile with the senior `debt_structure` outstanding at the stack's `point_in_time` — same amount, same rate — and a `closing` stack also with the `sources_uses` senior bucket. This is the generalized `CC-03` (RFC 0098): each senior is stated once per point, and like-dated figures agree.
 - **Sizing is stated and verified, never trusted.** Each `sizing` entry names a closed `fn`, a selector, and a stated `value`; a verifier recomputes `fn` and compares. Disagreement is `CS-SIZING-DISAGREES` and the result is `failed`, never a silent pass. A figure that reads a tranche field the document does not supply is `unverifiable`, never `0`.

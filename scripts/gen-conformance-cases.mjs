@@ -336,6 +336,16 @@ function referenceVariant(path, section) {
   return ['--variant', variant];
 }
 
+for (const scenario of dirs(join(CONFORMANCE, 'capital-stack'))) {
+  const dir = join(CONFORMANCE, 'capital-stack', scenario);
+  if (!existsSync(join(dir, 'expected.json'))) continue;
+  const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
+  if (!expected.cs_issues) continue;
+  add(`capital-stack/${scenario}/validate`, 'validate', ['deal.uwx.md', '--json'], dir, {
+    kind: 'json-subset', file: 'expected.json', project: 'capital-admission', exit_code: 1,
+  });
+}
+
 const SECTION_VERIFIERS = [
   { suite: 'cash-flow', command: 'verify-cash-flows', section: 'cash_flow_series',
     blocks: (c) => [fence('cash_flow_series', c.series, 'base')] },

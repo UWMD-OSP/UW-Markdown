@@ -1,27 +1,12 @@
-"""Instants for DQ-05 gap staleness, as the reference reads `last_checked`.
-
-Format §4.22 says a gap older than the freshness threshold
-is stale (DQ-05) but not how a `last_checked` without a time or an offset is
-placed in time. The reference parses it with ECMAScript `Date.parse`, so this
-module implements the ECMAScript Date Time String Format (ECMA-262 §21.4.1.32):
-
-- `YYYY`, `YYYY-MM`, `YYYY-MM-DD` and the six-digit signed extended years;
-- optionally `THH:mm`, `:ss` and a fraction (truncated to milliseconds);
-- optionally `Z` or a `+HH:mm` / `-HH:mm` offset.
-
-A date-only form is UTC midnight; a date-time form without an offset is the
-host's local time, exactly as ECMAScript specifies. Strings outside the format
-are not instants (the finding is not assessed), including the host-specific
-legacy forms some engines also accept. Out-of-range fields are not instants.
-"""
+"""RFC 0122 strict calendar-valid DQ-05 instants; no local-time admission."""
 from datetime import datetime, timedelta, timezone
 import re
 
 
 _FORMAT = re.compile(
-    r"(?P<year>[0-9]{4}|[+-][0-9]{6})(?:-(?P<month>[0-9]{2})(?:-(?P<day>[0-9]{2}))?)?"
-    r"(?:[Tt](?P<hour>[0-9]{2}):(?P<minute>[0-9]{2})(?::(?P<second>[0-9]{2})(?:\.(?P<fraction>[0-9]+))?)?"
-    r"(?P<zone>[Zz]|[+-][0-9]{2}:?[0-9]{2})?)?\Z")
+    r"(?P<year>[0-9]{4})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})"
+    r"(?:T(?P<hour>[0-9]{2}):(?P<minute>[0-9]{2})(?::(?P<second>[0-9]{2})(?:\.(?P<fraction>[0-9]{1,3}))?)?"
+    r"(?P<zone>Z|[+-][0-9]{2}:[0-9]{2}))?\Z")
 _EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 _DAY = 86_400_000
 
@@ -45,7 +30,7 @@ def epoch_milliseconds(text):
     if not isinstance(text, str):
         return None
     match = _FORMAT.match(text)
-    if match is None or match["year"] == "-000000":
+    if match is None or int(match["year"]) < 1:
         return None
     year = int(match["year"])
     month = int(match["month"] or 1)
@@ -61,9 +46,7 @@ def epoch_milliseconds(text):
     hour, minute = int(match["hour"]), int(match["minute"])
     second = int(match["second"] or 0)
     millis = int((match["fraction"] or "0")[:3].ljust(3, "0"))
-    if hour == 24 and (minute or second or millis):
-        return None
-    if hour > 24 or minute > 59 or second > 59:
+    if hour > 23 or minute > 59 or second > 59:
         return None
     clock = ((hour * 60 + minute) * 60 + second) * 1000 + millis
     zone = match["zone"]
@@ -76,15 +59,27 @@ def epoch_milliseconds(text):
                 return None
             offset = (hours * 60 + minutes) * 60_000 * (1 if zone[0] == "+" else -1)
         return days * _DAY + clock - offset
-    # No offset on a date-time: the host's local time zone (ECMA-262).
-    try:
-        local = datetime(year, month, day) + timedelta(hours=hour, minutes=minute, seconds=second)
-        seconds = round(local.timestamp())
-    except (OverflowError, OSError, ValueError):
-        return None
-    return seconds * 1000 + millis
+    return None
 
 
 def instant_milliseconds(instant):
     """Exact integer milliseconds of an aware datetime (no float rounding)."""
     return (instant - _EPOCH) // timedelta(milliseconds=1)
+
+
+class ValidationClockError(ValueError):
+    category = "validate"
+    code = "PROTO-VALIDATION-CLOCK"
+
+
+def validation_now_milliseconds(value):
+    if value is None:
+        return instant_milliseconds(datetime.now(timezone.utc))
+    if isinstance(value, datetime):
+        if value.tzinfo is not None and value.utcoffset() is not None:
+            return instant_milliseconds(value)
+    else:
+        instant = epoch_milliseconds(value)
+        if instant is not None:
+            return instant
+    raise ValidationClockError("The supplied validation clock is not an RFC 0122 instant.")

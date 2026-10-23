@@ -1,0 +1,112 @@
+{
+  "cs_issues": [
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[0].amount"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[0].class"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[0].id"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[0].position"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[1].amount"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[1].class"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[1].id"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[1].position"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[2].amount"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[2].class"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[2].id"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[2].position"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[3].amount"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[3].class"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[3].id"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[3].position"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[5].id"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[5].position"
+    }
+  ]
+}
