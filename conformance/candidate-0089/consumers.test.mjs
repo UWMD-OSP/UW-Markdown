@@ -20,8 +20,11 @@ const inventory = {
   'packages/uwmd-verify/src/envelope.ts': 'whole-source canonicalization definition',
   'packages/uwmd-verify/src/integrity.ts': 'whole-source V13 check; V9 block and V11 signing inputs stay separately scoped',
   'packages/uwmd-verify/src/lease-up-cash-flows.ts': 'whole-source assembly provenance; selected ledger/result commitments stay scoped',
+  'packages/uwmd-verify/src/property-cash-flows.ts': 'forwards the lease-up whole-source identity into assembly provenance; output series retain selected ledger scope',
   'packages/uwmd-verify/src/protocol.ts': 'typed whole-source result fields, not additional computation',
   'packages/uwmd-verify/src/receipts.ts': 'whole-source UWX receipt subject; ordinary receipts retain their own subject policy',
+  'packages/uwmd-verify/src/replacement-funding.ts': 'V12 selected payment-vector binding, not a whole-source commitment',
+  'packages/uwmd-verify/src/replacement-funding-structure.ts': 'V12 selected binding shape admission, not whole-source identity',
   'packages/uwmd-verify/src/reserve-accounts.ts': 'whole-source verification provenance, not an authored stale-plan binding',
   'packages/uwmd-verify/src/reserve-draw-bindings.ts': 'whole-source once-bound plan subject; no automatic rebinding',
   'packages/uwmd-verify/src/uwcsv.ts': 'whole-source carrier stamp',
@@ -42,7 +45,7 @@ test('all current source-identity consumers have an explicit commitment scope', 
   const results = [];
   for (const group of ['packages', 'tools']) for (const path of sources(resolve(root, group))) {
     const source = readFileSync(path, 'utf8');
-    const matches = [...source.matchAll(/computeEnvelopeDigest|toUWEnvelope|stampEnvelopeDigest|verifyEnvelopeDigest|uw-envelope-semantic|source_digest/g)];
+    const matches = [...source.matchAll(/computeEnvelopeDigest|toUWEnvelope|stampEnvelopeDigest|verifyEnvelopeDigest|uw-envelope-semantic|source_digest|source_envelope_digest|binding_digest/g)];
     if (!matches.length) continue;
     const name = relative(root, path).replaceAll('\\', '/');
     assert.ok(Object.hasOwn(inventory, name), `unclassified consumer: ${name}`);

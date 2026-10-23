@@ -94,6 +94,15 @@ test('D5 actual new-subject receipt issuance, source identity and current Receip
   assert.equal(issued.subject.canonicalization_version, '2.0');
   assert.equal(issued.subject.digest, digest(projectSource(singleSource).model));
   const original = signedReceipt(clone(issued));
+  let rejectedCalls = 0;
+  const mustNotRun = { verify: async () => { rejectedCalls++; return true; } };
+  const malformed = clone(original); malformed.subject.digest = 'bad'; malformed.computation.rule_set = '3.1';
+  await assert.rejects(() => candidate.receipts.verifyReceipt(malformed, 'invalid source', { signatureVerifier: mustNotRun }), error => error.code === 'RCP_MALFORMED');
+  assert.equal(rejectedCalls, 0);
+  observations.push({ name: 'receipt-malformed-before-source', code: 'RCP_MALFORMED', backend_calls: rejectedCalls });
+  const unreadable = await candidate.receipts.verifyReceipt(original, 'invalid source', { signatureVerifier: mustNotRun });
+  assert.deepEqual(codes(unreadable), ['RCP-09']); assert.equal(rejectedCalls, 0);
+  observations.push({ name: 'receipt-source-before-authentication', codes: codes(unreadable), backend_calls: rejectedCalls });
   let observed = await receiptObservation('candidate-receipt-valid', original);
   assert.equal(observed.result.verdict, 'verified'); assert.equal(observed.calls, 1);
   const version = clone(original); version.subject.canonicalization_version = 'different';

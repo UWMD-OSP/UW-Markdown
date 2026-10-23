@@ -24,9 +24,16 @@ for (const value of ['{"a":0,"\\u0061":0}', '{"x":[{"a":0,"a":0}]}']) add(`dupli
 add('nonfinite', 'json', '{"x":1e400}', 'raw-json', 'finite');
 add('surrogate', 'json', '{"x":"\\ud800"}', 'raw-json', 'surrogate|Unicode');
 const xml = encodeXML(model);
+for (const [name, value] of [
+  ['prefix-rename-positive', xml.replaceAll('xmlns:uw=', 'xmlns:renamed=').replace(/(<\/?)(?:uw:)/g, '$1renamed:')],
+  ['default-namespace-positive', xml.replaceAll('xmlns:uw=', 'xmlns=').replace(/(<\/?)(?:uw:)/g, '$1')],
+]) cases.push({ name, kind: 'xml', value, layer: 'accepted' });
 for (const [name, value, pattern] of [
   ['namespace', xml.replace('https://uwmd.org/ns/document/2', 'urn:wrong'), 'namespace|root'],
   ['attribute', xml.replace('envelope-version=', 'unexpected="x" envelope-version='), 'attribute'],
+  ['qualified-attribute', xml.replace(' type="object"', ' uw:type="object"'), 'attribute'],
+  ['nested-rebinding', xml.replace('<uw:value type="object">', '<uw:value xmlns:uw="urn:wrong" type="object">'), 'namespace|value'],
+  ['extra-root', xml + xml, 'root|XML|xml|element|junk'],
   ['mixed', xml.replace('<uw:value type="object">', '<uw:value type="object">mixed'), 'mixed|text'],
   ['lexical', xml.replace('\\u000a', '\\n'), 'lexical|canonical'],
   ['truncated', xml.replace('</uw:document>', ''), 'XML|xml|element|tag'],
@@ -44,6 +51,19 @@ for (const name of ['duplicate-pointer', 'ordinal-alias', 'block-extra-overlap',
   files['block_values.csv'] = writeCSV([VALUE, ...rows]);
   add(name, 'csv', inventory(files), name === 'duplicate-cell' ? 'raw-json' : 'csv-grammar', name === 'ordinal-alias' ? 'gap|alias' : name === 'block-extra-overlap' ? 'overlap' : 'duplicate');
 }
+const duplicateToken = value => {
+  const key = Object.keys(value)[0]; const alias = `\\u${key.charCodeAt(0).toString(16).padStart(4, '0')}${key.slice(1)}`;
+  return `{"${alias}":${JSON.stringify(value[key])},${JSON.stringify(value).slice(1)}`;
+};
+const emptyDuplicate = encodeCSV(model); const emptyRows = readCSV(emptyDuplicate['document.csv'], DOC);
+emptyRows[0][8] = `[${duplicateToken(JSON.parse(emptyRows[0][8])[0])}]`;
+emptyDuplicate['document.csv'] = writeCSV([DOC, ...emptyRows]);
+add('duplicate-empty-collection-cell', 'csv', inventory(emptyDuplicate), 'raw-json', 'duplicate');
+const manifestDuplicate = encodeCSV(model); manifestDuplicate['manifest.json'] = duplicateToken(JSON.parse(manifestDuplicate['manifest.json']));
+add('duplicate-manifest', 'csv', manifestDuplicate, 'raw-json', 'duplicate');
+const viewSubstitution = encodeCSV(model); const viewManifest = JSON.parse(viewSubstitution['manifest.json']);
+viewManifest.files[0].fidelity = 'view'; viewSubstitution['manifest.json'] = JSON.stringify(viewManifest);
+add('view-is-not-model', 'csv', viewSubstitution, 'carrier-admission', 'fidelity|model/view');
 for (const level of [0, 6]) {
   const bytes = encodeZIP(model, level); const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   for (let at = 0; at < bytes.length - 46; at++) {
