@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { areEnvelopesEquivalent, fromUWEnvelope, toUWEnvelope } from './envelope.js';
 import { validateUWFile } from './validator.js';
 import { parseUWFile } from './parser.js';
+import { sha256BytesHex } from './integrity.js';
 import {
   decodeUWCSVBundle,
   decodeUWCSVZip,
@@ -71,6 +72,22 @@ describe('UW CSV Bundle 1.0', () => {
     expect(first).toEqual(second);
     const decoded = await decodeUWCSVZip(first);
     expect(areEnvelopesEquivalent(decoded, envelope)).toBe(true);
+  });
+
+  it.each([0, 6] as const)('checks BOM bytes in the original ZIP inventory before text decoding (%s)', async (level) => {
+    const bundle = await encodeUWCSVBundle(envelope);
+    const files = Object.fromEntries(Object.entries(bundle.files).map(([path, text]) => [path, strToU8(text)]));
+    files['frontmatter.csv'] = new Uint8Array([239, 187, 191, ...files['frontmatter.csv']!]);
+    await expect(decodeUWCSVZip(zipSync(files, { level }))).rejects.toThrow(/CSV_SIZE_MISMATCH/);
+    const manifest = JSON.parse(bundle.files['manifest.json']!);
+    const entry = manifest.files.find((file: { path: string }) => file.path === 'frontmatter.csv');
+    entry.bytes = files['frontmatter.csv'].length;
+    entry.sha256 = `sha256:${await sha256BytesHex(files['frontmatter.csv'])}`;
+    files['manifest.json'] = strToU8(JSON.stringify(manifest));
+    expect(areEnvelopesEquivalent(await decodeUWCSVZip(zipSync(files, { level })), envelope)).toBe(true);
+    entry.sha256 = `sha256:${'0'.repeat(64)}`;
+    files['manifest.json'] = strToU8(JSON.stringify(manifest));
+    await expect(decodeUWCSVZip(zipSync(files, { level }))).rejects.toThrow(/CSV_HASH_MISMATCH/);
   });
 
   it('preserves arrays with more than ten entries and formula-looking prose', async () => {
