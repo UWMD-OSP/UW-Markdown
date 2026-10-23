@@ -1185,14 +1185,16 @@ describe('RFC 0088 authenticate-first receipt precedence', () => {
 describe('RFC 0123 dictionary receipts without packs', () => {
   const options = { filename: PARKVIEW, issued_at: ISSUED_AT };
   it('recomputes the exact stated dictionary subset without claiming complete pack coverage', async () => {
-    const source = await parkview(), receipt = await issueReceipt(source, options);
+    const source = await parkview();
+    const receipt = await issueReceipt(source, options);
     const result = await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [] });
     expect(result.verdict).toBe('unverifiable');
     expect(result.issues.map(i => i.code)).toEqual(['RCP-05']);
     expect(result.recomputed).toEqual(receipt.computation.results);
   });
   it.each(['value', 'computed', 'unit'])('does not let an unavailable pack mask dictionary %s disagreement', async field => {
-    const source = await parkview(), receipt = await issueReceipt(source, options);
+    const source = await parkview();
+    const receipt = await issueReceipt(source, options);
     const stated = receipt.computation.results.find(r => r.calc_id === 'cap_rate')!;
     if (field === 'value') stated.value = (stated.value as number) + 0.01;
     else if (field === 'computed') { stated.computed = false; stated.value = null; }
@@ -1205,7 +1207,8 @@ describe('RFC 0123 dictionary receipts without packs', () => {
     expect((await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [] })).issues[0]!.code).toBe('RCP-07');
   });
   it('checks the full stated digest despite an unavailable or different-version pack', async () => {
-    const source = await parkview(), receipt = await issueReceipt(source, options);
+    const source = await parkview();
+    const receipt = await issueReceipt(source, options);
     receipt.computation.results_digest = `sha256:${'0'.repeat(64)}`;
     expect((await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [] })).issues[0]!.code).toBe('RCP-04');
     receipt.computation.results_digest = await computeResultsDigest(receipt.computation.results);
@@ -1215,7 +1218,8 @@ describe('RFC 0123 dictionary receipts without packs', () => {
     expect(result.recomputed).toEqual(receipt.computation.results);
   });
   it('exposes only dictionary ids actually stated, with opaque pack-only output still unproved', async () => {
-    const source = await parkview(), receipt = await issueReceipt(source, options);
+    const source = await parkview();
+    const receipt = await issueReceipt(source, options);
     receipt.computation.results = receipt.computation.results.filter(r => r.calc_id === 'cap_rate');
     receipt.computation.results.push({ calc_id: 'opaque', value: 1, computed: true });
     receipt.computation.results_digest = await computeResultsDigest(receipt.computation.results);
@@ -1224,7 +1228,8 @@ describe('RFC 0123 dictionary receipts without packs', () => {
     expect(result.recomputed?.map(r => r.calc_id)).toEqual(['cap_rate']);
   });
   it('authenticates before dictionary recomputation when the pack is unavailable', async () => {
-    const source = await parkview(), receipt = await issueReceipt(source, options);
+    const source = await parkview();
+    const receipt = await issueReceipt(source, options);
     receipt.signature = { algorithm: 'ed25519', key_id: 'test', value: 'AA==' };
     const absent = await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [] });
     expect(absent.issues.map(i => i.code)).toEqual(['RCP-05', 'RCP-08']);

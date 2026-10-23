@@ -143,3 +143,12 @@ class VerifierComparatorTests(unittest.TestCase):
                                             "evidence": {"lease_up": {"evidence": {"verification": {"verdict": "failed"}}}}}}, "property-cash-flow-assembly")
         self.assertEqual(refusal, {"error_code": "CALC-CF-ASSEMBLY", "reason": "verification", "pointer": "p", "lease_up_verdict": "failed"})
         self.assertEqual(runner.json_pointer({"cases": [{"a": 1}, {"a/b": 2}]}, "/cases/1/a~1b"), 2)
+
+
+class ReceiptRecomputedIdsTests(unittest.TestCase):
+    def test_recomputed_ids_are_exact_and_keep_multiplicity(self):
+        expected = {"recomputed_ids": ["a", "a", "b"]}
+        self.assertEqual(runner.verdict_codes(expected, {"recomputed_ids": ["a", "a", "b"]}, ["recomputed_ids"]), [])
+        for actual in (["a", "b"], ["a", "a", "b", "extra"], ["b", "a", "a"]):
+            self.assertTrue(runner.verdict_codes(expected, {"recomputed_ids": actual}, ["recomputed_ids"]))
+        self.assertTrue(runner.verdict_codes(expected, {}, ["recomputed_ids"]))

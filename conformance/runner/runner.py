@@ -304,7 +304,7 @@ def project(actual, name: str | None):
 # exactly. The case names the baseline fields read, from a closed set, because
 # a document fixture's `expected_codes` are validator codes, not verifier codes.
 
-VERDICT_FIELDS = ("verdict", "expected_code", "expected_codes", "refused_code")
+VERDICT_FIELDS = ("verdict", "expected_code", "expected_codes", "refused_code", "recomputed_ids")
 
 
 def verdict_codes(expected: dict, actual, fields: list[str]) -> list[str]:
@@ -318,7 +318,9 @@ def verdict_codes(expected: dict, actual, fields: list[str]) -> list[str]:
         if field not in expected:
             continue
         want = expected[field]
-        if field in ("verdict", "refused_code"):
+        if field == "recomputed_ids":
+            problems.extend(json_subset(want, actual.get(field), field))
+        elif field in ("verdict", "refused_code"):
             if actual.get(field) != want:
                 problems.append(f"{field}: {want!r} != {actual.get(field)!r}")
         else:
