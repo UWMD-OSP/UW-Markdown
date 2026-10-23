@@ -336,6 +336,16 @@ function referenceVariant(path, section) {
   return ['--variant', variant];
 }
 
+for (const scenario of dirs(join(CONFORMANCE, 'capital-stack'))) {
+  const dir = join(CONFORMANCE, 'capital-stack', scenario);
+  if (!existsSync(join(dir, 'expected.json'))) continue;
+  const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
+  if (!expected.cs_issues) continue;
+  add(`capital-stack/${scenario}/validate`, 'validate', ['deal.uwx.md', '--json'], dir, {
+    kind: 'json-subset', file: 'expected.json', project: 'capital-admission', exit_code: 1,
+  });
+}
+
 const SECTION_VERIFIERS = [
   { suite: 'cash-flow', command: 'verify-cash-flows', section: 'cash_flow_series',
     blocks: (c) => [fence('cash_flow_series', c.series, 'base')] },
@@ -421,7 +431,7 @@ for (const id of dirs(join(CONFORMANCE, 'receipts', 'verify'))) {
   const expected = JSON.parse(readFileText(join(dir, file)));
   const inputs = existsSync(join(dir, 'inputs.json')) ? ['--inputs', 'inputs.json'] : [];
   add(`receipts/verify-${id}/verify-receipt`, 'verify-receipt', ['receipt.json', deal, ...inputs, '--json'], dir, {
-    kind: 'verdict-codes', file, project: 'receipt-verification', fields: ['verdict', 'expected_codes', 'refused_code'],
+    kind: 'verdict-codes', file, project: 'receipt-verification', fields: ['verdict', 'expected_codes', 'refused_code', ...(expected.recomputed_ids ? ['recomputed_ids'] : [])],
     exit_code: expected.refused_code || expected.verdict === 'failed' ? 1 : 0,
   });
 }

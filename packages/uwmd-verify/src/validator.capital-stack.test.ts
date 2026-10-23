@@ -455,3 +455,17 @@ describe('validateUWFile — CC-03 senior rate (#406)', () => {
   });
 });
 
+describe('RFC 0121 bounded CS-01 ownership', () => {
+  it.each(['id', 'class', 'position', 'amount'])('requires own %s without broad schema ownership', field => {
+    const b = goodStack(); const rows = b.content.tranches as Array<Record<string, unknown>>;
+    rows[0] = Object.assign(Object.create({ [field]: rows[0]![field] }), rows[0]);
+    delete rows[0]![field];
+    const issues = validateUWFile(file({ capital_stack: b })).issues.filter(i => i.code === 'CS-01');
+    expect(issues.map(i => i.field)).toEqual([`tranches[0].${field}`]);
+  });
+  it('keeps unrelated schema fields outside CS-01', () => {
+    const b = goodStack(); const rows = b.content.tranches as Array<Record<string, unknown>>;
+    rows[0]!.accrual = 'unknown'; rows[0]!.amortization_months = 'invalid';
+    expect(codes(file({ capital_stack: b }))).not.toContain('CS-01');
+  });
+});

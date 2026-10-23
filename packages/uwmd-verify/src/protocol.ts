@@ -1303,6 +1303,7 @@ export const EXTENSION_SECTION_PREFIX = 'x_' as const;
 
 /** A class-scoped normative calculation; packs mirror these definitions. */
 export interface MetricDictionaryCalculation {
+  /** RFC 0123: an applicable receipt calc_id asserts this definition, independent of starter packs. */
   readonly id: string;
   readonly label: string;
   readonly asset_classes: readonly AssetClass[];
@@ -1643,7 +1644,7 @@ export type ProtocolErrorCategory =
 
 export interface ProtocolError {
   category: ProtocolErrorCategory;
-  code: string;                     // e.g. "PROTO-EDIT-001"
+  code: string;                     // e.g. PROTO-EDIT-001; RFC 0122 invalid clock: PROTO-VALIDATION-CLOCK
   message: string;
   /** Path into the owning input. For VAL-INSTITUTION-CONFIG-UNREADABLE and
    * VAL-INSTITUTION-CONFIG-MALFORMED this is the selected configuration,
@@ -2228,7 +2229,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'CS-01', severity: 'error',
     title: 'Malformed capital-stack tranche',
-    description: 'A tranche omits a required field (id, class, position, amount) or repeats an id/position.',
+    description: 'RFC 0121: tranche object admission, required own id/class/position/amount, their existing types/domains and unique id/position only; coupon, sizing, point-in-time and waterfall retain separate owners.',
     remediation: 'Give every tranche a unique id, a valid class, a unique integer position, and a numeric amount.',
     spec_ref: '§4.24 CS-01',
   },

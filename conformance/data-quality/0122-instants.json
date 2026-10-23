@@ -1,0 +1,162 @@
+[
+  {
+    "input": "1970-01-01",
+    "milliseconds": 0
+  },
+  {
+    "input": "0001-01-01",
+    "milliseconds": -62135596800000
+  },
+  {
+    "input": "0099-12-31",
+    "milliseconds": -59011545600000
+  },
+  {
+    "input": "2000-02-29",
+    "milliseconds": 951782400000
+  },
+  {
+    "input": "2024-02-29T23:59Z",
+    "milliseconds": 1709251140000
+  },
+  {
+    "input": "2026-10-01T12:34:56.1+03:30",
+    "milliseconds": 1790845496100
+  },
+  {
+    "input": "2026-10-01T12:34:56.12-03:30",
+    "milliseconds": 1790870696120
+  },
+  {
+    "input": "2026-10-01T12:34:56.123Z",
+    "milliseconds": 1790858096123
+  },
+  {
+    "input": "2026-10-01T00:00-00:00",
+    "milliseconds": 1790812800000
+  },
+  {
+    "input": "2026-10-01T23:59+23:59",
+    "milliseconds": 1790812800000
+  },
+  {
+    "input": "9999-12-31T23:59:59.999-23:59",
+    "milliseconds": 253402387139999
+  },
+  {
+    "input": null,
+    "milliseconds": null
+  },
+  {
+    "input": 0,
+    "milliseconds": null
+  },
+  {
+    "input": false,
+    "milliseconds": null
+  },
+  {
+    "input": "",
+    "milliseconds": null
+  },
+  {
+    "input": "0000-01-01",
+    "milliseconds": null
+  },
+  {
+    "input": "1900-02-29",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-02-30",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-04-31",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-13-01",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-01-00",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-1-01",
+    "milliseconds": null
+  },
+  {
+    "input": "2026",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10",
+    "milliseconds": null
+  },
+  {
+    "input": " 2026-10-01",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01\n",
+    "milliseconds": null
+  },
+  {
+    "input": "October 1 2026",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01T00:00",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01t00:00Z",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01T00:00z",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01T24:00Z",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01T23:60Z",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01T23:59:60Z",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01T00:00.1Z",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01T00:00:00.1234Z",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01T00:00+24:00",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01T00:00+00:60",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01T00:00+0000",
+    "milliseconds": null
+  },
+  {
+    "input": "+002026-10-01",
+    "milliseconds": null
+  },
+  {
+    "input": "2026-10-01T00:00Zx",
+    "milliseconds": null
+  }
+]
