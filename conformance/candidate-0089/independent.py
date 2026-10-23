@@ -505,7 +505,9 @@ def encode_zip(model, method=zipfile.ZIP_DEFLATED):
     output = io.BytesIO()
     with zipfile.ZipFile(output, 'w', compression=method) as archive:
         for name, value in sorted(encode_csv(model).items()):
-            archive.writestr(name, value.encode('utf-8'))
+            info = zipfile.ZipInfo(name, date_time=(1980, 1, 2, 0, 0, 0))
+            info.compress_type = method
+            archive.writestr(info, value.encode('utf-8'), compresslevel=6 if method == zipfile.ZIP_DEFLATED else None)
     return output.getvalue()
 
 

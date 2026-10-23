@@ -116,6 +116,7 @@ export function encodeCSV(input) {
 
 export function decodeCSV(input) {
   const files = Object.fromEntries(Object.entries(input).map(([path, value]) => [path, typeof value === 'string' ? Buffer.from(value) : value]));
+  check(Object.keys(files).length <= 100 && Object.keys(files).every(zipReader.isSafeZipPath), 'CSV file/path limit');
   const manifest = readJSON(utf8(files['manifest.json']));
   check(manifest.bundle_version === REPRESENTATION && manifest.envelope_version === VERSION && manifest.canonicalization_version === VERSION, 'CSV supported regime');
   check(manifest.normalized_value_encoding === 'canonical-json' && manifest.csv_dialect === 'rfc4180' && Array.isArray(manifest.views), 'CSV manifest encoding');
@@ -215,7 +216,7 @@ export function decodeCSV(input) {
 
 export function encodeZIP(model, level = 6) {
   const files = encodeCSV(model);
-  return zipSync(Object.fromEntries(Object.entries(files).map(([path, value]) => [path, Buffer.from(value)])), { level });
+  return zipSync(Object.fromEntries(Object.keys(files).sort().map(path => [path, [Buffer.from(files[path]), { level, mtime: new Date('1980-01-02T00:00:00Z') }]])));
 }
 export function decodeZIP(bytes, options = {}) {
   const files = zipReader.extractZipSafely(bytes, options, (code, message) => { throw new TypeError(`${code}: ${message}`); });
