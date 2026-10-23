@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Draft RFC 0123: recompute dictionary-defined receipt results without a starter pack; pending owner review, with no implementation.
+- Implement accepted RFC 0123: recompute dictionary-defined receipt results without a starter pack; pending owner review, with no implementation.
 
 - Apply the public/private paperwork policy and enforce the tracked-content
   identity guard in required CI, with only the named public-handle exceptions.

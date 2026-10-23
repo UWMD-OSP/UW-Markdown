@@ -1303,6 +1303,7 @@ export const EXTENSION_SECTION_PREFIX = 'x_' as const;
 
 /** A class-scoped normative calculation; packs mirror these definitions. */
 export interface MetricDictionaryCalculation {
+  /** RFC 0123: an applicable receipt calc_id asserts this definition, independent of starter packs. */
   readonly id: string;
   readonly label: string;
   readonly asset_classes: readonly AssetClass[];

@@ -246,6 +246,15 @@ which needs an edit engine. A read-only reader could not satisfy it.
 
 ### II.2 Verifier
 
+RFC 0123 makes applicable builtin receipt calc_ids assertions of the selected
+rule set's dictionary definitions. Recompute these after authentication without
+a starter pack; expose only stated result ids. Pack availability cannot hide a
+dictionary mismatch or corrupt result digest. Unknown named-pack coverage still
+prevents an overall verified receipt (Receipt §5.1); full known-pack coverage
+retains RCP-02. Exact value/computed/unit and existing engine-identity/refusal
+precedence apply. No additional tolerance or wire field.
+
+
 A Verifier MUST satisfy all Reader requirements, and additionally:
 
 1. Claim `validate` and apply the Format validation rules (format spec

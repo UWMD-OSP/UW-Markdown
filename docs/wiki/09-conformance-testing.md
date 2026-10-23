@@ -849,3 +849,7 @@ payloads, issue order, institution configuration and tier claims are outside it.
 ## Draft RFC 0123
 
 [Recompute dictionary-defined receipt results without a starter pack](../rfcs/0123-dictionary-receipt-recomputation.md) is pending owner review. Its proposed controls are not current conformance requirements.
+
+RFC 0123 authenticates before dictionary receipt recomputation. Missing packs
+expose the actual recomputed stated subset, with honest coverage indeterminacy;
+pack absence cannot mask a same-engine dictionary mismatch or corrupt digest.

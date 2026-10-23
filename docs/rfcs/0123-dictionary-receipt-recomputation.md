@@ -1,7 +1,7 @@
 ---
 rfc: 0123
 title: Recompute dictionary-defined receipt results without a starter pack
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-22
 affects:
@@ -13,14 +13,14 @@ affects:
 
 # RFC 0123: Recompute dictionary-defined receipt results without a starter pack
 
-## Recommendation
+## Resolution
 
 Implement RFC 0115 D4 literally: lack of a starter pack must not prevent a
 Verifier from recomputing dictionary-defined results. Retain honest inability
-to verify pack-only outputs and pack-output coverage. This draft is the owner-
-requested receipt-spec follow-up, not acceptance or implementation.
+to verify pack-only outputs and pack-output coverage. Accepted as drafted by the owner on 2026-10-22 (fourth set); this PR implements
+the receipt-spec follow-up.
 
-## Proposed contract
+## Contract
 
 For the record's selected rule set and asset class, a receipt result whose
 `calc_id` matches an applicable builtin dictionary entry asserts that entry's
@@ -55,7 +55,7 @@ claim a complete named-pack receipt verified merely because its visible metric
 subset agrees. Known-pack verification retains exact declared-output coverage
 RCP-02 and evaluates the remaining pack-only outputs as today.
 
-## Decisions proposed
+## Decisions
 
 | Question | Recommendation | Precedent |
 |---|---|---|
@@ -64,7 +64,7 @@ RCP-02 and evaluates the remaining pack-only outputs as today.
 | All visible dictionary values agree but pack coverage is unknown? | Still unverifiable overall, with the recomputed subset exposed | Receipt 3.2 promises complete named-pack outputs; agreement does not prove omitted outputs |
 | New wire field or tolerance? | Neither; existing calc_id, recomputed and RCP codes suffice | Existing receipt result/verification structure |
 
-## Implementation and conformance after acceptance
+## Implementation and conformance
 
 Update Receipt 3.2/5.1/5.4, Protocol II.2/II.6a, executable mirrors and affected
 schema descriptions together. Add portable cases for a pack-less verifier with
