@@ -175,19 +175,18 @@ export function projectSource(source) {
     const active = blocks.filter(block => !historical(block));
     const roles = active.some(block => has(block.content, '_role'));
     const variants = roles && active.some(block => has(block.annotation, 'variant'));
-    const explicit = blocks.filter(historical);
-    const priors = [];
+    const history = [];
     const selected = new Map();
-    for (const block of active) {
+    for (const block of blocks) {
+      if (historical(block)) { history.push(block); continue; }
       const key = variants ? block.annotation.variant ?? null : null;
-      if (selected.has(key)) priors.push(selected.get(key));
+      if (selected.has(key)) history.push(selected.get(key));
       selected.set(key, block);
     }
     if (selected.size) {
       if (variants) put(extensions, id, { mode: 'variants', blocks: [...selected].sort(([a], [b]) => order(a, b)).map(([variant, block]) => ({ variant, block: envelopeBlock(block) })) });
       else put(extensions, id, { mode: 'single', block: envelopeBlock(selected.get(null)) });
     }
-    const history = [...explicit, ...priors];
     if (history.length) put(superseded, id, history.map(envelopeBlock));
     for (const block of [...selected.values(), ...history]) occurrences.push(block.content);
   }
