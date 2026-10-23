@@ -31,7 +31,7 @@ affects:
 >
 > 1. **§6's schema pattern rejected the RFC's own §1 example.** The draft
 >    pattern's id charset was lowercase-only (`[a-z0-9][a-z0-9._-]*`), which
->    refuses `agent/L6-01` — the worked example in §1 — and every Bancroft
+>    refuses `agent/L6-01` — the worked example in §1 — and every retired agent host
 >    layer id in the corpus. Corrected to `[A-Za-z0-9][A-Za-z0-9._-]*`.
 > 2. **Fixture 03's refusal code.** The RFC said a `section_replace` against a
 >    catch-all-governed block "must be refused with `POL-02`", but the live

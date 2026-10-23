@@ -165,7 +165,7 @@ describe('STUDENT_HOUSING_PACK', () => {
     );
   });
 
-  it('reads gross_potential_rent as the §4.5 object, not a scalar (UPSTREAM-015)', async () => {
+  it('reads gross_potential_rent as the §4.5 object, not a scalar (adopter report 015)', async () => {
     const raw = await readFile(EXAMPLE, 'utf8');
     const parsed = parseUWFile(raw);
     const noi = parsed.sections['noi_model'] as { content: Record<string, unknown> };

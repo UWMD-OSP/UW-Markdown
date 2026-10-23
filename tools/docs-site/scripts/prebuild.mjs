@@ -95,7 +95,7 @@ const COPIES = [
   { from: 'docs/reviews/2026-09-12-excel-period-bindings.md', to: 'about/reviews/excel-period-bindings.md' },
   { from: 'docs/reviews/2026-09-16-lake-live-postgres.md', to: 'about/reviews/lake-live-postgres.md', title: '@uwmd/lake against a live PostgreSQL server' },
   { from: 'docs/reviews/2026-09-21-golden-deal-release-comparison.md', to: 'about/reviews/golden-deal-release-comparison.md', title: 'Golden-deal release comparison' },
-  { from: 'docs/reviews/2026-09-24-completed-golden-corpus-validation.md', to: 'about/reviews/completed-golden-corpus-validation.md', title: 'Completed Golden Deal corpus validation' },
+  { from: 'docs/reviews/2026-09-24-completed-golden-corpus-validation.md', to: 'about/reviews/completed-golden-corpus-validation.md', title: 'Completed review corpus validation' },
   { from: 'docs/reviews/2026-09-24-terminal-boundary-design.md', to: 'about/reviews/terminal-boundary-design.md', title: 'Terminal-boundary design review' },
   { from: 'docs/reviews/2026-09-24-rfc-0063-implementation.md', to: 'about/reviews/rfc-0063-implementation.md', title: 'RFC 0063 implementation verification' },
   { from: 'docs/reviews/2026-09-29-rfc-0064-owner-review.md', to: 'about/reviews/rfc-0064-owner-review.md', title: 'RFC 0064 owner review: statement carrier' },

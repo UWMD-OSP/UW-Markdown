@@ -846,9 +846,9 @@ fixed test clock. CI runs it on Node 20 with the existing Python runtime. This
 is development evidence alongside the portable CLI driver; messages, evidence
 payloads, issue order, institution configuration and tier claims are outside it.
 
-## Draft RFC 0121
+## RFC 0121
 
-[Bound CS-01 to tranche identities and required members](../rfcs/0121-capital-stack-structural-scope.md) is pending owner review. Its proposed controls are not current conformance requirements.
+The owner accepted the bounded CS-01 contract on 2026-10-22. Required own members, identity constraints and independent code ownership are implemented and covered by paired controls.
 
 Accepted RFC 0121 fixes CS-01 diagnostic ownership at the four required own
 tranche members and identities, including builtin components. Other schema
