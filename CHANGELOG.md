@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Draft RFC 0122: make dq-05 date parsing deterministic; pending owner review, with no implementation.
+- Implement accepted RFC 0122: make dq-05 date parsing deterministic; pending owner review, with no implementation.
 
 - Fix direct verify-packages invocation on Windows: resolve npm-cli.js and run
   it through Node rather than executing npm.cmd. Add direct Windows CI coverage.

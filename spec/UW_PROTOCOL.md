@@ -4229,6 +4229,13 @@ with readiness-only DQ-06/info. Their exact fields, complete-pass ordering and
 admitted-parent suppression are normative in §III.6a. META-01/02/03 and ordinary
 issue/ProtocolError transport remain unchanged.
 
+RFC 0122 pins DQ-05 instant admission to Format §4.22's strict Gregorian date/
+explicit-offset grammar. Compare exact milliseconds after admission, without
+host-timezone or permissive parsing. Invalid last_checked contributes no DQ-05;
+an invalid supplied clock is the typed category validate operation refusal
+PROTO-VALIDATION-CLOCK, never a document finding or stale result. No financial
+convention or freshness threshold changes.
+
 ### XI.1 Selected institution-configuration operation errors (RFC0097)
 
 `VAL-INSTITUTION-CONFIG-UNREADABLE` and

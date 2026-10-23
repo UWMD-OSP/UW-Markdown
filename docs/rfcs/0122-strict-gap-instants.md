@@ -1,7 +1,7 @@
 ---
 rfc: 0122
 title: Make DQ-05 date parsing deterministic
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-22
 affects:
@@ -13,13 +13,12 @@ affects:
 
 # RFC 0122: Make DQ-05 date parsing deterministic
 
-## Recommendation
+## Resolution
 
-Accept a closed, calendar-valid grammar for DQ-05 last_checked and its clock
-input. The owner accepted date-only UTC midnight and explicitly zoned date-times
-on 2026-10-22. This draft pins the remaining spellings for review.
+Accepted as drafted by the owner on 2026-10-22 (fourth set), including the
+explicit grammar details and typed refusal of an invalid supplied clock.
 
-## Proposed contract
+## Contract
 
 Admit exactly a four-digit-year `YYYY-MM-DD`, interpreted at UTC midnight, or
 `YYYY-MM-DDTHH:mm[:ss[.fraction]]` followed by uppercase `Z` or a signed numeric
@@ -45,7 +44,7 @@ Only after admission compare instants using the existing DQ-05 strict older-than
 freshness rule. Retain the existing default 14 days and institution override;
 this RFC changes neither threshold nor financial math.
 
-## Decisions proposed
+## Decisions
 
 | Question | Recommendation | Precedent |
 |---|---|---|
@@ -55,7 +54,7 @@ this RFC changes neither threshold nor financial math.
 | Invalid last_checked? | No DQ-05; retain structural owners | DQ-05 is a staleness test, not a new schema error |
 | Invalid explicit clock? | Typed refusal | An invalid clock cannot establish a verification claim |
 
-## Implementation and conformance after acceptance
+## Implementation and conformance
 
 Specify the grammar alongside Format 4.16 data-gap rules and the protocol data
 quality contract; synchronize executable types/schema descriptions as needed.
@@ -64,4 +63,5 @@ Portable controls cover leap years/invalid days, UTC date-only, equal instants
 with opposing offsets, exact threshold versus older, unzoned/textual/overflow
 refusals, fractional precision, and invalid explicit clock. Run under multiple
 host timezones with one fixed clock. No fixture values are repaired to simulate
-acceptance; no implementation ships in this draft.
+acceptance. Implementation uses PROTO-VALIDATION-CLOCK under the existing PROTO
+operation-refusal family; no document issue is invented.

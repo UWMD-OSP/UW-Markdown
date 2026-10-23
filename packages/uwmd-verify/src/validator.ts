@@ -1,3 +1,4 @@
+import { parseGapInstant, ValidationClockError } from './gap-instant.js';
 import { hasBlockShape } from './block-kind.js';
 import { checkPayloadAdmission, currentPayloadBlocks } from './payload-admission.js';
 import { checkSizeContract } from './size-contract.js';
@@ -3762,7 +3763,7 @@ const DEFAULT_GAP_STALENESS_DAYS = 14;
 interface DataQualityOptions {
   policies?: readonly IncompleteDataPolicy[];
   gap_staleness_days?: number;
-  /** Override "now" for deterministic tests. */
+  /** RFC 0122 date/explicit-offset instant; invalid supplied clocks refuse. */
   now?: string;
 }
 
@@ -3771,6 +3772,8 @@ export function checkDataQuality(
   issues: ValidationMessage[],
   opts: DataQualityOptions = {},
 ): void {
+  const now = opts.now === undefined ? Date.now() : parseGapInstant(opts.now);
+  if (now === null) throw new ValidationClockError();
   const policies = opts.policies ?? BUILTIN_INCOMPLETE_DATA_POLICIES;
   const stage: DealStage = parsed.frontmatter.deal_stage ?? 'scope';
   const gaps = readGapsContent(parsed);
@@ -3839,12 +3842,11 @@ export function checkDataQuality(
 
   // DQ-05: stale gaps
   if (gaps) {
-    const now = opts.now ? Date.parse(opts.now) : Date.now();
     const thresholdMs = (opts.gap_staleness_days ?? DEFAULT_GAP_STALENESS_DAYS) * 86_400_000;
     for (const [index, item] of gaps.items.entries()) {
       if (!item.last_checked) continue;
-      const last = Date.parse(item.last_checked);
-      if (Number.isNaN(last)) continue;
+      const last = parseGapInstant(item.last_checked);
+      if (last === null) continue;
       if (now - last > thresholdMs) {
         issues.push({
           code: 'DQ-05',
