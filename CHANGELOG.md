@@ -10,6 +10,9 @@ protocol, and each package each carry an independent semver).
 
 - Draft RFC 0122: make dq-05 date parsing deterministic; pending owner review, with no implementation.
 
+- Fix direct verify-packages invocation on Windows: resolve npm-cli.js and run
+  it through Node rather than executing npm.cmd. Add direct Windows CI coverage.
+
 - CSV decoding preserves own prototype-named content members while reconstructing
   metadata first, so valid envelopes retain their semantic digest.
 

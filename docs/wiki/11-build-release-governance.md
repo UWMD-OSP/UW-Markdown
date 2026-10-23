@@ -580,3 +580,9 @@ Add a new official asset class | Yes (full builtin, RFC 0080); third-party class
 Change provenance rules (§V.2–§V.4), integrity, calc notation or numeric model | Yes (protocol)
 Change starter behavior: cascade order, defaults, editor mechanics, view models, display, agents | No (starter guide + package semver); numerics still go to maintainers
 Anything touching `spec/` or `spec/schemas/` | Yes
+
+Direct `node scripts/verify-packages.mjs` resolves npm's JavaScript entry on
+Windows and launches it with the current Node executable and argument array.
+The npm script entry still uses npm_execpath; no shell quoting or command shim
+execution is needed. Required Windows CI exercises the direct invocation after
+building the packages.
