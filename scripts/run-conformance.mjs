@@ -2694,6 +2694,13 @@ async function runCapitalStack() {
     if (existsSync(join(dir, 'deal.uwx.md'))) {
       const expected = readCase(dir, 'expected.json');
       const codes = validatorCodes(join(dir, 'deal.uwx.md'));
+      if (expected.cs_issues) {
+        const actual = validateUWFile(parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'))).issues
+          .filter(i => i.code.startsWith('CS-')).map(({ code, severity, section, field }) => ({ code, severity, section, field }))
+          .sort((a, b) => `${a.code}:${a.section}:${a.field}`.localeCompare(`${b.code}:${b.section}:${b.field}`));
+        record('capital-stack', id, JSON.stringify(actual) === JSON.stringify(expected.cs_issues) ? 'pass' : 'fail', JSON.stringify(actual));
+        continue;
+      }
       const minOccurrences = expected.min_occurrences ?? 1;
       const short = (expected.expected_codes ?? []).filter(
         (c) => codes.filter((x) => x === c).length < minOccurrences);

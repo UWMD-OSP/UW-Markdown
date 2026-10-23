@@ -1,0 +1,16 @@
+{
+  "cs_issues": [
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "components",
+      "field": "retail.capital_stack.tranches[0].amount"
+    },
+    {
+      "code": "CS-01",
+      "severity": "error",
+      "section": "components",
+      "field": "retail.capital_stack.tranches[0].position"
+    }
+  ]
+}

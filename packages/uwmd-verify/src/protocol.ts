@@ -2228,7 +2228,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'CS-01', severity: 'error',
     title: 'Malformed capital-stack tranche',
-    description: 'A tranche omits a required field (id, class, position, amount) or repeats an id/position.',
+    description: 'RFC 0121: tranche object admission, required own id/class/position/amount, their existing types/domains and unique id/position only; coupon, sizing, point-in-time and waterfall retain separate owners.',
     remediation: 'Give every tranche a unique id, a valid class, a unique integer position, and a numeric amount.',
     spec_ref: '§4.24 CS-01',
   },

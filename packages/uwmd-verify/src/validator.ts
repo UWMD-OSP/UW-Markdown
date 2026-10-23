@@ -2358,11 +2358,11 @@ function checkStackContent(
 
   for (let i = 0; i < tranches.length; i++) {
     const raw = tranches[i];
-    const t = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
-    const id = t['id'];
-    const cls = t['class'];
-    const position = t['position'];
-    const amount = t['amount'];
+    const t = raw && typeof raw === 'object' && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
+    const id = Object.hasOwn(t, 'id') ? t['id'] : undefined;
+    const cls = Object.hasOwn(t, 'class') ? t['class'] : undefined;
+    const position = Object.hasOwn(t, 'position') ? t['position'] : undefined;
+    const amount = Object.hasOwn(t, 'amount') ? t['amount'] : undefined;
     const label = typeof id === 'string' && id ? id : `tranches[${i}]`;
 
     // CS-01: structural — id, class, position, amount present and well-typed; id and position unique.
