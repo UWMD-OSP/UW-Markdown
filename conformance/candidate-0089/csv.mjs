@@ -160,7 +160,20 @@ export function decodeCSV(input) {
   }
   const seen = new Set(); const received = [];
   const append = (parent, index, block) => { check(String(parent.length) === index, 'CSV block ordinal gap/alias'); parent.push(block); };
-  for (const row of table('blocks.csv', BLOCK)) {
+  const rank = new Map(['sections', ...arrays, 'extensions', 'superseded'].map((key, index) => [key, index]));
+  const sourceRows = table('blocks.csv', BLOCK).map(row => {
+    const section = readJSON(row[2]); const variant = readJSON(row[3]);
+    check(typeof section === 'string' && (variant === null || typeof variant === 'string'), 'CSV descriptor identities');
+    check(row[4] === '' || /^(?:0|[1-9][0-9]*)$/.test(row[4]), 'CSV canonical ordinal');
+    return { row, section };
+  }).sort((a, b) => {
+    const collection = (rank.get(a.row[1]) ?? 99) - (rank.get(b.row[1]) ?? 99);
+    if (collection) return collection;
+    if (!arrays.includes(a.row[1]) && a.section !== b.section) return a.section < b.section ? -1 : 1;
+    const ordinal = Number(a.row[4] || -1) - Number(b.row[4] || -1);
+    return ordinal || (a.row[0] < b.row[0] ? -1 : a.row[0] > b.row[0] ? 1 : 0);
+  });
+  for (const { row } of sourceRows) {
     const [ref, collection, sectionToken, variantToken, ordinal, state, mode] = row;
     check(!seen.has(ref), 'CSV duplicate block'); seen.add(ref);
     const section = readJSON(sectionToken); const variant = readJSON(variantToken);
@@ -203,13 +216,13 @@ export function decodeCSV(input) {
         check(model.extensions[section].mode === mode, 'CSV extension mode collision'); append(model.extensions[section].blocks, ordinal, { variant, block });
       }
     }
-    received.push(row);
+    received.push([ref, collection, jcs(section), jcs(variant), ordinal, state, mode]);
   }
   check(valueRows.size === 0 && prose.size === 0, 'CSV unused rows');
   validateModel(model, true);
   const expected = descriptors(model).map(row => [row.ref, row.collection, jcs(row.section), jcs(row.variant), String(row.ordinal ?? ''), row.state, row.mode]);
-  // Descriptor order is canonical; metadata cannot alias another reconstructed address.
-  check(jcs(received) === jcs(expected), 'CSV descriptor agreement/order');
+  const byRef = (a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0;
+  check(jcs(received.sort(byRef)) === jcs(expected.sort(byRef)), 'CSV descriptor agreement');
   check(manifest.semantic_digest === model.semantic_digest && manifest.format_version === model.format_version, 'CSV manifest/model identity');
   return model;
 }

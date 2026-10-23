@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { zipSync } from 'fflate';
 import { VERSION, NAMESPACE, jcs, readJSON, validateModel, projectSource, portable, preimage, digest, stamp, toMarkdown, sha } from './model.mjs';
 import { lexical, encodeXML, decodeXML } from './xml.mjs';
-import { DOC, VALUE, readCSV, writeCSV, flatten, encodeCSV, decodeCSV, encodeZIP, decodeZIP } from './csv.mjs';
+import { DOC, BLOCK, VALUE, readCSV, writeCSV, flatten, encodeCSV, decodeCSV, encodeZIP, decodeZIP } from './csv.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 export const evidence = resolve(root, 'node_modules/.cache/rfc0089-evidence');
@@ -169,6 +169,25 @@ test('D4 empty builtin variants and null metadata stay invalid despite carrier c
   const missing = structuredClone(model); delete missing.sections.property.content._meta;
   const nullable = structuredClone(model); nullable.sections.property.content._meta = null;
   for (const bad of [missing, nullable]) assert.throws(() => validateModel(bad), /shape/);
+});
+
+test('D4 CSV table order is independent of semantic ordinals and JSON token spelling', () => {
+  const files = encodeCSV(model);
+  for (const [name, header] of [['blocks.csv', BLOCK], ['block_values.csv', VALUE]]) {
+    const rows = readCSV(files[name], header).reverse();
+    if (name === 'blocks.csv') for (const row of rows) row[2] = row[2].replace('property', '\\u0070roperty');
+    files[name] = writeCSV([header, ...rows]);
+  }
+  equal(decodeCSV(inventory(files)), stamp(model));
+});
+
+test('D4 direct model admission cannot silently erase non-JSON values', () => {
+  for (const value of [undefined, NaN, Infinity, new Date(), [undefined], Array(1), () => 1]) {
+    const changed = structuredClone(model); changed.outer = value;
+    assert.throws(() => validateModel(changed));
+  }
+  const cyclic = structuredClone(model); cyclic.outer = cyclic;
+  assert.throws(() => validateModel(cyclic), /cyclic/);
 });
 
 test('D4 actual ZIP CRC/header/BOM and resource controls independent of semantic digest', () => {

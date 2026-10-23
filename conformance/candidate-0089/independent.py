@@ -56,8 +56,21 @@ def load_json(text):
         return value
     value = json.loads(text, object_pairs_hook=pairs, parse_int=number, parse_float=number,
                        parse_constant=lambda _: need(False, 'nonfinite JSON token'))
+    admit_json(value)
     canonicalize(value)
     return value
+
+
+def admit_json(value, depth=0):
+    need(depth < 128, 'JSON value depth limit')
+    need(value is None or isinstance(value, (bool, int, float, str, list, dict)), 'non-JSON value')
+    if isinstance(value, dict):
+        need(all(isinstance(key, str) for key in value), 'non-JSON member name')
+        for child in value.values():
+            admit_json(child, depth + 1)
+    elif isinstance(value, list):
+        for child in value:
+            admit_json(child, depth + 1)
 
 
 def dump(value):
@@ -233,6 +246,7 @@ def blocks(model):
 
 
 def validate(model, stamped=True):
+    admit_json(model)
     need(isinstance(model, dict) and set(RESERVED) - {'generated_at', 'generator', 'semantic_digest'} <= model.keys(), 'model fields')
     need(model['envelope_version'] == VERSION and model['format_version'] == '3.0', 'model regime')
     need(isinstance(model['frontmatter'], dict) and model['frontmatter'].get('uw_version') == '3.0' and all(isinstance(model['frontmatter'].get(k), str) for k in ('deal_id', 'deal_name')), 'frontmatter shape')
@@ -287,6 +301,7 @@ def encode_xml(model):
 
 
 def decode_xml(text):
+    need(len(text.encode('utf-8')) <= 50 * 1024 * 1024, 'XML size limit')
     need('<!' not in text, 'XML declaration/entity/comment')
     rest = re.sub(r'^\ufeff?<\?xml\s+version=["\']1\.0["\'](?:\s+encoding=["\']UTF-8["\'])?\s*\?>', '', text, flags=re.I)
     need('<?' not in rest, 'XML processing instruction')
@@ -454,7 +469,12 @@ def decode_csv(files):
         need(isinstance(value, str), 'CSV prose type')
         prose[block] = value
     received, seen = [], set()
-    for row in table(text['blocks.csv'], BLOCK):
+    rank = {key: index for index, key in enumerate(['sections', *ARRAYS, 'extensions', 'superseded'])}
+    def row_order(row):
+        section = load_json(row[2])
+        need(isinstance(section, str) and (row[4] == '' or re.fullmatch(r'0|[1-9][0-9]*', row[4])), 'CSV descriptor/ordinal')
+        return (rank.get(row[1], 99), b'' if row[1] in ARRAYS else section.encode('utf-16-be'), -1 if row[4] == '' else int(row[4]), row[0].encode('utf-16-be'))
+    for row in sorted(table(text['blocks.csv'], BLOCK), key=row_order):
         ref, collection, section_token, variant_token, ordinal, state, mode = row
         need(ref not in seen, 'CSV duplicate block')
         seen.add(ref)
@@ -492,11 +512,11 @@ def decode_csv(files):
                 parent = model[collection].setdefault(section, dict(mode=mode, blocks=[]))
                 need(parent['mode'] == mode and ordinal == str(len(parent['blocks'])), 'CSV variants ordinal')
                 parent['blocks'].append(dict(variant=variant, block=block))
-        received.append(row)
+        received.append([ref, collection, dump(section), dump(variant), ordinal, state, mode])
     need(not values and not prose, 'CSV unused rows')
     validate(model)
     expected = [[ref, collection, dump(section), dump(variant), ordinal, state, mode] for ref, collection, section, variant, ordinal, state, mode, _ in blocks(model)]
-    need(received == expected, 'CSV descriptor canonical agreement')
+    need(sorted(received, key=lambda row: row[0]) == sorted(expected, key=lambda row: row[0]), 'CSV descriptor canonical agreement')
     need(manifest['semantic_digest'] == model['semantic_digest'] and manifest['format_version'] == model['format_version'], 'CSV manifest/model agreement')
     return model
 
@@ -511,15 +531,17 @@ def encode_zip(model, method=zipfile.ZIP_DEFLATED):
     return output.getvalue()
 
 
-def decode_zip(data, max_bytes=200 * 1024 * 1024):
-    need(len(data) <= 50 * 1024 * 1024, 'ZIP compressed limit')
+def decode_zip(data, options=None):
+    options = options or {}
+    max_bytes = options.get('maxUncompressedBytes', 200 * 1024 * 1024)
+    need(len(data) <= options.get('maxCompressedBytes', 50 * 1024 * 1024), 'ZIP compressed limit')
     end = data.rfind(b'PK\x05\x06', max(0, len(data) - 65557))
     need(end >= 0 and end + 22 <= len(data), 'ZIP end record')
     disk, central_disk, disk_count, count, central_size, central_start, comment = struct.unpack_from('<HHHHIIH', data, end + 4)
     need(end + 22 + comment == len(data) and disk == central_disk == 0 and disk_count == count and central_start + central_size <= end, 'ZIP end structure/multidisk')
     files, total, ranges = {}, 0, []
     with zipfile.ZipFile(io.BytesIO(data)) as archive:
-        need(len(archive.infolist()) == count and count <= 100, 'ZIP file count/limit')
+        need(len(archive.infolist()) == count and count <= options.get('maxFiles', 100), 'ZIP file count/limit')
         for item in archive.infolist():
             at = item.header_offset
             need(data[at:at+4] == b'PK\x03\x04', 'ZIP local header')
@@ -535,7 +557,7 @@ def decode_zip(data, max_bytes=200 * 1024 * 1024):
             need(raw_name == expected_name, 'ZIP local/central name')
             expected = (item.CRC, item.compress_size, item.file_size)
             need(all(a == b or flags & 8 and a == 0 for a, b in zip((crc, compressed, expanded), expected)), 'ZIP local/central CRC/size')
-            need(max(expected) < 0xffffffff and item.volume == 0 and item.file_size <= item.compress_size * 100 + 1048576, 'ZIP64/multidisk/ratio limit')
+            need(max(expected) < 0xffffffff and item.volume == 0 and item.file_size <= item.compress_size * options.get('maxCompressionRatio', 100) + 1048576, 'ZIP64/multidisk/ratio limit')
             start = at + 30 + name_len + extra_len
             need(start + item.compress_size <= central_start, 'ZIP local payload/central overlap')
             payload = data[start:start+item.compress_size]

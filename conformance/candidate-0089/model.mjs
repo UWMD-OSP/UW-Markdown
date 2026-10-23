@@ -33,6 +33,23 @@ export function unicode(text) {
   return text;
 }
 
+export function admitJSONValue(value, depth = 0, parents = new Set()) {
+  check(depth < 128, 'JSON value depth limit');
+  if (value === null || typeof value === 'boolean') return;
+  if (typeof value === 'string') { unicode(value); return; }
+  if (typeof value === 'number') { check(Number.isFinite(value), 'nonfinite binary64'); return; }
+  check(typeof value === 'object' && !parents.has(value), 'non-JSON or cyclic model value');
+  check(Array.isArray(value) || [null, Object.prototype].includes(Object.getPrototypeOf(value)), 'non-JSON object');
+  check(Reflect.ownKeys(value).every(key => typeof key === 'string'), 'non-JSON symbol key');
+  if (Array.isArray(value)) check(Object.keys(value).length === value.length && Object.keys(value).every((key, index) => key === String(index)), 'non-JSON array holes/extras');
+  parents.add(value);
+  for (const key of Object.keys(value)) {
+    unicode(key); check(Object.hasOwn(Object.getOwnPropertyDescriptor(value, key), 'value'), 'non-JSON accessor');
+    admitJSONValue(value[key], depth + 1, parents);
+  }
+  parents.delete(value);
+}
+
 /** Recursive raw-token reader: duplicate decoded keys never enter an object. */
 export function readJSON(text) {
   let at = 0;
@@ -136,6 +153,7 @@ export function descriptors(model) {
 }
 
 export function validateModel(model, stamped = false) {
+  admitJSONValue(model);
   check(shape(model), `candidate shape: ${ajv.errorsText(shape.errors)}`);
   jcs(model); // Complete Unicode/finite-number admission, including unknown values.
   descriptors(model);
