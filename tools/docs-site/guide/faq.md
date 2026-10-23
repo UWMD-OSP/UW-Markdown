@@ -79,7 +79,7 @@ those results agree but full pack/output coverage cannot be established, the
 overall verdict remains unverifiable. Neither verdict is a pass. A receipt only attests
 that stated outputs follow from the unchanged record, not input truth.
 
-The receipt issue codes are specific: `RCP-01` digest mismatch, `RCP-02`
+The receipt issue codes are specific: `RCP-01` document digest or signature mismatch, `RCP-02`
 missing or extra result, `RCP-03` recomputation disagreement, `RCP-04` corrupt
 results digest, `RCP-05` unknown pack, `RCP-06` pack-version mismatch, `RCP-07`
 engine-identity disagreement, `RCP-08` unavailable signature backend,

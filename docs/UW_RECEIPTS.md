@@ -227,23 +227,25 @@ pack's outputs, but a leaner record often will not. A receipt never carries a
 hand-entered figure.
 
 **Validation counts are recorded, not enforced.** A receipt notes how many errors
-and warnings the policy set found at issuance. A deal that trips a DSCR threshold
-can still carry a valid receipt — the receipt attests the arithmetic, and the
-warning is part of what it attests, not a reason to withhold it.
+and warnings the policy set found at issuance. Financial threshold bands are separate deal flags unless institution policy
+escalates one into a validation issue. A low-DSCR deal can carry a valid receipt;
+the receipt verifies the stated arithmetic, not a credit recommendation.
 
 ## Signing
 
-Receipts have a `signature` field, and it is currently always `null`.
+Receipts may be unsigned (`signature: null`) or signed. The `@uwmd/signing`
+package implements receipt signing with `signReceipt` and
+`stampReceiptSignature`; its `signatureVerifier` plugs into `verifyReceipt`.
+See the [signing package guide](../packages/uwmd-signing/README.md).
 
-Unsigned receipts already do the useful work: anyone can recompute and compare.
-Signing adds *who issued this*, which requires key distribution and is specified
-separately. Until a signing implementation exists, a verifier that meets a signed
-receipt reports `unverifiable` rather than quietly ignoring the signature — which
-is precisely the situation that third state exists for.
+An available backend authenticates a supplied signature before recomputation.
+An invalid signature fails with RCP-01; a verifier without the required backend
+reports RCP-08 unverifiable. Neither case silently ignores the signature.
+Key distribution and the truth of source facts remain separate from arithmetic.
 
 ## Reading further
 
-- [Verification receipt specification (v1.0)](../spec/UW_RECEIPT.md) — the
+- [Verification receipt specification](../spec/UW_RECEIPT.md) — the
   normative document: canonicalizations, issue codes, verifier precedence.
 - [RFC 0016](rfcs/0016-verification-receipts.md) — the design rationale and the
   alternatives that were rejected.
