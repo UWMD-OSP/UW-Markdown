@@ -67,7 +67,7 @@ replace this baseline.
 
 ## Current example findings
 
-There are **188 verified, 0 failed, 0 unverifiable** numeric statements.
+There are **189 verified, 0 failed, 0 unverifiable** numeric statements.
 All 35 former precision disagreements now verify. Riverside LTC remains the
 literal `0.6`; it verifies at the 1% leverage minimum. No tokens were padded to
 clear findings. Agave's original `0.4938` verifies against its stated $48.6M

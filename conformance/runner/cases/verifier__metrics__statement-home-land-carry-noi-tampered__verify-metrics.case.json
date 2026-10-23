@@ -15,7 +15,7 @@
   "expect": {
     "kind": "statement-states",
     "file": "conformance/metrics/statement-homes/cases.json",
-    "baseline_pointer": "/cases/27",
+    "baseline_pointer": "/cases/33",
     "exit_code": 1
   }
 }

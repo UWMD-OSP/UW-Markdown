@@ -6,7 +6,7 @@ of any starter engine, defaults, underwriting workflow, or Excel layout.
 
 | Dictionary | Contents | Schema |
 |---|---|---|
-| [builtin.json](builtin.json) | 172 class-scoped calculations and eleven primary-size selectors | [metric-dictionary.schema.json](../schemas/metric-dictionary.schema.json) |
+| [builtin.json](builtin.json) | 173 class-scoped calculations and eleven primary-size selectors | [metric-dictionary.schema.json](../schemas/metric-dictionary.schema.json) |
 
 ## Statement bindings (RFC 0099)
 
