@@ -352,7 +352,9 @@ months. For payment q=1…K interest-only applies; amortization starts at K+1.
 Refinance/takeout resets, within-year transitions, floating paths, draws,
 capitalized interest and cash sweeps need separately admitted procedures.
 
-At amortization start bind its opening principal B and fix the payment once:
+The first opening balance MUST equal that same loan's L at close; every later
+opening comes from the preceding stated closing balance. At amortization start
+use that chained opening principal B and fix the payment once:
 `PMT=B/n` if i=0, otherwise `(B*i)/(1-P(1+i,-n))`, in the written association.
 This reuses UWMD VIII.3's **positive** PMT convention, not a producer calc
 interface's signed PMT. The count is the full n after IO; it does not infer a
