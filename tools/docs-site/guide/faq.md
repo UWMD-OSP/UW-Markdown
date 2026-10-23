@@ -82,7 +82,8 @@ that stated outputs follow from the unchanged record, not input truth.
 The receipt issue codes are specific: `RCP-01` document digest or signature mismatch, `RCP-02`
 missing or extra result, `RCP-03` recomputation disagreement, `RCP-04` corrupt
 results digest, `RCP-05` unknown pack, `RCP-06` pack-version mismatch, `RCP-07`
-engine-identity disagreement, `RCP-08` unavailable signature backend,
+result disagreement under a different engine identity, `RCP-08` unavailable
+signature backend,
 `RCP-09` uncanonicalizable document, `RCP-10` canonicalization disagreement,
 `RCP-11` unavailable referenced input, `RCP-12` referenced-input digest mismatch,
 and `RCP-13` rule-set mismatch. See the [receipt specification](/spec/receipt)

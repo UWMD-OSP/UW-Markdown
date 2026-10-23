@@ -219,7 +219,7 @@ Three details worth understanding:
 the deal's financial content, so reflowing a label, changing comma grouping, or
 switching line endings does not break a receipt. Changing a number does.
 
-**`computed: false` is not the same as a value of zero or null.** A pack declares
+**`computed: false` distinguishes missing inputs from a computed zero.** A pack declares
 a fixed set of outputs, and the receipt lists all of them. When the deal lacks
 the inputs for one, it is recorded as `{"value": null, "computed": false}` rather
 than as a number nobody calculated — the deal above supports all eight of its
