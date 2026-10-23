@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Implement accepted RFC 0120: preserve applicable existing CF findings from the exact selected replacement-funding source.
+
 - Refresh current docs for explicit rule sets, dictionary receipt verification,
   financial flags, workbook import and current tool roles; derive spec page
   version titles from the version matrix.

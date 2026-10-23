@@ -248,6 +248,10 @@ def _check(document):
     cash = _cash(document, variant) if isinstance(variant, str) and variant else None
     if cash is not None:
         check.consulted.append(cash)
+        # RFC 0120: preserve existing CF findings from this exact source even
+        # beside a malformed reference or a structurally valid series with CF-03.
+        issues.extend(_issue(code, "cash_flow_series", path, message)
+                      for code, path, message in cash_flow_findings(cash.parsed.value))
     elif isinstance(variant, str) and variant:
         check.unresolved = True
     if not (isinstance(variant, str) and variant and _safe_index(index)
@@ -261,10 +265,6 @@ def _check(document):
     if not binding_series_valid(payload) or index >= len(payload["series"]):
         add("HDG-08", "replacement_funding.cash_flow_ref.row_index",
             "Selected ordered series/row must have legal shape and an in-range index.")
-        # V.12.2: applicable existing CF findings stay exposed with the V.12
-        # result. validate takes only HDG/ESC from here; CF is its own rule.
-        issues.extend(_issue(code, "cash_flow_series", path, message)
-                      for code, path, message in cash_flow_findings(payload))
         return check
     rows = payload["series"]
     row = rows[int(index)]

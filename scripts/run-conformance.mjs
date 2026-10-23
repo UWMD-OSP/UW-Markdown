@@ -2553,6 +2553,13 @@ async function runHedge() {
           record('hedge', entry.name, 'fail', `binding verification ${JSON.stringify(projection)}`); continue;
         }
       }
+      if (expected.structural_codes) {
+        const result = await verifyReplacementFundingBindings(parsed);
+        const gotStructure = ('structural_issues' in result ? result.structural_issues : []).map(i => i.code).sort();
+        if (JSON.stringify(gotStructure) !== JSON.stringify(expected.structural_codes)) {
+          record('hedge', entry.name, 'fail', `structural codes ${JSON.stringify(gotStructure)}`); continue;
+        }
+      }
       record('hedge', entry.name, 'pass', (want.length ? want.join(', ') : 'structurally clean')
         + (expected.verification ? `; binding ${expected.verification.state}` : ''));
     } catch (error) {
