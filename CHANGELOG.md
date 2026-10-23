@@ -14,6 +14,8 @@ protocol, and each package each carry an independent semver).
 - Implement accepted RFC 0123: authenticate and recompute dictionary receipt results without packs, preserving coverage indeterminacy and exact units.
 - Implement accepted RFC 0124: require every Lite source to declare a kept uw_version; retain RCP-13 and model version refusal.
 
+- Fix CSV chat rendering of nested sources/uses amounts; read canonical stated totals and refuse numeric object coercion.
+
 - Apply the public/private paperwork policy and enforce the tracked-content
   identity guard in required CI, with only the named public-handle exceptions.
 

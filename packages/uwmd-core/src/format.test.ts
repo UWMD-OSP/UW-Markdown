@@ -54,3 +54,14 @@ describe('display formatters', () => {
     expect(formatValue(null, { nullDisplay: 'none' })).toBe('none');
   });
 });
+
+
+describe('numeric displays accept scalar carriers without object coercion', () => {
+  it.each([Object.create(null), {}, [], Symbol('missing'), { [Symbol.toPrimitive]: () => { throw new Error('must not coerce'); } }])('uses the missing display for nonnumeric carriers', value => {
+    expect(formatCurrency(value)).toBe('n/a');
+    expect(formatPercent(value)).toBe('n/a');
+    expect(formatRatio(value)).toBe('n/a');
+    expect(formatCount(value)).toBe('n/a');
+    expect(formatNumberCsv(value)).toBe('');
+  });
+});
