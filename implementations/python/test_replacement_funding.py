@@ -262,11 +262,11 @@ class ReplacementFundingTests(unittest.TestCase):
             self.assertIn("HDG-08",codes(result))
             self.assertEqual(any(c.startswith("CF-") for c in codes(result)),cf)
             self.assertEqual(result["replacement_funding_verification"]["reason"],"invalid_structure")
-        # A stated xirr without a sign change is CF-03 in validation, but a
-        # metric is outside the binding (V.12 step 3), as in the reference.
+        # RFC 0120 preserves selected CF-03 as a structural prerequisite;
+        # numerical agreement of a stated metric remains outside the binding.
         signs=alter(document,2,lambda p:p.update(stated_metrics={"xirr":0.1}))
-        self.assertEqual(codes(report(signs)),[])
-        self.assertEqual(verify(signs)["state"],"verified")
+        self.assertEqual(codes(report(signs)),["CF-03"])
+        self.assertEqual(verify(signs)["state"],"unverifiable")
         validation=asyncio.run(validate_document(signs,now="2026-10-16T00:00:00Z"))
         self.assertEqual([i["code"] for i in validation["errors"]],["CF-03"])
         good=alter(document,2,lambda p:p.update(stated_metrics={"xnpv":{"rate":0.1,"value":123}}))
