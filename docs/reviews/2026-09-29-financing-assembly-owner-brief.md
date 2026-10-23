@@ -4,7 +4,7 @@ Date: 2026-09-29. **Design only; no normative behavior is authorized here.**
 
 ## Demonstrated need and current surfaces
 
-The [completed Golden Deal review](2026-09-24-completed-golden-corpus-validation.md)
+The [completed review corpus review](2026-09-24-completed-golden-corpus-validation.md)
 observed source-defined bridge/takeout financing, issuance fees, paydown and
 payoff. UWMD can verify a *stated* dated pre-tax equity series today, but it
 cannot deterministically generate that series from loan terms. Those source
@@ -36,7 +36,7 @@ scheduled principal, fees and payoff, then combine them with the property
 rows in date/source order. It would preserve every source row and expose a
 binding for every generated amount. It would refuse bridge/takeout refinance,
 floating/hedged terms, multi-tranche debt and lender escrows in this first
-scope unless separately pinned. The demonstrated Golden Deal may therefore
+scope unless separately pinned. The demonstrated review corpus may therefore
 remain outside the first scope; reducing scope is an engineering candidate,
 not a claim of parity or an owner-approved product boundary.
 
@@ -49,7 +49,7 @@ not a claim of parity or an owner-approved product boundary.
 | Payment frequency and calendar | Monthly service and IO months appear as stated figures. | Exact due-date schedule, month-end behavior, weekends/holidays, stub periods and same-day ordering under RFC 0062. |
 | IO and amortization | `io_period_months`, `amortization_years`; tranche `io_months`, `amortization_months`, `term_months`. | When IO begins/ends, amortization start date, fixed-payment vs fixed-principal method, recalculation after a stub/paydown, precision and final balloon. |
 | Scheduled principal, maturity and payoff | `loan_term_years`, `balloon_year`, estimated balloon and prepayment type. | Whether maturity follows calendar or payment count, exact payoff date, unscheduled paydown ordering, balloon identity and partial prepayment policy. |
-| Fees and refinancing | Origination and exit fee percentages, closing-cost buckets; Golden Deal review saw fees and bridge/takeout. | Fee base, payable date, cash vs financed treatment, prepayment/exit charge rules, refinance proceeds and retirement of prior debt. A percentage alone is insufficient cash evidence. |
+| Fees and refinancing | Origination and exit fee percentages, closing-cost buckets; review corpus review saw fees and bridge/takeout. | Fee base, payable date, cash vs financed treatment, prepayment/exit charge rules, refinance proceeds and retirement of prior debt. A percentage alone is insufficient cash evidence. |
 | Accrued interest at exit | No complete field. | Whether payoff includes current-period accrued interest, whether it is a separate row, and how to avoid counting a scheduled coupon again. |
 | Row identity and equity cash | §4.26 dates/signed rows and RFC 0045 source bindings. | Closed event categories, source path/digest, duplicate detection, gross proceeds vs net disbursement, ordering and date boundaries under RFC 0063. |
 | Reserves/escrows | RFC 0056 funding declarations and draft RFC 0064 property custody. | Lender-held balances, draws, release and payoff application need their own financing boundary; do not silently reuse property `reserve_accounts`. |
@@ -70,5 +70,5 @@ excluding the demonstrated bridge/takeout case, and supply the exact date,
 interest, payment, amortization, fee and payoff conventions for that scope.
 Then draft a separate financing-assembly RFC with synthetic dated conformance
 and explicit RFC 0045/0062/0063 and lender-reserve interactions. Do not fold
-it into RFC 0064 or draft RFC 0065, and do not claim Golden Deal generation
+it into RFC 0064 or draft RFC 0065, and do not claim review corpus generation
 parity from the existing 640 stated-source comparisons.

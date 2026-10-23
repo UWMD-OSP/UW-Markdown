@@ -47,7 +47,7 @@ Checked against `spec/UW_FORMAT_SPEC_v1.md` on `main`.
 | Standard `reserve_accounts` §4.28 | Every conforming validator can apply one closed rule set to a registered section. Readers and browser tools see the section, and the schema and protocol carry one portable meaning. | Format readers and a future Protocol minor commit to a common shape before five-deal extension evidence exists. Corrections require ordinary spec evolution. |
 | `x_*` statement plus companion verifier | Existing readers preserve the unknown block. A selected verifier can check one explicit profile without touching the standard section registry. Ordinary validation skips its semantics, so adopters must agree on the profile and invoke the verifier separately. | Standardizing later requires a stable `schema_version`, C.7 promotion evidence (five deals, three examples), a section ID in a format minor, migration guidance or dual-carrier support, and conformance for both carriers without counting one account twice. |
 
-The [completed Golden Deal review](../reviews/2026-09-24-completed-golden-corpus-validation.md)
+The [completed review corpus review](../reviews/2026-09-24-completed-golden-corpus-validation.md)
 identifies account funding, draws, releases and balances in two source roles.
 For the proposed consumer, that evidence requires an attributable statement and
 deterministic account verification. It permits a standard section, but it does

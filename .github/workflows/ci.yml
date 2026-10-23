@@ -548,6 +548,9 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+      - name: Verify packages through direct Node invocation
+        # Exercise the path without npm_execpath, including Windows command shims.
+        run: node scripts/verify-packages.mjs
       - name: Test
         run: npm test
       - uses: actions/setup-python@v5

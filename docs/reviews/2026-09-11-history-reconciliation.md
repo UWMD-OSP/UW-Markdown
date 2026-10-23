@@ -1,7 +1,7 @@
 # Historical-claim reconciliation — 2026-09-11
 
 Baseline: `origin/main` at `9f243e1`, after fetching the remote. Release tag
-`v2.6.2` points to `628b7c0`. Work was performed in the dedicated `codex/work`
+`v2.6.2` points to `628b7c0`. Work was performed in the dedicated `work/work`
 worktree; the primary checkout was left unchanged.
 
 The numbered historical Sources 1–16 were not supplied, so their quotations and

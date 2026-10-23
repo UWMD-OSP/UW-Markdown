@@ -196,7 +196,7 @@ release records. Then:
 - **If that evidence establishes the intended behavior,** the artifacts that
   disagree with it are corrected by an ordinary pull request. Which artifact
   is wrong depends on the case. A precedent where the spec text held the
-  intended behavior (UPSTREAM-003 in 2.3.0, where a schema's `required` array
+  intended behavior (adopter report 003 in 2.3.0, where a schema's `required` array
   was corrected) shows only that it did in that case.
 - **If the evidence doesn't establish it,** or every way of reconciling the
   sources changes what some conforming implementation must do, the report
