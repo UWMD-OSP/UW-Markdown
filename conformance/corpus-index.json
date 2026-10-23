@@ -6600,6 +6600,21 @@
       "suite": "cross-checks",
       "scenario": "cc-noi-16-positive-disagrees",
       "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "0121-four-members",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "0121-independent-owners",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "0121-component",
+      "target": "verifier"
     }
   ]
 }

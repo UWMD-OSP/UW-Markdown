@@ -50,7 +50,7 @@ class ValidationTests(unittest.TestCase):
         paths = [p for p in every if p not in config]
         # 111 plus RFC 0086's six cross-check projections (their coverage twins
         # are `__coverage` cases, compared below only through the CLI runner).
-        self.assertEqual((len(paths), len(config)), (143, 33))
+        self.assertEqual((len(paths), len(config)), (146, 33))  # RFC 0121 adds three exact CS ownership cases.
         for path in paths:
             case = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(case["requires_capabilities"], ["validate"])
