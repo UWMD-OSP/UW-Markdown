@@ -297,7 +297,7 @@ export interface UWIntegrity {
   input_hash?: string | null;
   /** Lowercase hex SHA-256 of the JCS of the block minus `_meta` (§V.9). */
   content_hash?: string;
-  /** `content_hash` of the superseded predecessor; null on a chain root. */
+  /** `content_hash` of the retained predecessor; null/absent on the first retained hashed-chain block (RFC 0085). */
   parent_hash?: string | null;
   /**
    * Detached signature over this block's signing input (Protocol §V.11,

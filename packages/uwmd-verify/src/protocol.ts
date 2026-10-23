@@ -2325,8 +2325,8 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'INT-01', severity: 'error',
     title: 'Parent hash mismatch',
-    description: 'A block\'s _meta.integrity.parent_hash does not equal the prior block\'s _meta.integrity.content_hash in the supersede chain.',
-    remediation: 'Recompute the block from the current head: stamp parent_hash with the prior block\'s content_hash and bump the version.',
+    description: 'The first retained hashed-chain block declares a missing predecessor, or a later parent_hash differs from the retained predecessor content_hash (RFC 0085).',
+    remediation: 'Supply the declared predecessor. A permitted replacement starts with null parent_hash; retained supersede links must equal their predecessor content_hash.',
     spec_ref: 'UW_PROTOCOL.md §V.10',
   },
   {

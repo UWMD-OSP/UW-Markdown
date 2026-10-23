@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "integrity": {
+    "ok": true,
+    "chains_verified": 1,
+    "chains_with_hashes": 1,
+    "signatures_present": 1,
+    "signatures_verified": 1,
+    "issues": []
+  }
+}

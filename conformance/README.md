@@ -17,13 +17,13 @@ describe content; they do not confer a tier claim.
 | Reader | 42 | 27 |
 | Verifier | 881 | 568 |
 | Module | 76 | 1 |
-| Integrity | 32 | 14 |
+| Integrity | 34 | 16 |
 | Representations | 154 | 0 |
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
 | Starter products | 142 | 57 |
-| **Total** | **1,353** | **667** |
+| **Total** | **1,355** | **669** |
 
 ## How to self-certify
 

@@ -1,5 +1,7 @@
 # 13 — Build status (living document)
 
+RFC 0085 C+D is implemented under owner acceptance (2026-10-22): full records retain supplied history, record compaction is removed, missing declared predecessors fail INT-01 and permitted manual replacements start null-parent roots.
+
 **Owner rule,2026-10-17.** AGENTS.md and CLAUDE.md carry the rule near the top:
 all @uwmd npm packages launch together at5.0.0; prelaunch releases use4.x.x from
 main as needed, including incompatible changes. Zero prelaunch compatibility:

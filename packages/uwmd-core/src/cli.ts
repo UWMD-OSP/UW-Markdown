@@ -83,13 +83,13 @@ import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js
 // Receipts the CLI issues name `@uwmd/core` as their issuer (RFC 0083).
 import { issueReceipt } from './receipt-engine.js';
 // uwmd CLI — command-line interface for .uw.md files
-// Commands: parse, validate, compact, diff, init, summary, render
+// Commands: parse, validate, diff, init, summary, render
 // Usage: uwmd <command> <file> [options]
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
 import { InstitutionConfigError, loadInstitutionPolicy } from './institution-config.js';
-import { compact, diff } from './compactor.js';
+import { diff } from './compactor.js';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
 import { render, UnsupportedLocaleError } from './renderer.js';
 import { resolveRenderMetrics } from './render-metrics.js';
@@ -557,32 +557,6 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   process.exit(hadError ? 1 : 0);
 }
 
-async function cmdCompact(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  const content = readFile(file);
-  const parsed = await loadEditableUWXFile(file);
-  const totalSuperseded = Object.values(parsed.superseded).reduce((n, arr) => n + arr.length, 0);
-
-  if (totalSuperseded === 0) {
-    console.log(`No superseded blocks found in ${basename(file)} — nothing to compact.`);
-    return;
-  }
-
-  const compacted = compact(parsed);
-
-  if (flags['dry-run']) {
-    console.log(`Would remove ${totalSuperseded} superseded block(s) from ${basename(file)}.`);
-    console.log(`Original: ${content.length} bytes → Compacted: ${compacted.length} bytes`);
-    return;
-  }
-
-  const outPath = flags['output']
-    ? resolve(flags['output'] as string)
-    : resolve(file);
-
-  writeFileSync(outPath, compacted, 'utf-8');
-  console.log(`Compacted ${totalSuperseded} superseded block(s). Wrote to: ${outPath}`);
-}
-
 async function cmdDiff(fileA: string, fileB: string): Promise<void> {
   const parsedA = (await loadSource(fileA)).parsed;
   const parsedB = (await loadSource(fileB)).parsed;
@@ -719,13 +693,12 @@ async function cmdSummary(file: string): Promise<void> {
 }
 
 async function cmdExport(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  const includeSuperseded = flags['no-superseded'] !== true;
   // --resolved exports the assembled record. Exporting the directive instead
   // would ship a document whose rent roll is a list of filenames.
   const loaded = flags['resolved']
     ? toUWEnvelope(withResolved((await loadSource(file)).parsed, file, flags))
     : await loadEnvelope(file);
-  const envelope = includeSuperseded ? loaded : { ...loaded, superseded: {} };
+  const envelope = loaded;
   const text = stringifyUWEnvelope(await stampEnvelopeDigest(envelope));
 
   // Default output path: swap the .uw.md suffix for .uw.json (fall back to appending).
@@ -1503,11 +1476,6 @@ switch (command) {
     break;
   }
 
-  case 'compact':
-    if (!positional[0]) { console.error('Usage: uwmd compact <file> [--output <file>] [--dry-run]'); process.exit(1); }
-    await cmdCompact(positional[0], flags);
-    break;
-
   case 'diff':
     if (!positional[0] || !positional[1]) { console.error('Usage: uwmd diff <file-a> <file-b>'); process.exit(1); }
     await cmdDiff(positional[0], positional[1]);
@@ -1893,7 +1861,7 @@ switch (command) {
     break;
 
   case 'export':
-    if (!positional[0]) { console.error('Usage: uwmd export <file.uw.md> [--output <file.uw.json>] [--no-superseded] [--resolved [--parts <dir>]] [--stdout]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd export <file.uw.md> [--output <file.uw.json>] [--resolved [--parts <dir>]] [--stdout]'); process.exit(1); }
     await cmdExport(positional[0], flags);
     break;
 
@@ -2080,7 +2048,6 @@ Commands:
                                (RFC 0084, via the optional @uwmd/signing package)
   render   <file>              Render to output format (see --format)
   edit     <file> <op.json>    Apply an EditOperation (Tier-2)
-  compact  <file>              Strip superseded blocks
   diff     <file-a> <file-b>  Compare two files section by section
   verify-reserve-draws <file> [plan.json] [--json]  Verify stated gross-expenditure draw bindings (read-only)
   verify-reserve-accounts <file> [--json]  Verify stated property reserve balances (read-only)
@@ -2113,13 +2080,11 @@ Commands:
   --version, -V                Print the @uwmd/core, @uwmd/verify, Protocol and Format versions
 
 Options (each command accepts only the flags listed for it; an unknown flag exits 1 before any work runs):
-  --output <path>    Output file path (compact, init; init refuses an existing file)
-  --dry-run          Show what would change without writing (compact)
+  --output <path>    Output file path (init; init refuses an existing file)
   --json             JSON output on stdout, nothing else (validate, calc, edit)
   --calc-context <f> JSON sectionVariants/overrides (calc, refine; refine: period overrides only)
   --strict           Throw on parse errors instead of collecting
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
-  --no-superseded    Drop append-only history from the .uw.json export (export)
   --resolved         Resolve externalized sections first (verify, export)
   --signing          Check _meta.integrity.signature on every block (verify; requires --keystore)
   --keystore <path>  JSON key store mapping kid to public key (verify --signing, --document-signature)

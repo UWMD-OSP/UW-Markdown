@@ -1315,16 +1315,22 @@ parsed file:
 
 1. If no block in the chain carries `content_hash`, the chain is
    skipped.
-2. Each non-root block's `parent_hash` MUST equal the prior block's
-   `content_hash` (else `INT-01 error`).
+2. The first retained block's `parent_hash` MUST be null or absent; a non-null
+   value declares a missing predecessor (`INT-01 error`). This does not prove
+   history-origin completeness. Each later block's `parent_hash` MUST equal the
+   prior retained block's `content_hash` (else `INT-01 error`). A chain with
+   either error is not counted as verified. Independent hashes and signatures
+   are still checked (RFC 0085).
 3. Each block's stamped `content_hash` MUST recompute from its
    current canonicalized content (else `INT-04 warning`).
 
 **Editor enforcement (`applyEdit`).** When the section's current
 head carries `content_hash`, the caller's `EditContext.parentHash`
 MUST equal it; mismatch is rejected as `INT-02` (concurrent write
-detected). The new block is then stamped with `parent_hash =
-prior.content_hash` and a freshly computed `content_hash`. The
+detected). A permitted manual `section_replace` stamps `parent_hash = null`
+because it replaces the prior head. `section_supersede` retains that head and
+stamps `parent_hash = prior.content_hash`. Revision and source-policy checks
+remain unchanged. Both stamp a freshly computed `content_hash`. The
 async stamping is performed by `applyEditAsync` (Web Crypto's
 SHA-256 is async); the sync `applyEdit` performs only the INT-02
 mismatch check.

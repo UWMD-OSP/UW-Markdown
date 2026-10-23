@@ -107,7 +107,7 @@ export interface EditOptions {
    * Enable content_hash chain enforcement (UW_PROTOCOL.md §V.10):
    *   - If the section's current head has `_meta.integrity.content_hash`, the caller's
    *     `EditContext.parentHash` MUST equal it (else INT-02).
-   *   - The new block is stamped with `parent_hash = prior.content_hash`.
+   *   - A replacement stamps `parent_hash = null`; supersede stamps the retained prior hash (RFC 0085).
    *   - The new block's `content_hash` is computed and stamped.
    * No effect when the prior head carries no content_hash (chain stays opt-out).
    *
@@ -247,7 +247,7 @@ export async function applyEditAsync(
   // Stamp parent_hash + content_hash on the new head. The digest covers the
   // block minus _meta (Protocol §V.9), so stamping either never moves it.
   const contentHash = await computeBlockHash(newHead);
-  newHead.meta.integrity = { ...newHead.meta.integrity, content_hash: contentHash, parent_hash: priorHash };
+  newHead.meta.integrity = { ...newHead.meta.integrity, content_hash: contentHash, parent_hash: op.kind === 'section_replace' ? null : priorHash };
 
   const stamped = restampBlockMeta(result.content, newHead);
   return { ...result, content: stamped };

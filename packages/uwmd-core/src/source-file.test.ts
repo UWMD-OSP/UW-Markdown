@@ -65,7 +65,7 @@ describe('registered source files', () => {
       { encoding: 'utf8', timeout: 30_000, maxBuffer: 2_000_000 });
     const compact = cli('compact', file);
     expect(compact.status).toBe(1);
-    expect(compact.stderr).toContain('SOURCE_EDIT_UNSUPPORTED');
+    expect(compact.stderr).toContain("unknown command 'compact'");
     const signature = join(root, 'conformance/document-signatures/01-valid/signature.json');
     const keys = join(root, 'conformance/document-signatures/keys');
     const verified = cli('verify', file, '--integrity', `--document-signature=${signature}`, `--keystore=${join(keys, 'keystore.json')}`, '--json');
