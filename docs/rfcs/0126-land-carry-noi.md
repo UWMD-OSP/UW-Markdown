@@ -1,7 +1,7 @@
 ---
 rfc: 0126
 title: Verify the stated land carry-NOI identity
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-22
 affects:
@@ -13,12 +13,17 @@ affects:
 
 # RFC 0126: Verify the stated land carry-NOI identity
 
+## Owner ruling — 2026-10-22 (sixth set)
+
+Accepted as drafted by the owner, D1–D6 stand as written.
+This PR records the ruling and implements the synchronized current contract.
+
 ## Summary
 
 Define the land identity `land_carry_noi`: stated effective gross income minus
 stated total operating expenses, at the same scope, period and variant. Verify
 negative and zero results as well as positive ones. Add no land cap rate or DSCR.
-**Draft for owner acceptance; no implementation.** The owner's fifth-set ruling
+**Accepted by the owner; implemented in this PR.** The owner's fifth-set ruling
 requests this proposal. Recommendation: accept D1–D6 as written.
 
 ## Motivation
@@ -32,7 +37,7 @@ remain unchecked when no other copy is stated.
 
 ## Proposed change
 
-After acceptance, add one `land` calculation, label `Land carry NOI`:
+Add one `land` calculation, label `Land carry NOI`:
 
 ```json
 {
@@ -112,8 +117,8 @@ ruling; this RFC neither defines nor generates a loan payment stream.
 
 ## Current contract and versions
 
-Draft only. No dictionary, Format, Protocol, schema or runtime changes here.
-Owner acceptance precedes synchronized implementation. No version allocation,
+This PR synchronizes the accepted dictionary, Format/Protocol and conformance
+contract. Existing variant-locked section selection supplies same-block reads. No version allocation,
 compatibility path or historical artifact work; prelaunch packages remain 4.x.
 
 ## Conformance impact
@@ -128,7 +133,7 @@ DSCR evidence is synthesized. Independent Python and reference results agree.
 
 ## Reference implementation
 
-After acceptance synchronize Format 4.5 shared-basis text, Protocol metric
+This implementation synchronizes Format 4.5 shared-basis text, Protocol metric
 contract and executable mirror/descriptions, dictionary and generated copy,
 land pack/Excel parity, same-block statement selection, Python verifier,
 conformance, wiki and changelog. No new API/dependency or invented diagnostic.
@@ -145,7 +150,7 @@ to another period/basis rather than the stated model.
 
 ## Unresolved questions
 
-Owner acceptance of D1–D6, especially the explicit same-block shared-basis
+D1–D6 are accepted, including the explicit same-block shared-basis
 contract and existing dollar comparison precision. No new financial convention
 is left for implementation to guess.
 

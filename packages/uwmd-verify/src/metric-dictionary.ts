@@ -2406,6 +2406,24 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "deterministic": true
     },
     {
+      "id": "land_carry_noi",
+      "label": "Land carry NOI",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "noi_model.income.effective_gross_income - noi_model.expenses.total_operating_expenses",
+      "input_paths": [
+        "noi_model.income.effective_gross_income",
+        "noi_model.expenses.total_operating_expenses"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "minimum_stated_decimals": 0,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
       "id": "price_per_acre",
       "label": "Price / Gross Acre",
       "asset_classes": [
@@ -3547,6 +3565,9 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       ],
       "senior_housing_total_labor_expense": [
         "components.senior_housing.total_labor_expense"
+      ],
+      "land_carry_noi": [
+        "noi_model.net_operating_income"
       ]
     }
   }

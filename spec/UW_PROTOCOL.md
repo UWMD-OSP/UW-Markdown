@@ -251,6 +251,13 @@ square feet, registered as secondary size; critical IT kW stays primary. Its
 existing statement homes, comparison precision and positive-size semantics
 apply. Missing rentable area is unverifiable, never inferred from power.
 
+RFC 0126 binds land noi_model.net_operating_income to land_carry_noi: stated
+EGI less stated total OpEx. All three fields assert the same block scope/period.
+Lock that current statement's exact noi_model variant for both operand reads;
+no missing operand falls through to another variant. Other bound homes resolve
+a unique noi_model through VIII.2. Dollar round_to 2/minimum 0 applies, including
+negative/zero results; no inferred inputs, row sums, land cap rate or DSCR.
+
 RFC 0123 makes applicable builtin receipt calc_ids assertions of the selected
 rule set's dictionary definitions. Recompute these after authentication without
 a starter pack; expose only stated result ids. Pack availability cannot hide a

@@ -12,6 +12,10 @@ protocol, and each package each carry an independent semver).
   home; register rentable area as secondary while keeping kW primary. Mirror
   the dictionary in the pack and live workbook; infer no area from power.
 
+- RFC 0126: verify land carry NOI as same-block stated EGI less stated total
+  OpEx, including negative results; bind the existing NOI field without adding
+  land cap rate or DSCR. Packs/workbooks mirror the dictionary identity.
+
 - Implement accepted RFC 0120: preserve applicable existing CF findings from the exact selected replacement-funding source.
 - Implement accepted RFC 0121: bound CS-01 to required tranche members and identities, preserving independent code owners.
 - Implement accepted RFC 0122: strict calendar/offset DQ-05 instants and typed invalid-clock refusal.

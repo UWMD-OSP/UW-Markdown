@@ -111,7 +111,7 @@ change; selecting an entry does not authorize filling absent inputs.
 | `hospitality` | 18 |
 | `senior_housing` | 14 |
 | `student_housing` | 14 |
-| `land` | 12 |
+| `land` | 13 |
 | `mixed_use` | 25 |
 | `data_center` | 21 |
 | `manufactured_housing` | 13 |
@@ -201,3 +201,12 @@ property.rentable_square_feet, a registered secondary size. The existing SF
 aliases apply; $ round_to 2/minimum 2 and positive-size refusal rules stand.
 Critical IT kW remains primary. Missing area is not inferred from kW, footprint
 or raised-floor area; no measurement conversion or new area requirement.
+
+## Land carry NOI (RFC 0126)
+
+`land_carry_noi` is stated EGI less stated total OpEx, with explicit alias
+noi_model.net_operating_income. The three fields in one land noi_model block
+assert one scope/period/basis; both operands come from that same exact variant.
+Dollar round_to 2/minimum 0 and ordinary null semantics apply. Negative and zero
+results can verify. Do not sum expense rows, infer zero, annualize or borrow
+operands from other blocks. No land cap rate, DSCR or debt yield is introduced.
