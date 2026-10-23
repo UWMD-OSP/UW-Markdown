@@ -2190,3 +2190,8 @@ first, then Workers static-asset configuration. `tools/docs-site/README.md` give
 the exact build, watch-path and project settings. Merged in #391; the owner
 then moved uwmd.org to the Cloudflare Worker `uwmd-org` and disconnected Vercel,
 and the Vercel configuration was removed from the repository.
+
+Current site guidance distinguishes validation issues from deal flags, documents
+bounded workbook input import and pack-less dictionary receipt checks, and
+derives specification page titles from the version matrix. The current-main
+scaffold reports one size warning and two screening-stage info notes.

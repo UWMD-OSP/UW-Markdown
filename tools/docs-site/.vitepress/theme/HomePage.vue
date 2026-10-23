@@ -211,10 +211,12 @@ the post-sale value.
 <span class="tok-rule">$</span> npx @uwmd/cli validate deal.uwx.md
 <span class="tok-tail">Validation result: WARNINGS — deal.uwx.md</span>
 <span class="tok-tail">Stage Readiness (workflow completeness):</span>
-<span class="tok-tail">  screening: complete</span>
-<span class="tok-tail">Issues (1):</span>
+<span class="tok-tail">  screening: incomplete</span>
+<span class="tok-tail">Issues (3):</span>
 <span class="tok-tail">  [WARN] CC-13: the property section does not</span>
-<span class="tok-tail">  state multifamily's primary size field …</span></code></pre>
+<span class="tok-tail">  state multifamily's primary size field …</span>
+<span class="tok-tail">  [INFO] DQ-06: screening requires debt_structure</span>
+<span class="tok-tail">  [INFO] DQ-06: screening requires validation</span></code></pre>
       </div>
     </section>
 
