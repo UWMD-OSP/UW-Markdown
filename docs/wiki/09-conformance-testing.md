@@ -846,6 +846,14 @@ fixed test clock. CI runs it on Node 20 with the existing Python runtime. This
 is development evidence alongside the portable CLI driver; messages, evidence
 payloads, issue order, institution configuration and tier claims are outside it.
 
+## RFC 0120
+
+Accepted on 2026-10-22: existing CF findings from the exact selected physical binding source are preserved, with unrelated/superseded sources excluded.
+
+RFC 0120 preserves existing CF diagnostics for the exact selected replacement-
+funding source. Portable hedge controls assert structural code multiplicity;
+other variants and superseded blocks remain outside that bounded claim.
+
 ## RFC 0124
 
 Accepted on 2026-10-22: Lite declares uw_version explicitly; no reader, compilation, canonicalization or receipt path authors an implicit rule set.
