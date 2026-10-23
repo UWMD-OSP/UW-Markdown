@@ -1473,6 +1473,11 @@ does not claim `signing` skips the suite and remains conformant.
 
 ---
 
+RFC 0121 bounds Format CS-01 to tranche objects, required own id/class/position/
+amount and their existing types/domains, and id/position uniqueness. It is not
+blanket schema validation. Independent CS-02/02b/03/04 and waterfall owners keep
+their conditions and findings, including admitted builtin component stacks.
+
 ### V.12 Replacement-funding binding verification (RFC 0070)
 
 This procedure and HDG-06–10 apply only when the all-or-none hedge terms group is stated (Format §4.7, RFC 0081 G1). A strike-only hedge states no replacement-selection claim; replacement_funding requires the terms group.

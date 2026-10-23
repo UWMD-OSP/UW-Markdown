@@ -241,6 +241,10 @@ def project(actual, name: str | None):
             "issues": sorted(seen.values(), key=lambda i: (i["code"] or "", i["severity"] or "")),
             "deal_flags": sorted(flags.values(), key=lambda f: (f["code"] or "", f["band"] or "")),
         }
+    if name == "capital-admission":
+        return {"cs_issues": sorted(({k: i.get(k) for k in ("code", "severity", "section", "field")}
+            for i in actual.get("issues", []) if i["code"].startswith("CS-")),
+            key=lambda i: (i["code"], i["section"], i["field"]))}
     if name == "replacement-funding":
         verification = actual.get("replacement_funding_verification", {})
         result = {"state": verification.get("state")}

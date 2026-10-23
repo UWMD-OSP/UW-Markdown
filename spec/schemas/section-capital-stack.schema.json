@@ -38,7 +38,7 @@
   "$defs": {
     "tranche": {
       "type": "object",
-      "description": "One layer of the capital stack.",
+      "description": "One layer of the capital stack. RFC 0121: CS-01 owns only object admission, required own id/class/position/amount and existing identities/types/domains/uniqueness; other schema failures retain separate code owners.",
       "required": ["id", "class", "position", "amount"],
       "additionalProperties": false,
       "properties": {

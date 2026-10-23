@@ -849,3 +849,7 @@ payloads, issue order, institution configuration and tier claims are outside it.
 ## Draft RFC 0121
 
 [Bound CS-01 to tranche identities and required members](../rfcs/0121-capital-stack-structural-scope.md) is pending owner review. Its proposed controls are not current conformance requirements.
+
+Accepted RFC 0121 fixes CS-01 diagnostic ownership at the four required own
+tranche members and identities, including builtin components. Other schema
+constraints retain their existing code owners; portable controls preserve counts.

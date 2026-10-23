@@ -1,7 +1,7 @@
 ---
 rfc: 0121
 title: Bound CS-01 to tranche identities and required members
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-22
 affects:
@@ -13,13 +13,12 @@ affects:
 
 # RFC 0121: Bound CS-01 to tranche identities and required members
 
-## Recommendation
+## Resolution
 
-Accept the owner-approved narrow reading of Format 4.24: CS-01 owns the four
-required tranche members and their identity constraints. This draft makes that
-boundary explicit; it does not add whole-schema validation.
+Accepted as drafted by the owner on 2026-10-22 (fourth set). CS-01 owns the four
+required tranche members and their identity constraints, not whole-schema validation.
 
-## Proposed contract
+## Contract
 
 CS-01 MUST check tranche object admission, the required own members `id`,
 `class`, `position` and `amount`, their existing Format-defined types/domains,
@@ -38,7 +37,7 @@ finding just because CS-01 also applies.
 Apply the same ownership boundary to an admitted builtin component stack under
 Format 4.23. Do not infer component admission from an arbitrary extension.
 
-## Decisions proposed
+## Decisions
 
 | Question | Recommendation | Precedent |
 |---|---|---|
@@ -46,7 +45,7 @@ Format 4.23. Do not infer component admission from an arbitrary extension.
 | Other fields? | Retain their existing code owners and exact conditions | Format 4.24 and RFC 0096 explicitly preserve separate owners |
 | Broader schema validator? | Not part of CS-01 | Avoid duplicate/conflicting diagnostics; issue #516 records the ambiguity |
 
-## Implementation and conformance after acceptance
+## Implementation and conformance
 
 Clarify Format 4.24 and synchronized code/schema descriptions where present.
 The current TypeScript and Python narrow reading should remain behaviorally
@@ -57,4 +56,4 @@ including admitted components. No formula, tolerance or dependency changes.
 
 ## Status
 
-Draft for owner review; this PR implements no validator change.
+Accepted and implemented in this PR under standing merge approval.

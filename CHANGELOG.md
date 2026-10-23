@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Draft RFC 0121: bound cs-01 to tranche identities and required members; pending owner review, with no implementation.
+- Implement accepted RFC 0121: bound cs-01 to tranche identities and required members; pending owner review, with no implementation.
 
 - Fix direct verify-packages invocation on Windows: resolve npm-cli.js and run
   it through Node rather than executing npm.cmd. Add direct Windows CI coverage.
