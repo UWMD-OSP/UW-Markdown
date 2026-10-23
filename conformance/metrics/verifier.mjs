@@ -9,7 +9,7 @@
 // from the same build's `metric-verification.js`.
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { FORMAT_VERSION, getStatedDecimals, parseUWFile, parseUWLite, verifyStatedMetrics } from '../../packages/uwmd-verify/dist/index.js';
+import { getStatedDecimals, parseUWFile, parseUWLite, verifyStatedMetrics } from '../../packages/uwmd-verify/dist/index.js';
 import { verifyStatedMetric } from '../../packages/uwmd-verify/dist/metric-verification.js';
 
 export { verifyStatedMetric };
@@ -21,10 +21,9 @@ function readExample(source, liteSections) {
   const lite = parseUWLite(source);
   if (lite.issues.some(i => i.severity === 'error')) throw new Error('Invalid Lite fixture');
   // An empty structured view over the Lite frontmatter; the anchors below fill it.
-  // A Lite record that declares no uw_version is Format 3.0, as the bridge
-  // compiles it (RFC 0081 D12); that version selects its rule set (RFC 0111).
+  // RFC 0124: parseUWLite already admitted the explicit kept rule set.
   const parsed = {
-    frontmatter: { uw_version: FORMAT_VERSION, ...lite.frontmatter }, sections: {}, prose: {}, pipeline_log: [],
+    frontmatter: { ...lite.frontmatter }, sections: {}, prose: {}, pipeline_log: [],
     custom_calculations: [], custom_scenarios: [], extensions: {}, superseded: {}, raw: source,
   };
   const litePrecision = new Map();

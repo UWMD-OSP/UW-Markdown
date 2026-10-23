@@ -1,5 +1,6 @@
 ---
 uw_lite_version: 1.0
+uw_version: "3.0"
 deal_id: "uw_lite_o'brien"
 deal_name: "Café \"Tower\" at C:\\deals #2"
 created: "2026-07-29T00:00:00Z"

@@ -12,6 +12,7 @@ protocol, and each package each carry an independent semver).
 - Implement accepted RFC 0121: bound CS-01 to required tranche members and identities, preserving independent code owners.
 - Implement accepted RFC 0122: strict calendar/offset DQ-05 instants and typed invalid-clock refusal.
 - Implement accepted RFC 0123: authenticate and recompute dictionary receipt results without packs, preserving coverage indeterminacy and exact units.
+- Implement accepted RFC 0124: require every Lite source to declare a kept uw_version; retain RCP-13 and model version refusal.
 
 - Apply the public/private paperwork policy and enforce the tracked-content
   identity guard in required CI, with only the named public-handle exceptions.

@@ -12,13 +12,7 @@
         "target_path": "valuation.purchase_price"
       }
     ],
-    "defaults": [
-      {
-        "path": "frontmatter.uw_version",
-        "value": "3.0",
-        "reason": "The Lite bridge emits Format 3.0 (RFC 0081 D12)."
-      }
-    ],
+    "defaults": [],
     "issues": [],
     "source_preserved_in": "x_uw_lite_source"
   }

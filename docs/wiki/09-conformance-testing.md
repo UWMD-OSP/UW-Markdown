@@ -876,3 +876,7 @@ Accepted on 2026-10-22: dictionary receipt assertions are recomputed without pac
 RFC 0123 authenticates before dictionary receipt recomputation. Missing packs
 expose the actual recomputed stated subset, with honest coverage indeterminacy;
 pack absence cannot mask a same-engine dictionary mismatch or corrupt digest.
+
+## RFC 0124
+
+Accepted on 2026-10-22: Lite declares uw_version explicitly; no reader, compilation, canonicalization or receipt path authors an implicit rule set.

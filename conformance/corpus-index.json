@@ -6602,6 +6602,26 @@
       "target": "verifier"
     },
     {
+      "suite": "lite",
+      "scenario": "malformed/16-rule-set-missing",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/17-rule-set-null",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/18-rule-set-numeric",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/19-rule-set-unsupported",
+      "target": "representations"
+    },
+    {
       "suite": "receipts",
       "scenario": "verify/14-dictionary-packless-clean",
       "target": "starter-products"

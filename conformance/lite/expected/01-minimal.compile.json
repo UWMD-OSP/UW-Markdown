@@ -14,11 +14,6 @@
     ],
     "defaults": [
       {
-        "path": "frontmatter.uw_version",
-        "value": "3.0",
-        "reason": "The Lite bridge emits Format 3.0 (RFC 0081 D12)."
-      },
-      {
         "path": "frontmatter.created_by",
         "value": "unknown",
         "reason": "Lite bridge provenance default for an unspecified author."

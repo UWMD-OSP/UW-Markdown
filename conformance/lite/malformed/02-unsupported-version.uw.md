@@ -1,4 +1,5 @@
 ---
+uw_version: "3.0"
 uw_lite_version: 2.0
 deal_id: uw_lite_future_version
 deal_name: Future Version

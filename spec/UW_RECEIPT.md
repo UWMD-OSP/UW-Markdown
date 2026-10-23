@@ -270,6 +270,11 @@ Absence means **unstated**, not non-conforming: a receipt issued before the
 field existed cannot retroactively claim a version. A verifier **MUST NOT**
 treat absence as a failure.
 
+RFC 0124 requires an explicit kept uw_version in Lite subjects too. A missing,
+null, malformed or unsupported declaration cannot canonicalize (RCP-09). It is
+not filled from uw_lite_version or the receipt. A valid subject whose receipt
+names another rule set retains failed/RCP-13 before pack/backend uncertainty.
+
 ### 5.2.2 Rule set
 
 *Added by [RFC 0111](../docs/rfcs/0111-verify-under-declared-rule-set.md) D5.*

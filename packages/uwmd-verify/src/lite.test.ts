@@ -9,6 +9,7 @@ import {
 const SOURCE = [
   '---',
   'uw_lite_version: 1.0',
+  'uw_version: "3.0"',
   'deal_name: Parkview',
   '---',
   '# Acquisition',
@@ -25,6 +26,7 @@ describe('percent normalization (RFC 0025)', () => {
       [
         '---',
         'uw_lite_version: 1.0',
+        'uw_version: "3.0"',
         'deal_name: Rate',
         '---',
         `- Rate: ${display} <!-- uw:valuation.going_in_cap_rate -->`,
@@ -88,7 +90,7 @@ describe('parseUWLite', () => {
       path: 'acquisition.purchase_price',
       value: 12_500_000,
       unit: 'USD',
-      range: { line: 7 },
+      range: { line: 8 },
     });
     expect(parsed.fields[1]).toMatchObject({
       value: 0.055,
@@ -134,6 +136,7 @@ describe('UW Lite financial canonicalization', () => {
     const alternate = [
       '---',
       'uw_lite_version: 1.0',
+      'uw_version: "3.0"',
       '---',
       '- Cap: 5.50% <!-- uw:valuation.going_in_cap_rate scenario=base -->',
       '- Price: $12500000 <!-- uw:acquisition.purchase_price -->',
@@ -160,5 +163,16 @@ describe('UW Lite financial canonicalization', () => {
   it('refuses to canonicalize ambiguous/error documents', () => {
     const invalid = parseUWLite(SOURCE.replace('uw_lite_version: 1.0', 'uw_lite_version: 2.0'));
     expect(() => canonicalizeUWLiteFinancial(invalid)).toThrow(UWLiteError);
+  });
+});
+
+describe('RFC 0124 explicit kept Lite rule set', () => {
+  it.each([undefined, null, 3, false, '', '99.0'])('refuses %s at parsing and model boundaries', value => {
+    const source = SOURCE.replace('uw_version: "3.0"\n', value === undefined ? '' : `uw_version: ${JSON.stringify(value)}\n`);
+    expect(() => parseUWLite(source)).toThrow(expect.objectContaining({ code: 'UNSUPPORTED_FORMAT_VERSION' }));
+    const model = parseUWLite(SOURCE);
+    if (value === undefined) delete model.frontmatter.uw_version; else model.frontmatter.uw_version = value;
+    expect(() => canonicalizeUWLiteFinancial(model)).toThrow(expect.objectContaining({ code: 'UNSUPPORTED_FORMAT_VERSION' }));
+    expect(() => renderCanonicalUWLite(model)).toThrow(expect.objectContaining({ code: 'UNSUPPORTED_FORMAT_VERSION' }));
   });
 });

@@ -4308,6 +4308,13 @@ A Reader MUST refuse absent or non-`"3.0"` uw_version at parse stage with `UNSUP
 
 A module MUST NOT load unless its requires_protocol range is satisfied by 4.1.0 and its requires_format range by 3.0. No earlier contract satisfies either range.
 
+RFC 0124 requires every Lite source to declare a kept uw_version. Parsing,
+compilation, canonicalization and adapters refuse absent/null/malformed or
+unsupported declarations with UNSUPPORTED_FORMAT_VERSION, never an implicit
+rule set. RCP-13 remains the receipt/subject rule-set mismatch; a subject that
+cannot canonicalize because its declaration is unsupported remains RCP-09.
+Models naming no kept rule set remain refused, including in-memory API models.
+
 ### XII.5 Rule sets (RFC 0111)
 
 *Accepted in [RFC 0111](../docs/rfcs/0111-verify-under-declared-rule-set.md).
