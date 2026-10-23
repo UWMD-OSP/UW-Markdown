@@ -101,7 +101,7 @@ Mesa Gateway is a 10 MW (critical IT) wholesale data center in the Elliot Road c
 
 ## Property {#property}
 
-Square footage is the **building** footprint, carried so that a fallback reader labels a true number rather than a wrong one. White space (`raised_floor_sf`) lives in the capacity section, because for a data center the denominator that matters is kilowatts, not feet.
+`rentable_square_feet` explicitly states rentable building area as a secondary size; it does not state the building footprint or infer area from power. White space (`raised_floor_sf`) is separately stated in the capacity section. Commissioned critical IT kW remains the primary size for this data center. No area measurement standard is asserted here.
 
 ```json uw:section=property source=manual ts=2026-09-09T08:40:00Z v=1 confidence=high
 {
@@ -410,7 +410,7 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense an
 
 ## Valuation {#valuation}
 
-`price_per_sf` is on the building footprint and is carried for the fallback reader only. The denominator this deal is priced on is `price_per_commissioned_kw`, a module calculation.
+`price_per_sf` uses the explicitly stated `property.rentable_square_feet` as a secondary price comparison. The primary pricing denominator remains commissioned critical IT kW, through the builtin `price_per_commissioned_kw` calculation. No conversion between kW, rentable area and raised-floor area is implied. RFC 0125 proposes adding the SF figure to data-center dictionary verification; that extension is not yet accepted.
 
 ```json uw:section=valuation source=manual ts=2026-09-09T11:00:00Z v=1 confidence=high
 {
