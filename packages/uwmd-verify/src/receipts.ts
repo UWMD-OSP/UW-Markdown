@@ -653,16 +653,14 @@ export interface ReceiptVerificationOptions extends ReceiptSubjectOptions {
  *      and burying it under a later step would let an unknown pack mask it.
  *      A receipt naming a rule set other than the one its record's declared
  *      Format version selects misstates its subject: `failed` (RCP-13, RFC 0111).
- *   3. Input/signature-backend preflights stay early; unknown pack/pack
- *      version it does not hold, a signature with no backend, or a referenced
- *      input it does not hold — RCP-11) → `unverifiable`.
- *   4. Authenticate a supplied signature; invalid signed input fails before any computation.
- *   5. Otherwise, recomputation refusal is RCP-03 with no engine carve-out. Finite disagreement → `failed`, unless the issuing
- *      engine identity (name *and* version) differs from this verifier's, in
- *      which case the disagreement is attributable to the engine and the
- *      verdict is `unverifiable` (RFC 0016 open question, resolved in
- *      `spec/UW_RECEIPT.md` §5).
- *   6. Result digest is checked only after agreement; otherwise `verified`.
+ *   3. Missing held inputs/signature backend are indeterminate preflights.
+ *   4. Authenticate a supplied signature before any financial recomputation/refusal.
+ *   5. Recompute dictionary assertions independently of packs, then held matching
+ *      pack-only outputs. Refusal is RCP-03 with no engine carve-out; finite
+ *      disagreement keeps the existing RCP-03/RCP-07 engine-identity rule.
+ *   6. Check the complete stated results digest independently of pack presence.
+ *   7. Unknown pack coverage remains RCP-05/06 with the actual dictionary subset;
+ *      otherwise the complete named-pack receipt is verified.
  *
  * The verifier always recomputes; `results_digest` is checked only as a cheap
  * corruption signal and never authorizes skipping the recomputation.

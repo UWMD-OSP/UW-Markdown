@@ -112,6 +112,10 @@ canonical form, serialized as `sha256:<lowercase hex>`.
 
 ### 3.2 Results
 
+RFC 0123: an applicable builtin calc_id asserts its selected rule-set dictionary
+definition. A producer using another definition MUST use another id; a starter
+pack cannot redefine standard meaning. Pack-less verification follows §5.1.
+
 `computation.results` **MUST** contain every calc the named pack declares as an
 output, and **MUST NOT** contain any value the pack did not compute. A receipt
 is not a place to carry hand-entered numbers.

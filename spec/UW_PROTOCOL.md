@@ -469,9 +469,10 @@ reserve schemas).
   run the subcommand once per variant.
 - **Receipts.** `verify-receipt` verifies as a Verifier holds the standard:
   without a calculation pack (packs are starter products, RFC 0078). A
-  receipt's results are its pack's outputs, so after the subject, rule-set and
-  referenced-input checks a pack-named receipt is `unverifiable` with
-  `RCP-05` (UW_RECEIPT §5.1 step 3). `--inputs` supplies the referenced-input
+  Verifier authenticates after subject, rule-set and held-input preflights,
+  then recomputes applicable dictionary-defined stated results (RFC 0123).
+  Unknown named-pack coverage remains unverifiable/RCP-05 only when no earlier
+  decisive dictionary disagreement, refusal or corrupt result digest applies. `--inputs` supplies the referenced-input
   digests the verifier holds (UW_RECEIPT §10); without it the verifier holds none.
   A receipt that cannot be read is refused with `{ error }`, code
   `RCP_MALFORMED`.

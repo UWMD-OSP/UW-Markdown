@@ -1248,3 +1248,16 @@ describe('RFC 0123 dictionary receipts without packs', () => {
     expect(result.verdict).toBe('failed');expect(result.issues[0]!.code).toBe('RCP-03');
   });
 });
+
+describe('RFC 0123 missing dictionary dependencies', () => {
+  it('recomputes an uncomputed statement as null without inventing inputs', async () => {
+    const source = '---\nuw_version: "3.0"\nasset_class: multifamily\ndeal_id: missing-input\ndeal_name: Missing input\n---\n\n```json uw:section=property\n{"total_units": 1}\n```\n';
+    const pack = { ...MULTIFAMILY_PACK, id: 'org.example.dictionary-subset', calculations: MULTIFAMILY_PACK.calculations!.filter(d => d.id === 'cap_rate') };
+    const receipt = await issueReceipt(source, { filename: 'deal.uwx.md', pack, issued_at: ISSUED_AT });
+    expect(receipt.computation.results).toEqual([{ calc_id: 'cap_rate', value: null, unit: '%', computed: false }]);
+    const result = await verifyReceipt(receipt, source, { filename: 'deal.uwx.md', packs: [] });
+    expect(result.verdict).toBe('unverifiable');
+    expect(result.issues.map(i => i.code)).toEqual(['RCP-05']);
+    expect(result.recomputed).toEqual(receipt.computation.results);
+  });
+});
