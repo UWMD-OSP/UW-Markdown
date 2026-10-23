@@ -550,11 +550,11 @@ def decode_zip(data, options=None):
             name_len, extra_len = struct.unpack_from('<HH', data, at + 26)
             raw_name = data[at+30:at+30+name_len]
             name = raw_name.decode('utf-8')
-            need(safe_path(name) and name not in files and not flags & 1 and (item.external_attr >> 16) & 0xf000 != 0xa000, 'ZIP path/duplicate/encryption/symlink')
             need(method in (0, 8) and method == item.compress_type and flags == item.flag_bits, 'ZIP local/central method/flags')
             # zipfile independently compares each local name with its central spelling.
             expected_name = item.orig_filename.encode('utf-8' if item.flag_bits & 0x800 else 'cp437')
             need(raw_name == expected_name, 'ZIP local/central name')
+            need(safe_path(name) and name not in files and not flags & 1 and (item.external_attr >> 16) & 0xf000 != 0xa000, 'ZIP path/duplicate/encryption/symlink')
             expected = (item.CRC, item.compress_size, item.file_size)
             need(all(a == b or flags & 8 and a == 0 for a, b in zip((crc, compressed, expanded), expected)), 'ZIP local/central CRC/size')
             need(max(expected) < 0xffffffff and item.volume == 0 and item.file_size <= item.compress_size * options.get('maxCompressionRatio', 100) + 1048576, 'ZIP64/multidisk/ratio limit')
