@@ -18,11 +18,14 @@ remediation text. Common families are:
 
 | Code family | Meaning | What to do |
 |---|---|---|
-| `CC-01`–`CC-10` | Two deal surfaces disagree. | Reconcile the named section fields; do not choose a value by intuition. |
-| `FV-01`–`FV-14` | A financial input crosses a configured threshold. | Confirm the source and assumption; use an institution threshold override only when authorized. |
-| `DQ-01`–`DQ-05` | Provisional, partial, or stale information needs tracking. | Add a precise gap or field override, then resolve it from evidence. |
+| `CC-*` | Two deal surfaces disagree. | Reconcile the named section fields; do not choose a value by intuition. |
+| `FV-*` deal flags | A financial input crosses a configured band. These flags are separate from validation issues unless an institution policy escalates one. | Confirm the source and assumption; apply threshold overrides only when authorized. |
+| `DQ-*` | Provisional, partial, or stale information needs tracking. | Add a precise gap or field override, then resolve it from evidence. |
 | `INT-01`–`INT-04` | A supersede hash/provenance chain cannot be verified. | Preserve prior blocks and write a proper superseding block. |
 | `POL-01`–`POL-02` | The actor or edit method violates policy. | Use the authorized actor/source and the required supersede operation. |
+
+The [code registry](/spec/protocol#iii-6a-validator-code-taxonomy) defines the
+current codes. A valid record can still describe an unattractive deal.
 
 ## A calc command reports an error
 
@@ -47,8 +50,9 @@ remediation text. Common families are:
 
 | Code | Fix |
 |---|---|
+| `UNSUPPORTED_VERSION` | Supply the supported string `uw_version: "3.0"`; missing, numeric, null and other versions are refused. |
 | `LITE_UNCLOSED_FRONTMATTER` | Add the closing `---` delimiter. |
-| `LITE_FRONTMATTER_REQUIRED`, `LITE_VERSION_REQUIRED`, `LITE_VERSION_UNSUPPORTED` | Add top-level Lite frontmatter with `uw_lite_version: 1.0`. |
+| `LITE_FRONTMATTER_REQUIRED`, `LITE_VERSION_REQUIRED`, `LITE_VERSION_UNSUPPORTED` | Declare top-level `uw_lite_version: 1.0` and `uw_version: "3.0"`. |
 | `LITE_FRONTMATTER_NESTING_UNSUPPORTED`, `LITE_FRONTMATTER_SYNTAX`, `LITE_FRONTMATTER_DUPLICATE` | Use unique top-level `key: value` entries only. |
 | `LITE_FIELD_SYNTAX`, `LITE_FIELD_DUPLICATE`, `LITE_VALUE_INVALID` | Repair the anchored field line, its identity, or its display value. |
 | `LITE_ATTRIBUTE_SYNTAX`, `LITE_ATTRIBUTE_DUPLICATE` | Use one `key=value` pair for each field attribute. |
@@ -66,24 +70,37 @@ means neither the content nor extension identifies a supported source.
 
 ## Receipt verification says `failed` or `unverifiable`
 
-`failed` means the document digest or recomputed results disagree. Use the exact
+`failed` means a digest, rule-set declaration, signature or recomputed result disagrees. Use the exact
 deal version that issued the sidecar, then reissue after an authorized edit.
-`unverifiable` means the verifier lacks a required pack/version or signature
-backend, so it cannot decide. Neither verdict is a pass. A receipt only attests
+`unverifiable` means required evidence or verification capability is unavailable.
+A pack-less Verifier still authenticates the receipt and recomputes stated
+dictionary-defined results; a disagreement fails even without the pack. If
+those results agree but full pack/output coverage cannot be established, the
+overall verdict remains unverifiable. Neither verdict is a pass. A receipt only attests
 that stated outputs follow from the unchanged record, not input truth.
 
 The receipt issue codes are specific: `RCP-01` digest mismatch, `RCP-02`
 missing or extra result, `RCP-03` recomputation disagreement, `RCP-04` corrupt
 results digest, `RCP-05` unknown pack, `RCP-06` pack-version mismatch, `RCP-07`
-engine-version disagreement, `RCP-08` unavailable signature backend, and
-`RCP-09` uncanonicalizable document. Restore the exact record and compatible
-pack first; do not change the receipt to make a verifier pass.
+engine-identity disagreement, `RCP-08` unavailable signature backend,
+`RCP-09` uncanonicalizable document, `RCP-10` canonicalization disagreement,
+`RCP-11` unavailable referenced input, `RCP-12` referenced-input digest mismatch,
+and `RCP-13` rule-set mismatch. See the [receipt specification](/spec/receipt)
+for precedence and exact meanings. Reissue from the current record after an
+authorized edit; do not change a receipt to make a verifier pass.
 
 ## Why is a workbook edit not reflected in the deal?
 
-Workbooks are exports. The reference converter does not yet import workbook
-edits into a UWX record. Apply source-backed edits to the deal via an
-editor workflow, then regenerate the workbook.
+The converter supports bounded input import:
+
+```bash
+node packages/uwmd-excel/bin/uwmd-excel.mjs --import review.xlsx
+```
+
+It prints editable section payloads as JSON; it does not overwrite a deal.
+Review and apply source-backed edits through the normal edit API, then
+recompute and regenerate the workbook. Formula cells are derived results,
+not imported assumptions. Unsupported workbook edits are refused.
 
 ## The command cannot find my file
 

@@ -5,8 +5,8 @@ title: "Cookbook"
 # UW Markdown cookbook
 
 These short recipes use the reference implementation from a source checkout.
-The commands work unchanged with the published CLI when `uwmd` replaces
-`npm run cli --`.
+They follow current main. For published package versions, consult the
+[version matrix](/about/versions) and that package's command help.
 
 ## Start a structured underwriting record
 
@@ -43,7 +43,8 @@ The calc engine owns financial math. Rates are fractions: `0.0551` means 5.51%.
 npm run cli -- calc examples/Parkview-Apts-Glendale-AZ.uwx.md "pmt(0.0551 / 12, 360, 1000000)"
 ```
 
-For a named metric, add a `ModuleCalcDecl` to the relevant asset-class pack.
+Builtin metric definitions live in the normative dictionary. A new or changed
+builtin requires an accepted RFC and synchronized dictionary, pack and controls.
 The pack drives both the deterministic calc engine and Excel formula emission;
 see [Calc conventions](/guide/calc-conventions).
 
@@ -51,7 +52,7 @@ see [Calc conventions](/guide/calc-conventions).
 
 ```bash
 npm --prefix packages/uwmd-excel run build
-node packages/uwmd-excel/dist/cli.js examples/Parkview-Apts-Glendale-AZ.uwx.md -o parkview.xlsx
+node packages/uwmd-excel/bin/uwmd-excel.mjs examples/Parkview-Apts-Glendale-AZ.uwx.md -o parkview.xlsx
 ```
 
 The workbook is a live projection: input cells and operating-statement line
@@ -83,7 +84,9 @@ report before treating the Lite output as a complete representation.
 
 ## Add a metric to a pack
 
-1. Add the deterministic `ModuleCalcDecl` in the relevant core pack.
+1. For a builtin, obtain RFC acceptance and define the metric in `spec/metrics/`;
+   keep its core pack declaration synchronized. Third-party module metrics
+   follow the module contract instead.
 2. Ensure every field path has a workbook named range in that class's Excel
    layout, or Excel export will reject it with `EXCEL-EMIT-PATH`.
 3. Use only Excel-mappable builtins in pack formulas; `coalesce` and null-aware
@@ -91,5 +94,5 @@ report before treating the Lite output as a complete representation.
 4. Add a pack test and confirm exact Excel-to-engine parity at the declaration's
    effective `round_to` (protocol §VIII.5); a native recalculation test is the evidence.
 
-Pack and asset-class changes require normal project coordination; they are not
-edits to a single deal file.
+Official asset classes are full builtins. Their dictionary, pack, defaults,
+example and workbook layout ship together under RFC discipline.

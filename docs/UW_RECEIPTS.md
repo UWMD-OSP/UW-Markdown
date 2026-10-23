@@ -88,7 +88,7 @@ These checks answer different questions:
 | `receipt issue` | Can a detached proof of that document and pack result/status set be created? |
 | `receipt verify` | Does the current document match the prior receipt's hashes, result statuses/values and applicable signature checks? |
 
-CLI reporting (core/CLI 2.18.0) makes these
+CLI reporting makes these
 distinctions explicit. For example, a multifamily document without asset-level
 equity inputs can issue with:
 
@@ -122,8 +122,9 @@ This Deal** command do the same check. The extension only verifies — issuing
 while you are still editing produces a receipt that is stale on the next
 keystroke.
 
-Verification always recomputes. It never trusts the digest recorded inside the
-receipt as a shortcut.
+After source, referenced-input and authentication preflights, verification
+recomputes the results it can establish. It never treats a matching result
+digest as proof of correct computation.
 
 ## Three answers, not two
 
@@ -139,7 +140,8 @@ third into either of the others.
 `unverifiable` is the one people are most likely to get wrong, so it has its own
 exit code. You get it when the verifier lacks the named calculation pack, holds a
 different version of it, cannot parse the record, or encounters a signature it
-has no key for.
+cannot authenticate with an available backend. Invalid supplied signatures
+fail; absent verification capability is distinct.
 
 **Unverifiable is not a failure.** It is the absence of evidence, not evidence of
 absence. Reporting it as a failure would cry wolf every time a verifier is
@@ -151,9 +153,11 @@ that has the pack" — not as a pass and not as a rejection.
 
 `uwmd verify-receipt <receipt.json> <file> --json` is the conformance protocol's
 receipt subcommand (RFC 0115, Protocol §II.6a.1). It verifies as a Verifier
-without a calculation pack does, so a receipt whose record is unchanged reports
-`unverifiable` with RCP-05 rather than `verified`; digest, referenced-input,
-rule-set and signature checks still decide first. It exits 1 only on `failed`
+without a calculation pack does: it recomputes stated builtin dictionary results
+under the record's declared rule set. A mismatch fails with RCP-03 or RCP-07;
+matching results leave overall `unverifiable` with RCP-05/06 when full claimed
+pack/output coverage is unproven. Digest, referenced-input, rule-set and
+signature checks still decide first. It exits 1 only on `failed`
 or an unreadable receipt. `uwmd receipt verify` is the pack-based check above.
 
 ## Receipts go stale, and that is normal

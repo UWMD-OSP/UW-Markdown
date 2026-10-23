@@ -30,14 +30,15 @@ leaves every NOI, DSCR, and IRR to the calculation engine.
 7. Treat the format specification, protocol, metric dictionary, schemas, and
    conformance fixtures as the contract.
 
-The agent host is a starter product, not part of the standard
+Agent execution belongs to the producer. The reference toolkit provides
+non-normative context helpers and generic writers
 ([RFC 0078](/about/rfcs/0078-protocol-is-verification)). These rules come from
 the non-normative [agent writers guide](/starter/ai-host), and the reference
 toolkit's generic writers apply them. Rule 3 binds every tool, and the
 standard keeps its provenance rules (append or supersede, host-owned `_meta`).
 The reference toolkit runs no agent: your host runs its own model and writes
 the result through `writeAgentBlock` or `uwmd edit`. See
-[tools and packages](/guide/tools#programmatic-agent-host).
+[tools and packages](/guide/tools#agent-writers-and-context).
 
 ## Best context order
 

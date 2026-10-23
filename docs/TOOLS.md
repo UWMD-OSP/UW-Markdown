@@ -7,16 +7,16 @@ just want to create and validate a first record, start with the
 The tools overlap on purpose: the format is the contract, and the tools are
 interchangeable. Pick the one that matches what you're trying to do.
 
-Every tool on this page is a **starter product**: a non-normative reference
-tool built on the standard ([RFC 0078](rfcs/0078-protocol-is-verification.md)).
+The reference stack includes the standalone standard Verifier and **starter
+products** built on the standard ([RFC 0078](rfcs/0078-protocol-is-verification.md)).
 The standard is the format, the [Protocol](../spec/UW_PROTOCOL.md) as
 verification, receipts and the [metric dictionary](../spec/metrics/README.md);
 a lender can verify a record with none of these tools. Their behavior is
 described in the [starter products guide](starter/README.md).
 
 Two file extensions appear below. `.uwx.md` is the complete structured
-record every tool works on. `.uw.md` is the UW Lite summary, which only
-the editor, the CLI, and the VS Code extension read. See
+record. `.uw.md` is the UW Lite summary. Readers and source-loading APIs
+accept the representations they advertise; the editor compiles Lite into UWX. See
 [UW Lite and UWX](UW_LITE_AND_UWX.md).
 
 ## What is published
@@ -26,23 +26,22 @@ publication state. At the time of writing:
 
 | Package or tool | How to get it |
 |---|---|
-| `@uwmd/verify` (read and verify only: the reference implementation of the standard, not a starter product) | `npm install @uwmd/verify` (release 4.1.0 on); `@uwmd/core` depends on it and re-exports it |
+| `@uwmd/verify` (read and verify only: the reference implementation of the standard, not a starter product) | `npm install @uwmd/verify`; `@uwmd/core` depends on it and re-exports it |
 | `@uwmd/core` (library) | `npm install @uwmd/core` |
 | `@uwmd/cli` (`uwmd` command) | `npx @uwmd/cli <command>` or `npm install @uwmd/cli` |
 | `@uwmd/signing` (block and receipt signatures) | `npm install @uwmd/signing` |
 | `@uwmd/batch` (collection index and fact table) | `npx @uwmd/batch <dir> --out <dir>` |
-| `@uwmd/excel` (`.xlsx` workbooks) | `npm install @uwmd/excel` (release 3.0.0 on); before that, build from a clone |
-| `@uwmd/report` (PDF lender package) | `npm install @uwmd/report` (release 3.0.0 on); before that, build from a clone |
-| `@uwmd/lake` (PostgreSQL adapter) | `npm install @uwmd/lake` (release 3.0.0 on); before that, build from a clone |
-| Official modules (hospitality, data center) | Not needed: both classes are builtin in `@uwmd/core` from 3.0.0 (RFC 0080). Their final 0.2.0 packages are deprecated on npm and were deleted from the repository in 4.0.0 (RFC 0081) |
+| `@uwmd/excel` (`.xlsx` workbooks) | `npm install @uwmd/excel` |
+| `@uwmd/report` (PDF lender package) | `npm install @uwmd/report` |
+| `@uwmd/lake` (PostgreSQL adapter) | `npm install @uwmd/lake` |
+| Official asset classes | All twelve, including hospitality and data center, are builtins; modules are for third parties |
+| `@uwmd/mcp` | Private source workspace: read-only validation, verification and code explanations over stdio; not published on npm |
 | Web viewer | Hosted at [uwmd.org/viewer](/viewer/), or download the single HTML file |
 | Web editor | Hosted public preview at [uwmd.org/editor](https://www.uwmd.org/editor/) |
 | VS Code extension | Source only: package with `vsce package` |
 
-The registry also serves a stray `0.3.0` of `@uwmd/excel` and `@uwmd/report`.
-Both are deprecated and pinned to core 1.3.0; do not install them. Install an
-exact version that pins your core, for example `@uwmd/excel@0.9.19` with
-`@uwmd/core@4.3.0`.
+Install matching exact workspace versions from the matrix. Source-checkout
+features may be newer than the published package generation.
 
 For source-checkout calculation scenarios, see
 [Calculation context files](CALCULATION_CONTEXT.md): select period variants
@@ -58,19 +57,19 @@ It checks mathematical consistency, not economic completeness.
 
 ## Decision tree
 
-| If you want to... | Reach for | Tier |
-|---|---|---|
-| Open a `.uw.md` Lite summary or `.uwx.md` structured deal | [Web editor](#web-editor) | 2 + 3 |
-| Author a deal file by hand | [VS Code extension](#vs-code-extension) | 1 + lint |
-| Edit numeric fields and watch DSCR/LTV recompute | [Web editor](#web-editor) | 2 + 3 |
-| Script validation, scaffolding, or rendering | [`uwmd` CLI](#uwmd-cli) | 1 + 2 |
-| Hand the deal to a banker who lives in Excel | [Excel converter](#excel-converter) | 3 (export) |
-| Index a folder of deals, or feed a data lake | [`@uwmd/batch`](#batch-indexer) | 1 + 3 (read-only) |
-| Write an agent's output into the deal | [`uwmd edit`](#uwmd-cli) or `writeAgentBlock` from `@uwmd/core` (your host runs the agent) | 2 |
-| Prove a deal's metrics follow from its inputs | [`uwmd receipt`](#uwmd-cli) or the [web editor](#web-editor) | 3 |
-| Check a receipt a counterparty sent you | any of the [CLI](#uwmd-cli), [web editor](#web-editor), or [VS Code extension](#vs-code-extension) | 3 |
+| If you want to... | Reach for |
+|---|---|
+| Open a `.uw.md` Lite summary or `.uwx.md` structured deal | [Web editor](#web-editor) |
+| Author a deal file by hand | [VS Code extension](#vs-code-extension) |
+| Edit numeric fields and watch DSCR/LTV recompute | [Web editor](#web-editor) |
+| Script validation, scaffolding, or rendering | [`uwmd` CLI](#uwmd-cli) |
+| Hand the deal to a banker who lives in Excel | [Excel converter](#excel-converter) |
+| Index a folder of deals, or feed a data lake | [`@uwmd/batch`](#batch-indexer) |
+| Write an agent's output into the deal | [`uwmd edit`](#uwmd-cli) or `writeAgentBlock` from `@uwmd/core` (your host runs the agent) |
+| Prove a deal's metrics follow from its inputs | [`uwmd receipt`](#uwmd-cli) or the [web editor](#web-editor) |
+| Check a receipt a counterparty sent you | any of the [CLI](#uwmd-cli), [web editor](#web-editor), or [VS Code extension](#vs-code-extension) |
 
-If you're not sure what conformance tier means, see the
+The standard has Reader and Verifier tiers, with optional profiles. See the
 [protocol spec §II](../spec/UW_PROTOCOL.md) or the
 [tier overview in the conformance corpus](../conformance/README.md).
 
@@ -92,7 +91,7 @@ Skip it for: editing (no edit UI), calc evaluation (no calc engine),
 sections beyond the most-displayed eight (the inlined registry is
 intentionally minimal).
 
-Under 500 LOC of HTML/CSS/JS. Nothing to install.
+Nothing to install.
 
 ---
 
@@ -131,8 +130,8 @@ It opens readable `.uw.md` Lite summaries and complete `.uwx.md` structured reco
 
 Single-page app. Embeds the `@uwmd/core` parser, validator, edit
 dispatcher, and calc engine in the browser. Every
-numeric edit re-runs every dependent calc immediately, so the file
-can never be left internally inconsistent.
+numeric edit triggers dependent calculations. Validation and explicit
+verification still report missing inputs or inconsistent stated restatements.
 
 The **Receipt** tab issues and verifies
 [verification receipts](UW_RECEIPTS.md) client-side — nothing is uploaded.
@@ -191,7 +190,7 @@ clone, `npm run cli -- <cmd>` runs it from source.
 
 **[`packages/uwmd-excel`](../packages/uwmd-excel/) — `.uwx.md` → `.xlsx`.**
 
-**On npm from release 3.0.0** (`npx @uwmd/excel deal.uwx.md -o deal.xlsx`).
+**On npm** (`npx @uwmd/excel deal.uwx.md -o deal.xlsx`).
 From a clone: `npm run build`, then `node packages/uwmd-excel/bin/uwmd-excel.mjs
 deal.uwx.md -o deal.xlsx`.
 
@@ -207,8 +206,8 @@ Best for: handing a deal to someone who lives in Excel. Producing
 deliverables for credit committee. Bridging legacy review processes.
 
 Skip it for: storing your data in. The `.uwx.md` record remains the
-source of truth — the workbook is an export, not a roundtrip target
-in v1.
+source of truth. Bounded `uwmd-excel --import review.xlsx` prints editable
+section payloads for review and application; it does not overwrite the deal.
 
 Supports all twelve builtin asset classes. Mixed-use gets its own workbook shape
 — one footing operating statement per component plus a consolidation
@@ -247,7 +246,7 @@ Read-only by construction. Published on npm as `@uwmd/batch`.
 
 ---
 
-## Programmatic agent host
+## Agent writers and context
 
 The reference toolkit hosts no agents: it runs no model, ships no provider
 adapter or tool schema, and the CLI has no `uwmd run`. UW Markdown needs no
@@ -273,6 +272,6 @@ conventions.
 | VS Code extension | `tools/vscode-uwmd/` | Reader |
 | Web editor | `tools/web-editor/` | Starter editor; recomputes with the reference engine |
 | `uwmd` CLI | `packages/uwmd-cli/` | Verifier (all six profiles, `uwmd manifest`), plus starter editing |
-| Excel converter | `packages/uwmd-excel/` | Starter export |
+| Excel converter | `packages/uwmd-excel/` | Starter workbook export and bounded input import |
 | Batch indexer | `packages/uwmd-batch/` | Reader (read-only index) |
 | Context profiles and writers | `packages/uwmd-core/src/context-profiles.ts`, `runner.ts` | Starter context builder and generic writers (no agent execution) |
