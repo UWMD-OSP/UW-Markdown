@@ -868,3 +868,11 @@ The owner accepted the full strict DQ-05 grammar and typed clock refusal on 2026
 
 RFC 0122 shares strict date/offset controls across TypeScript and Python; invalid
 supplied clocks refuse before returning findings, even when gaps are absent.
+
+## RFC 0123
+
+Accepted on 2026-10-22: dictionary receipt assertions are recomputed without packs after authentication, with honest named-pack coverage indeterminacy.
+
+RFC 0123 authenticates before dictionary receipt recomputation. Missing packs
+expose the actual recomputed stated subset, with honest coverage indeterminacy;
+pack absence cannot mask a same-engine dictionary mismatch or corrupt digest.

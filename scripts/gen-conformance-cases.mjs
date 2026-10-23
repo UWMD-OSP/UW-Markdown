@@ -431,7 +431,7 @@ for (const id of dirs(join(CONFORMANCE, 'receipts', 'verify'))) {
   const expected = JSON.parse(readFileText(join(dir, file)));
   const inputs = existsSync(join(dir, 'inputs.json')) ? ['--inputs', 'inputs.json'] : [];
   add(`receipts/verify-${id}/verify-receipt`, 'verify-receipt', ['receipt.json', deal, ...inputs, '--json'], dir, {
-    kind: 'verdict-codes', file, project: 'receipt-verification', fields: ['verdict', 'expected_codes', 'refused_code'],
+    kind: 'verdict-codes', file, project: 'receipt-verification', fields: ['verdict', 'expected_codes', 'refused_code', ...(expected.recomputed_ids ? ['recomputed_ids'] : [])],
     exit_code: expected.refused_code || expected.verdict === 'failed' ? 1 : 0,
   });
 }

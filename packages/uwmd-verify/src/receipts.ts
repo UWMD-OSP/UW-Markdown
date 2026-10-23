@@ -17,6 +17,7 @@ import { ASSET_CLASSES } from './types.js';
 // RFC 0010 proposes; a verifier without one returns `unverifiable` for a signed
 // receipt rather than silently ignoring the signature.
 
+import { verifyStatedMetric } from './metric-verification.js';
 import { evaluateCalc } from './calc/index.js';
 import {
   canonicalizeUWEnvelope,
@@ -462,6 +463,26 @@ export function computeReceiptResults(
   return results.sort((left, right) => left.calc_id.localeCompare(right.calc_id));
 }
 
+/** RFC 0123: only stated applicable dictionary ids, at reported-output precision. */
+function dictionaryReceiptResults(stated: readonly UWReceiptResult[], parsed: ParsedUWFile, ruleSet: UWRuleSet): UWReceiptResult[] {
+  const definitions = ruleSet.metric_dictionary.calculations.filter(m =>
+    (m.asset_classes as readonly string[]).includes(parsed.frontmatter.asset_class));
+  const byId = new Map(definitions.map(m => [m.id, m]));
+  return stated.flatMap(result => {
+    const metric = byId.get(result.calc_id);
+    if (!metric) return [];
+    // The existing dictionary evaluator owns selectors, prerequisites and all
+    // expression dependencies. A dummy numeric statement obtains the quantized
+    // value; comparison happens below against the actual receipt, exactly once.
+    const outcome = verifyStatedMetric(metric, parsed, 0, undefined, metric.round_to);
+    if (outcome.state === 'unverifiable' && outcome.reason !== 'missing_or_null_input') {
+      throw new ReceiptError('RCP_COMPUTATION_FAILED', `${metric.id}: ${outcome.reason}`);
+    }
+    const computed = outcome.computed !== null;
+    return [{ calc_id: metric.id, value: outcome.computed, computed, unit: metric.unit }];
+  });
+}
+
 /** SHA-256 over the RFC 8785 canonicalization of the result set. */
 export async function computeResultsDigest(results: readonly UWReceiptResult[]): Promise<string> {
   return digestOf(canonicalize(results));
@@ -632,16 +653,14 @@ export interface ReceiptVerificationOptions extends ReceiptSubjectOptions {
  *      and burying it under a later step would let an unknown pack mask it.
  *      A receipt naming a rule set other than the one its record's declared
  *      Format version selects misstates its subject: `failed` (RCP-13, RFC 0111).
- *   3. Otherwise, anything this verifier cannot decide (unknown pack, pack
- *      version it does not hold, a signature with no backend, or a referenced
- *      input it does not hold — RCP-11) → `unverifiable`.
- *   4. Authenticate a supplied signature; invalid signed input fails before any computation.
- *   5. Otherwise, recomputation refusal is RCP-03 with no engine carve-out. Finite disagreement → `failed`, unless the issuing
- *      engine identity (name *and* version) differs from this verifier's, in
- *      which case the disagreement is attributable to the engine and the
- *      verdict is `unverifiable` (RFC 0016 open question, resolved in
- *      `spec/UW_RECEIPT.md` §5).
- *   6. Result digest is checked only after agreement; otherwise `verified`.
+ *   3. Missing held inputs/signature backend are indeterminate preflights.
+ *   4. Authenticate a supplied signature before any financial recomputation/refusal.
+ *   5. Recompute dictionary assertions independently of packs, then held matching
+ *      pack-only outputs. Refusal is RCP-03 with no engine carve-out; finite
+ *      disagreement keeps the existing RCP-03/RCP-07 engine-identity rule.
+ *   6. Check the complete stated results digest independently of pack presence.
+ *   7. Unknown pack coverage remains RCP-05/06 with the actual dictionary subset;
+ *      otherwise the complete named-pack receipt is verified.
  *
  * The verifier always recomputes; `results_digest` is checked only as a cheap
  * corruption signal and never authorizes skipping the recomputation.
@@ -778,35 +797,22 @@ export async function verifyReceipt(
     });
   }
 
-  // 3 — can this verifier decide at all?
+  // 3 — input/backend preflights remain early. Pack uncertainty is deferred
+  // until independently decidable dictionary assertions have been recomputed.
   const pack = lookupPack(receipt.computation.pack, ruleSet, options.packs);
-  if (!pack) {
-    issues.push({
-      code: 'RCP-05',
-      severity: 'indeterminate',
-      message: `This verifier does not hold pack '${receipt.computation.pack}', so it cannot recompute the stated results.`,
-    });
-  } else if (pack.version !== receipt.computation.pack_version) {
-    issues.push({
-      code: 'RCP-06',
-      severity: 'indeterminate',
-      message: `This verifier holds pack '${pack.id}' at version ${pack.version}; the receipt names ${receipt.computation.pack_version}.`,
-      expected: receipt.computation.pack_version,
-      actual: pack.version,
-    });
-  }
-
-  if (receipt.signature && !options.signatureVerifier) {
-    issues.push({
-      code: 'RCP-08',
-      severity: 'indeterminate',
-      message:
-        'The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked.',
-    });
-  }
-
-  if (issues.some((issue) => issue.severity === 'indeterminate')) {
-    return { rule_set: ruleSet.format_version, verdict: 'unverifiable', issues };
+  const packIssues: UWReceiptIssue[] = [];
+  const availablePack = pack?.version === receipt.computation.pack_version ? pack : null;
+  if (!pack) packIssues.push({ code: 'RCP-05', severity: 'indeterminate',
+    message: `This verifier does not hold pack '${receipt.computation.pack}'; dictionary results can be checked, but complete pack-output coverage cannot.` });
+  else if (!availablePack) packIssues.push({ code: 'RCP-06', severity: 'indeterminate',
+    message: `This verifier holds pack '${pack.id}' at version ${pack.version}; the receipt names ${receipt.computation.pack_version}.`,
+    expected: receipt.computation.pack_version, actual: pack.version });
+  const backendMissing = receipt.signature && !options.signatureVerifier;
+  if (issues.some(issue => issue.severity === 'indeterminate') || backendMissing) {
+    return { rule_set: ruleSet.format_version, verdict: 'unverifiable', issues: [
+      ...issues, ...packIssues, ...(backendMissing ? [{ code: 'RCP-08' as const, severity: 'indeterminate' as const,
+        message: 'The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked.' }] : []),
+    ] };
   }
 
   // 4 — authenticate before financial recomputation or any refusal (RFC 0088).
@@ -836,26 +842,25 @@ export async function verifyReceipt(
     }
   }
 
-  // 5 — recompute. `pack` is non-null here: a null pack produced RCP-05 above.
-  const resolvedPack = pack as ModuleManifest;
+  // 5 — dictionary definitions are authoritative even when a held pack uses
+  // a builtin id for another formula. Only stated result ids are exposed.
   let recomputed: UWReceiptResult[];
   try {
-    recomputed = computeReceiptResults(resolvedPack, resolved.parsed);
+    recomputed = dictionaryReceiptResults(receipt.computation.results, resolved.parsed, ruleSet);
+    if (availablePack) {
+      const declarations = availablePack.calculations ?? [];
+      if (!declarations.length) throw new ReceiptError('RCP_NO_CALCULATIONS', 'The named pack declares no outputs.');
+      const dictionaryIds = new Set(recomputed.map(r => r.calc_id));
+      const statedIds = new Set(receipt.computation.results.map(r => r.calc_id));
+      const packOnly = declarations.filter(d => statedIds.has(d.id) && !dictionaryIds.has(d.id));
+      if (packOnly.length) recomputed.push(...computeReceiptResults({ ...availablePack, calculations: packOnly }, resolved.parsed));
+    }
+    recomputed.sort((a, b) => a.calc_id.localeCompare(b.calc_id));
   } catch (e) {
-    return {
-      rule_set: ruleSet.format_version,
-      verdict: 'failed',
-      issues: [
-        {
-          code: 'RCP-03',
-          severity: 'failure',
-          message: `Recomputation did not produce the pack's declared outputs: ${
-            e instanceof Error ? e.message : String(e)
-          }`,
-        },
-      ],
-      recomputed: [],
-    };
+    return { rule_set: ruleSet.format_version, verdict: 'failed', issues: [{
+      code: 'RCP-03', severity: 'failure',
+      message: `Recomputation refused: ${e instanceof Error ? e.message : String(e)}`,
+    }], recomputed: [] };
   }
 
   // Engine identity is the pair, not the version alone. A version string only
@@ -869,7 +874,8 @@ export async function verifyReceipt(
     receipt.computation.engine === verifierEngine &&
     receipt.computation.engine_version === verifierEngineVersion;
 
-  const disagreements = compareResults(receipt.computation.results, recomputed);
+  const disagreements = compareResults(receipt.computation.results, recomputed,
+    availablePack ? (availablePack.calculations ?? []).map(d => d.id) : null);
   if (disagreements.length > 0) {
     if (!engineMatches) {
       return {
@@ -919,6 +925,7 @@ export async function verifyReceipt(
     };
   }
 
+  if (packIssues.length) return { rule_set: ruleSet.format_version, verdict: 'unverifiable', issues: packIssues, recomputed };
   return { rule_set: ruleSet.format_version, verdict: 'verified', issues: [], recomputed };
 }
 
@@ -934,35 +941,28 @@ function lookupPack(id: string, ruleSet: UWRuleSet, packs?: readonly ModuleManif
 function compareResults(
   stated: readonly UWReceiptResult[],
   recomputed: readonly UWReceiptResult[],
+  coverage: readonly string[] | null,
 ): UWReceiptIssue[] {
   const issues: UWReceiptIssue[] = [];
   const statedById = new Map(stated.map((result) => [result.calc_id, result]));
   const recomputedById = new Map(recomputed.map((result) => [result.calc_id, result]));
 
-  for (const result of recomputed) {
-    if (!statedById.has(result.calc_id)) {
-      issues.push({
-        code: 'RCP-02',
-        severity: 'failure',
-        calc_id: result.calc_id,
-        message: `The receipt omits '${result.calc_id}', which the pack declares as an output.`,
-      });
-    }
-  }
-  for (const result of stated) {
-    if (!recomputedById.has(result.calc_id)) {
-      issues.push({
-        code: 'RCP-02',
-        severity: 'failure',
-        calc_id: result.calc_id,
-        message: `The receipt states '${result.calc_id}', which the pack does not compute.`,
-      });
-    }
+  if (coverage !== null) {
+    const declared = new Set(coverage);
+    for (const id of declared) if (!statedById.has(id)) issues.push({ code: 'RCP-02', severity: 'failure', calc_id: id,
+      message: `The receipt omits '${id}', which the pack declares as an output.` });
+    for (const result of stated) if (!declared.has(result.calc_id)) issues.push({ code: 'RCP-02', severity: 'failure', calc_id: result.calc_id,
+      message: `The receipt states '${result.calc_id}', which the pack does not compute.` });
   }
 
   for (const statedResult of stated) {
     const actual = recomputedById.get(statedResult.calc_id);
     if (!actual) continue;
+    if (statedResult.unit !== actual.unit) {
+      issues.push({ code: 'RCP-03', severity: 'failure', calc_id: statedResult.calc_id,
+        message: `Stated '${statedResult.calc_id}' has a different unit.`,
+        expected: String(statedResult.unit), actual: String(actual.unit) });
+    }
     if (statedResult.computed !== actual.computed) {
       issues.push({
         code: 'RCP-03',

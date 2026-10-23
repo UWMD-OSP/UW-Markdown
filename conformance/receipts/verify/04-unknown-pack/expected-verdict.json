@@ -1,6 +1,8 @@
 {
   "verdict": "unverifiable",
   "expected_codes": [
-    "RCP-05"
-  ]
+    "RCP-07",
+    "RCP-03"
+  ],
+  "description": "RFC 0123: dictionary disagreement is exposed; this receipt names another engine, so the disagreement is indeterminate under RCP-07."
 }

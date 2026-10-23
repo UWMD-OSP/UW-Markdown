@@ -1,0 +1,38 @@
+{
+  "receipt_version": "1.1",
+  "subject": {
+    "representation": "uwx-markdown",
+    "representation_version": "1.0",
+    "canonicalization": "uw-envelope-semantic",
+    "canonicalization_version": "1.0",
+    "digest": "sha256:9f933f980aea8fb0ae6c9257e8983d5ad083a3a691c74013283416d9a3dcc521"
+  },
+  "computation": {
+    "pack": "org.example.unavailable",
+    "pack_version": "1.0.2",
+    "engine": "@uwmd/verify",
+    "engine_version": "0.2.1",
+    "protocol_version": "4.1.0",
+    "rule_set": "3.0",
+    "results": [
+      {
+        "calc_id": "cap_rate",
+        "value": 0.0575,
+        "unit": "%",
+        "computed": true
+      }
+    ],
+    "results_digest": "sha256:6e0495329e9fb8bbf014eb683c3945933b0b1ed113dd51179e31b68b483d18b2"
+  },
+  "policy": {
+    "policy_set": "builtin",
+    "policy_set_version": "1.0",
+    "validation": {
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  "issued_at": "2026-10-22T00:00:00Z",
+  "issuer": "@uwmd/verify@0.2.1",
+  "signature": null
+}

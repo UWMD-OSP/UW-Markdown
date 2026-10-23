@@ -1104,7 +1104,7 @@ describe('JCS receipt artifact error boundaries', () => {
     receipt.subject.digest = `sha256:${'0'.repeat(64)}`;
     expect((await verifyReceipt(receipt, source, verifyOptions)).issues[0]).toMatchObject({ code: 'RCP-01', expected: receipt.subject.digest });
     receipt.subject.digest = (await resolveReceiptSubject(source, { filename: options.filename })).subject.digest;
-    expect((await verifyReceipt(receipt, source, { ...verifyOptions, packs: [] })).issues.map(issue => issue.code)).toEqual(['RCP-05']);
+    expect((await verifyReceipt(receipt, source, { ...verifyOptions, packs: [] })).issues.map(issue => issue.code)).toEqual(['RCP-01']);
     expect(calls).toBe(0);
   });
 
@@ -1179,5 +1179,85 @@ describe('RFC 0088 authenticate-first receipt precedence', () => {
     expect(malformedResult.issues.map(issue => issue.code)).toEqual(['RCP-01']);
     expect(Object.hasOwn(malformedResult, 'recomputed')).toBe(false);
     expect(await parkview()).toBe(content);
+  });
+});
+
+describe('RFC 0123 dictionary receipts without packs', () => {
+  const options = { filename: PARKVIEW, issued_at: ISSUED_AT };
+  it('recomputes the exact stated dictionary subset without claiming complete pack coverage', async () => {
+    const source = await parkview();
+    const receipt = await issueReceipt(source, options);
+    const result = await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [] });
+    expect(result.verdict).toBe('unverifiable');
+    expect(result.issues.map(i => i.code)).toEqual(['RCP-05']);
+    expect(result.recomputed).toEqual(receipt.computation.results);
+  });
+  it.each(['value', 'computed', 'unit'])('does not let an unavailable pack mask dictionary %s disagreement', async field => {
+    const source = await parkview();
+    const receipt = await issueReceipt(source, options);
+    const stated = receipt.computation.results.find(r => r.calc_id === 'cap_rate')!;
+    if (field === 'value') stated.value = (stated.value as number) + 0.01;
+    else if (field === 'computed') { stated.computed = false; stated.value = null; }
+    else stated.unit = '$';
+    receipt.computation.results_digest = await computeResultsDigest(receipt.computation.results);
+    const result = await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [] });
+    expect(result.verdict).toBe('failed');
+    expect(result.issues.some(i => i.code === 'RCP-03' && i.calc_id === 'cap_rate')).toBe(true);
+    receipt.computation.engine = 'org.example.different-engine';
+    expect((await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [] })).issues[0]!.code).toBe('RCP-07');
+  });
+  it('checks the full stated digest despite an unavailable or different-version pack', async () => {
+    const source = await parkview();
+    const receipt = await issueReceipt(source, options);
+    receipt.computation.results_digest = `sha256:${'0'.repeat(64)}`;
+    expect((await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [] })).issues[0]!.code).toBe('RCP-04');
+    receipt.computation.results_digest = await computeResultsDigest(receipt.computation.results);
+    receipt.computation.pack_version = '999.0.0';
+    const result = await verifyReceipt(receipt, source, { filename: PARKVIEW });
+    expect(result.issues.map(i => i.code)).toEqual(['RCP-06']);
+    expect(result.recomputed).toEqual(receipt.computation.results);
+  });
+  it('exposes only dictionary ids actually stated, with opaque pack-only output still unproved', async () => {
+    const source = await parkview();
+    const receipt = await issueReceipt(source, options);
+    receipt.computation.results = receipt.computation.results.filter(r => r.calc_id === 'cap_rate');
+    receipt.computation.results.push({ calc_id: 'opaque', value: 1, computed: true });
+    receipt.computation.results_digest = await computeResultsDigest(receipt.computation.results);
+    const result = await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [] });
+    expect(result.verdict).toBe('unverifiable');
+    expect(result.recomputed?.map(r => r.calc_id)).toEqual(['cap_rate']);
+  });
+  it('authenticates before dictionary recomputation when the pack is unavailable', async () => {
+    const source = await parkview();
+    const receipt = await issueReceipt(source, options);
+    receipt.signature = { algorithm: 'ed25519', key_id: 'test', value: 'AA==' };
+    const absent = await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [] });
+    expect(absent.issues.map(i => i.code)).toEqual(['RCP-05', 'RCP-08']);
+    expect(absent.recomputed).toBeUndefined();
+    let calls = 0;
+    const invalid = await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [], signatureVerifier: { verify: async () => { calls++; return false; } } });
+    expect(calls).toBe(1);expect(invalid.issues[0]!.code).toBe('RCP-01');expect(invalid.recomputed).toBeUndefined();
+    const valid = await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [], signatureVerifier: { verify: async () => true } });
+    expect(valid.recomputed).toEqual(receipt.computation.results);
+  });
+  it('refuses a redefined builtin id even when the named custom pack is held', async () => {
+    const source = await parkview();
+    const pack = { ...MULTIFAMILY_PACK, id: 'org.example.redefined', calculations: [{ id: 'cap_rate', label: 'Wrong definition', formula: '1', unit: '%', deterministic: true }] };
+    const receipt = await issueReceipt(source, { ...options, pack });
+    const result = await verifyReceipt(receipt, source, { filename: PARKVIEW, packs: [pack] });
+    expect(result.verdict).toBe('failed');expect(result.issues[0]!.code).toBe('RCP-03');
+  });
+});
+
+describe('RFC 0123 missing dictionary dependencies', () => {
+  it('recomputes an uncomputed statement as null without inventing inputs', async () => {
+    const source = '---\nuw_version: "3.0"\nasset_class: multifamily\ndeal_id: missing-input\ndeal_name: Missing input\n---\n\n```json uw:section=property\n{"total_units": 1}\n```\n';
+    const pack = { ...MULTIFAMILY_PACK, id: 'org.example.dictionary-subset', calculations: MULTIFAMILY_PACK.calculations!.filter(d => d.id === 'cap_rate') };
+    const receipt = await issueReceipt(source, { filename: 'deal.uwx.md', pack, issued_at: ISSUED_AT });
+    expect(receipt.computation.results).toEqual([{ calc_id: 'cap_rate', value: null, unit: '%', computed: false }]);
+    const result = await verifyReceipt(receipt, source, { filename: 'deal.uwx.md', packs: [] });
+    expect(result.verdict).toBe('unverifiable');
+    expect(result.issues.map(i => i.code)).toEqual(['RCP-05']);
+    expect(result.recomputed).toEqual(receipt.computation.results);
   });
 });
