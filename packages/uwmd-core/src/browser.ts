@@ -14,7 +14,7 @@
 
 export * from '@uwmd/verify/browser';
 
-export { compact, diff } from './compactor.js';
+export { diff } from './compactor.js';
 export { render, UnsupportedRenderFormatError, UnsupportedLocaleError, InvalidCurrencyCodeError } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
 export { renderReportHtml, REPORT_CSS } from './report.js';

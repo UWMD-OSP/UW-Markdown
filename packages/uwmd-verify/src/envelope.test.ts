@@ -88,3 +88,15 @@ describe('UW Document Envelope', () => {
     expect((await verifyEnvelopeDigest(stamped)).valid).toBe(true);
   });
 });
+
+describe('RFC 0085 full-record exports', () => {
+  it('retains history and refuses an explicit stripping option from untyped callers', () => {
+    const parsed = document();
+    parsed.superseded.property = [block(12)];
+    expect(toUWEnvelope(parsed).superseded.property).toHaveLength(1);
+    for (const includeSuperseded of [false, true]) {
+      // @ts-expect-error Removed record-stripping option must also refuse at runtime.
+      expect(() => toUWEnvelope(parsed, { includeSuperseded })).toThrow('[ENVELOPE_UNSUPPORTED_OPTION]');
+    }
+  });
+});

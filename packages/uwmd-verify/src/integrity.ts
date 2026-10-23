@@ -233,6 +233,8 @@ export interface VerifyChainOptions {
  *     block in the chain MUST carry one (else INT-03 warning).
  *   - Each block's recomputed hash MUST equal the stamped `content_hash`
  *     (else INT-04 warning).
+ *   - The first retained hashed-chain block MUST have null/absent parent_hash
+ *     (else INT-01 error); this does not establish history-origin completeness.
  *   - Each non-root block's `parent_hash` MUST equal the prior block's
  *     `content_hash` (else INT-01 error).
  *
@@ -273,6 +275,15 @@ export async function verifyChain(
     for (let i = 0; i < chain.length; i++) {
       const block = chain[i]!;
       const stamped = block.meta.integrity?.content_hash;
+
+      // RFC 0085: a declared missing predecessor is an error, including
+      // when another retained block is the one that opts the chain into hashing.
+      if (i === 0 && block.meta.integrity?.parent_hash != null) {
+        issues.push({ code: 'INT-01', severity: 'error', section: sectionId,
+          message: `First retained block of '${sectionId}' declares a predecessor that is absent.`,
+          expected: '<null>', actual: block.meta.integrity.parent_hash });
+        chainOK = false;
+      }
 
       // INT-03: partial chain
       if (typeof stamped !== 'string') {

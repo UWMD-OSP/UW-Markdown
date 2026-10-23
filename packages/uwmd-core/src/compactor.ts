@@ -1,47 +1,6 @@
-// .uw.md compactor — strips superseded blocks, writes clean file
-// Spec: UW_FORMAT_SPEC.md §2.7 "uwmd compact strips superseded blocks"
+// Section-by-section diff. RFC 0085 removes record compaction.
 
 import type { ParsedUWFile, UWBlock } from '@uwmd/verify';
-
-// ─── Compact: remove all superseded blocks from raw file text ─────────────────
-// Returns the compacted file content as a string.
-// Strategy: parse line ranges of superseded blocks, remove those line spans.
-
-export function compact(parsed: ParsedUWFile): string {
-  const lines = parsed.raw.split('\n');
-
-  // Collect all superseded block line ranges (1-indexed, inclusive)
-  const supersededRanges: Array<{ start: number; end: number }> = [];
-
-  for (const blocks of Object.values(parsed.superseded)) {
-    for (const block of blocks) {
-      supersededRanges.push({ start: block.lineStart, end: block.lineEnd });
-    }
-  }
-
-  if (supersededRanges.length === 0) return parsed.raw;
-
-  // Sort ranges by start line descending so we remove from bottom up
-  supersededRanges.sort((a, b) => b.start - a.start);
-
-  const resultLines = [...lines];
-
-  for (const range of supersededRanges) {
-    // lineStart is the opening ``` line, lineEnd is the closing ``` line (both 1-indexed)
-    // Also remove one blank line before the fence if present, to avoid double spacing
-    const startIdx = range.start - 1; // convert to 0-indexed
-    const endIdx = range.end - 1;
-
-    let removeFrom = startIdx;
-    if (removeFrom > 0 && resultLines[removeFrom - 1].trim() === '') {
-      removeFrom--;
-    }
-
-    resultLines.splice(removeFrom, endIdx - removeFrom + 1);
-  }
-
-  return resultLines.join('\n');
-}
 
 // ─── Diff: compare two ParsedUWFile objects section by section ────────────────
 

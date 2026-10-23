@@ -273,7 +273,7 @@
                 "null"
               ],
               "pattern": "^([0-9a-f]{64})?$",
-              "description": "content_hash of the superseded predecessor; null on a chain root."
+              "description": "RFC 0085: null or absent on the first retained hashed-chain block; otherwise the immediately prior retained content_hash."
             },
             "signature": {
               "type": "object",

@@ -1302,6 +1302,7 @@ export const EXTENSION_SECTION_PREFIX = 'x_' as const;
 // ─── Metric dictionary (RFC 0078 Phase 2, spec/metrics/) ────────────────────
 
 /** A class-scoped normative calculation; packs mirror these definitions. */
+// RFC 0126: land_carry_noi uses same-block EGI/OpEx and an explicit NOI alias.
 export interface MetricDictionaryCalculation {
   /** RFC 0123: an applicable receipt calc_id asserts this definition, independent of starter packs. */
   readonly id: string;
@@ -1389,7 +1390,7 @@ export const SIZE_INTENSIVES: Readonly<Record<string, SizeIntensive>> = Object.f
   hospitality:     Object.freeze({ path: 'keys',                     label: 'Keys',        unit: 'keys',  secondary: Object.freeze([]) }),
   student_housing: Object.freeze({ path: 'total_beds',               label: 'Beds',        unit: 'beds',  secondary: Object.freeze(['total_units']) }),
   senior_housing:  Object.freeze({ path: 'total_units',              label: 'Units',       unit: 'units', secondary: Object.freeze(['total_beds']) }),
-  data_center: Object.freeze({ path: 'critical_it_load_kw', label: 'Critical IT kW', unit: 'kW', secondary: Object.freeze([]) }),
+  data_center: Object.freeze({ path: 'critical_it_load_kw', label: 'Critical IT kW', unit: 'kW', secondary: Object.freeze(['rentable_square_feet']) }),
   manufactured_housing: Object.freeze({ path: 'total_sites', label: 'Sites', unit: 'sites', secondary: Object.freeze([]) }),
   land:            Object.freeze({ path: 'gross_acres',              label: 'Gross acres', unit: 'acres', secondary: Object.freeze(['usable_acres', 'entitled_units']) }),
 });
@@ -2324,8 +2325,8 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'INT-01', severity: 'error',
     title: 'Parent hash mismatch',
-    description: 'A block\'s _meta.integrity.parent_hash does not equal the prior block\'s _meta.integrity.content_hash in the supersede chain.',
-    remediation: 'Recompute the block from the current head: stamp parent_hash with the prior block\'s content_hash and bump the version.',
+    description: 'The first retained hashed-chain block declares a missing predecessor, or a later parent_hash differs from the retained predecessor content_hash (RFC 0085).',
+    remediation: 'Supply the declared predecessor. A permitted replacement starts with null parent_hash; retained supersede links must equal their predecessor content_hash.',
     spec_ref: 'UW_PROTOCOL.md §V.10',
   },
   {

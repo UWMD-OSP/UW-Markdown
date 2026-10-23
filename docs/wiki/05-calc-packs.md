@@ -2,7 +2,7 @@
 
 A **calc pack** is a `ModuleManifest` that bundles a set of derived-metric
 declarations for an asset class. Their normative source is now the
-[metric dictionary](../../spec/metrics/README.md) (RFC 0078 Phase 2, extended by RFC 0080): 171
+[metric dictionary](../../spec/metrics/README.md) (RFC 0078 Phase 2, extended by RFC 0080): 173
 class-scoped calculations across twelve builtin packs, plus the primary-size
 registry. Packs derive their definitions from that contract as TypeScript
 mirrors, enforced by exact, bidirectional tests rather than runtime generation.
@@ -63,7 +63,7 @@ File | Role
 `builtin-packs/hospitality.ts` | `HOSPITALITY_PACK` — the canonical hospitality metrics
 `builtin-packs/senior-housing.ts` | `SENIOR_HOUSING_PACK` — the canonical senior-housing metrics
 `builtin-packs/student-housing.ts` | `STUDENT_HOUSING_PACK` — the canonical student-housing metrics
-`builtin-packs/data-center.ts` | `DATA_CENTER_PACK` — twenty data-center metrics
+`builtin-packs/data-center.ts` | `DATA_CENTER_PACK` — twenty-one data-center metrics
 `builtin-packs/manufactured-housing.ts` | `MANUFACTURED_HOUSING_PACK` — thirteen manufactured-housing metrics
 `builtin-packs/land.ts` | `LAND_PACK` — the canonical land metrics (no cap rate by design)
 `builtin-packs/mixed-use.ts` | `MIXED_USE_PACK` — property metrics and component calculations

@@ -22,6 +22,13 @@ export const DATA_CENTER_PACK: ModuleManifest = {
   ],
   "calculations": [
     {
+      "id": "price_per_sqft",
+      "label": "Price / SqFt",
+      "formula": "valuation.purchase_price / property.rentable_square_feet",
+      "unit": "$",
+      "deterministic": true
+    },
+    {
       "id": "cap_rate",
       "label": "Cap Rate",
       "formula": "noi_model.net_operating_income / valuation.purchase_price",

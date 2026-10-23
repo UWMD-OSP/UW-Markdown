@@ -1,5 +1,7 @@
 # 13 — Build status (living document)
 
+RFC 0085 C+D is implemented under owner acceptance (2026-10-22): full records retain supplied history, record compaction is removed, missing declared predecessors fail INT-01 and permitted manual replacements start null-parent roots.
+
 **Owner rule,2026-10-17.** AGENTS.md and CLAUDE.md carry the rule near the top:
 all @uwmd npm packages launch together at5.0.0; prelaunch releases use4.x.x from
 main as needed, including incompatible changes. Zero prelaunch compatibility:
@@ -479,6 +481,18 @@ features still refuse. This extracts a reviewed prerequisite from the larger
 complete-validation WIP without advertising validate or a Reader/Verifier tier.
 The existing three-platform Python jobs exercise the correction and actual
 portable Reader cases. It does not load modules or activate a draft contract.
+
+## RFC 0125 — data-center rentable-SF price
+
+The accepted SF definition now applies to data centers at every bound home.
+Rentable area is a registered secondary, kW stays primary, and missing/zero/
+negative area never yields a verified per-SF figure. Pack and Excel share it.
+
+## RFC 0126 — land carry-NOI identity
+
+Every stated land NOI home is checked against same-block, same-variant EGI
+minus stated total OpEx. Negative/zero results can verify; no cap rate/DSCR,
+expense-row summation or temporal conversion is introduced.
 
 ## Bounded parallel workstreams
 

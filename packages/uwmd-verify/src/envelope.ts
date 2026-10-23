@@ -44,8 +44,6 @@ export interface UWDocumentEnvelope {
 }
 
 export interface ToEnvelopeOptions {
-  /** Default true. False intentionally emits a compacted, model-lossy archive. */
-  includeSuperseded?: boolean;
   generatedAt?: string;
   generator?: string;
 }
@@ -70,6 +68,9 @@ export function toUWEnvelope(
   parsed: ParsedUWFile,
   options: ToEnvelopeOptions = {},
 ): UWDocumentEnvelope {
+  if (Object.hasOwn(options, 'includeSuperseded')) {
+    throw new UWEnvelopeError('ENVELOPE_UNSUPPORTED_OPTION', 'Record exports always retain supplied history (RFC 0085).');
+  }
   const sections: Record<string, UWEnvelopeSectionEntry> = {};
   for (const [sectionId, entry] of Object.entries(parsed.sections)) {
     if (isVariantMap(entry)) {
@@ -85,10 +86,8 @@ export function toUWEnvelope(
   }
 
   const superseded: Record<string, UWEnvelopeBlock[]> = {};
-  if (options.includeSuperseded ?? true) {
-    for (const [sectionId, blocks] of Object.entries(parsed.superseded)) {
-      superseded[sectionId] = blocks.map(toEnvelopeBlock);
-    }
+  for (const [sectionId, blocks] of Object.entries(parsed.superseded)) {
+    superseded[sectionId] = blocks.map(toEnvelopeBlock);
   }
 
   return {

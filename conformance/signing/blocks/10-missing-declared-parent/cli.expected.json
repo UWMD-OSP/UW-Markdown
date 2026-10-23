@@ -1,0 +1,16 @@
+{
+  "ok": false,
+  "integrity": {
+    "ok": false,
+    "chains_verified": 0,
+    "chains_with_hashes": 1,
+    "signatures_present": 1,
+    "signatures_verified": 1,
+    "issues": [
+      {
+        "code": "INT-01",
+        "severity": "error"
+      }
+    ]
+  }
+}

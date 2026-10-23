@@ -102,7 +102,7 @@ Module | Package | Responsibility | Key exports
 `bindings-edit.ts` | core | Source edits wired to the starter editor | `applyUWMDSourceEdit`, `createUWMCPApplyEditResult`
 `uwjson.ts` | verify | UW JSON 1.0 codec + parsed-model bridge | `UW_JSON_CODEC`, `toUWJson`, `parseUWJsonVerified`, `fromUWJson`
 `runner.ts` | core | Write blocks back to file (supersede-aware) | `writeAgentBlock`, `writeErrorEntry`, `buildMeta` (defined in `metadata.ts`)
-`compactor.ts` | core | Live view + section diff | `compact`, `diff`
+`compactor.ts` | core | Section diff | `diff`
 `init.ts` | core | Scaffold a blank `.uw.md` | `generateBlankUWFile`
 `cli.ts` | core | The `uwmd` command program | (default program; routes subcommands)
 `protocol.ts` | verify | Executable protocol contract + BUILTIN_* tables | see [§ protocol](#protocol-the-contract-surface)
@@ -279,7 +279,7 @@ consumers do not.)
 - `createUWHTTPResponse` / `decodeUWHTTPRequest` / `assertUWIfMatch` — negotiated model bytes, semantic ETags, and optimistic concurrency.
 - `createUWMCPResource` and `createUWMCP*Result` — text/blob resources, compact structured results, JSON fallback, and resource links.
 
-CLI: `uwmd export <file.uw.md>` writes a digested `.uw.json` (`--no-superseded` to compact, `--stdout` to pipe). `uwmd convert <file> --to uw-json|uw-xml|uw-csv-bundle` converts Markdown and all verified model representations through the shared envelope.
+CLI: `uwmd export <file.uw.md>` writes a digested `.uw.json` (`--stdout` to pipe; all supplied history retained). `uwmd convert <file> --to uw-json|uw-xml|uw-csv-bundle` converts Markdown and all verified model representations through the shared envelope.
 
 > **Status — normative Envelope 1.0 / UW JSON 1.0 implementation.** The schema is
 > `spec/schemas/uw-document-envelope.schema.json`. This is model-lossless, not

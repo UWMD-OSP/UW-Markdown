@@ -178,7 +178,7 @@ describe('applyEditAsync — content_hash stamping', () => {
     );
     expect(r.ok).toBe(true);
     const newHead = getSection(parseUWFile(r.content!), 'property')!;
-    expect(newHead.meta.integrity?.parent_hash).toBe(seedHash);
+    expect(newHead.meta.integrity?.parent_hash).toBeNull();
     expect(newHead.meta.integrity?.content_hash).toMatch(/^[0-9a-f]{64}$/);
 
     // verifyChain should be ok on the result (single-block chain — head only).

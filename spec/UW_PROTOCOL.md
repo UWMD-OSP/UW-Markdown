@@ -246,6 +246,18 @@ which needs an edit engine. A read-only reader could not satisfy it.
 
 ### II.2 Verifier
 
+RFC 0125 extends price_per_sqft to data_center using only explicit rentable
+square feet, registered as secondary size; critical IT kW stays primary. Its
+existing statement homes, comparison precision and positive-size semantics
+apply. Missing rentable area is unverifiable, never inferred from power.
+
+RFC 0126 binds land noi_model.net_operating_income to land_carry_noi: stated
+EGI less stated total OpEx. All three fields assert the same block scope/period.
+Lock that current statement's exact noi_model variant for both operand reads;
+no missing operand falls through to another variant. Other bound homes resolve
+a unique noi_model through VIII.2. Dollar round_to 2/minimum 0 applies, including
+negative/zero results; no inferred inputs, row sums, land cap rate or DSCR.
+
 RFC 0123 makes applicable builtin receipt calc_ids assertions of the selected
 rule set's dictionary definitions. Recompute these after authentication without
 a starter pack; expose only stated result ids. Pack availability cannot hide a
@@ -1303,16 +1315,22 @@ parsed file:
 
 1. If no block in the chain carries `content_hash`, the chain is
    skipped.
-2. Each non-root block's `parent_hash` MUST equal the prior block's
-   `content_hash` (else `INT-01 error`).
+2. The first retained block's `parent_hash` MUST be null or absent; a non-null
+   value declares a missing predecessor (`INT-01 error`). This does not prove
+   history-origin completeness. Each later block's `parent_hash` MUST equal the
+   prior retained block's `content_hash` (else `INT-01 error`). A chain with
+   either error is not counted as verified. Independent hashes and signatures
+   are still checked (RFC 0085).
 3. Each block's stamped `content_hash` MUST recompute from its
    current canonicalized content (else `INT-04 warning`).
 
 **Editor enforcement (`applyEdit`).** When the section's current
 head carries `content_hash`, the caller's `EditContext.parentHash`
 MUST equal it; mismatch is rejected as `INT-02` (concurrent write
-detected). The new block is then stamped with `parent_hash =
-prior.content_hash` and a freshly computed `content_hash`. The
+detected). A permitted manual `section_replace` stamps `parent_hash = null`
+because it replaces the prior head. `section_supersede` retains that head and
+stamps `parent_hash = prior.content_hash`. Revision and source-policy checks
+remain unchanged. Both stamp a freshly computed `content_hash`. The
 async stamping is performed by `applyEditAsync` (Web Crypto's
 SHA-256 is async); the sync `applyEdit` performs only the INT-02
 mismatch check.

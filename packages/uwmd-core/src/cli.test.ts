@@ -290,3 +290,37 @@ describe('RFC 0115 portable Verifier subcommands', () => {
     expect(result.stderr).toContain(`unknown command '${command}'`);
   });
 });
+
+describe('RFC 0085 command removal and full exports', () => {
+  it('refuses removed commands and flags before reading or writing', async () => {
+    const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-no-compaction-'));
+    const missing = resolve(dir, 'missing.uwx.md');
+    const output = resolve(dir, 'out.uw.json');
+    try {
+      for (const args of [['compact', missing, '--output', output], ['export', missing, '--no-superseded', '--output', output]]) {
+        const result = await spawnCli(process.execPath, [cli, ...args], { encoding: 'utf8' });
+        expect(result.status).toBe(1);
+        expect(result.stderr).not.toContain('ENOENT');
+        expect(readdirSync(dir)).toEqual([]);
+      }
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+  it('preserves history when exporting both UWX and model sources without changing the source', async () => {
+    const source = resolve(process.cwd(), '../../conformance/documents/malformed/04-broken-chain.uwx.md');
+    const original = readFileSync(source);
+    const first = await spawnCli(process.execPath, [cli, 'export', source, '--stdout'], { encoding: 'utf8' });
+    expect(first.status).toBe(0);
+    const envelope = JSON.parse(first.stdout);
+    expect(envelope.superseded.property).toHaveLength(1);
+    const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-full-export-'));
+    const model = resolve(dir, 'record.uw.json');
+    try {
+      writeFileSync(model, first.stdout);
+      const second = await spawnCli(process.execPath, [cli, 'export', model, '--stdout'], { encoding: 'utf8' });
+      expect(second.status).toBe(0);
+      expect(JSON.parse(second.stdout).superseded).toEqual(envelope.superseded);
+      expect(readFileSync(model, 'utf8')).toBe(first.stdout);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+    expect(readFileSync(source)).toEqual(original);
+  });
+});

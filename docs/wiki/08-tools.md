@@ -44,11 +44,10 @@ Command | Purpose
 `render <file>` | Render (`--format json\|csv\|chat\|summary`, or `--profile`, `--max-tokens`, `--output`)
 `edit <file> <op.json>` | Apply an `EditOperation` with the starter editor (`--actor`, `--source`, `--confidence`, …)
 `calc <file> <calc.json\|formula>` | Evaluate a calc decl or inline formula
-`compact <file>` | Strip superseded blocks (`--dry-run`, `--output`)
 `diff <a> <b>` | Section-by-section comparison
 `init` | Scaffold a blank `.uwx.md` (`--name`, `--address`, `--asset-class`, `--stage`, `--scenario`, `--tier`, `--output`); names the file with `--output` only and refuses a file argument; refuses to overwrite an existing file; `--scenario` takes a standard business plan or reverse-DNS extension; `--asset-subtype` carries the open subtype, including multifamily `build_to_rent` (RFC 0072)
 `summary <file>` | Print quick metrics to terminal
-`export <file>` | Export a lossless `.uw.json` sibling — provenance + history preserved (`--no-superseded`, `--stdout`, `--output`)
+`export <file>` | Export a lossless `.uw.json` sibling — provenance + history preserved (`--stdout`, `--output`)
 `formats` | List Lite, UWX, and registered model representations/media types (`--json`)
 `convert <file> --to <format>` | Convert `.uw.md`, `.uwx.md`, verified model formats, or CSV bundles to `lite`, `uwx`, `uw-json`, `uw-xml`, or `uw-csv-bundle`
 `report <file>` | Render the §7.1 Lender Package / §7.2 Credit Memo HTML ([renderer reference](../starter/rendering.md); `--tier`, `--prepared-by`, `--output`, `--stdout`)
@@ -78,7 +77,7 @@ flag to both.
 The three 4.2.0 aliases (`validate --stage`, `export --compact`,
 `compose --parts`) were removed under the prelaunch no-compatibility rule
 (#412). They are unknown flags now and exit 1 like any other: use
-`stage_readiness` in the report, `--no-superseded` and `--out-dir`.
+`stage_readiness` in the report, full-record export and `--out-dir`.
 
 From a source checkout: `npm run cli -- <command> ...` (root script proxies to the
 CLI bin).

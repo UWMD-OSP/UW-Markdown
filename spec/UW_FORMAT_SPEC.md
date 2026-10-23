@@ -69,7 +69,7 @@ A `.uwx.md` file solves this by being structured enough for machines while stayi
 
 **Dual representation.** Every section carries both prose (human-readable narrative, tables) and a structured JSON data block (machine-parseable). Either layer can stand alone; together they are the complete record.
 
-**Append-only by default.** Tools and agents add to the file — they do not rewrite existing sections. History is preserved inline. A compact operation removes superseded blocks when the file is ready to archive.
+**Append-only by default.** Tools and agents add to the file — they do not rewrite existing sections. History is preserved inline. A full record retains all supplied history. Analytical views are not records and MUST NOT be presented as verified full records (RFC 0085).
 
 **Provenance on every block.** Every data block carries a `_meta` object that records who wrote it, when, with what confidence, and whether it requires human review. No fact in the file is anonymous.
 
@@ -697,7 +697,7 @@ When an agent or tool updates a section, it:
 
 This means the file grows; history is always recoverable. The canonical current value of any section is the **last block** where `_meta.lifecycle.superseded === false` for that `uw:section`.
 
-A compact operation strips superseded blocks and leaves only current versions.
+Full-record export retains superseded blocks. Read-only export and render do not append authority or pipeline events (RFC 0085).
 
 ### 2.8 Multi-Variant Sections
 
@@ -1031,7 +1031,9 @@ denominator, not an absence. Validated by `CC-13` (§5.3) as a warning.
 Field notes:
 
 - `rentable_square_feet` — rentable area (RSF); the primary size field for
-  `office` and `industrial`.
+  `office` and `industrial`, and a registered secondary for `data_center`
+  (RFC 0125). Data-center price_per_sqft uses only this explicit rentable area;
+  critical IT kW stays primary. No area is inferred from kW or raised floor.
 - `gross_leasable_area` — GLA in square feet; the primary size field for
   `retail`.
 - `net_rentable_square_feet` — NRSF; the primary size field for
@@ -1695,6 +1697,17 @@ Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `r
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `rent_roll`, `operating_statement`, `market_analysis`
 
+**Land carry identity (RFC 0126).** For land, income.effective_gross_income,
+expenses.total_operating_expenses and net_operating_income in this block assert
+one common property scope and reporting period, in the exact authored variant.
+The declared block basis applies to all three; absence does not authorize any
+annualization or another block's period. A producer stating different bases
+uses separate variants, not unmatched operands in these homes. The NOI field
+explicitly states dictionary land_carry_noi (stated EGI minus stated total OpEx),
+including zero/negative results. No row sums, reserve reclassification, land
+cap rate or DSCR are defined. Verification checks this shared-basis assertion,
+not disclosure completeness or the truth of its real-world assumptions.
+
 ```json
 {
   "_meta": {
@@ -1899,6 +1912,10 @@ from `jurisdiction`, which is a label.
 **Purpose:** Value conclusions using income approach, with third-party appraisal cross-check.  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `noi_model`, `market_analysis`
+
+For data centers, `price_per_sf` and `purchase_price_per_sqft` state the
+dictionary price_per_sqft against explicit property.rentable_square_feet
+(RFC 0125, Protocol II.2); no power-to-area conversion is implied.
 
 ```json
 {
@@ -3271,7 +3288,7 @@ implementation reads the section's contents).
     {
       "entry_id": "string",
       "timestamp": "ISO8601",
-      "event_type": "file_created | agent_run | user_edit | wizard_input | engine_run | render | import | export | validation | compact | note | flag_raised | flag_cleared | human_review | approval",
+      "event_type": "file_created | agent_run | user_edit | wizard_input | engine_run | render | import | export | validation | note | flag_raised | flag_cleared | human_review | approval",
       "agent_or_actor": "string",
       "section_affected": null,
       "status": "success | partial | failed | skipped | pending",
@@ -4712,7 +4729,7 @@ Example:
 uw_2026_a3f9b1_1234-main-st-phoenix-az_20260424.uwx.md
 ```
 
-Versioned snapshots (before compact):
+Versioned snapshots (with supplied history):
 ```
 uw_2026_a3f9b1_1234-main-st-phoenix-az_20260424_v3.uwx.md
 ```

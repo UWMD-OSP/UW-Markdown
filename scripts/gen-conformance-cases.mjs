@@ -436,6 +436,16 @@ for (const id of dirs(join(CONFORMANCE, 'receipts', 'verify'))) {
   });
 }
 
+// RFC 0085: independently signed payloads retain signature success at the
+// governed root/link boundary. These cases require block signing, not V.13.
+for (const id of ['10-missing-declared-parent', '11-null-parent-root']) {
+  const fixture = join(CONFORMANCE, 'signing', 'blocks', id);
+  add(`signing/block-${id}/verify`, 'verify', [
+    'deal.uwx.md', '--integrity', '--signing', '--keystore', '../../keys/keystore.json', '--json',
+  ], fixture, { kind: 'json-subset', file: rel(join(fixture, 'cli.expected.json')),
+    exit_code: id.startsWith('10-') ? 1 : 0 }, ['integrity', 'signing']);
+}
+
 // ── Emit (or, under --check, compare) ───────────────────────────────────────
 //
 // `--check` exists because these files are generated but committed. A fixture

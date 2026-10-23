@@ -27,6 +27,7 @@ function excelValue(formula: string): number | null {
 const EXAMPLE = resolve(__dirname, '../../../../examples/Sundance-Ranch-Land-Buckeye-AZ.uwx.md');
 
 const NAMED_RANGES = new Map<string, string>([
+  ['noi_model.income.effective_gross_income', 'effective_gross_income'],
   ['noi_model.expenses.total_operating_expenses', 'total_operating_expenses'],
   ['valuation.purchase_price', 'purchase_price'],
       ['valuation.underwritten_value', 'underwritten_value'],
@@ -46,6 +47,7 @@ describe('LAND_PACK', () => {
       'carry_cost_per_acre',
       'carry_ratio',
       'density_per_usable_acre',
+      'land_carry_noi',
       'land_to_sellout_ratio',
       'loan_per_acre',
       'ltc',
@@ -100,6 +102,7 @@ describe('LAND_PACK', () => {
     const uses = sus.content['uses'] as Record<string, number>;
 
     const values: Record<string, number | null> = {
+      effective_gross_income: (noi.content['income'] as Record<string, number>)['effective_gross_income']!,
       total_operating_expenses: expenses['total_operating_expenses']!,
       purchase_price: valuation.content['purchase_price'] as number,
       underwritten_value: (valuation.content['underwritten_value'] as number | undefined) ?? null,
