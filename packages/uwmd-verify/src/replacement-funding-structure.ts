@@ -58,6 +58,8 @@ export interface ReplacementFundingStructure {
   context: ReplacementFundingBindingContext | null;
   ref: ReplacementCashFlowRef | null;
   series: CashFlowRow[] | null;
+  /** Exact current physical source, even when other reference members are invalid. */
+  selectedSource: UWBlock | null;
 }
 
 export function checkReplacementFundingStructure(
@@ -71,6 +73,7 @@ export function checkReplacementFundingStructure(
     context: null,
     ref: null,
     series: null,
+    selectedSource: null,
   };
   const issue = (code: string, suffix: string, message: string) =>
     out.issues.push({
@@ -151,6 +154,7 @@ export function checkReplacementFundingStructure(
   const sources = sectionBlocks(parsed.sections.cash_flow_series).filter(
     (b) => b.annotation.variant === ref.variant && !b.annotation.superseded && !b.meta.lifecycle?.superseded
   );
+  out.selectedSource = sources.length === 1 ? sources[0]! : null;
   // Protocol §V.12.3: a named source that cannot resolve takes precedence,
   // including when another reference value is malformed.
   if (typeof ref.variant === 'string' && ref.variant.length > 0 && sources.length !== 1)

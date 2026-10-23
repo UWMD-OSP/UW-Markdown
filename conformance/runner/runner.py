@@ -249,7 +249,8 @@ def project(actual, name: str | None):
         result["codes"] = [i.get("code") for i in verification.get("issues", [])]
         return {"codes": sorted(i["code"] for i in actual.get("issues", [])
                                  if i["code"].startswith(("HDG-", "ESC-"))),
-                "verification": result}
+                "verification": result,
+                "structural_codes": sorted(i["code"] for i in verification.get("structural_issues", []))}
     if name == "section-verification":
         # RFC 0115: a section report reduced to its verdict and the set of
         # verifier issue codes. A not_applicable report has no verification.
