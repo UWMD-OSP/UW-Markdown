@@ -1,0 +1,1489 @@
+{
+  "method": "Manually scoped function/data-flow inventory backed by TypeScript-resolved reverse calls and explicit callback/storage/JSX edges. Broad spelling discovery is an audit aid only, not proof of closure.",
+  "scope": "Current repository complete-source producers, consumers and delegations; separate named commitments are classified but their entire financial call graphs are outside this inventory.",
+  "seeds": [
+    "packages/uwmd-verify/src/envelope.ts#toUWEnvelope",
+    "packages/uwmd-verify/src/envelope.ts#computeEnvelopeDigest",
+    "packages/uwmd-verify/src/envelope.ts#stampEnvelopeDigest",
+    "packages/uwmd-verify/src/envelope.ts#verifyEnvelopeDigest",
+    "packages/uwmd-verify/src/document-signatures.ts#resolveDocumentSigningSubject",
+    "packages/uwmd-verify/src/receipts.ts#resolveReceiptSubject",
+    "packages/uwmd-verify/src/receipts.ts#issueReceipt",
+    "packages/uwmd-verify/src/receipts.ts#verifyReceipt",
+    "packages/uwmd-verify/src/deal-package-zip.ts#verifyUWDealPackage",
+    "packages/uwmd-verify/src/bindings.ts#uwmdETag",
+    "packages/uwmd-lake/src/plan.ts#planDocument",
+    "packages/uwmd-lake/src/plan.ts#planFact",
+    "packages/uwmd-lake/src/plan.ts#planReceipt",
+    "packages/uwmd-excel/src/mcpSheet.ts#writeMcpSheet",
+    "packages/uwmd-excel/src/mcpSheet.ts#readWorkbookContract",
+    "packages/uwmd-excel/src/mcpSheet.ts#verifyWorkbookContract"
+  ],
+  "nodes": [
+    {
+      "id": "packages/uwmd-batch/src/index.ts#buildUWMDFactTable",
+      "file": "packages/uwmd-batch/src/index.ts",
+      "symbol": "buildUWMDFactTable",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Index and fact-table producers compute a source Envelope digest once per record and propagate it to document rows and flattened facts. Directory/index wrappers delegate.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-batch/src/index.ts#indexFile",
+      "file": "packages/uwmd-batch/src/index.ts",
+      "symbol": "indexFile",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Index and fact-table producers compute a source Envelope digest once per record and propagate it to document rows and flattened facts. Directory/index wrappers delegate.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-batch/src/index.ts#indexUWMDDirectory",
+      "file": "packages/uwmd-batch/src/index.ts",
+      "symbol": "indexUWMDDirectory",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Index and fact-table producers compute a source Envelope digest once per record and propagate it to document rows and flattened facts. Directory/index wrappers delegate.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/bindings-edit.ts#applyUWMDSourceEdit",
+      "file": "packages/uwmd-core/src/bindings-edit.ts",
+      "symbol": "applyUWMDSourceEdit",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Injects starterEditor into standard edit/If-Match functions; source and precondition are forwarded, not independently canonicalized.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/bindings-edit.ts#createUWMCPApplyEditResult",
+      "file": "packages/uwmd-core/src/bindings-edit.ts",
+      "symbol": "createUWMCPApplyEditResult",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Injects starterEditor into standard edit/If-Match functions; source and precondition are forwarded, not independently canonicalized.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli-packages.ts#cmdPackageVerify",
+      "file": "packages/uwmd-core/src/cli-packages.ts",
+      "symbol": "cmdPackageVerify",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "The CLI supplies semanticDigestOf as a callback into packageMemberSemanticDigest. UWX parses/projects then hashes; supported model codecs decode then hash; unavailable canonicalization returns null.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli-packages.ts#packageMemberSemanticDigest",
+      "file": "packages/uwmd-core/src/cli-packages.ts",
+      "symbol": "packageMemberSemanticDigest",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "The CLI supplies semanticDigestOf as a callback into packageMemberSemanticDigest. UWX parses/projects then hashes; supported model codecs decode then hash; unavailable canonicalization returns null.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#<module>",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "<module>",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdCompose",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdCompose",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdConvert",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdConvert",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdDiff",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdDiff",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdExport",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdExport",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdMarketDataValidate",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdMarketDataValidate",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdParse",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdParse",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdReceiptIssue",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdReceiptIssue",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdReceiptVerify",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdReceiptVerify",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdRefine",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdRefine",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdReport",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdReport",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdResolve",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdResolve",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdScope",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdScope",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdSummary",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdSummary",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdValidate",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdValidate",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#cmdVerify",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "cmdVerify",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#loadEnvelope",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "loadEnvelope",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#loadMarketData",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "loadMarketData",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/cli.ts#loadSource",
+      "file": "packages/uwmd-core/src/cli.ts",
+      "symbol": "loadSource",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Command/loader delegation. Only export/convert/receipt/signing paths use or create identities; validation/report/scope paths also receive a parsed view through the shared loader and are not extra hashes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/receipt-engine.ts#issueReceipt",
+      "file": "packages/uwmd-core/src/receipt-engine.ts",
+      "symbol": "issueReceipt",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Defaults issuer only and delegates the original content/options to the standard receipt producer; does not choose another source algorithm or engine.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/source-file.ts#loadEditableUWXFile",
+      "file": "packages/uwmd-core/src/source-file.ts",
+      "symbol": "loadEditableUWXFile",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Loads UWX or decoded model representations and carries Envelope plus parsed views. Codec decoding and Lite projection keep their own admission/fidelity boundaries.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-core/src/source-file.ts#loadUWSourceFile",
+      "file": "packages/uwmd-core/src/source-file.ts",
+      "symbol": "loadUWSourceFile",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Loads UWX or decoded model representations and carries Envelope plus parsed views. Codec decoding and Lite projection keep their own admission/fidelity boundaries.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-excel/src/cli.ts#<module>",
+      "file": "packages/uwmd-excel/src/cli.ts",
+      "symbol": "<module>",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Load/convert/import delegation to source loader and workbook APIs; no additional source canonicalization algorithm.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-excel/src/cli.ts#main",
+      "file": "packages/uwmd-excel/src/cli.ts",
+      "symbol": "main",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Load/convert/import delegation to source loader and workbook APIs; no additional source canonicalization algorithm.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-excel/src/fromWorkbook.ts#fromWorkbook",
+      "file": "packages/uwmd-excel/src/fromWorkbook.ts",
+      "symbol": "fromWorkbook",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Reads contract metadata to select class/layout/pack for import; it does not assert whole-source verification merely by reading the stored digest.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-excel/src/mcpSheet.ts#buildWorkbookContract",
+      "file": "packages/uwmd-excel/src/mcpSheet.ts",
+      "symbol": "buildWorkbookContract",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Build computes source identity; contract writer/reader propagate it. Verification recomputes against supplied source and compares. Metadata reading alone verifies neither source nor workbook results.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-excel/src/mcpSheet.ts#readWorkbookContract",
+      "file": "packages/uwmd-excel/src/mcpSheet.ts",
+      "symbol": "readWorkbookContract",
+      "kinds": [
+        "propagation/storage"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Build computes source identity; contract writer/reader propagate it. Verification recomputes against supplied source and compares. Metadata reading alone verifies neither source nor workbook results.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-excel/src/mcpSheet.ts#verifyWorkbookContract",
+      "file": "packages/uwmd-excel/src/mcpSheet.ts",
+      "symbol": "verifyWorkbookContract",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Build computes source identity; contract writer/reader propagate it. Verification recomputes against supplied source and compares. Metadata reading alone verifies neither source nor workbook results.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-excel/src/mcpSheet.ts#writeMcpSheet",
+      "file": "packages/uwmd-excel/src/mcpSheet.ts",
+      "symbol": "writeMcpSheet",
+      "kinds": [
+        "propagation/storage"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Build computes source identity; contract writer/reader propagate it. Verification recomputes against supplied source and compares. Metadata reading alone verifies neither source nor workbook results.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-excel/src/toWorkbook.ts#toMixedUseWorkbook",
+      "file": "packages/uwmd-excel/src/toWorkbook.ts",
+      "symbol": "toMixedUseWorkbook",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Workbook and mixed-use producers delegate to buildWorkbookContract and writeMcpSheet; pack/formula results retain separate input and numerical scopes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-excel/src/toWorkbook.ts#toWorkbook",
+      "file": "packages/uwmd-excel/src/toWorkbook.ts",
+      "symbol": "toWorkbook",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Workbook and mixed-use producers delegate to buildWorkbookContract and writeMcpSheet; pack/formula results retain separate input and numerical scopes.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-lake/src/ingest.ts#lakeInputFromEnvelope",
+      "file": "packages/uwmd-lake/src/ingest.ts",
+      "symbol": "lakeInputFromEnvelope",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "lakeInputFromEnvelope computes document identity and copies it to flattened facts. CSV/JSONL fact readers accept explicit identity; they do not recompute it.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-lake/src/plan.ts#planDocument",
+      "file": "packages/uwmd-lake/src/plan.ts",
+      "symbol": "planDocument",
+      "kinds": [
+        "propagation/storage"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Storage/planning uses opaque supplied document/fact semantic_digest as SQL parameters and conflict keys; receipt.subject.digest is stored as a join key while the receipt JSON has a separate row hash. No stored value is fresh verification.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-lake/src/plan.ts#planFact",
+      "file": "packages/uwmd-lake/src/plan.ts",
+      "symbol": "planFact",
+      "kinds": [
+        "propagation/storage"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Storage/planning uses opaque supplied document/fact semantic_digest as SQL parameters and conflict keys; receipt.subject.digest is stored as a join key while the receipt JSON has a separate row hash. No stored value is fresh verification.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-lake/src/plan.ts#planLakeLoad",
+      "file": "packages/uwmd-lake/src/plan.ts",
+      "symbol": "planLakeLoad",
+      "kinds": [
+        "propagation/storage"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Storage/planning uses opaque supplied document/fact semantic_digest as SQL parameters and conflict keys; receipt.subject.digest is stored as a join key while the receipt JSON has a separate row hash. No stored value is fresh verification.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-lake/src/plan.ts#planReceipt",
+      "file": "packages/uwmd-lake/src/plan.ts",
+      "symbol": "planReceipt",
+      "kinds": [
+        "propagation/storage"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Storage/planning uses opaque supplied document/fact semantic_digest as SQL parameters and conflict keys; receipt.subject.digest is stored as a join key while the receipt JSON has a separate row hash. No stored value is fresh verification.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-mcp/src/bin.ts#<module>",
+      "file": "packages/uwmd-mcp/src/bin.ts",
+      "symbol": "<module>",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Starts the read-only server; transitive delegation only.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-mcp/src/server.ts#createServer",
+      "file": "packages/uwmd-mcp/src/server.ts",
+      "symbol": "createServer",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "MCP tool callbacks forward source text to verifySource; they do not recompute a new transport-specific identity.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-mcp/src/tools.ts#verifySource",
+      "file": "packages/uwmd-mcp/src/tools.ts",
+      "symbol": "verifySource",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "verifySource delegates verifyChain plus separately scoped validation/metrics/replacement checks. With no document artifact/backend it does not newly authenticate a complete document.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-report/src/cli.ts#<module>",
+      "file": "packages/uwmd-report/src/cli.ts",
+      "symbol": "<module>",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Delegates loading, then renders a parsed view. The loader carries an Envelope; rendering does not create source authentication.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-report/src/cli.ts#main",
+      "file": "packages/uwmd-report/src/cli.ts",
+      "symbol": "main",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Delegates loading, then renders a parsed view. The loader carries an Envelope; rendering does not create source authentication.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-signing/src/documents.ts#signDocument",
+      "file": "packages/uwmd-signing/src/documents.ts",
+      "symbol": "signDocument",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Actual signDocument producer resolves the original source under V13, then signs documentSigningPayload. The backend consumes the signing payload, not arbitrary model stamps.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/bindings.ts#applyUWMDSourceEditWith",
+      "file": "packages/uwmd-verify/src/bindings.ts",
+      "symbol": "applyUWMDSourceEditWith",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "HTTP/MCP response and edit preconditions freshly stamp the selected Envelope; uwmdETag propagates that stamp. Edit result identity is recomputed after the adapter, not an automatic plan rebind.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/bindings.ts#assertUWIfMatch",
+      "file": "packages/uwmd-verify/src/bindings.ts",
+      "symbol": "assertUWIfMatch",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "HTTP/MCP response and edit preconditions freshly stamp the selected Envelope; uwmdETag propagates that stamp. Edit result identity is recomputed after the adapter, not an automatic plan rebind.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/bindings.ts#createUWHTTPResponse",
+      "file": "packages/uwmd-verify/src/bindings.ts",
+      "symbol": "createUWHTTPResponse",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "HTTP/MCP response and edit preconditions freshly stamp the selected Envelope; uwmdETag propagates that stamp. Edit result identity is recomputed after the adapter, not an automatic plan rebind.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/bindings.ts#createUWMCPApplyEditResultWith",
+      "file": "packages/uwmd-verify/src/bindings.ts",
+      "symbol": "createUWMCPApplyEditResultWith",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "HTTP/MCP response and edit preconditions freshly stamp the selected Envelope; uwmdETag propagates that stamp. Edit result identity is recomputed after the adapter, not an automatic plan rebind.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/bindings.ts#createUWMCPGetDocumentResult",
+      "file": "packages/uwmd-verify/src/bindings.ts",
+      "symbol": "createUWMCPGetDocumentResult",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "HTTP/MCP response and edit preconditions freshly stamp the selected Envelope; uwmdETag propagates that stamp. Edit result identity is recomputed after the adapter, not an automatic plan rebind.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/bindings.ts#createUWMCPResource",
+      "file": "packages/uwmd-verify/src/bindings.ts",
+      "symbol": "createUWMCPResource",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "HTTP/MCP response and edit preconditions freshly stamp the selected Envelope; uwmdETag propagates that stamp. Edit result identity is recomputed after the adapter, not an automatic plan rebind.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/bindings.ts#createUWMCPValidationResult",
+      "file": "packages/uwmd-verify/src/bindings.ts",
+      "symbol": "createUWMCPValidationResult",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "HTTP/MCP response and edit preconditions freshly stamp the selected Envelope; uwmdETag propagates that stamp. Edit result identity is recomputed after the adapter, not an automatic plan rebind.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/bindings.ts#uwmdETag",
+      "file": "packages/uwmd-verify/src/bindings.ts",
+      "symbol": "uwmdETag",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "HTTP/MCP response and edit preconditions freshly stamp the selected Envelope; uwmdETag propagates that stamp. Edit result identity is recomputed after the adapter, not an automatic plan rebind.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/deal-package-zip.ts#verifyUWDealPackage",
+      "file": "packages/uwmd-verify/src/deal-package-zip.ts",
+      "symbol": "verifyUWDealPackage",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Whole member semantic identity is recomputed through opaque semanticDigestOf. Raw member byte SHA-256 is checked separately first; a callback absence yields unverifiable, not a guessed digest.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/document-signatures.ts#resolveDocumentSigningSubject",
+      "file": "packages/uwmd-verify/src/document-signatures.ts",
+      "symbol": "resolveDocumentSigningSubject",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "V13 guarded fresh source resolution and comparison precede backend invocation; complete accounting does not widen source admission.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/document-signatures.ts#verifyDocumentSignature",
+      "file": "packages/uwmd-verify/src/document-signatures.ts",
+      "symbol": "verifyDocumentSignature",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "V13 guarded fresh source resolution and comparison precede backend invocation; complete accounting does not widen source admission.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/envelope.ts#computeEnvelopeDigest",
+      "file": "packages/uwmd-verify/src/envelope.ts",
+      "symbol": "computeEnvelopeDigest",
+      "kinds": [
+        "computation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Defines projection, complete semantic value and canonical digest. Stamp/verification delegate to computeEnvelopeDigest; neither a stored stamp nor a serialized view attributes raw source.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/envelope.ts#stampEnvelopeDigest",
+      "file": "packages/uwmd-verify/src/envelope.ts",
+      "symbol": "stampEnvelopeDigest",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Defines projection, complete semantic value and canonical digest. Stamp/verification delegate to computeEnvelopeDigest; neither a stored stamp nor a serialized view attributes raw source.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/envelope.ts#toUWEnvelope",
+      "file": "packages/uwmd-verify/src/envelope.ts",
+      "symbol": "toUWEnvelope",
+      "kinds": [
+        "computation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Defines projection, complete semantic value and canonical digest. Stamp/verification delegate to computeEnvelopeDigest; neither a stored stamp nor a serialized view attributes raw source.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/envelope.ts#verifyEnvelopeDigest",
+      "file": "packages/uwmd-verify/src/envelope.ts",
+      "symbol": "verifyEnvelopeDigest",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Defines projection, complete semantic value and canonical digest. Stamp/verification delegate to computeEnvelopeDigest; neither a stored stamp nor a serialized view attributes raw source.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/integrity.ts#verifyChain",
+      "file": "packages/uwmd-verify/src/integrity.ts",
+      "symbol": "verifyChain",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "verifyChain combines scoped block/signature checks with optional guarded V13 complete-document verification. V9 and six-field V11 inputs are unchanged.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/lease-up-cash-flows.ts#projectLeaseUpCashFlows",
+      "file": "packages/uwmd-verify/src/lease-up-cash-flows.ts",
+      "symbol": "projectLeaseUpCashFlows",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Carries complete source_envelope_digest with projected series; numerical/binding inputs are separately scoped.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/property-cash-flows.ts#assemblePropertyCashFlows",
+      "file": "packages/uwmd-verify/src/property-cash-flows.ts",
+      "symbol": "assemblePropertyCashFlows",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Propagates projection.source_envelope_digest into assembled output and plan provenance; does not transfer unchanged series/results into a new source subject.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/receipts.ts#issueReceipt",
+      "file": "packages/uwmd-verify/src/receipts.ts",
+      "symbol": "issueReceipt",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Ordinary source-subject issuance/verification, separate from full carrier admission and V13 guard. UWX uses complete Envelope; Lite canonicalizes its own financial representation. Receipt-signing and results digests remain separate.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/receipts.ts#resolveReceiptSubject",
+      "file": "packages/uwmd-verify/src/receipts.ts",
+      "symbol": "resolveReceiptSubject",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Ordinary source-subject issuance/verification, separate from full carrier admission and V13 guard. UWX uses complete Envelope; Lite canonicalizes its own financial representation. Receipt-signing and results digests remain separate.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/receipts.ts#verifyReceipt",
+      "file": "packages/uwmd-verify/src/receipts.ts",
+      "symbol": "verifyReceipt",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Ordinary source-subject issuance/verification, separate from full carrier admission and V13 guard. UWX uses complete Envelope; Lite canonicalizes its own financial representation. Receipt-signing and results digests remain separate.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/reserve-accounts.ts#verifyReserveAccounts",
+      "file": "packages/uwmd-verify/src/reserve-accounts.ts",
+      "symbol": "verifyReserveAccounts",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Whole source_digest is provenance of the verification report, distinct from account math.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/reserve-draw-bindings.ts#verifyReserveDrawBindings",
+      "file": "packages/uwmd-verify/src/reserve-draw-bindings.ts",
+      "symbol": "verifyReserveDrawBindings",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Compares the once-authored plan.source_digest to a fresh complete source digest. Stamping a changed source does not approve or automatically rebind the plan.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwcsv.ts#decodeBundleContents",
+      "file": "packages/uwmd-verify/src/uwcsv.ts",
+      "symbol": "decodeBundleContents",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "CSV/ZIP raw inventory and grammar precede reconstructed complete identity comparison; raw archive hashes are distinct.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwcsv.ts#decodeUWCSVBundle",
+      "file": "packages/uwmd-verify/src/uwcsv.ts",
+      "symbol": "decodeUWCSVBundle",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "CSV/ZIP raw inventory and grammar precede reconstructed complete identity comparison; raw archive hashes are distinct.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwcsv.ts#decodeUWCSVZip",
+      "file": "packages/uwmd-verify/src/uwcsv.ts",
+      "symbol": "decodeUWCSVZip",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "CSV/ZIP raw inventory and grammar precede reconstructed complete identity comparison; raw archive hashes are distinct.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwcsv.ts#encodeUWCSVBundle",
+      "file": "packages/uwmd-verify/src/uwcsv.ts",
+      "symbol": "encodeUWCSVBundle",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "CSV/ZIP raw inventory and grammar precede reconstructed complete identity comparison; raw archive hashes are distinct.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwcsv.ts#encodeUWCSVZip",
+      "file": "packages/uwmd-verify/src/uwcsv.ts",
+      "symbol": "encodeUWCSVZip",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "CSV/ZIP raw inventory and grammar precede reconstructed complete identity comparison; raw archive hashes are distinct.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwjson.ts#<module>",
+      "file": "packages/uwmd-verify/src/uwjson.ts",
+      "symbol": "<module>",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Projection/serialization delegates to Envelope; verified JSON reads compare fresh complete identity after model admission.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwjson.ts#parseUWJsonVerified",
+      "file": "packages/uwmd-verify/src/uwjson.ts",
+      "symbol": "parseUWJsonVerified",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Projection/serialization delegates to Envelope; verified JSON reads compare fresh complete identity after model admission.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwjson.ts#stringifyUWJson",
+      "file": "packages/uwmd-verify/src/uwjson.ts",
+      "symbol": "stringifyUWJson",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Projection/serialization delegates to Envelope; verified JSON reads compare fresh complete identity after model admission.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwjson.ts#stringifyUWJsonWithDigest",
+      "file": "packages/uwmd-verify/src/uwjson.ts",
+      "symbol": "stringifyUWJsonWithDigest",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Projection/serialization delegates to Envelope; verified JSON reads compare fresh complete identity after model admission.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwjson.ts#toUWJson",
+      "file": "packages/uwmd-verify/src/uwjson.ts",
+      "symbol": "toUWJson",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Projection/serialization delegates to Envelope; verified JSON reads compare fresh complete identity after model admission.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwxml.ts#parseUWXml",
+      "file": "packages/uwmd-verify/src/uwxml.ts",
+      "symbol": "parseUWXml",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "XML encoding stamps and admitted decoding verifies the selected complete subject; XML raw grammar remains separately required.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwxml.ts#parseUWXmlVerified",
+      "file": "packages/uwmd-verify/src/uwxml.ts",
+      "symbol": "parseUWXmlVerified",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "XML encoding stamps and admitted decoding verifies the selected complete subject; XML raw grammar remains separately required.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwxml.ts#stringifyUWXml",
+      "file": "packages/uwmd-verify/src/uwxml.ts",
+      "symbol": "stringifyUWXml",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "XML encoding stamps and admitted decoding verifies the selected complete subject; XML raw grammar remains separately required.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "tools/vscode-uwmd/src/extension.ts#verifyReceiptCommand",
+      "file": "tools/vscode-uwmd/src/extension.ts",
+      "symbol": "verifyReceiptCommand",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Receipt command delegates checkReceipt and displays the result; it does not add a canonicalization.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "tools/vscode-uwmd/src/receipts.ts#checkReceipt",
+      "file": "tools/vscode-uwmd/src/receipts.ts",
+      "symbol": "checkReceipt",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Loads/admits sidecar then delegates verifyReceipt using dealText. Display helpers only propagate verdict/digest fields.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "tools/web-editor/src/App.tsx#App",
+      "file": "tools/web-editor/src/App.tsx",
+      "symbol": "App",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Forwards deal.loaded.source to ReceiptPanel. App/BridgeStatus project an Envelope for export/Lite view reporting; reduced display does not authenticate omitted values.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "tools/web-editor/src/App.tsx#BridgeStatus",
+      "file": "tools/web-editor/src/App.tsx",
+      "symbol": "BridgeStatus",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Forwards deal.loaded.source to ReceiptPanel. App/BridgeStatus project an Envelope for export/Lite view reporting; reduced display does not authenticate omitted values.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "tools/web-editor/src/components/ReceiptPanel.tsx#ReceiptPanel",
+      "file": "tools/web-editor/src/components/ReceiptPanel.tsx",
+      "symbol": "ReceiptPanel",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "UI calls issueForSource/assess with held source, then displays/downloads receipt. JSX/callback wiring is not another digest.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "tools/web-editor/src/receipts.ts#assess",
+      "file": "tools/web-editor/src/receipts.ts",
+      "symbol": "assess",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "issueForSource passes original source through core/browser issuance wrapper; assess delegates receipt verification before UI-only stale classification.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "tools/web-editor/src/receipts.ts#issueForSource",
+      "file": "tools/web-editor/src/receipts.ts",
+      "symbol": "issueForSource",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "issueForSource passes original source through core/browser issuance wrapper; assess delegates receipt verification before UI-only stale classification.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "tools/web-editor/src/state.ts#useDeal",
+      "file": "tools/web-editor/src/state.ts",
+      "symbol": "useDeal",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "complete-source or explicit delegation to its provider",
+      "reviewed_flow": "Loaded source and parsed state propagate into explicit Lite projection; source identity and reduced view fidelity stay distinct.",
+      "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
+    },
+    {
+      "id": "packages/uwmd-verify/src/integrity.ts#computeBlockHash",
+      "file": "packages/uwmd-verify/src/integrity.ts",
+      "symbol": "computeBlockHash",
+      "kinds": [
+        "separate-commitment"
+      ],
+      "scope": "V9 block / V11 six-field signing inputs",
+      "reviewed_flow": "Block content hash and named signing inputs are not complete-document subjects.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-verify/src/integrity.ts#canonicalBlockSigningInput",
+      "file": "packages/uwmd-verify/src/integrity.ts",
+      "symbol": "canonicalBlockSigningInput",
+      "kinds": [
+        "separate-commitment"
+      ],
+      "scope": "V9 block / V11 six-field signing inputs",
+      "reviewed_flow": "Block content hash and named signing inputs are not complete-document subjects.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-verify/src/integrity.ts#blockSigningPayload",
+      "file": "packages/uwmd-verify/src/integrity.ts",
+      "symbol": "blockSigningPayload",
+      "kinds": [
+        "separate-commitment"
+      ],
+      "scope": "V9 block / V11 six-field signing inputs",
+      "reviewed_flow": "Block content hash and named signing inputs are not complete-document subjects.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-verify/src/receipts.ts#receiptSigningPayload",
+      "file": "packages/uwmd-verify/src/receipts.ts",
+      "symbol": "receiptSigningPayload",
+      "kinds": [
+        "separate-commitment"
+      ],
+      "scope": "receipt signing payload or canonical result records",
+      "reviewed_flow": "Receipt signature commits to the admitted receipt including its declared subject; result digest commits to result records, not all source values.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-verify/src/receipts.ts#computeResultsDigest",
+      "file": "packages/uwmd-verify/src/receipts.ts",
+      "symbol": "computeResultsDigest",
+      "kinds": [
+        "separate-commitment"
+      ],
+      "scope": "receipt signing payload or canonical result records",
+      "reviewed_flow": "Receipt signature commits to the admitted receipt including its declared subject; result digest commits to result records, not all source values.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-verify/src/replacement-funding.ts#computeReplacementCashFlowBindingDigest",
+      "file": "packages/uwmd-verify/src/replacement-funding.ts",
+      "symbol": "computeReplacementCashFlowBindingDigest",
+      "kinds": [
+        "separate-commitment"
+      ],
+      "scope": "V12 selected payment vector",
+      "reviewed_flow": "Selected row/variant/currency/payment inputs retain their own identity.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-signing/src/sign.ts#signReceipt",
+      "file": "packages/uwmd-signing/src/sign.ts",
+      "symbol": "signReceipt",
+      "kinds": [
+        "delegation",
+        "separate-commitment"
+      ],
+      "scope": "receipt signing input",
+      "reviewed_flow": "Delegates receiptSigningPayload into signPayload; no source parser.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-signing/src/sign.ts#signBlock",
+      "file": "packages/uwmd-signing/src/sign.ts",
+      "symbol": "signBlock",
+      "kinds": [
+        "delegation",
+        "separate-commitment"
+      ],
+      "scope": "V9/V11 block inputs",
+      "reviewed_flow": "Delegates content hash and canonicalBlockSigningInput; cannot inherit document-wide scope.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-signing/src/verify.ts#createReceiptSignatureVerifier",
+      "file": "packages/uwmd-signing/src/verify.ts",
+      "symbol": "createReceiptSignatureVerifier",
+      "kinds": [
+        "delegation",
+        "separate-commitment"
+      ],
+      "scope": "already-selected receipt signing payload",
+      "reviewed_flow": "Backend delegates verifyRawSignature; source admission/comparison belongs upstream in verifyReceipt.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-signing/src/modules.ts#signModule",
+      "file": "packages/uwmd-signing/src/modules.ts",
+      "symbol": "signModule",
+      "kinds": [
+        "separate-commitment"
+      ],
+      "scope": "module manifest signing input",
+      "reviewed_flow": "Module signing is not an underwriting source subject.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-lake/src/ingest.ts#readBlockValuesCSV",
+      "file": "packages/uwmd-lake/src/ingest.ts",
+      "symbol": "readBlockValuesCSV",
+      "kinds": [
+        "propagation/storage"
+      ],
+      "scope": "supplied fact source identity",
+      "reviewed_flow": "Forwards supplied semantic_digest into fact rows without recomputing it.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-lake/src/ingest.ts#readBatchFactJSONL",
+      "file": "packages/uwmd-lake/src/ingest.ts",
+      "symbol": "readBatchFactJSONL",
+      "kinds": [
+        "propagation/storage"
+      ],
+      "scope": "supplied fact source identity",
+      "reviewed_flow": "Forwards supplied semantic_digest into fact rows without recomputing it.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-lake/src/plan.ts#planPackage",
+      "file": "packages/uwmd-lake/src/plan.ts",
+      "symbol": "planPackage",
+      "kinds": [
+        "propagation/storage"
+      ],
+      "scope": "package member identities",
+      "reviewed_flow": "Stores member.semantic_digest separately from raw sha256 and package identity.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-lake/src/plan.ts#executeLakeLoad",
+      "file": "packages/uwmd-lake/src/plan.ts",
+      "symbol": "executeLakeLoad",
+      "kinds": [
+        "delegation",
+        "propagation/storage"
+      ],
+      "scope": "opaque SQL plan",
+      "reviewed_flow": "Sends planned SQL/params to adopter client.query; runtime database adoption is not demonstrated here.",
+      "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    }
+  ],
+  "manual_edges": [
+    {
+      "from": "packages/uwmd-core/src/cli-packages.ts#cmdPackageVerify",
+      "to": "packages/uwmd-core/src/cli-packages.ts#packageMemberSemanticDigest",
+      "kind": "callback-provider",
+      "evidence": [
+        "semanticDigestOf: (id, bytes) => packageMemberSemanticDigest"
+      ]
+    },
+    {
+      "from": "packages/uwmd-verify/src/deal-package-zip.ts#verifyUWDealPackage",
+      "to": "packages/uwmd-core/src/cli-packages.ts#packageMemberSemanticDigest",
+      "kind": "opaque-callback-reference-provider",
+      "evidence": [
+        "options.semanticDigestOf(member.id, bytes)"
+      ],
+      "limit": "External adopters may supply other providers; their internals are outside this repository."
+    },
+    {
+      "from": "packages/uwmd-core/src/cli.ts#<module>",
+      "to": "packages/uwmd-signing/src/documents.ts#signDocument",
+      "kind": "dynamic-import-call",
+      "evidence": [
+        "signing.signDocument(source.parsed.raw"
+      ]
+    },
+    {
+      "from": "tools/web-editor/src/App.tsx#App",
+      "to": "tools/web-editor/src/components/ReceiptPanel.tsx#ReceiptPanel",
+      "kind": "JSX-source-propagation",
+      "evidence": [
+        "<ReceiptPanel source={deal.loaded.source}"
+      ]
+    },
+    {
+      "from": "packages/uwmd-lake/src/ingest.ts#lakeInputFromEnvelope",
+      "to": "packages/uwmd-lake/src/plan.ts#planDocument",
+      "kind": "document-data-contract",
+      "evidence": [
+        "semantic_digest, envelope"
+      ],
+      "target_evidence": [
+        "document.semantic_digest",
+        "ON CONFLICT (semantic_digest)"
+      ]
+    },
+    {
+      "from": "packages/uwmd-lake/src/ingest.ts#lakeInputFromEnvelope",
+      "to": "packages/uwmd-lake/src/plan.ts#planFact",
+      "kind": "fact-data-contract",
+      "evidence": [
+        "semantic_digest,"
+      ],
+      "target_evidence": [
+        "fact.semantic_digest",
+        "ON CONFLICT (semantic_digest, block_ref, scope, pointer)"
+      ]
+    },
+    {
+      "from": "packages/uwmd-lake/src/plan.ts#planLakeLoad",
+      "to": "packages/uwmd-lake/src/plan.ts#executeLakeLoad",
+      "kind": "opaque-plan-data-contract",
+      "evidence": [
+        "statements,"
+      ],
+      "target_evidence": [
+        "client.query(statement.sql, statement.params)"
+      ]
+    },
+    {
+      "from": "packages/uwmd-verify/src/property-cash-flows.ts#assemblePropertyCashFlows",
+      "to": "packages/uwmd-verify/src/lease-up-cash-flows.ts#projectLeaseUpCashFlows",
+      "kind": "source-identity-propagation",
+      "evidence": [
+        "source_envelope_digest: projection.source_envelope_digest"
+      ]
+    }
+  ],
+  "passive": [
+    {
+      "file": "packages/uwmd-lake/src/schema.ts",
+      "kind": "propagation/storage",
+      "scope": "SQL identity columns/primary keys; no extra hash computation",
+      "evidence": [
+        "semantic_digest   text PRIMARY KEY",
+        "PRIMARY KEY (semantic_digest, block_ref, scope, pointer)",
+        "subject_digest"
+      ]
+    },
+    {
+      "file": "packages/uwmd-verify/src/deal-package.ts",
+      "kind": "type/admission",
+      "scope": "Manifest type and admission of optional semantic_digest, distinct from raw member sha256",
+      "evidence": [
+        "semantic_digest"
+      ]
+    },
+    {
+      "file": "packages/uwmd-verify/src/protocol.ts",
+      "kind": "type/admission",
+      "scope": "Typed source digest fields, not runtime hash computation",
+      "evidence": [
+        "source_digest",
+        "source_envelope_digest"
+      ]
+    },
+    {
+      "file": "packages/uwmd-verify/src/replacement-funding-structure.ts",
+      "kind": "type/admission",
+      "scope": "Selected binding shape, not complete source",
+      "evidence": [
+        "binding_digest"
+      ]
+    },
+    {
+      "file": "packages/uwmd-verify/src/lite-bridge.ts",
+      "kind": "delegation",
+      "scope": "Explicit Lite compilation/reduced projection and UWX serialization; not complete-envelope authentication",
+      "evidence": [
+        "projectUWEnvelopeToLite",
+        "stringifyUWX"
+      ]
+    },
+    {
+      "file": "packages/uwmd-verify/src/codec.ts",
+      "kind": "delegation",
+      "scope": "Opaque registry selects codec encode/decode; dispatch is not a new hash algorithm",
+      "evidence": [
+        "this.get(id).encode(document)",
+        "this.get(id).decode(input)"
+      ]
+    },
+    {
+      "file": "packages/uwmd-verify/src/codecs.ts",
+      "kind": "delegation",
+      "scope": "Registry registers JSON/XML/CSV providers and forwards encode/decode",
+      "evidence": [
+        "new CodecRegistry([UW_JSON_CODEC, UW_XML_CODEC, UW_CSV_BUNDLE_CODEC])",
+        "registry.encode",
+        "registry.decode"
+      ]
+    },
+    {
+      "file": "packages/uwmd-verify/src/metric-verification.ts",
+      "kind": "comment-only",
+      "scope": "Envelope appears in a comment about lexical-decimal availability; metrics retain their own inputs",
+      "evidence": [
+        "fromUWEnvelope"
+      ]
+    },
+    {
+      "file": "packages/uwmd-verify/src/validator.ts",
+      "kind": "comment-only",
+      "scope": "Envelope appears in an extension-shape comment; validation findings do not select source canonicalization",
+      "evidence": [
+        "fromUWEnvelope"
+      ]
+    },
+    {
+      "file": "packages/uwmd-verify/src/version.ts",
+      "kind": "comment-only",
+      "scope": "Receipt engine/issuer metadata explanation only",
+      "evidence": [
+        "issueReceipt"
+      ]
+    },
+    {
+      "file": "packages/uwmd-verify/src/index.ts",
+      "kind": "display/reexport",
+      "scope": "Public export routing; core explicitly shadows issueReceipt with its wrapper. Reexporting creates no new subject.",
+      "evidence": [
+        "export"
+      ]
+    },
+    {
+      "file": "packages/uwmd-verify/src/browser.ts",
+      "kind": "display/reexport",
+      "scope": "Public export routing; core explicitly shadows issueReceipt with its wrapper. Reexporting creates no new subject.",
+      "evidence": [
+        "export"
+      ]
+    },
+    {
+      "file": "packages/uwmd-core/src/index.ts",
+      "kind": "display/reexport",
+      "scope": "Public export routing; core explicitly shadows issueReceipt with its wrapper. Reexporting creates no new subject.",
+      "evidence": [
+        "export"
+      ]
+    },
+    {
+      "file": "packages/uwmd-core/src/browser.ts",
+      "kind": "display/reexport",
+      "scope": "Public export routing; core explicitly shadows issueReceipt with its wrapper. Reexporting creates no new subject.",
+      "evidence": [
+        "export"
+      ]
+    },
+    {
+      "file": "packages/uwmd-signing/src/index.ts",
+      "kind": "display/reexport",
+      "scope": "Public export routing; core explicitly shadows issueReceipt with its wrapper. Reexporting creates no new subject.",
+      "evidence": [
+        "export"
+      ]
+    },
+    {
+      "file": "packages/uwmd-excel/src/index.ts",
+      "kind": "display/reexport",
+      "scope": "Public export routing; core explicitly shadows issueReceipt with its wrapper. Reexporting creates no new subject.",
+      "evidence": [
+        "export"
+      ]
+    },
+    {
+      "file": "packages/uwmd-lake/src/index.ts",
+      "kind": "display/reexport",
+      "scope": "Public export routing; core explicitly shadows issueReceipt with its wrapper. Reexporting creates no new subject.",
+      "evidence": [
+        "export"
+      ]
+    }
+  ],
+  "required_routes": [
+    [
+      "packages/uwmd-signing/src/documents.ts#signDocument",
+      "packages/uwmd-verify/src/document-signatures.ts#resolveDocumentSigningSubject",
+      "packages/uwmd-verify/src/envelope.ts#computeEnvelopeDigest"
+    ],
+    [
+      "tools/web-editor/src/components/ReceiptPanel.tsx#ReceiptPanel",
+      "tools/web-editor/src/receipts.ts#issueForSource",
+      "packages/uwmd-core/src/receipt-engine.ts#issueReceipt",
+      "packages/uwmd-verify/src/receipts.ts#issueReceipt",
+      "packages/uwmd-verify/src/receipts.ts#resolveReceiptSubject"
+    ],
+    [
+      "tools/web-editor/src/components/ReceiptPanel.tsx#ReceiptPanel",
+      "tools/web-editor/src/receipts.ts#assess",
+      "packages/uwmd-verify/src/receipts.ts#verifyReceipt",
+      "packages/uwmd-verify/src/receipts.ts#resolveReceiptSubject"
+    ],
+    [
+      "packages/uwmd-core/src/cli-packages.ts#cmdPackageVerify",
+      "packages/uwmd-verify/src/deal-package-zip.ts#verifyUWDealPackage",
+      "packages/uwmd-core/src/cli-packages.ts#packageMemberSemanticDigest",
+      "packages/uwmd-verify/src/envelope.ts#computeEnvelopeDigest"
+    ],
+    [
+      "packages/uwmd-lake/src/ingest.ts#lakeInputFromEnvelope",
+      "packages/uwmd-lake/src/plan.ts#planDocument"
+    ],
+    [
+      "packages/uwmd-lake/src/ingest.ts#lakeInputFromEnvelope",
+      "packages/uwmd-lake/src/plan.ts#planFact"
+    ],
+    [
+      "packages/uwmd-excel/src/toWorkbook.ts#toWorkbook",
+      "packages/uwmd-excel/src/mcpSheet.ts#buildWorkbookContract",
+      "packages/uwmd-verify/src/envelope.ts#computeEnvelopeDigest"
+    ],
+    [
+      "packages/uwmd-core/src/bindings-edit.ts#applyUWMDSourceEdit",
+      "packages/uwmd-verify/src/bindings.ts#applyUWMDSourceEditWith",
+      "packages/uwmd-verify/src/envelope.ts#stampEnvelopeDigest",
+      "packages/uwmd-verify/src/envelope.ts#computeEnvelopeDigest"
+    ],
+    [
+      "tools/vscode-uwmd/src/extension.ts#verifyReceiptCommand",
+      "tools/vscode-uwmd/src/receipts.ts#checkReceipt",
+      "packages/uwmd-verify/src/receipts.ts#verifyReceipt"
+    ],
+    [
+      "packages/uwmd-verify/src/property-cash-flows.ts#assemblePropertyCashFlows",
+      "packages/uwmd-verify/src/lease-up-cash-flows.ts#projectLeaseUpCashFlows",
+      "packages/uwmd-verify/src/envelope.ts#computeEnvelopeDigest"
+    ]
+  ],
+  "limits": [
+    "Static type resolution is a discovery aid, not general dynamic-call analysis.",
+    "Manual data edges document API contracts, not live HTTP/MCP/workbook/database end-to-end adoption.",
+    "Opaque external callbacks and clients require adopter evidence; no unseen implementation is inferred.",
+    "Candidate execution does not activate or independently close production integration."
+  ]
+}

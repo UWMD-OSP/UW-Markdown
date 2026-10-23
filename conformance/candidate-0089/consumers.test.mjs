@@ -1,57 +1,66 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { resolve, relative } from 'node:path';
+import { discoverCalls, root } from './consumer-graph.mjs';
 import { sha } from './model.mjs';
 
-const root = fileURLToPath(new URL('../../', import.meta.url));
-// Inventory is deliberately closed: a new current consumer must be classified.
-const inventory = {
-  'packages/uwmd-batch/src/index.ts': 'whole-source batch document identity',
-  'packages/uwmd-lake/src/ingest.ts': 'whole-source ingestion identity; flat result indexes retain their own scope',
-  'packages/uwmd-core/src/cli-packages.ts': 'whole-source package member identity',
-  'packages/uwmd-core/src/cli.ts': 'whole-source serialization; selected financial results remain separately scoped',
-  'packages/uwmd-core/src/source-file.ts': 'whole-source representation loading',
-  'packages/uwmd-excel/src/mcpSheet.ts': 'whole-source workbook/MCP optimistic concurrency identity',
-  'packages/uwmd-verify/src/bindings.ts': 'whole-source HTTP/MCP edit precondition and returned stamp',
-  'packages/uwmd-verify/src/document-signatures.ts': 'whole-source V13 document subject',
-  'packages/uwmd-verify/src/index.ts': 'public export, not an additional commitment',
-  'packages/uwmd-verify/src/envelope.ts': 'whole-source canonicalization definition',
-  'packages/uwmd-verify/src/integrity.ts': 'whole-source V13 check; V9 block and V11 signing inputs stay separately scoped',
-  'packages/uwmd-verify/src/lease-up-cash-flows.ts': 'whole-source assembly provenance; selected ledger/result commitments stay scoped',
-  'packages/uwmd-verify/src/property-cash-flows.ts': 'forwards the lease-up whole-source identity into assembly provenance; output series retain selected ledger scope',
-  'packages/uwmd-verify/src/protocol.ts': 'typed whole-source result fields, not additional computation',
-  'packages/uwmd-verify/src/receipts.ts': 'whole-source UWX receipt subject; ordinary receipts retain their own subject policy',
-  'packages/uwmd-verify/src/replacement-funding.ts': 'V12 selected payment-vector binding, not a whole-source commitment',
-  'packages/uwmd-verify/src/replacement-funding-structure.ts': 'V12 selected binding shape admission, not whole-source identity',
-  'packages/uwmd-verify/src/reserve-accounts.ts': 'whole-source verification provenance, not an authored stale-plan binding',
-  'packages/uwmd-verify/src/reserve-draw-bindings.ts': 'whole-source once-bound plan subject; no automatic rebinding',
-  'packages/uwmd-verify/src/uwcsv.ts': 'whole-source carrier stamp',
-  'packages/uwmd-verify/src/uwjson.ts': 'whole-source carrier stamp',
-  'packages/uwmd-verify/src/uwxml.ts': 'whole-source carrier stamp',
-  'tools/web-editor/src/state.ts': 'whole-source projection into explicitly reduced Lite view',
-  'tools/web-editor/src/App.tsx': 'whole-source JSON export',
-};
-function* sources(directory) {
-  for (const item of readdirSync(directory, { withFileTypes: true })) {
-    if (['node_modules', 'dist', 'dist-validator', '.git'].includes(item.name)) continue;
-    const path = resolve(directory, item.name);
-    if (item.isDirectory()) yield* sources(path);
-    else if (/\.(ts|tsx)$/.test(item.name) && !/\.test\.(ts|tsx)$/.test(item.name)) yield path;
+const specification = JSON.parse(readFileSync(new URL('./consumer-flows.json', import.meta.url), 'utf8'));
+const normalize = text => text.replace(/\s+/g, '');
+function* files(directory) {
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    if (['node_modules', 'dist', 'dist-validator', 'public', '.git'].includes(entry.name)) continue;
+    const path = resolve(directory, entry.name);
+    if (entry.isDirectory()) yield* files(path);
+    else if (/\.(ts|tsx)$/.test(path) && !/\.test\.(ts|tsx)$/.test(path)) yield path;
   }
 }
-test('all current source-identity consumers have an explicit commitment scope', () => {
-  const results = [];
-  for (const group of ['packages', 'tools']) for (const path of sources(resolve(root, group))) {
-    const source = readFileSync(path, 'utf8');
-    const matches = [...source.matchAll(/computeEnvelopeDigest|toUWEnvelope|stampEnvelopeDigest|verifyEnvelopeDigest|uw-envelope-semantic|source_digest|source_envelope_digest|binding_digest/g)];
+
+test('F4 reviewed call/data-flow inventory covers resolved producers, delegation and opaque storage', () => {
+  const graph = discoverCalls(specification.seeds);
+  const nodes = new Map(specification.nodes.map(node => [node.id, node]));
+  assert.equal(nodes.size, specification.nodes.length);
+  for (const id of graph.reached) assert.ok(nodes.has(id), `unclassified resolved caller: ${id}`);
+  const source = file => readFileSync(resolve(root, file), 'utf8');
+  for (const node of nodes.values()) {
+    assert.ok(node.reviewed_flow && node.scope && node.production_action);
+    if (node.symbol !== '<module>') assert.ok(graph.declarations.has(node.id), `missing scoped declaration: ${node.id}`);
+  }
+  for (const edge of specification.manual_edges) {
+    assert.ok(nodes.has(edge.from) && nodes.has(edge.to));
+    const from = nodes.get(edge.from); const to = nodes.get(edge.to);
+    const body = from.symbol === '<module>' ? source(from.file) : graph.declarations.get(from.id);
+    for (const anchor of edge.evidence) assert.ok(normalize(body).includes(normalize(anchor)), `${edge.kind}: missing source edge ${anchor}`);
+    for (const anchor of edge.target_evidence ?? []) assert.ok(normalize(graph.declarations.get(to.id)).includes(normalize(anchor)), `missing target flow ${anchor}`);
+  }
+  const edges = [...graph.edges, ...specification.manual_edges];
+  for (const route of specification.required_routes) for (let index = 1; index < route.length; index++) {
+    assert.ok(edges.some(edge => edge.from === route[index - 1] && edge.to === route[index]), `unconnected required route ${route[index - 1]} -> ${route[index]}`);
+  }
+  const classifiedFiles = new Set([...nodes.values()].map(node => node.file));
+  for (const record of specification.passive) {
+    classifiedFiles.add(record.file);
+    for (const anchor of record.evidence) assert.ok(source(record.file).includes(anchor), `stale passive classification: ${record.file}`);
+  }
+  // Spelling search remains a discovery cross-check, not proof of closure.
+  const discovery = [];
+  const terms = /semantic_digest|semanticDigestOf|EnvelopeDigest|UWEnvelope|resolveDocumentSigningSubject|signDocument|issueReceipt|verifyReceipt|source_envelope_digest|binding_digest/g;
+  for (const group of ['packages', 'tools']) for (const path of files(resolve(root, group))) {
+    const text = readFileSync(path, 'utf8'); const matches = [...text.matchAll(terms)];
     if (!matches.length) continue;
     const name = relative(root, path).replaceAll('\\', '/');
-    assert.ok(Object.hasOwn(inventory, name), `unclassified consumer: ${name}`);
-    results.push({ path: name, source_sha256: sha(Buffer.from(source)), matches: matches.length, commitment: inventory[name], production_adoption: 'after acceptance, not claimed by this candidate' });
+    assert.ok(classifiedFiles.has(name), `unclassified discovery hit (inspect scope): ${name}`);
+    discovery.push({ file: name, matches: matches.length, proof: 'discovery only' });
   }
-  assert.deepEqual(results.map(row => row.path).sort(), Object.keys(inventory).sort());
+  const results = [...classifiedFiles].sort().map(file => {
+    const raw = Buffer.from(source(file));
+    return { file, source_sha256: sha(raw), source_lf_sha256: sha(Buffer.from(raw.toString('utf8').replaceAll('\r\n', '\n'))),
+      nodes: [...nodes.values()].filter(node => node.file === file), passive: specification.passive.filter(record => record.file === file) };
+  });
   const folder = resolve(root, 'node_modules/.cache/rfc0089-evidence'); mkdirSync(folder, { recursive: true });
-  writeFileSync(resolve(folder, 'consumer-inventory.json'), JSON.stringify({ platform: process.platform, results }, null, 2));
+  writeFileSync(resolve(folder, 'consumer-inventory.json'), `${JSON.stringify({ platform: process.platform,
+    method: specification.method, scope: specification.scope, results, nodes: specification.nodes, resolved_edges: graph.edges,
+    manual_edges: specification.manual_edges, required_routes: specification.required_routes, discovery,
+    unresolved_calls: graph.resolutionMisses, limits: [graph.limits, ...specification.limits],
+    production_adoption: 'not activated; requires explicit acceptance and later integration evidence' }, null, 2)}\n`);
 });
