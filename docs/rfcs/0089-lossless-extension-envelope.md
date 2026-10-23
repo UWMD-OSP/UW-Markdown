@@ -19,9 +19,10 @@ affects:
 Use a tagged `single`/`variants` extension entry, exact nullable identities,
 complete XML/CSV carriers and a separately identified whole-Envelope commitment.
 The owner selected that design direction on 2026-10-17, **not final acceptance**.
-This 2026-10-22 refresh makes the contract choices explicit against main
-`9138f75b`; it replaces the earlier research diary, not the accepted specs.
-**Draft only; no implementation or new wire label.**
+The 2026-10-23 owner direction retains that design after independent red-team
+review, without acceptance. This revision freezes the carrier grammar and the
+executable evidence sequence against main `2168b504`.
+**Draft; isolated candidate work is authorized, production integration is not.**
 
 Recommendation: retain the selected design below. Obtain the required **Chief
 of Staff red-team before owner acceptance**, with particular scrutiny of D2's
@@ -48,8 +49,15 @@ invalid Unicode; that correction is already accepted, not an open gate.
 RFC 0088's numerics are accepted. RFCs 0111/0124 require an explicit kept rule
 set; RFC 0123 authenticates then recomputes dictionary receipt assertions even
 without packs. Preserve those rules rather than the earlier pack-first wording.
-RFC 0085 is still a separate draft about authority/compaction, not a prerequisite
-or an accepted completeness claim.
+RFC 0085 C+D is accepted and implemented on current main: supplied full history
+is the subject, record-producing compaction is removed, and an absent declared
+predecessor fails INT-01. It does not prove physical extension accounting. Old
+reproducers importing the removed compaction export are not current evidence.
+The independent red-team reproduced the extension loss/stale-plan blind spot
+and actual-ZIP CRC/header/BOM defects; current-main repairs are tracked in
+[#545](https://github.com/UWMD-OSP/UW-Markdown/issues/545) and
+[#544](https://github.com/UWMD-OSP/UW-Markdown/issues/544), separately from this
+RFC's new semantics. Those repairs do not close the complete-candidate gates.
 
 ## Proposed contract (conditional on acceptance)
 
@@ -123,6 +131,8 @@ JSON/XML/CSV exchange preserves model intent independent of Markdown emission.
 | Role on history only | no activation by that role; history retained |
 | Same identity, earlier higher revision | last physical current wins; earlier block retained unchanged as prior |
 | Direct one-peer variants, role absent | preserve through model codecs; refuse unrepresentable Markdown |
+| Equal physical payloads | preserve both occurrences; equality is not deduplication |
+| Interleaved active1, explicit-history2, active3 | current3; history[2,1], preserving current main's explicit/implicit retention convention |
 
 ### D3 — Portable minimum is not the authentication subject
 
@@ -135,11 +145,18 @@ member named `content` remain payload. Ordered history retains the existing
 block minimum. No annotation/prose/source-position echo becomes mandatory in
 the minimum. Public reference parsed APIs must be able to carry the exact nullable
 collection without coercing it into a default-key map.
+An unlabelled singleton and named-default singleton can intentionally have the
+same portable `single` minimum when their only difference is annotation echo.
+That subset coincidence authenticates neither annotation. Exact `variants`
+records still distinguish null from literal default.
 
 The full Envelope preserves complete annotations, payloads, metadata, notes,
 prose, outer block extras and unknown outer members, including absent/null/empty
 and scalar-type distinctions. The portable minimum cannot reconstruct or
 authenticate omitted values. No financial-role-selected view is model fidelity.
+Carrier capacity does not widen admission: portable parsing can expose an
+authored absent/null `_meta`, while full-Envelope admission requires the current
+object-shaped metadata contract. Apply the relevant boundary explicitly.
 
 ### D4 — Complete exchange carriers
 
@@ -199,6 +216,105 @@ allowed compression methods and transport limits are not narrowed to the lab's
 STORE-only prototype. The implementation must test actual ZIP, not just CSV
 directories, and record resource-limit refusal boundaries.
 
+#### D4a — Frozen executable carrier grammar
+
+The isolated candidate uses the proposed Envelope `2.0`, XML/CSV representation
+`2.0.0`, XML namespace `https://uwmd.org/ns/document/2`, and
+`uw-envelope-semantic` canonicalization version `2.0`. These identify the actual
+supported **candidate** producer/verifier on its unmerged branch; they do not
+activate production support or allocate an npm/release version. Acceptance and
+production integration must use the reviewed coordinated identities and rerun
+the complete matrix; silently relabelling old-regime results is not evidence.
+
+**JSON lexical admission.** A carrier is one RFC8259 JSON value with only JSON
+whitespace outside it. The Envelope root is an object. At every object depth,
+decoded names are unique, including escaped aliases such as `a`/`\u0061`.
+Apply this scanner to the raw JSON document, manifest and every embedded JSON
+CSV cell, including `extra_json`, `empty_collections_json`, identity cells and
+typed-value cells. Do not first erase occurrences through object construction.
+Number tokens use the JSON number grammar and round to finite binary64;
+overflow/nonfinite tokens and unpaired Unicode surrogates refuse. No case or
+Unicode normalization. JCS determines semantic preimages and scalar reporting;
+negative zero canonicalizes to0 under the existing JCS contract.
+
+**Canonical ASCII string token S.** Surround the value with ASCII quotes.
+Encode quote as `\"` and backslash as `\\`. Encode every UTF-16 code unit in
+U+0000–001F, U+007F and U+0080–FFFF as exactly lowercase `\uhhhh`; all other
+ASCII characters U+0020–007E remain literal. Thus LF is `\u000a`, TAB is
+`\u0009`, CR is `\u000d`; the short JSON escapes `\n`, `\t`, `\r`, `\b`,
+`\f` and `\/` are noncanonical here. Valid supplementary characters use two
+paired surrogate escapes; isolated surrogates refuse. The empty name is `""`.
+Decode one JSON token, validate Unicode, re-encode S and require exact equality.
+
+**XML tree.** Exactly one expanded-name `{namespace}document` root has the
+required unqualified `envelope-version` and `format-version` attributes, equal
+to the contained model stamps, and exactly one `{namespace}value` child. Apart
+from namespace declarations, these are the root's only attributes. The value
+tree carries the **entire Envelope**, including unknown outer members:
+
+| Element/type | Required attributes | Exact content |
+|---|---|---|
+| `value type="object"` | unqualified `type` only | Zero or more `member` children; decoded names unique. Writers sort by UTF-16 units; readers accept any distinct member order. |
+| `member` | unqualified `name-json=S(name)` only | Exactly one `value` child. |
+| `value type="array"` | unqualified `type` only | Zero or more `value` children in array order. |
+| `value type="string"` | unqualified `type` only | One S token as decoded character text; no element children. |
+| `value type="number"` | unqualified `type` only | The exact JCS scalar token of a finite binary64 number; no extra whitespace/children. |
+| `value type="boolean"` | unqualified `type` only | Exactly `true` or `false`; no children. |
+| `value type="null"` | unqualified `type` only | Empty content; no children or character data. |
+
+All mapping elements have the selected expanded namespace. Object/array/member
+containers permit only XML whitespace between their permitted children; other
+text/mixed content refuses. Leaf tokens have no surrounding whitespace.
+XML entity decoding happens **once** before S/scalar validation; apply ordinary
+XML escaping on write, never a second entity/JSON pass. Namespace resolution is
+scope-aware: consistent prefix renaming and the default namespace work;
+unqualified mapping attributes remain unqualified even under a default
+namespace. Reject unknown/qualified mapping attributes, unbound/wrong/reserved
+bindings, duplicate expanded attributes, DTD/entities beyond the predefined
+XML entities and legal numeric references, malformed nesting, extra roots and
+trailing content. An optional initial XML1.0 UTF-8 declaration and surrounding
+XML whitespace are allowed; other processing instructions/comments refuse.
+No XML character reference can substitute for an S escape that the XML scalar
+domain itself cannot carry. NUL/noncharacters remain ASCII lexical escapes.
+
+**CSV tables.** Retain the current exact RFC4180 quoted-table dialect and table
+headers, with precisely these additions: `extension_mode` is the final column
+of `blocks.csv`; `empty_collections_json` is the final column of `document.csv`.
+All rows have the declared header width; headers may not duplicate or alias.
+`block_values.csv` keeps `block_ref,scope,pointer,json_type,value_json` and adds
+`block-extra` to the admitted scopes. `prose.csv` is unchanged. Every embedded
+JSON cell follows raw duplicate admission above. Typed rows include root and
+all container/scalar nodes; declared parent/container types must agree, every
+array index from0 through its last index exists, and no scalar has children.
+Empty object/array roots remain explicit typed rows. JSON Pointer permits the
+empty root and empty member names; only `~0`/`~1` escape sequences are legal.
+Require exact canonical re-encoding of each decoded pointer segment; ordinal
+segments are `0` or `[1-9][0-9]*`, never aliases such as `00`.
+
+Reconstruct block refs exactly from descriptor collection/id/identity/ordinal;
+reject duplicate decoded addresses, gaps, overlap, unknown scopes, unused rows
+and conflicting types. Append/history ordinals are consecutive from0; extension
+variant ordinals follow D1's exact null-first/UTF-16 order. A single entry has
+no ordinal and its variant descriptor is its annotation identity. History's
+variant descriptor remains null and selects no active peer. `block-extra`
+must reconstruct an object disjoint from annotation/content/prose; full content
+retains `_meta` exactly once through the existing meta scope. Missing versus
+empty history slots use the closed sorted empty-collection descriptors, without
+legalizing schema-invalid empty builtin variant maps. Unknown outer members
+remain in the disjoint `extra_json` object. Semantic admission precedes comparing
+the received complete digest; a valid carrier never rescues an invalid model.
+
+**ZIP processing sequence.** Inspect central directory and local records and
+their agreement, then bounded STORE/DEFLATE extraction with actual-output-size
+and CRC checks. Validate manifest counts and hashes over original uncompressed
+bytes before UTF-8/BOM handling of each inventoried payload. Then decode text,
+apply the raw JSON/CSV grammar, reconstruct, admit the complete model and verify
+its semantic digest. Test malformed sizes/descriptors/overlaps, local/central
+names/flags/method/CRC disagreement, invalid CRC even when both headers agree,
+BOM old versus correct inventory, invalid UTF-8 and all existing path/duplicate/
+symlink/encryption/count/size/ratio restrictions. Resource tests pin refusal
+boundaries without running a decompression bomb. No filesystem extraction.
+
 ### D5 — Whole-model commitment and authentication boundaries
 
 Keep JCS/UTF-8/SHA-256. Hash the complete supported new Envelope minus only
@@ -237,7 +353,16 @@ subject. This RFC does not certify historical completeness or financial truth.
 
 ### D6 — Governed activation; no historical support
 
-Synchronize Format mixed-identity wording, Protocol portable projection, public
+The executable sequence is: **(1)** freeze this contract and independent expected
+values/preimages; **(2)** implement an isolated candidate on a separate branch,
+not merged, and run the full preacceptance gate matrix below; **(3)** close the
+independent findings and request final owner acceptance only after those gates
+pass; **(4)** after acceptance, integrate production and rerun the same matrix
+plus required CI before declaring support/activation. Candidate implementation
+is explicitly authorized to produce the required preacceptance evidence. It is
+not production integration or acceptance by another name.
+
+After acceptance synchronize Format mixed-identity wording, Protocol portable projection, public
 types, Envelope/schema, XML/CSV/ZIP mappings/descriptors and current signing/
 receipt subject support in one coherent implementation after acceptance. Keep
 independent surface versions and explicit unsupported-input refusal. HTTP
@@ -274,6 +399,18 @@ and receipt checks must exercise malformed/unsupported/source/digest/backend/
 rule-set/pack/disagreement precedence, including pack-less dictionary checks.
 Do not infer those results from schema success, raw crypto or previous-head CI.
 
+### Gate matrix — acceptance and activation are separate
+
+| Gate | Required before final acceptance | Required after acceptance, before activation |
+|---|---|---|
+| D1/D2 complete accounting | Independently frozen exact models/preimages for all collections; both null/default source orders, source/revision disagreement, equal physical occurrences, mixed explicit/implicit history, history-only/role-in-history, one-peer mode and Markdown refusal. Every physical block accounted once. | Production parser/API/schema and portable projection pass the same cases. |
+| D3 complete subject | Single-mutation notes/prose/annotation/block-extra/outer-extra and absent/null/empty controls; minimum/view/stamp substitution refused at its actual boundary. | Every producer/consumer deliberately selects the supported complete identity. |
+| D4 lawful-domain codecs | Frozen D4a grammar; independent Windows/Linux JSON/XML/CSV implementations agree on exact expected values/preimages, including Unicode/finite-binary64/empty-name boundaries and all raw duplicate cells. | Synchronized specs, schemas, APIs/descriptors and independent Python implementation pass the same frozen corpus. |
+| D4 actual ZIP | Actual STORE and DEFLATE positives; original-byte BOM/inventory, CRC, header agreement, malformed structure, aliases/gaps and security/resource refusals independently of semantic digest checks. | Real CLI/bindings/archive integration repeats those controls; directory-only tests do not count. |
+| D5 signatures/receipts | Supported new-subject creation/signing/verification using real crypto and exact malformed/unsupported/source/digest/backend/ref-input/rule-set precedence, equal-digest/different-version and decisive pack-less dictionary checks. | Supported labels and production state machines match and pass the same single-mutation cases. |
+| Subject consumers | Complete inventory; once-bound candidate plans fail after an omitted-peer/whole-source mutation, including a freshly stamped changed Envelope. No automatic rebinding; distinguish results/block/selected-vector commitments. | Coordinated adoption and explicit reviewed rebinding; no blanket expectation refresh. |
+| Independent review/owner ruling | Findings closed or explicitly ruled on, truthful exact-head/platform/authorship evidence, and final owner acceptance only after all gates pass. | Production integration/conformance/required CI and capability claims match the accepted contract; launch separately authorized. |
+
 ## Conformance impact
 
 No current fixture or capability changes in this draft. Implementation adds
@@ -289,6 +426,10 @@ before precise governed expectation changes; no blanket rebaseline.
 
 ## Reference implementation
 
+Before acceptance build the isolated candidate and run the matrix above;
+candidate-only tests/workflows do not activate the current standard. Preserve
+failed gates and distinguish Windows-only, shared-projector and raw-crypto
+observations from the independent full-domain/new-subject results required.
 After acceptance update parser/types, Envelope and schema, portable subset,
 source accounting, generic codecs and their mappings, document signatures,
 receipts/rule-set identity and source-digest consumers in verify; core/starter
