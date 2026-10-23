@@ -129,7 +129,7 @@ for the shared LTV denominator correction.
 
 The Excel layout binds total equity and the stated year-1 flow to the same pack
 expression; absent total equity emits a blank, and stated zero cash flow is kept.
-See [the classification and scope note](../reviews/2026-10-03-deal-cash-on-cash.md).
+See the classification and scope note.
 
 ### LTV denominator and producer inputs (RFC 0079 revised direction)
 

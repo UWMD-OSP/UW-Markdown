@@ -244,7 +244,7 @@ pin 11,264 raw draws and 176 exact doubles. The original seed-42 vector and all
 stochastic results are unchanged. The upstream fixed-stream API is pcg64s;
 NumPy's default SeedSequence must not be confused with UWMD's seeding convention.
 
-See the [verification record](../reviews/2026-09-12-pcg64-reference.md) for
+See the [verification record](../../conformance/stochastic/pcg64-reference.md) for
 upstream source provenance, coverage and limits. The optional maintainer script
 reproduces the independent oracle; ordinary Vitest tests compare against its
 committed vectors without adding a Python or runtime dependency.

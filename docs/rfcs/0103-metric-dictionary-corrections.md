@@ -16,7 +16,7 @@ affects:
 
 > **Accepted by the owner, 2026-10-20.** The owner decided the four metric
 > questions the 2026-10-15 financial audit left open (M01–M04,
-> [docs/reviews/2026-10-15-financial-audit-343.md](../reviews/2026-10-15-financial-audit-343.md)),
+> prior review),
 > which are owner-gated. The owner's words: "(1) fb_gross_margin becomes USALI gross
 > margin, (revenue − cost of sales) ÷ revenue, with no labor; (2) replace
 > rent_index with mark_to_market = (market − in-place) ÷ in-place, positive =

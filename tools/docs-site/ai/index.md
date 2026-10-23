@@ -69,7 +69,6 @@ The MCP profile defines `uwmd.get_document`, `uwmd.validate`, `uwmd.convert`,
 - <a href="/downloads/ai/GEMINI.md" download="GEMINI.md">Gemini instructions</a>
 - <a href="/downloads/ai/UWMD-AI-GUIDE.md" download="UWMD-AI-GUIDE.md">Platform-neutral guide</a>
 
-[Bounded agent skills](/ai/skills) describes narrower, task-specific skills.
 
 ## Canonical project
 

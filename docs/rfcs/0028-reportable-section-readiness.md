@@ -20,7 +20,7 @@ affects:
 > `STAGE_REQUIREMENTS.full_underwrite` (and the stages above it), reviving
 > the validator's dead variant-aware `hasSection` case rather than striking
 > the spec's claim; and example stage-honesty cleanup is a **tracked
-> follow-up** in `docs/wiki/13-status.md`, not part of this RFC's
+> follow-up** in `ROADMAP.md`, not part of this RFC's
 > implementation.
 
 ## Summary
@@ -59,7 +59,7 @@ never reported.
    without a single issue. `CC-13` (RFC 0027) deliberately does not absorb
    this — its applicability list states "a missing section is a different
    defect with a different remedy" — and the spin-off note in
-   `docs/wiki/13-status.md` queues this RFC by name.
+   `ROADMAP.md` queues this RFC by name.
 
 2. **`stage_readiness` is invisible in practice.** `computeStageReadiness`
    (validator.ts) evaluates `STAGE_REQUIREMENTS` per stage and returns seven

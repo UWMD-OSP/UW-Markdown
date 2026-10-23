@@ -320,9 +320,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Check draft RFC 0095 independent date-domain research (no activation)
+      - name: Check independent RFC 0095 calendar-domain conformance
         if: matrix.node == 20
-        run: node docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.check.mjs
+        run: node conformance/metadata-dates/2026-10-17-validation-diagnostic-gap-354.0095-date-only.check.mjs
       - name: Check activated numerical consumers and receipt precedence
         # Actual production APIs; no ESM loader or source transformation. Fresh
         # Python graphs must also match the immutable preactivation references.

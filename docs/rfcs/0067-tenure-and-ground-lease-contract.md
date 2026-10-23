@@ -73,7 +73,7 @@ leasehold, leased fee, fee simple or tenure.
   the "wrong conceptual layer": a ground lease is "tenure and encumbrance, not
   capital". It preserved the need as "a demand-gated property/tenure or
   ground-lease contract against its own section, with its own RFC and a
-  demonstrated consumer". `docs/wiki/13-status.md` records the same.
+  demonstrated consumer". `ROADMAP.md` records the same.
 
 **What the format does today.** RFC 0060 notes that ground-rent dollars "may be
 reflected in NOI, at the author's discretion and without a named line". A

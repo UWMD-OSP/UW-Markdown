@@ -175,5 +175,5 @@ this audit; no institutional convention is invented to fill them.
 retains canonical reported-revenue RevPAR despite inconsistent model inputs.
 [RFC 0081](0081-one-format-one-protocol.md) consolidates field homes without
 changing arithmetic. [Issue #343](https://github.com/UWMD-OSP/UW-Markdown/issues/343)
-and [its review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-financial-audit-343.md) distinguish STR room
+and its review distinguish STR room
 eligibility evidence from incomplete current USALI accounting evidence.

@@ -153,5 +153,5 @@ corpus regeneration; the Python implementation's manifest and module reader.
 - RFC 0078 (the standard is verification; agents and the CLI are starter
   products; the Agent Host tier is retired).
 - RFC 0108 D5 (retired members are not refused when nothing reads them).
-- `docs/reviews/2026-10-15-agent-removal-5.0.md`, which sorted the §6.8
+- `ARCHITECTURE.md`, which sorted the §6.8
   obligations and the call sites.

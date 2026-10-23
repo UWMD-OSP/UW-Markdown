@@ -260,7 +260,7 @@ tolerance and the pinned cent disagrees.
   `spec/UW_FORMAT_SPEC_v1.md` §4.27, `spec/UW_PROTOCOL_v1.md` §VIII.10 +
   version line + §XVI, `protocol.ts` (`PROTOCOL_VERSION` 2.6.0),
   `conformance/waterfall/` per the table, `CHANGELOG.md`, the waterfall
-  rows in `docs/wiki/13-status.md`, `ROADMAP.md`, and the RFC index.
+  rows in `ROADMAP.md`, `ROADMAP.md`, and the RFC index.
 - **API surface:** no new exports. `WaterfallTierSplit.until_lp_irr?:
   number | null` is the only type change (additive).
 - **Test plan:** unit tests in `waterfall.test.ts` pinning the hurdle

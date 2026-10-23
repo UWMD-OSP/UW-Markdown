@@ -23,7 +23,7 @@ the 2.7.0 release contract below records the original consumer limitation.
 
 The owner authorized the bounded next stage after RFC 0040. This revision
 replaces the earlier draft's positional calendar keys and first-match behavior.
-The [readiness review](../reviews/2026-09-11-rfc-0040-0041-readiness.md) records
+The readiness review records
 the conflicts. Protocol 2.8.0 implements explicit year and absolute calendar
 selectors; Format 2.0 and package publication remain separate.
 

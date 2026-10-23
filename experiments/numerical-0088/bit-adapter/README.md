@@ -1,7 +1,7 @@
 # RFC 0088 experimental binary64 word adapter
 
 This isolated research infrastructure implements a proposed bit-operation model
-for the [pinned candidate helper graph](../../../docs/reviews/2026-10-15-fdlibm-closure-356.md).
+for the pinned candidate helper graph.
 It is not imported by any UWMD package, conformance driver or financial kernel.
 No numerical procedure is selected, and no financial expected answer changes.
 No dependency installation, Node invocation from Python, or runtime math oracle
