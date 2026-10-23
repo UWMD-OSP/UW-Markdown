@@ -7,6 +7,7 @@ import { generateKeyPairSync, sign, verify } from 'node:crypto';
 import { candidate, runtime } from './build-runtime.mjs';
 import { projectSource, digest, stamp, jcs } from './model.mjs';
 import { computeReplacementCashFlowBindingDigest } from '../../packages/uwmd-verify/dist/replacement-funding.js';
+import { toUWEnvelope as nativeEnvelope } from '../../packages/uwmd-verify/dist/envelope.js';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const packet = JSON.parse(readFileSync(new URL('./cases.json', import.meta.url), 'utf8'));
@@ -25,7 +26,7 @@ async function documentSignature(source) {
   const artifact = { kind: 'uwmd-document-signature', signature_version: '1',
     subject: await candidate.signing.resolveDocumentSigningSubject(source),
     alg: 'ed25519', kid: 'synthetic-key', signed_at: '2026-10-23T00:00:00Z', sig: '' };
-  artifact.sig = sign(null, Buffer.from(candidate.signing.documentSigningPayload(artifact)), privateKey).toString('base64');
+  artifact.sig = sign(null, Buffer.from(candidate.signing.documentSigningPayload(artifact)), privateKey).toString('base64url');
   return artifact;
 }
 function signedReceipt(value) {
@@ -50,7 +51,7 @@ test('D5 actual supported new-subject document signatures and exact admission pr
   let calls = 0;
   const backend = { verify: async (payload, artifact) => {
     calls++;
-    return verify(null, Buffer.from(payload), publicKey, Buffer.from(artifact.sig, 'base64'))
+    return verify(null, Buffer.from(payload), publicKey, Buffer.from(artifact.sig, 'base64url'))
       ? { ok: true } : { ok: false, reason: 'bad_signature' };
   } };
   const valid = await candidate.signing.verifyDocumentSignature(singleSource, original, { signatureVerifier: backend });
@@ -70,7 +71,7 @@ test('D5 actual supported new-subject document signatures and exact admission pr
   }
   const missing = await candidate.signing.verifyDocumentSignature(singleSource, original);
   assert.deepEqual(codes(missing), ['INT-13']);
-  const invalid = clone(original); const bytes = Buffer.from(invalid.sig, 'base64'); bytes[0] ^= 1; invalid.sig = bytes.toString('base64');
+  const invalid = clone(original); const bytes = Buffer.from(invalid.sig, 'base64url'); bytes[0] ^= 1; invalid.sig = bytes.toString('base64url');
   calls = 0; assert.deepEqual(codes(await candidate.signing.verifyDocumentSignature(singleSource, invalid, { signatureVerifier: backend })), ['INT-10']); assert.equal(calls, 1);
   const thrown = await candidate.signing.verifyDocumentSignature(singleSource, original, { signatureVerifier: { verify: async () => { throw new TypeError('backend'); } } });
   assert.deepEqual(codes(thrown), ['INT-13']);
@@ -78,7 +79,7 @@ test('D5 actual supported new-subject document signatures and exact admission pr
 
 test('D3/D5 changed parsed models cannot borrow a source signature verdict', async () => {
   const artifact = await documentSignature(singleSource);
-  const verifier = { verify: async (payload, value) => verify(null, Buffer.from(payload), publicKey, Buffer.from(value.sig, 'base64')) ? { ok: true } : { ok: false, reason: 'bad_signature' } };
+  const verifier = { verify: async (payload, value) => verify(null, Buffer.from(payload), publicKey, Buffer.from(value.sig, 'base64url')) ? { ok: true } : { ok: false, reason: 'bad_signature' } };
   for (const mutate of [value => { value.frontmatter.deal_name = 'Changed'; },
     value => { value.outer = null; }, value => { value.candidatePhysicalBlocks[0].extra = null; },
     value => { value.extensions.x_probe = clone(value.extensions.x_probe); value.extensions.x_probe.content.marker = 999; }]) {
@@ -121,8 +122,28 @@ test('D5 actual new-subject receipt issuance, source identity and current Receip
   assert.deepEqual(codes(observed.result), ['RCP-01']); assert.equal(observed.calls, 0);
 });
 
+function dictionarySource() {
+  // Author a fresh synthetic test record from current stated financial inputs.
+  // No prior integrity/signature or historical artifact is copied or repaired.
+  const inputs = nativeEnvelope(candidate.parser.parseUWFile(readFileSync(resolve(root, 'examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8')));
+  const lines = ['---', 'uw_version: "3.0"', 'asset_class: multifamily', 'deal_id: synthetic-candidate-receipt',
+    'deal_name: "Synthetic candidate receipt"', 'currency_code: USD', '---', ''];
+  for (const section of ['property', 'valuation', 'debt_structure', 'noi_model', 'sources_uses', 'dcf']) {
+    const entry = inputs.sections[section];
+    const blocks = entry.annotation ? [entry] : Object.values(entry);
+    for (const block of blocks) {
+      const { _meta: _old, ...facts } = block.content;
+      const content = { _meta: { section, provenance: { source: 'manual', actor: 'synthetic', timestamp: options.issued_at },
+        quality: { confidence: 'high', human_review_required: false }, lifecycle: { revision: 1, superseded: false } }, ...facts };
+      lines.push(`\`\`\`json uw:section=${section}${block.annotation.variant === undefined ? '' : ` variant=${block.annotation.variant}`}`,
+        JSON.stringify(content), '\`\`\`', '');
+    }
+  }
+  return lines.join('\n');
+}
+
 test('D5 signed pack-less dictionary recomputation is decisive after real authentication', async () => {
-  const source = readFileSync(resolve(root, 'examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8');
+  const source = dictionarySource();
   const receipt = signedReceipt(await candidate.receipts.issueReceipt(source, { issued_at: options.issued_at, issuer: 'synthetic-key' }));
   let result = await receiptObservation('pack-less-dictionary', receipt, source, []);
   assert.equal(result.calls, 1); assert.equal(result.result.recomputed.length, 8); assert.deepEqual(codes(result.result), ['RCP-05']);
@@ -187,8 +208,11 @@ test('subject consumers: block/six-field/payment-vector inputs do not inherit wh
   const b = before.sections.cash_flow_series.gross; const a = after.sections.cash_flow_series.gross;
   assert.equal(await candidate.integrity.computeBlockHash(b), await candidate.integrity.computeBlockHash(a));
   const hash = await candidate.integrity.computeBlockHash(b);
-  for (const block of [b, a]) block.meta.integrity = { content_hash: hash, parent_hash: null, signature: { alg: 'ed25519', kid: 'synthetic-key', sig: 'AAAA' } };
-  assert.equal(candidate.integrity.blockSigningPayload(b), candidate.integrity.blockSigningPayload(a));
+  for (const block of [b, a]) block.meta.integrity = { content_hash: hash, parent_hash: null, signature: { alg: 'ed25519', kid: 'synthetic-key', signed_at: options.issued_at, sig: 'AAAA' } };
+  const signedFields = candidate.integrity.blockSigningPayload(b);
+  assert.equal(typeof signedFields, 'string');
+  assert.deepEqual(Object.keys(JSON.parse(signedFields)).sort(), ['actor', 'content_hash', 'kid', 'section', 'signed_at', 'timestamp']);
+  assert.equal(signedFields, candidate.integrity.blockSigningPayload(a));
   assert.equal(await computeReplacementCashFlowBindingDigest(b.content.series, 'gross', 0, 'USD'),
     await computeReplacementCashFlowBindingDigest(a.content.series, 'gross', 0, 'USD'));
 });
