@@ -6715,6 +6715,36 @@
       "suite": "capital-stack",
       "scenario": "0121-component",
       "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-tampered",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-missing-area",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-zero-area",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-negative-area",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-nonnumeric-area",
+      "target": "verifier"
     }
   ]
 }

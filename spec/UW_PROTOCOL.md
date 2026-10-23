@@ -246,6 +246,11 @@ which needs an edit engine. A read-only reader could not satisfy it.
 
 ### II.2 Verifier
 
+RFC 0125 extends price_per_sqft to data_center using only explicit rentable
+square feet, registered as secondary size; critical IT kW stays primary. Its
+existing statement homes, comparison precision and positive-size semantics
+apply. Missing rentable area is unverifiable, never inferred from power.
+
 RFC 0123 makes applicable builtin receipt calc_ids assertions of the selected
 rule set's dictionary definitions. Recompute these after authentication without
 a starter pack; expose only stated result ids. Pack availability cannot hide a

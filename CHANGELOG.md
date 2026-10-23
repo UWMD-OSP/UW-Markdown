@@ -8,6 +8,10 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- RFC 0125: verify data-center price per explicit rentable SF at every bound
+  home; register rentable area as secondary while keeping kW primary. Mirror
+  the dictionary in the pack and live workbook; infer no area from power.
+
 - Implement accepted RFC 0120: preserve applicable existing CF findings from the exact selected replacement-funding source.
 - Implement accepted RFC 0121: bound CS-01 to required tranche members and identities, preserving independent code owners.
 - Implement accepted RFC 0122: strict calendar/offset DQ-05 instants and typed invalid-clock refusal.

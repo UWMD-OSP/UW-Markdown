@@ -273,3 +273,18 @@ class CalcExecutionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DataCenterRentableSfTests(unittest.TestCase):
+    """Independent expression evidence; no unclaimed verify-metrics capability."""
+    def test_dictionary_sf_definition_and_null_inputs(self):
+        import json
+        dictionary = json.loads((ROOT / "spec/metrics/builtin.json").read_text(encoding="utf-8"))
+        metric = next(row for row in dictionary["calculations"] if row["id"] == "price_per_sqft" and row["asset_classes"] == ["data_center"])
+        for area, expected in [(3, 333.33), (None, None)]:
+            document = parse(HEADER + block("property", {"rentable_square_feet": area, "critical_it_load_kw": 50}) + block("valuation", {"purchase_price": 1000}))
+            result = evaluate_calc(metric, document)
+            self.assertTrue(result["ok"], result)
+            self.assertEqual(result["value"], expected)
+        document = parse(HEADER + block("property", {"critical_it_load_kw": 50}) + block("valuation", {"purchase_price": 1000}))
+        self.assertIsNone(evaluate_calc(metric, document)["value"])

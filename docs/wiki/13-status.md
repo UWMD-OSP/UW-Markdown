@@ -480,6 +480,12 @@ complete-validation WIP without advertising validate or a Reader/Verifier tier.
 The existing three-platform Python jobs exercise the correction and actual
 portable Reader cases. It does not load modules or activate a draft contract.
 
+## RFC 0125 — data-center rentable-SF price
+
+The accepted SF definition now applies to data centers at every bound home.
+Rentable area is a registered secondary, kW stays primary, and missing/zero/
+negative area never yields a verified per-SF figure. Pack and Excel share it.
+
 ## Bounded parallel workstreams
 
 One integrator owns sequencing, independent review, shared indexes/changelog/

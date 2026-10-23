@@ -6,7 +6,7 @@ of any starter engine, defaults, underwriting workflow, or Excel layout.
 
 | Dictionary | Contents | Schema |
 |---|---|---|
-| [builtin.json](builtin.json) | 171 class-scoped calculations and eleven primary-size selectors | [metric-dictionary.schema.json](../schemas/metric-dictionary.schema.json) |
+| [builtin.json](builtin.json) | 172 class-scoped calculations and eleven primary-size selectors | [metric-dictionary.schema.json](../schemas/metric-dictionary.schema.json) |
 
 ## Statement bindings (RFC 0099)
 
@@ -113,7 +113,7 @@ change; selecting an entry does not authorize filling absent inputs.
 | `student_housing` | 14 |
 | `land` | 12 |
 | `mixed_use` | 25 |
-| `data_center` | 20 |
+| `data_center` | 21 |
 | `manufactured_housing` | 13 |
 
 ## Primary-size selection
@@ -193,3 +193,11 @@ changes none of them.
 | `price_per_sqft`, `price_per_nrsf` and the other per-area ids | Purchase price ÷ the class's primary size: rentable SF (office, industrial), gross leasable area (retail), net rentable SF (self storage) | OCC *Comptroller's Handbook*, appraisal review units of comparison; CMBS documents quote appraised value per SF | Always purchase price, never appraised value; the measurement standard (BOMA, IPMS, REBNY, RICS) is recorded in `property.area_measurement` when stated (RFC 0114), and no metric converts between standards |
 | `economic_occupancy` (self storage) | EGI ÷ gross potential rent | Economic occupancy is GPR less physical vacancy, concessions and credit loss, ÷ GPR (the complement of economic vacancy in the Fannie Mae DUS Guide, Part II, Ch. 2, §203.01) | EGI includes other income, so the ratio can exceed 1 |
 | `cash_on_cash` (all income classes) | Year-1 levered net cash flow from the DCF ÷ total equity, falling back to NOI − annual debt service; `null` without stated equity | The equity dividend rate: (NOI − annual debt service) ÷ equity (California State Board of Equalization, *The Income Approach to Value*) | The primary path is after capital items and reserves; the fallback is the textbook form |
+
+## Data-center secondary rentable area (RFC 0125)
+
+Data-center `price_per_sqft` divides stated valuation.purchase_price by explicit
+property.rentable_square_feet, a registered secondary size. The existing SF
+aliases apply; $ round_to 2/minimum 2 and positive-size refusal rules stand.
+Critical IT kW remains primary. Missing area is not inferred from kW, footprint
+or raised-floor area; no measurement conversion or new area requirement.
