@@ -10,7 +10,7 @@ from main as needed; breaking changes within 4.x are allowed.
 Before 5.0 there is zero backward compatibility. Do not write migration notes,
 deprecation paths, "breaking for consumers" analyses or version-bump
 recommendations. Do not preserve or repair pre-5.0 documents, signatures,
-receipts or historical artifacts. Jared is the only prelaunch consumer; no
+receipts or historical artifacts. The owner is the only prelaunch consumer; no
 prelaunch document is intended for anyone else. Drop work whose only purpose
 is prelaunch compatibility or artifact preservation. This restates PROCESS
 principle 5 and supersedes earlier compatibility/preservation instructions.
@@ -61,7 +61,7 @@ Know which side a change is on before you start.
 UWMD stays vendor-neutral and verifier-focused. StackUW owns modeling, AI
 agents and workflow products; it is an adopter, not the required producer or
 runtime for this standard. The reference toolkit no longer hosts agents, and
-RFC 0112 removed the Bancroft layer vocabulary from the standard (layer
+RFC 0112 removed the retired agent host layer vocabulary from the standard (layer
 registry, `pipeline_state`, module `agent_layers`, `agent-host`, `uwmd layers`).
 Generic agent provenance (`agent/<id>` with `agent_id`/`agent_version`) stays.
 None of this is a direction to expand UWMD's product scope. UWMD 5.0 is the first official public
@@ -208,3 +208,15 @@ CI runs all of them; a red check is yours to fix before asking for review.
 Maintainers keep their own team workflow outside this repo. It loads through
 gitignored local files (`CLAUDE.local.md`, a user-level Codex `AGENTS.md`), so
 this file stays the same for every contributor and fork.
+
+## Public paperwork policy
+
+The public repository holds the standard, reference implementation (including
+examples and conformance), RFCs, contributor documentation, CHANGELOG and VERSIONS.
+Release preparation and evidence, reviews, status notes and owner briefs belong
+in the private maintainer workspace. Public release proof is CHANGELOG, VERSIONS,
+GitHub Releases and npm provenance. No release gate requires a public release
+record file. Existing paperwork is moved by the separately scheduled launch
+cleanup; do not add more of it. CI scans all tracked file contents for the public
+identity policy; only the public handle in the maintainer and code-owner files
+is exempt. No baseline or path-wide content exemptions apply.

@@ -62,7 +62,7 @@ complete in its definitions.
 - **The tool contracts are normative, so implementers face the whole stack.**
   §0.2 defines four strictly nested tiers: Reader, Editor, Calc Host and Agent
   Host. §I.1 says the Protocol specifies "the contract for hosting
-  Bancroft-style AI agents". §V (edit semantics, ~760 lines), §VIII (calc
+  retired agent host-style AI agents". §V (edit semantics, ~760 lines), §VIII (calc
   engine, ~1,650 lines) and §IX (AI host) are all requirements. A lender's IT
   team that only wants to check incoming documents meets a spec that reads
   like the manual for our own products.
@@ -126,7 +126,7 @@ the standard.
 **Starter products (non-normative).** These are the reference tools: the
 evaluator implementation and packs as code, defaults and the cascade,
 refinement and gap ranking, the editor (web editor, VS Code extension, edit
-API), the viewer and report renderer, the Excel exporter, Bancroft agents,
+API), the viewer and report renderer, the Excel exporter, retired agent host agents,
 and CLI convenience commands. Their behavior moves to a non-normative
 **Starter products guide** (`docs/starter/`), keeps its test suites, and can
 change without a Protocol version.

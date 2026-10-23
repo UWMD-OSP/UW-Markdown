@@ -639,7 +639,7 @@ as metadata-incomplete history. RFC0048's positive-validation promise remains
 as written. This direction does not accept RFC0091 or authorize readiness/merge.
 
 New kit: `examples/standalone/authored-2026-10-17/`, author
-`codex/standalone-kit-2026-10-17`, authored_at2026-10-17T21:34:15Z,
+`work/standalone-kit-2026-10-17`, authored_at2026-10-17T21:34:15Z,
 source`system/standalone-kit`; package`pkg:standalone:authored:2026-10-17`.
 The lease abstract is`doc:standalone:2026-10-17:lease-abstract`, source note
 `note:standalone:2026-10-17:transcription`. Both deal carriers represent NEW

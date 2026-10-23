@@ -1,7 +1,7 @@
 # 06 — Agent writers and context profiles (starter product)
 
 > RFC 0078 retired Tier 4 (Agent Host) as a Protocol tier, and RFC 0112 removed
-> the Bancroft layer vocabulary from the standard and the toolkit: the layer
+> the retired agent host layer vocabulary from the standard and the toolkit: the layer
 > registry, its context, prompt and readiness builders, frontmatter
 > `pipeline_state`, module `agent_layers`, the `agent-host` capability and
 > `uwmd layers`. What remains is described in the non-normative

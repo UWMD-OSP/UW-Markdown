@@ -95,7 +95,7 @@ and `runner.py --format-version` selects by it. The Python validator reports
 `rule_set` too. Open before a second rule set exists: a UW Lite record may omit
 `uw_version` and is compiled as 3.0 (RFC 0081 D12).
 
-**RFC 0112 implemented: the Bancroft layer vocabulary is gone (2026-10-22).**
+**RFC 0112 implemented: the retired agent host layer vocabulary is gone (2026-10-22).**
 The Format no longer names a producer tool (§1.2), maps layers to sections
 (§1.3 deleted), carries frontmatter `pipeline_state` (a record that still has it
 reads it as an unknown key) or "Written by" lines; eight prohibitions became
@@ -489,9 +489,9 @@ Focused local checks precede full exact-head CI at integration checkpoints.
 
 | Lane | Remote branch | Scope and gate |
 |---|---|---|
-| A Python verification | `codex/python-complete-validation` | Minimum-complete capability gates; completevalidate next, then dictionary/stated figures and receipts. Parse-only until complete obligations are demonstrated. |
-| B numerical determinism | `codex/numerical-determinism-356` / #357 | DraftRFC0088, existing numerical study and isolated experiments; no production arithmetic, expected-result or acceptance changes. |
-| C Envelope | `codex/rfc-0089-extension-envelope` / #368 | DraftRFC0089, the existing365review section and illustrative evidence; no Envelope1/schema/digest/receipt change before owner approval. |
+| A Python verification | `work/python-complete-validation` | Minimum-complete capability gates; completevalidate next, then dictionary/stated figures and receipts. Parse-only until complete obligations are demonstrated. |
+| B numerical determinism | `work/numerical-determinism-356` / #357 | DraftRFC0088, existing numerical study and isolated experiments; no production arithmetic, expected-result or acceptance changes. |
+| C Envelope | `work/rfc-0089-extension-envelope` / #368 | DraftRFC0089, the existing365review section and illustrative evidence; no Envelope1/schema/digest/receipt change before owner approval. |
 
 RFC0085/#335 remains coordinated without a fourth worker. Provisional direction
 is not design acceptance. Independent versioning and the public5.0 launch
@@ -671,11 +671,11 @@ remain recorded below and in the publication record.
 
 | Lane / PR | GitHub branch | Exact current head | Latest CI at closeout |
 | --- | --- | --- | --- |
-| Numerical #357 / RFC 0088 | `codex/numerical-determinism-356` | `32aed4629dcbacd2dffaae1453cfa5d843a9ff66` | 38848963510: success, 17 ordinary jobs |
-| Python #358 / Issue #354 | `codex/python-source-354` | `b079923ab765a75852b7751b2cd45deecc9bb19e` | 38850234668: success, 17 ordinary jobs |
-| Architecture #361 / Issue #355 | `codex/agent-retirement-scope` | `65539e24d5e70ba7c23d57ba022fc77d5d2d0081` | 38848268602: success, 14 ordinary jobs |
-| Quoted-key correction #362 | `codex/quoted-frontmatter-key-fidelity` | `588107a5c14ff40ddb146e62dcbeccdd76349e3f` | 38850699635: success, 14 ordinary jobs |
-| Provenance #335 / RFC 0085 | `claude/rfc-0085-compaction-provenance` | `ce8ae0100a28b9fe82612a651afce1f8c041d425` | Previously verified 38831751616: success, 14 ordinary jobs |
+| Numerical #357 / RFC 0088 | `work/numerical-determinism-356` | `32aed4629dcbacd2dffaae1453cfa5d843a9ff66` | 38848963510: success, 17 ordinary jobs |
+| Python #358 / Issue #354 | `work/python-source-354` | `b079923ab765a75852b7751b2cd45deecc9bb19e` | 38850234668: success, 17 ordinary jobs |
+| Architecture #361 / Issue #355 | `work/agent-retirement-scope` | `65539e24d5e70ba7c23d57ba022fc77d5d2d0081` | 38848268602: success, 14 ordinary jobs |
+| Quoted-key correction #362 | `work/quoted-frontmatter-key-fidelity` | `588107a5c14ff40ddb146e62dcbeccdd76349e3f` | 38850699635: success, 14 ordinary jobs |
+| Provenance #335 / RFC 0085 | `work/rfc-0085-compaction-provenance` | `ce8ae0100a28b9fe82612a651afce1f8c041d425` | Previously verified 38831751616: success, 14 ordinary jobs |
 
 The opt-in publication-observation job is skipped in ordinary PR runs; it is
 not counted as a pass. Recheck exact heads and CI before integrating anything.
@@ -796,11 +796,11 @@ metadata and raw logs are intentionally not preserved as a cross-machine
 dependency. Local original worktrees remain untouched, not deleted.
 
 On the other Linux machine, clone/fetch the canonical repository and read this
-handoff from `origin/codex/session-closeout-2026-10-15` until #363 is integrated:
+handoff from `origin/work/session-closeout-2026-10-15` until #363 is integrated:
 
 ```sh
 git fetch origin
-git show origin/codex/session-closeout-2026-10-15:docs/wiki/13-status.md
+git show origin/work/session-closeout-2026-10-15:docs/wiki/13-status.md
 git show origin/experimental/recovery-python-354-2026-10-15:experiments/recovery-2026-10-15/python-354/README.md
 git show origin/experimental/recovery-designs-2026-10-15:experiments/recovery-2026-10-15/README.md
 ```
@@ -1203,7 +1203,7 @@ and no private file changed. All nine local tarballs pass inspection, and
 the four installed workflow artifacts pass consumer checks and 101/101 portable
 cases. First-/last-fence resolver negative controls still fail the four
 strengthened fixtures. See `docs/releases/2.16.0-candidate.md` for the exact
-receipts and limits. Jared reconfirmed all four npm trusted publishers on
+receipts and limits. the owner reconfirmed all four npm trusted publishers on
 2026-10-02 from his personal 2026-10-01 inspection, with no settings changes
 since; the inspection clock time was not recorded. The reported fields match
 the canonical release workflow; this is owner-reported account evidence.
@@ -1564,7 +1564,7 @@ RFC 0063 opt-in below changes only boundary admission.
 The [terminal-boundary design brief](../reviews/2026-09-24-terminal-boundary-design.md)
 is integrated in main at `22d993b5`. Its evidence places final monthly cash on
 economic disposition at the final source period's exclusive end, not after
-sale. Jared accepted [RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md)
+sale. the owner accepted [RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md)
 at `f04b34a` on 2026-09-24 and authorized implementation. The implementation
 integrated on canonical `main` at `413a645` shipped in 2.14.0. The released
 contract is Protocol **2.18.0**, with a closed `disposition_period_rule` enum
@@ -1573,14 +1573,14 @@ preserve legacy behavior; `allow_exclusive_end` additionally admits only the
 exact exclusive upper boundary. No new period or coverage cell, proration,
 inferred timing, grace period or post-sale cash is introduced. Reserve-funded
 spending still refuses. Quarterly is a calendar generalization, not direct
-Golden Deal evidence. RFC 0063 shipped in 2.14.0 and is **implemented**;
+review corpus evidence. RFC 0063 shipped in 2.14.0 and is **implemented**;
 Format is unchanged. See the
 [implementation verification record](../reviews/2026-09-24-rfc-0063-implementation.md).
 
 ## Same-day reconciliation (RFC 0062, released in 2.14.0)
 
 [RFC 0062](../rfcs/0062-same-day-cash-flow-selection.md) resolves
-the narrow reconciliation identified above. Jared accepted it on **2026-09-24**,
+the narrow reconciliation identified above. the owner accepted it on **2026-09-24**,
 retaining Protocol **2.17.1** as normative errata. The reference implementation,
 integrated at `e49eb43`, shipped in core/CLI 2.14.0; RFC status is
 `implemented`. Legal same-day cash-flow rows
@@ -1608,7 +1608,7 @@ with Protocol **2.19.0** and is `implemented`.
   total-debt-service input is contracted.
 - **Excel.** The workbook writes `#VALUE!` where the engine refuses.
 - **Refinement.** It reports excluded targets in `diagnostics.section_inputs`.
-- **Fixture hardening after the release.** StackUW's UPSTREAM-021 found that
+- **Fixture hardening after the release.** StackUW's adopter report 021 found that
   `variant-05` and `variant-11` put the block their calc context names in the
   last fence. A reader that kept the last fence therefore passed both.
   - **Change.** Both now append a third `junior` fence, so the named block is
@@ -1665,7 +1665,7 @@ and its formulas do not change.
   independent post-publication verification. The tag retains its accepted
   release-prepared lifecycle wording.
 
-## Release records true of their tag (UPSTREAM-020)
+## Release records true of their tag (adopter report 020)
 
 StackUW's re-vendor of `v2.15.0` found that the tagged tree calls its own
 generation unreleased, and `v2.14.0` does the same:
@@ -1898,7 +1898,7 @@ the implementation, PR #273, on 2026-10-06.
 
 ## 2026-10-06 — Rate hedges read from the senior loan (#266, RFC 0075)
 
-StackUW (UPSTREAM-024) reported that the hedge and escrow rules registered no
+StackUW (adopter report 024) reported that the hedge and escrow rules registered no
 role preference. With a `senior` and a `junior` `debt_structure`, neither keyed
 `default` or `base`, the hedge was refused (HDG-08). With the junior keyed
 `base`, the hedge rules read the junior, and the senior's outright replacement
@@ -1955,7 +1955,7 @@ RFC 0075's unresolved question. The owner accepted D1–D7 as recommended on
 
 ## 2026-10-07 — Exit proceeds with junior capital (#278, RFC 0077 accepted and implemented)
 
-StackUW (UPSTREAM-025) asked what `exit_analysis.net_proceeds_to_equity`
+StackUW (adopter report 025) asked what `exit_analysis.net_proceeds_to_equity`
 means beside a §4.24 `preferred_equity` tranche. §4.9 never said, and
 `deriveDCF` footed it as `exit_value_net − loan_balance_at_exit`.
 - **Verified, and more.** The repro gave 3,800,000 beside a stated
@@ -1982,7 +1982,7 @@ means beside a §4.24 `preferred_equity` tranche. §4.9 never said, and
 
 ## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
 
-Issue #263 (StackUW `UPSTREAM-023`) asks for previous ids on module and
+Issue #263 (StackUW `adopter report 023`) asks for previous ids on module and
 implementation manifests after a namespace move. The
 [review](../reviews/2026-10-04-renamed-identifiers.md) finds:
 
@@ -2028,7 +2028,7 @@ anything else; before this fix it dropped the flag and always wrote `null`.
 - **Still undefined.** No `scenario` value has a defined meaning, and no
   validator, pack or cross-check reads one. Defining them, including
   `build_to_rent` and a rule for a deal that fits several values, is issue
-  #255 (StackUW `UPSTREAM-022`) and needs an RFC. Draft
+  #255 (StackUW `adopter report 022`) and needs an RFC. Draft
   [RFC 0072](../rfcs/0072-frontmatter-scenario-semantics.md) carries the
   owner's 2026-10-04 direction: `scenario` names the business plan, stays
   single-valued with a closed vocabulary, and is descriptive only;
@@ -2185,7 +2185,7 @@ core/CLI 3.0.0 with Stable Protocol 3.0.0.
 
 ### Cloudflare static-host preparation
 
-The owner-directed `codex/site-cloudflare-migration` branch contains direction C
+The owner-directed `work/site-cloudflare-migration` branch contains direction C
 first, then Workers static-asset configuration. `tools/docs-site/README.md` gives
 the exact build, watch-path and project settings. Merged in #391; the owner
 then moved uwmd.org to the Cloudflare Worker `uwmd-org` and disconnected Vercel,

@@ -1,4 +1,5 @@
 {
+  "_public_redaction_note": "Identity-bearing observations were redacted; this retained historical file is not release proof.",
  "verified_at": "2026-10-15T01:40:00Z",
  "verification_date_local": "2026-10-14",
  "timezone": "America/Phoenix",
@@ -9,7 +10,7 @@
   "object": "ee48b9834089e278960da4491f39948261c47eeb",
   "commit": "238dbf35a8654e2f8394088b9c3982159b11af8f",
   "annotated": true,
-  "tagger": "Jared <jared@uwmd.org>",
+  "tagger": "[redacted tagger identity]",
   "tagger_date": "2026-10-15T01:02:48Z",
   "message": "4.2.0",
   "signed": false,
