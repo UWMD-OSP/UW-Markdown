@@ -8,6 +8,10 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Fix #544: verify ZIP local/central metadata, actual payload sizes and CRCs;
+  check CSV inventory hashes on original bytes before UTF-8 BOM handling,
+  preserving STORE and DEFLATE support in CSV and deal-package readers.
+
 - RFC 0125: verify data-center price per explicit rentable SF at every bound
   home; register rentable area as secondary while keeping kW primary. Mirror
   the dictionary in the pack and live workbook; infer no area from power.

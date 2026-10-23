@@ -9,7 +9,7 @@
 // shared safe-ZIP rules as the CSV bundle. Extraction to disk is not this
 // module's business and never happens here.
 
-import { unzipSync, zipSync } from 'fflate';
+import { zipSync } from 'fflate';
 import {
   UWPackageError,
   UW_PACKAGE_VERSION,
@@ -19,7 +19,7 @@ import {
 } from './deal-package.js';
 import { sha256BytesHex } from './integrity.js';
 import type { ProtocolError } from './protocol.js';
-import { inspectZipSafety, type ZipSafetyLimits } from './zip-safety.js';
+import { extractZipSafely, type ZipSafetyLimits } from './zip-safety.js';
 
 export const PACKAGE_MANIFEST_PATH = 'manifest.json' as const;
 
@@ -98,16 +98,9 @@ export function decodeUWDealPackageZip(
   input: Uint8Array,
   options: UWPackageDecodeOptions = {},
 ): UWDealPackageDecoded {
-  inspectZipSafety(input, options, (violation, message) => {
+  const entries = extractZipSafely(input, options, (violation, message) => {
     throw new UWPackageError(`PKG_${violation}`, message);
   });
-
-  let entries: Record<string, Uint8Array>;
-  try {
-    entries = unzipSync(input);
-  } catch (error) {
-    throw new UWPackageError('PKGZIP-003', `ZIP could not be read: ${String(error)}`);
-  }
 
   const manifestBytes = entries[PACKAGE_MANIFEST_PATH];
   if (!manifestBytes) {
