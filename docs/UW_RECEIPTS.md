@@ -88,7 +88,7 @@ These checks answer different questions:
 | `receipt issue` | Can a detached proof of that document and pack result/status set be created? |
 | `receipt verify` | Does the current document match the prior receipt's hashes, result statuses/values and applicable signature checks? |
 
-CLI reporting (core/CLI 2.18.0) makes these
+CLI reporting makes these
 distinctions explicit. For example, a multifamily document without asset-level
 equity inputs can issue with:
 
@@ -122,8 +122,9 @@ This Deal** command do the same check. The extension only verifies — issuing
 while you are still editing produces a receipt that is stale on the next
 keystroke.
 
-Verification always recomputes. It never trusts the digest recorded inside the
-receipt as a shortcut.
+After source, referenced-input and authentication preflights, verification
+recomputes the results it can establish. It never treats a matching result
+digest as proof of correct computation.
 
 ## Three answers, not two
 
@@ -139,7 +140,8 @@ third into either of the others.
 `unverifiable` is the one people are most likely to get wrong, so it has its own
 exit code. You get it when the verifier lacks the named calculation pack, holds a
 different version of it, cannot parse the record, or encounters a signature it
-has no key for.
+cannot authenticate with an available backend. Invalid supplied signatures
+fail; absent verification capability is distinct.
 
 **Unverifiable is not a failure.** It is the absence of evidence, not evidence of
 absence. Reporting it as a failure would cry wolf every time a verifier is
@@ -151,9 +153,11 @@ that has the pack" — not as a pass and not as a rejection.
 
 `uwmd verify-receipt <receipt.json> <file> --json` is the conformance protocol's
 receipt subcommand (RFC 0115, Protocol §II.6a.1). It verifies as a Verifier
-without a calculation pack does, so a receipt whose record is unchanged reports
-`unverifiable` with RCP-05 rather than `verified`; digest, referenced-input,
-rule-set and signature checks still decide first. It exits 1 only on `failed`
+without a calculation pack does: it recomputes stated builtin dictionary results
+under the record's declared rule set. A mismatch fails with RCP-03 or RCP-07;
+matching results leave overall `unverifiable` with RCP-05/06 when full claimed
+pack/output coverage is unproven. Digest, referenced-input, rule-set and
+signature checks still decide first. It exits 1 only on `failed`
 or an unreadable receipt. `uwmd receipt verify` is the pack-based check above.
 
 ## Receipts go stale, and that is normal
@@ -171,31 +175,41 @@ Issue the receipt when you are finished editing, and send it with the file.
 
 ## What is inside
 
-Abridged from the conformance corpus — the values are real, the results list is
-trimmed to two of the pack's eight outputs:
+Current receipt excerpt from the reference CLI, with the result list trimmed
+to two of the eight outputs and other envelope members omitted:
 
 ```json
 {
-  "receipt_version": "1.0",
+  "receipt_version": "1.1",
   "subject": {
     "representation": "uwx-markdown",
+    "representation_version": "1.0",
     "canonicalization": "uw-envelope-semantic",
-    "digest": "sha256:caa73f0e1dc38cf536149ff5dbdfbd72e21fad6263f6574adeea99f8803822f2"
+    "canonicalization_version": "1.0",
+    "digest": "sha256:d6d385866e5ed70f78776974810adc2ae0c3348b728a0c92df75610ef6f14be0"
   },
   "computation": {
     "pack": "org.uwmd.pack.multifamily",
-    "pack_version": "1.0.0",
-    "engine": "@uwmd/core",
-    "engine_version": "1.1.2",
+    "pack_version": "1.0.2",
+    "engine": "@uwmd/verify",
+    "engine_version": "0.2.1",
+    "protocol_version": "4.1.0",
+    "rule_set": "3.0",
     "results": [
-      { "calc_id": "dscr", "value": 1.2637362637362637, "unit": "x", "computed": true },
-      { "calc_id": "ltv", "value": 0.65, "unit": "%", "computed": true }
+      {
+        "calc_id": "cap_rate",
+        "value": 0.055088,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "cash_on_cash",
+        "value": 0.04189,
+        "unit": "%",
+        "computed": true
+      }
     ]
-  },
-  "policy": { "policy_set": "builtin", "validation": { "errors": 0, "warnings": 5 } },
-  "issued_at": "2026-08-09T00:00:00Z",
-  "issuer": "conformance",
-  "signature": null
+  }
 }
 ```
 
@@ -205,7 +219,7 @@ Three details worth understanding:
 the deal's financial content, so reflowing a label, changing comma grouping, or
 switching line endings does not break a receipt. Changing a number does.
 
-**`computed: false` is not the same as a value of zero or null.** A pack declares
+**`computed: false` distinguishes missing inputs from a computed zero.** A pack declares
 a fixed set of outputs, and the receipt lists all of them. When the deal lacks
 the inputs for one, it is recorded as `{"value": null, "computed": false}` rather
 than as a number nobody calculated — the deal above supports all eight of its
@@ -213,23 +227,25 @@ pack's outputs, but a leaner record often will not. A receipt never carries a
 hand-entered figure.
 
 **Validation counts are recorded, not enforced.** A receipt notes how many errors
-and warnings the policy set found at issuance. A deal that trips a DSCR threshold
-can still carry a valid receipt — the receipt attests the arithmetic, and the
-warning is part of what it attests, not a reason to withhold it.
+and warnings the policy set found at issuance. Financial threshold bands are separate deal flags unless institution policy
+escalates one into a validation issue. A low-DSCR deal can carry a valid receipt;
+the receipt verifies the stated arithmetic, not a credit recommendation.
 
 ## Signing
 
-Receipts have a `signature` field, and it is currently always `null`.
+Receipts may be unsigned (`signature: null`) or signed. The `@uwmd/signing`
+package implements receipt signing with `signReceipt` and
+`stampReceiptSignature`; its `signatureVerifier` plugs into `verifyReceipt`.
+See the [signing package guide](../packages/uwmd-signing/README.md).
 
-Unsigned receipts already do the useful work: anyone can recompute and compare.
-Signing adds *who issued this*, which requires key distribution and is specified
-separately. Until a signing implementation exists, a verifier that meets a signed
-receipt reports `unverifiable` rather than quietly ignoring the signature — which
-is precisely the situation that third state exists for.
+An available backend authenticates a supplied signature before recomputation.
+An invalid signature fails with RCP-01; a verifier without the required backend
+reports RCP-08 unverifiable. Neither case silently ignores the signature.
+Key distribution and the truth of source facts remain separate from arithmetic.
 
 ## Reading further
 
-- [Verification receipt specification (v1.0)](../spec/UW_RECEIPT.md) — the
+- [Verification receipt specification](../spec/UW_RECEIPT.md) — the
   normative document: canonicalizations, issue codes, verifier precedence.
 - [RFC 0016](rfcs/0016-verification-receipts.md) — the design rationale and the
   alternatives that were rejected.

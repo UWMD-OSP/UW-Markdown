@@ -15,6 +15,7 @@ import { rfcCopies, docsSiteVersions } from '../../../scripts/docs-site-sources.
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SITE_ROOT = resolve(__dirname, '..');
 const REPO_ROOT = resolve(SITE_ROOT, '..', '..');
+const SITE_VERSIONS = docsSiteVersions(REPO_ROOT);
 
 const GENERATED_DIRS = ['spec', 'conformance', 'about', 'guide', 'starter', 'public'];
 
@@ -48,12 +49,12 @@ const STARTER_PAGES = [
 
 const COPIES = [
   // Spec
-  { from: 'spec/UW_FORMAT_SPEC.md',   to: 'spec/format.md',   title: 'UW Format Specification (3.0)' },
-  { from: 'spec/UW_PROTOCOL.md',      to: 'spec/protocol.md', title: 'UW Protocol — verification (4.0.0)' },
+  { from: 'spec/UW_FORMAT_SPEC.md',   to: 'spec/format.md',   title: `UW Format Specification (${SITE_VERSIONS.specFormat})` },
+  { from: 'spec/UW_PROTOCOL.md',      to: 'spec/protocol.md', title: `UW Protocol — verification (${SITE_VERSIONS.specProtocol})` },
   { from: 'spec/UW_XML_MAPPING.md',   to: 'spec/xml.md',      title: 'UW XML Mapping (v1.0)' },
   { from: 'spec/UW_CSV_BUNDLE.md',    to: 'spec/csv.md',      title: 'UW CSV Bundle (v1.0)' },
   { from: 'spec/UW_LITE_SPEC.md',     to: 'spec/lite.md',     title: 'UW Lite Specification (v1.0)' },
-  { from: 'spec/UW_RECEIPT.md',       to: 'spec/receipt.md',  title: 'UW Verification Receipt (1.1)' },
+  { from: 'spec/UW_RECEIPT.md',       to: 'spec/receipt.md',  title: `UW Verification Receipt (${SITE_VERSIONS.receipt})` },
   { from: 'spec/UW_COMPOSITION.md',   to: 'spec/composition.md', title: 'UW Composition Specification (v1.0)' },
   { from: 'spec/bindings/README.md', to: 'spec/bindings/index.md', title: 'Transport Bindings' },
   { from: 'spec/bindings/UW_HTTP_BINDING_v1.md', to: 'spec/http.md', title: 'UW HTTP Binding (v1.0)' },
@@ -446,4 +447,4 @@ console.log(`\nCopied ${count} files.`);
 // The version card uses the same source constants as the generated spec title,
 // plus the published generation and its npm scope, kept as separate fields.
 await mkdir(join(SITE_ROOT, 'about'), { recursive: true });
-await writeFile(join(SITE_ROOT, 'about/versions.json'), JSON.stringify(docsSiteVersions(REPO_ROOT)), 'utf8');
+await writeFile(join(SITE_ROOT, 'about/versions.json'), JSON.stringify(SITE_VERSIONS), 'utf8');

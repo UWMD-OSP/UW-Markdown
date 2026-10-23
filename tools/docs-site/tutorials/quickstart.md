@@ -39,12 +39,14 @@ npx @uwmd/cli validate deal.uwx.md
 ```
 
 You'll get a stage-readiness checklist and a list of issues. A fresh record
-passes with one warning:
+reports one primary-size warning and two stage-gap info notes:
 
 ```text
-Issues (1):
+Issues (3):
   [WARN]  [property.total_units] CC-13: the property section does not state
           multifamily's primary size field "total_units" (Protocol §XIII.1)
+  [INFO] [debt_structure] DQ-06: screening requires debt_structure; section is missing.
+  [INFO] [validation] DQ-06: screening requires validation; section is missing.
 ```
 
 Warnings and info notes leave the exit code at `0`. Any error exits `1`, so the
@@ -145,7 +147,8 @@ const deal = parseUWFile(readFileSync('Parkview-Apts-Glendale-AZ.uwx.md', 'utf8'
 const result = validateUWFile(deal);
 
 console.log(deal.frontmatter.deal_name);   // Parkview Apartments — Glendale, AZ
-console.log(result.overall_status);        // "warnings"
+console.log(result.overall_status);        // "clean"
+console.log(result.deal_flags);            // financial warning-band flags
 for (const issue of result.issues) console.log(issue.severity, issue.code, issue.message);
 ```
 

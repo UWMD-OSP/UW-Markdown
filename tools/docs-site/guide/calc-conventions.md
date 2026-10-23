@@ -20,11 +20,16 @@ Paths begin with a section id and are resolved against its JSON content.
 noi_model.net_operating_income / debt_structure.annual_debt_service
 ```
 
-Arrays use zero-based bracket indexes:
+Registered series use explicit period identity, independent of row position:
 
 ```text
-dcf.annual_cash_flows[0].net_operating_income
+dcf.annual_cash_flows@Y1.net_operating_income
 ```
+
+Ordinary bracket access requires single-quoted string keys, such as `['0']`.
+Numeric bracket syntax `[0]` is outside the expression grammar. See
+[Protocol §VIII.2a](/spec/protocol#viii-2a-explicit-period-addressing-rfc-0041)
+for registered series, selectors and ambiguity refusal.
 
 Use a path only when the owning section really stores that value. Missing input
 propagates as `null`; do not substitute a made-up zero.

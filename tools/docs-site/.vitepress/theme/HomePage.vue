@@ -86,7 +86,7 @@ the post-sale value.
 
 <span class="tok-code">```json uw:section=noi_model</span>
 {
-  <span class="tok-json">"_meta"</span>: { <span class="tok-json">"section"</span>: <span class="tok-string">"noi_model"</span>, <span class="tok-tail">…</span> },
+  <span class="tok-json">"_meta"</span>: { <span class="tok-json">"quality"</span>: { <span class="tok-json">"confidence"</span>: <span class="tok-string">"high"</span> }, <span class="tok-tail">…</span> },
   <span class="tok-json">"income"</span>: {
     <span class="tok-json">"vacancy_credit_loss"</span>: {
       <span class="tok-json">"value"</span>: <span class="tok-number">45864</span>, <span class="tok-json">"rate_applied"</span>: <span class="tok-number">0.07</span>
@@ -125,7 +125,7 @@ the post-sale value.
                 </tbody>
               </table>
             </div>
-            <div class="uw-check"><span aria-hidden="true">✓</span><p><strong>DSCR and LTV recomputed by the multifamily calculation pack</strong><br>The pack derives DSCR, LTV, cap rate, and debt yield from figures stated in the record, using deterministic code rather than a model. The operating statement is stated, and validator cross-checks test it for consistency. The DSCR of 1.109× is below the 1.20× warning threshold, so the validator reports a warning.</p></div>
+            <div class="uw-check"><span aria-hidden="true">✓</span><p><strong>DSCR and LTV recomputed by the multifamily calculation pack</strong><br>The pack derives DSCR, LTV, cap rate, and debt yield from figures stated in the record, using deterministic code rather than a model. The operating statement is stated, and validator cross-checks test it for consistency. The DSCR of 1.109× produces a financial flag in the warning band. Financial flags describe the deal; validation issues describe the record.</p></div>
           </section>
         </div>
         <div class="uw-file-footer">
@@ -211,10 +211,12 @@ the post-sale value.
 <span class="tok-rule">$</span> npx @uwmd/cli validate deal.uwx.md
 <span class="tok-tail">Validation result: WARNINGS — deal.uwx.md</span>
 <span class="tok-tail">Stage Readiness (workflow completeness):</span>
-<span class="tok-tail">  screening: complete</span>
-<span class="tok-tail">Issues (1):</span>
+<span class="tok-tail">  screening: incomplete</span>
+<span class="tok-tail">Issues (3):</span>
 <span class="tok-tail">  [WARN] CC-13: the property section does not</span>
-<span class="tok-tail">  state multifamily's primary size field …</span></code></pre>
+<span class="tok-tail">  state multifamily's primary size field …</span>
+<span class="tok-tail">  [INFO] DQ-06: screening requires debt_structure</span>
+<span class="tok-tail">  [INFO] DQ-06: screening requires validation</span></code></pre>
       </div>
     </section>
 

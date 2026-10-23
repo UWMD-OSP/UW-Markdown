@@ -16,6 +16,10 @@ protocol, and each package each carry an independent semver).
 
 - Fix CSV chat rendering of nested sources/uses amounts; read canonical stated totals and refuse numeric object coercion.
 
+- Refresh current docs for explicit rule sets, dictionary receipt verification,
+  financial flags, workbook import and current tool roles; derive spec page
+  version titles from the version matrix.
+
 - Apply the public/private paperwork policy and enforce the tracked-content
   identity guard in required CI, with only the named public-handle exceptions.
 

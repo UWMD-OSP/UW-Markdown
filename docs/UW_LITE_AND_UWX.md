@@ -37,6 +37,10 @@ uwmd convert underwriting.uwx.md --to lite --projection-report lite-loss.json
 
 A `.uw.md` file is Lite. Structured content (`uw:section` JSON fences) under that extension is refused as `SOURCE_CONTENT_MISMATCH`, whatever representation the caller names; structured records use `.uwx.md`.
 
+Lite frontmatter declares both `uw_lite_version: 1.0` and the supported
+string `uw_version: "3.0"`. Parsing, compilation and receipt verification refuse
+an absent or unsupported rule-set declaration.
+
 ## A minimal Lite field
 
 ```markdown
