@@ -607,7 +607,7 @@ Commit reproducible evidence with fixtures. Native spreadsheet IRR/POWER is not
 presumed equal: procedural IRR follows RFC0024 and the accepted power contract.
 Record a genuine spreadsheet-contract conflict rather than hiding it with epsilon.
 Negative and unavailable-input expectations also need independent evidence.
-No Golden Deals, track record, personal identifiers or producer internals belong
+No private deal corpus, track record, personal identifiers or producer internals belong
 in this corpus. This is a plan, not a claim that a spreadsheet was executed.
 
 ## Reference implementation
