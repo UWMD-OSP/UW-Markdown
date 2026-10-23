@@ -5,7 +5,7 @@ import type { CashFlowRow } from './cash-flow-series.js';
 import { isCurrencyCode } from './protocol.js';
 import { canonicalize } from './integrity-canonical.js';
 import { sha256TextHex } from './integrity.js';
-import { validateUWFile, checkCashFlowContent } from './validator.js';
+import { validateUWFile, cashFlowContentFindings } from './validator.js';
 import { hasBlockShape } from './block-kind.js';
 import {
   checkReplacementFundingStructure,
@@ -58,7 +58,7 @@ export async function verifyReplacementFundingBindings(
     const entry = snapshot.sections.cash_flow_series;
     const variant = hasBlockShape(entry) ? 'default'
       : Object.entries(entry ?? {}).find(([, block]) => block === structure.selectedSource)?.[0] ?? 'default';
-    checkCashFlowContent(structure.selectedSource.content as Record<string, unknown>, variant, structuralIssues);
+    structuralIssues.push(...cashFlowContentFindings(structure.selectedSource.content as Record<string, unknown>, variant));
   }
   if (structure.unresolvable)
     return {

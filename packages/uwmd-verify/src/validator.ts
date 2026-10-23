@@ -2723,7 +2723,7 @@ function checkLeaseUpSchedule(parsed: ParsedUWFile, issues: ValidationMessage[],
 // every variant is checked — a downside series with a gapped date is just as
 // malformed as a base one.
 
-export function checkCashFlowContent(
+function checkCashFlowContent(
   content: Record<string, unknown>,
   variant: string,
   issues: ValidationMessage[],
@@ -2808,6 +2808,13 @@ export function checkCashFlowContent(
       message: `CF-03: stated_metrics.xirr${label} is stated but the series has no sign change (needs at least one negative and one positive amount)`,
     });
   }
+}
+
+/** Existing single-source CF diagnostics with the same annotations as validation. */
+export function cashFlowContentFindings(content: Record<string, unknown>, variant: string): ValidationMessage[] {
+  const issues: ValidationMessage[] = [];
+  checkCashFlowContent(content, variant, issues);
+  return issues.map(enrichWithRemediation);
 }
 
 function checkCashFlowSeries(parsed: ParsedUWFile, issues: ValidationMessage[]): void {

@@ -318,8 +318,6 @@ class ReplacementFundingTests(unittest.TestCase):
         self.assertEqual(verify(untouched)["context"]["currency_code"],"USD")
 
 
-if __name__ == "__main__":
-    unittest.main()
     def test_rfc0120_selected_findings_even_beside_invalid_reference(self):
         doc = case()
         index = next(i for i,b in enumerate(doc.source.blocks) if b.section == "cash_flow_series")
@@ -335,3 +333,7 @@ if __name__ == "__main__":
         doc = alter(doc, index, lambda p: p["series"][0].update(date="2028-02-30", amount="invalid"))
         result = verify(doc)
         self.assertEqual([i["code"] for i in result["structural_issues"] if i["code"].startswith("CF-")], ["CF-01", "CF-01"])
+
+
+if __name__ == "__main__":
+    unittest.main()
