@@ -1697,6 +1697,17 @@ Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `r
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `rent_roll`, `operating_statement`, `market_analysis`
 
+**Land carry identity (RFC 0126).** For land, income.effective_gross_income,
+expenses.total_operating_expenses and net_operating_income in this block assert
+one common property scope and reporting period, in the exact authored variant.
+The declared block basis applies to all three; absence does not authorize any
+annualization or another block's period. A producer stating different bases
+uses separate variants, not unmatched operands in these homes. The NOI field
+explicitly states dictionary land_carry_noi (stated EGI minus stated total OpEx),
+including zero/negative results. No row sums, reserve reclassification, land
+cap rate or DSCR are defined. Verification checks this shared-basis assertion,
+not disclosure completeness or the truth of its real-world assumptions.
+
 ```json
 {
   "_meta": {

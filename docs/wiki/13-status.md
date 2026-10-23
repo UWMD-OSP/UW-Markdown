@@ -486,6 +486,12 @@ The accepted SF definition now applies to data centers at every bound home.
 Rentable area is a registered secondary, kW stays primary, and missing/zero/
 negative area never yields a verified per-SF figure. Pack and Excel share it.
 
+## RFC 0126 — land carry-NOI identity
+
+Every stated land NOI home is checked against same-block, same-variant EGI
+minus stated total OpEx. Negative/zero results can verify; no cap rate/DSCR,
+expense-row summation or temporal conversion is introduced.
+
 ## Bounded parallel workstreams
 
 One integrator owns sequencing, independent review, shared indexes/changelog/

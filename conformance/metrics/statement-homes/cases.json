@@ -588,6 +588,72 @@
         }
       ],
       "failed": 0
+    },
+    {
+      "name": "land-carry-noi-negative-agrees",
+      "example": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+      "edits": [],
+      "expect": [
+        {
+          "path": "noi_model.net_operating_income",
+          "state": "verified"
+        }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "land-carry-noi-tampered",
+      "example": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "noi_model",
+          "find": "\"net_operating_income\": -272000",
+          "replace": "\"net_operating_income\": -299200"
+        }
+      ],
+      "expect": [
+        {
+          "path": "noi_model.net_operating_income",
+          "state": "failed"
+        }
+      ],
+      "failed": 1
+    },
+    {
+      "name": "land-carry-noi-missing-egi",
+      "example": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "noi_model",
+          "find": "\"effective_gross_income\": 18000",
+          "replace": "\"effective_gross_income\": null"
+        }
+      ],
+      "expect": [
+        {
+          "path": "noi_model.net_operating_income",
+          "state": "unverifiable"
+        }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "land-carry-noi-missing-opex",
+      "example": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "noi_model",
+          "find": "\"total_operating_expenses\": 290000",
+          "replace": "\"total_operating_expenses\": null"
+        }
+      ],
+      "expect": [
+        {
+          "path": "noi_model.net_operating_income",
+          "state": "unverifiable"
+        }
+      ],
+      "failed": 0
     }
   ]
 }

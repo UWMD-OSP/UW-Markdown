@@ -288,3 +288,15 @@ class DataCenterRentableSfTests(unittest.TestCase):
             self.assertEqual(result["value"], expected)
         document = parse(HEADER + block("property", {"critical_it_load_kw": 50}) + block("valuation", {"purchase_price": 1000}))
         self.assertIsNone(evaluate_calc(metric, document)["value"])
+
+
+class LandCarryIdentityTests(unittest.TestCase):
+    def test_stated_egi_less_opex_including_negative_and_null(self):
+        import json
+        dictionary = json.loads((ROOT / "spec/metrics/builtin.json").read_text(encoding="utf-8"))
+        metric = next(row for row in dictionary["calculations"] if row["id"] == "land_carry_noi" and row["asset_classes"] == ["land"])
+        for egi, opex, expected in [(20, 30, -10), (30, 30, 0), (30, 20, 10), (None, 30, None), (20, None, None), (0, 1.005, -1.01)]:
+            document = parse(HEADER + block("noi_model", {"income": {"effective_gross_income": egi}, "expenses": {"total_operating_expenses": opex, "detail": 999999}, "net_operating_income": -10}))
+            result = evaluate_calc(metric, document)
+            self.assertTrue(result["ok"], result)
+            self.assertEqual(result["value"], expected)

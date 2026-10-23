@@ -15,7 +15,7 @@ describe content; they do not confer a tier claim.
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
 | Reader | 42 | 27 |
-| Verifier | 877 | 564 |
+| Verifier | 881 | 568 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
 | Representations | 154 | 0 |
@@ -23,7 +23,7 @@ describe content; they do not confer a tier claim.
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
 | Starter products | 142 | 57 |
-| **Total** | **1,349** | **663** |
+| **Total** | **1,353** | **667** |
 
 ## How to self-certify
 
@@ -495,7 +495,7 @@ verify consistency, while producer purpose evidence must reject that mapping.
 
 The [metrics suite](../conformance/metrics/README.md) verifies every builtin example using the
 normative dictionary and safe-expression evaluator, without packs, defaults or
-cascade. It records 188 verified statements, zero failures and zero unverifiable
+cascade. It records 189 verified statements, zero failures and zero unverifiable
 statements, with per-example counts and per-statement evidence. Findings are
 compared exactly, and negative controls pin missing-input refusal and quantization. Run
 `npm run conformance -- --suite=metrics`; it is included in the default suite.

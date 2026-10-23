@@ -1302,6 +1302,7 @@ export const EXTENSION_SECTION_PREFIX = 'x_' as const;
 // ─── Metric dictionary (RFC 0078 Phase 2, spec/metrics/) ────────────────────
 
 /** A class-scoped normative calculation; packs mirror these definitions. */
+// RFC 0126: land_carry_noi uses same-block EGI/OpEx and an explicit NOI alias.
 export interface MetricDictionaryCalculation {
   /** RFC 0123: an applicable receipt calc_id asserts this definition, independent of starter packs. */
   readonly id: string;

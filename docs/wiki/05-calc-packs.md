@@ -2,7 +2,7 @@
 
 A **calc pack** is a `ModuleManifest` that bundles a set of derived-metric
 declarations for an asset class. Their normative source is now the
-[metric dictionary](../../spec/metrics/README.md) (RFC 0078 Phase 2, extended by RFC 0080): 172
+[metric dictionary](../../spec/metrics/README.md) (RFC 0078 Phase 2, extended by RFC 0080): 173
 class-scoped calculations across twelve builtin packs, plus the primary-size
 registry. Packs derive their definitions from that contract as TypeScript
 mirrors, enforced by exact, bidirectional tests rather than runtime generation.

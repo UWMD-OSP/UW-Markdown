@@ -311,3 +311,41 @@ describe('data-center price per explicit rentable SF', () => {
     expect(verifyStatedMetric(definition(), p, 333.33, { property: 'second' }, 2).state).toBe('failed');
   });
 });
+
+describe('RFC 0126 land carry NOI', () => {
+  const definition = () => metric('land_carry_noi', 'land');
+  const source = (egi: unknown, opex: unknown) => {
+    const p = simple(); p.frontmatter.asset_class = 'land';
+    p.sections.noi_model = block('noi_model', { income: { effective_gross_income: egi }, expenses: { total_operating_expenses: opex }, net_operating_income: -10 });
+    return p;
+  };
+  it('verifies zero/negative/positive subtraction and existing negative cent rounding', () => {
+    for (const [egi, opex, stated] of [[20, 30, -10], [30, 30, 0], [30, 20, 10], [0, 1.005, -1.01]]) {
+      expect(verifyStatedMetric(definition(), source(egi, opex), stated, undefined, 2).state).toBe('verified');
+    }
+    expect(verifyStatedMetric(definition(), source(20, 30), -11, undefined, 0).state).toBe('failed');
+    for (const value of [undefined, null, '20']) expect(verifyStatedMetric(definition(), source(value, 30), -10, undefined, 2).state).toBe('unverifiable');
+  });
+  it('checks the explicit NOI alias and quick metric independently without land income ratios', () => {
+    const p = source(20, 30); p.frontmatter.quick_metrics = { land_carry_noi: -11 };
+    const r = verifyStatedMetrics(p, { statedDecimals: new Map([['quick_metrics.land_carry_noi', 0], ['noi_model.net_operating_income', 0]]) });
+    expect(r.evidence.filter(e => e.id === 'land_carry_noi').map(e => [e.path, e.state])).toEqual([['quick_metrics.land_carry_noi', 'failed'], ['noi_model.net_operating_income', 'verified']]);
+    expect(r.evidence.some(e => ['cap_rate', 'dscr', 'debt_yield'].includes(e.id))).toBe(false);
+  });
+  it('keeps same-block operands per exact variant and never borrows a missing total', () => {
+    const p = source(20, 30); const first = p.sections.noi_model as UWBlock;
+    const second = block('noi_model', { income: { effective_gross_income: 5 }, expenses: { total_operating_expenses: 20 }, net_operating_income: -15 });
+    p.sections.noi_model = { first, second };
+    const precision = new Map([['noi_model.net_operating_income', 0]]);
+    expect(verifyStatedMetrics(p, { statedDecimals: precision }).evidence.filter(e => e.id === 'land_carry_noi').map(e => [e.path, e.state])).toEqual([['noi_model[first].net_operating_income', 'verified'], ['noi_model[second].net_operating_income', 'verified']]);
+    delete (first.content.expenses as Record<string, unknown>).total_operating_expenses;
+    expect(verifyStatedMetrics(p, { statedDecimals: precision }).evidence.filter(e => e.id === 'land_carry_noi').map(e => e.state)).toEqual(['unverifiable', 'verified']);
+    expect(verifyStatedMetric(definition(), p, -15, undefined, 0).reason).toBe('CALC-RESOLVE-002');
+  });
+  it('does not sum expense detail or use debt service/other blocks as inputs', () => {
+    const p = source(20, 30); const payload = (p.sections.noi_model as UWBlock).content;
+    (payload.expenses as Record<string, unknown>).a_detail = 999999;
+    (p.sections.debt_structure as UWBlock).content.annual_debt_service = 999999;
+    expect(verifyStatedMetric(definition(), p, -10, undefined, 0).state).toBe('verified');
+  });
+});
