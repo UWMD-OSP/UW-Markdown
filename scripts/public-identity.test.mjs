@@ -10,7 +10,7 @@ const handle = ['ja', 'redmaxey'].join('');
 const owner = ['Ja', 'red'].join('');
 const samples = [owner, handle, ['underwriter', '-app'].join(''),
   ['TA', 'SK-123'].join(''), ['UP', 'STREAM-4'].join(''),
-  ['Golden', ' Deal'].join(''), 'C:' + String.fromCharCode(92) + 'Users',
+  ['Golden', ' Deal'].join(''), `C:${String.fromCharCode(92)}Users`,
   ['co', 'dex/topic'].join(''), ['clau', 'de/topic'].join(''), ['Banc', 'roft'].join('')];
 
 test('every named pattern rejects tracked content with useful locations', () => {
@@ -19,7 +19,7 @@ test('every named pattern rejects tracked content with useful locations', () => 
     assert.equal(found.length, 1, sample);
     assert.equal(found[0].line, 2);
   }
-  const encodedPath = 'C:' + String.fromCharCode(92).repeat(2) + 'Users';
+  const encodedPath = `C:${String.fromCharCode(92).repeat(2)}Users`;
   assert.equal(publicIdentityFindings('evidence.json', encodedPath).length, 1);
 });
 

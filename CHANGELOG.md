@@ -8,8 +8,13 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+<<<<<<< HEAD
 - Apply the public/private paperwork policy and enforce the tracked-content
   identity guard in required CI, with only the named public-handle exceptions.
+=======
+- Fix direct verify-packages invocation on Windows: resolve npm-cli.js and run
+  it through Node rather than executing npm.cmd. Add direct Windows CI coverage.
+>>>>>>> origin/main
 
 - CSV decoding preserves own prototype-named content members while reconstructing
   metadata first, so valid envelopes retain their semantic digest.

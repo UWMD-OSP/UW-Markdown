@@ -583,7 +583,15 @@ Change provenance rules (§V.2–§V.4), integrity, calc notation or numeric mod
 Change starter behavior: cascade order, defaults, editor mechanics, view models, display, agents | No (starter guide + package semver); numerics still go to maintainers
 Anything touching `spec/` or `spec/schemas/` | Yes
 
+<<<<<<< HEAD
 The required index gate also enforces tracked-content identity policy. Its exact
 public-handle exceptions are the maintainer and code-owner files; other matches
 fail regardless of directory. Retained historical evidence with redactions is
 not public release proof. Launch-day file moves and slimming are separate work.
+=======
+Direct `node scripts/verify-packages.mjs` resolves npm's JavaScript entry on
+Windows and launches it with the current Node executable and argument array.
+The npm script entry still uses npm_execpath; no shell quoting or command shim
+execution is needed. Required Windows CI exercises the direct invocation after
+building the packages.
+>>>>>>> origin/main

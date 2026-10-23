@@ -10,7 +10,7 @@ export const identityRules = [
   ['private-task', ['TA', 'SK-'].join('') + String.raw`\d`],
   ['private-upstream', ['UP', 'STREAM-'].join('') + String.raw`\d`],
   ['private-corpus', ['Golden', ' Deal'].join('')],
-  ['personal-path', 'C:' + String.raw`\\+` + 'Users'],
+  ['personal-path', String.raw`C:\\+Users`],
   ['session-branch-a', ['co', 'dex/'].join('')],
   ['session-branch-b', ['clau', 'de/'].join('')],
   ['retired-product', ['Banc', 'roft'].join('')],
