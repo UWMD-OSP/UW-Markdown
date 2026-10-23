@@ -24,7 +24,6 @@ const REQUIRED_FILES = [
 const MAX_COMPRESSED_BYTES = 50 * 1024 * 1024;
 const MAX_UNCOMPRESSED_BYTES = 200 * 1024 * 1024;
 const MAX_FILES = 100;
-const MAX_COMPRESSION_RATIO = 100;
 const ZIP_EPOCH = new Date('1980-01-02T00:00:00.000Z');
 
 export interface UWCSVBundle {

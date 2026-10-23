@@ -128,7 +128,7 @@ function inspectEntries(
     if (entryEnd > centralOffset + centralSize) raise('ZIP_INVALID', 'ZIP central entry is truncated.');
     let name: string;
     try {
-      name = new TextDecoder('utf-8', { fatal: true }).decode(input.subarray(nameStart, nameEnd));
+      name = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(input.subarray(nameStart, nameEnd));
     } catch (error) {
       raise('ZIP_FILENAME_UTF8', `ZIP filename is not UTF-8: ${String(error)}.`);
     }
