@@ -1,4 +1,5 @@
 ---
+uw_version: "3.0"
 uw_lite_version: 1.0
 deal_id: uw_lite_ironwood_rev
 deal_name: Ironwood Logistics (revised rate)

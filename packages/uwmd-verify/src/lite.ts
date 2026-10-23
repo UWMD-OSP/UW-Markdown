@@ -1,5 +1,6 @@
 import { canonicalize } from './integrity-canonical.js';
-import { isBlockedSegment } from './parser.js';
+import { isBlockedSegment, unsupportedFormatVersionError } from './parser.js';
+import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
 import { readYamlScalar, YAML_SCALAR_FAILURE_FEATURE } from './yaml-scalar.js';
 
@@ -86,6 +87,13 @@ const HEADING = /^(#{1,6})[ \t]+(.+?)[ \t]*$/;
 const FIELD =
   /^[ \t]*[-*+][ \t]+(.+?):[ \t]*(.*?)[ \t]*<!--[ \t]*uw:([A-Za-z][A-Za-z0-9_.-]*)(.*?)[ \t]*-->[ \t]*$/;
 const ATTRIBUTE = /([A-Za-z][A-Za-z0-9_-]*)=("[^"]*"|'[^']*'|[^\s]+)/g;
+
+/** RFC 0124: representation version never supplies a financial rule set. */
+export function assertLiteRuleSet(frontmatter: ParsedUWLite['frontmatter']): string {
+  const declared = frontmatter.uw_version;
+  if (declared !== SUPPORTED_FORMAT_VERSIONS[0]) throw unsupportedFormatVersionError(declared);
+  return declared;
+}
 
 export function parseUWLite(content: string): ParsedUWLite {
   const lines = content.split(/\r?\n/);
@@ -183,6 +191,7 @@ export function parseUWLite(content: string): ParsedUWLite {
     nodes.push({ kind: 'prose', raw, range: rangeForLine(raw, line) });
   }
 
+  assertLiteRuleSet(frontmatter);
   const version = frontmatter['uw_lite_version'];
   const versionString =
     typeof version === 'number' ? version.toFixed(1) : String(version ?? '');
@@ -233,6 +242,7 @@ export function parseUWLite(content: string): ParsedUWLite {
 }
 
 export function canonicalizeUWLiteFinancial(document: ParsedUWLite): string {
+  assertLiteRuleSet(document.frontmatter);
   const blocking = document.issues.filter((issue) => issue.severity === 'error');
   if (blocking.length > 0) {
     throw new UWLiteError(
@@ -267,6 +277,7 @@ export function canonicalizeUWLiteFinancial(document: ParsedUWLite): string {
 }
 
 export function renderCanonicalUWLite(document: ParsedUWLite): string {
+  assertLiteRuleSet(document.frontmatter);
   const output: string[] = [];
   const frontmatterNode = document.nodes.find(
     (node): node is UWLiteFrontmatterNode => node.kind === 'frontmatter',

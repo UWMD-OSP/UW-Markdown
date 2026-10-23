@@ -260,3 +260,11 @@ class ReaderTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class LiteDeclarationTests(unittest.TestCase):
+    def test_lite_source_never_gets_an_implicit_rule_set(self):
+        for declaration in ['', 'uw_version: null\n', 'uw_version: 3.0\n', 'uw_version: "99.0"\n']:
+            raw=('---\nuw_lite_version: 1.0\n'+declaration+'---\n- Price: $1 <!-- uw:acquisition.purchase_price -->\n').encode()
+            with self.subTest(declaration=declaration),self.assertRaises(ReaderError) as caught:
+                parse(raw,filename='deal.uw.md')
+            self.assertEqual(caught.exception.code,'UNSUPPORTED_FORMAT_VERSION')

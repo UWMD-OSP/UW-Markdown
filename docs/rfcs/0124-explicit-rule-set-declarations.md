@@ -1,7 +1,7 @@
 ---
 rfc: 0124
 title: Require an explicit rule-set declaration in every source representation
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-22
 affects:
@@ -13,14 +13,15 @@ affects:
 
 # RFC 0124: Require an explicit rule-set declaration in every source representation
 
-## Recommendation
+## Resolution
 
-Require UW Lite to declare uw_version. Retain the owner-confirmed RFC 0111
+Accepted as drafted by the owner on 2026-10-22 (fourth set). Require UW Lite to
+declare uw_version. Retain the owner-confirmed RFC 0111
 implementation decisions: RCP-13 for receipt/record rule-set disagreement and
-refusal of a model naming no kept rule set. This draft closes Lite's implicit
+refusal of a model naming no kept rule set. This implementation closes Lite's implicit
 3.0 selection; it does not authorize a release or add a second rule set.
 
-## Proposed contract
+## Contract
 
 UW Lite frontmatter MUST contain a non-null uw_version naming a rule set the
 reader/verifier keeps. The existing Format scalar version semantics apply.
@@ -44,7 +45,7 @@ This supersedes only RFC 0081 D12's undeclared-Lite fallback. It adds no old-
 version reader, retention obligation for prelaunch documents or repair path.
 RFC 0111's already accepted post-launch rule-set retention remains separate.
 
-## Decisions proposed
+## Decisions
 
 | Question | Recommendation | Precedent |
 |---|---|---|
@@ -53,7 +54,7 @@ RFC 0111's already accepted post-launch rule-set retention remains separate.
 | Model without a kept rule set? | Typed refusal | Owner confirmation; no implicit financial behavior |
 | Representation version selects rules? | No | Format/representation versions are distinct contracts |
 
-## Implementation and conformance after acceptance
+## Implementation and conformance
 
 Update UW Lite 3/7, Format representation notes, Protocol rule-set selection,
 Receipt 5.2.2, frontmatter schema descriptions and executable mirrors together.
@@ -61,4 +62,6 @@ Remove the bridge fallback and update current Lite creation examples/fixtures to
 state uw_version explicitly. Add portable controls for missing/null/malformed/
 unsupported declarations, explicit supported declarations through each reader,
 model API refusals and receipt RCP-13/RCP-09 precedence. Update the independent
-Python Lite adapter and shared cases. No runtime change is included in this PR.
+Python Lite adapter and shared cases. The independent Python source reader already requires the declaration. It has
+no Lite financial compiler/capability; source-level refusal controls are added
+without claiming one.

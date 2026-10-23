@@ -1,0 +1,6 @@
+{
+  "must_parse": false,
+  "expected_codes": [
+    "UNSUPPORTED_FORMAT_VERSION"
+  ]
+}

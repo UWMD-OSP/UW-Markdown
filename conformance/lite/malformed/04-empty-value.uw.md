@@ -1,4 +1,5 @@
 ---
+uw_version: "3.0"
 uw_lite_version: 1.0
 deal_id: uw_lite_empty_value
 deal_name: Empty Value

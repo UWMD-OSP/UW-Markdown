@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Draft RFC 0124: require an explicit rule-set declaration in every source representation; pending owner review, with no implementation.
+- Implement accepted RFC 0124: require every Lite source to declare a kept uw_version; retain RCP-13 and model version refusal.
 
 - Apply the public/private paperwork policy and enforce the tracked-content
   identity guard in required CI, with only the named public-handle exceptions.

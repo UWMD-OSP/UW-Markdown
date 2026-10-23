@@ -101,7 +101,12 @@ A `.uwx.md` file is a UTF-8 encoded plain text file with the extension `.uwx.md`
 
 Sections MUST appear in the canonical order defined in Part IV. Parsers MUST tolerate out-of-order sections by scanning for `uw:section=` annotations rather than relying on position.
 
-### 2.2 Frontmatter Schema
+### 2.2 Frontmatter
+
+RFC 0124 requires the uw_version declaration in UW Lite as well as structured
+and envelope representations. uw_lite_version is a representation label, not
+a financial rule-set selector; absent/null/unsupported declarations never default.
+ Schema
 
 The frontmatter is YAML. All fields shown; `*` = required.
 

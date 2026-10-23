@@ -5,7 +5,7 @@ import type {
   UWEnvelopeSectionEntry,
 } from './envelope.js';
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
-import type { ParsedUWLite, UWLiteFieldNode, UWLiteScalar } from './lite.js';
+import { assertLiteRuleSet, type ParsedUWLite, type UWLiteFieldNode, type UWLiteScalar } from './lite.js';
 import { isBlockedSegment } from './parser.js';
 import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 import { buildMeta } from './metadata.js';
@@ -13,7 +13,7 @@ import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
 import type { UWFrontmatter } from './types.js';
 
 // The bridge emits Format 3.0 bare blocks for every class (RFC 0081 D12). A
-// Lite source stating any other uw_version is refused; no financial value is
+// Lite must explicitly state its kept uw_version (RFC 0124); no financial value is
 // inferred.
 const UW_LITE_BRIDGE_FORMAT_VERSION = SUPPORTED_FORMAT_VERSIONS[0];
 
@@ -221,6 +221,7 @@ const KNOWN_SECTIONS = new Set([
 ]);
 
 export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
+  assertLiteRuleSet(document.frontmatter);
   const report: UWLiteCompilationReport = {
     profile: UW_LITE_BRIDGE_PROFILE,
     mappings: [],
@@ -505,18 +506,7 @@ function compileFrontmatter(
   const dealName = readRequiredString(document.frontmatter, 'deal_name', report);
   const created = readRequiredString(document.frontmatter, 'created', report);
   if (!dealId || !dealName || !created) return null;
-  const semanticVersion = UW_LITE_BRIDGE_FORMAT_VERSION;
-  if (document.frontmatter['uw_version'] !== undefined && document.frontmatter['uw_version'] !== semanticVersion) {
-    report.issues.push({
-      code: 'UNSUPPORTED_FORMAT_VERSION',
-      severity: 'error',
-      message: `Declared uw_version ${JSON.stringify(document.frontmatter['uw_version'])} is unsupported; the Lite bridge emits "${semanticVersion}" only.`,
-    });
-    return null;
-  }
-  if (document.frontmatter['uw_version'] === undefined) {
-    report.defaults.push({ path: 'frontmatter.uw_version', value: semanticVersion, reason: 'The Lite bridge emits Format 3.0 (RFC 0081 D12).' });
-  }
+  const semanticVersion = assertLiteRuleSet(document.frontmatter);
 
   const output: Record<string, unknown> = {
     ...document.frontmatter,

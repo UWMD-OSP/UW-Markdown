@@ -87,7 +87,7 @@ describe('resolveReceiptSubject', () => {
   });
 
   it('refuses a document with parse errors', async () => {
-    const broken = '---\nuw_lite_version: 1.0\n---\n\n- Purchase price: $1 <!-- uw: -->\n';
+    const broken = '---\nuw_lite_version: 1.0\nuw_version: "3.0"\n---\n\n- Purchase price: $1 <!-- uw: -->\n';
     await expect(
       resolveReceiptSubject(broken, { filename: 'broken.uw.md' }),
     ).rejects.toBeInstanceOf(ReceiptError);
@@ -196,7 +196,7 @@ describe('issueReceipt', () => {
       raw.replace('asset_class: "multifamily"', `asset_class: "${UNREGISTERED_CLASS}"`),
       raw.replace(/```uwmd/g, '```'),
       '',
-      '---\nuw_lite_version: 1.0\n---\n',
+      '---\nuw_lite_version: 1.0\nuw_version: "3.0"\n---\n',
     ];
     for (const candidate of mutations) {
       try {
