@@ -597,7 +597,7 @@ function setPath(target: Record<string, unknown>, path: string[], value: unknown
 }
 
 function projectFrontmatter(frontmatter: UWFrontmatter): string[] {
-  const keys = ['uw_version', 'deal_name', 'created', 'last_modified', 'asset_class', 'created_by'];
+  const keys = ['uw_version', 'deal_id', 'deal_name', 'created', 'last_modified', 'asset_class', 'created_by'];
   return keys.flatMap((key) => {
     const value = frontmatter[key];
     return value === undefined ? [] : [`${key}: ${serializeYamlScalar(value)}`];
