@@ -96,7 +96,8 @@ test('D4 separate Python projector and both codec directions against the same fr
     const actual = [json(readFileSync(resolve(folder, 'python.json'), 'utf8')),
       decodeXML(readFileSync(resolve(folder, 'python.xml'), 'utf8')),
       decodeCSV(JSON.parse(readFileSync(resolve(folder, 'python-csv.json'), 'utf8'))),
-      decodeZIP(readFileSync(resolve(folder, 'python-store.zip'))), decodeZIP(readFileSync(resolve(folder, 'python-deflate.zip')))];
+      decodeZIP(readFileSync(resolve(folder, 'python-store.zip'))), decodeZIP(readFileSync(resolve(folder, 'python-deflate.zip'))),
+      decodeZIP(readFileSync(resolve(folder, 'python-streaming.zip')))];
     for (const value of actual) equal(value, expected);
   }
 });

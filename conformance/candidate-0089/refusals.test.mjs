@@ -54,6 +54,46 @@ for (const level of [0, 6]) {
 }
 const renamed = encodeZIP(model, 0); renamed[30] ^= 1;
 add('local-name', 'zip', Buffer.from(renamed).toString('base64'), 'zip-integrity', 'name|ZIP_INVALID');
+const zipCase = (name, bytes, pattern, layer = 'zip-security') => add(name, 'zip', Buffer.from(bytes).toString('base64'), layer, pattern);
+const headers = bytes => {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const end = bytes.length - 22;
+  const central = view.getUint32(end + 16, true);
+  return { view, end, central };
+};
+const sample = () => zipSync({ 'sample.txt': Buffer.from('synthetic transport payload') }, { level: 0 });
+zipCase('unsafe-path', zipSync({ '../unsafe': Buffer.from('x') }), 'path|PATH_UNSAFE');
+const encrypted = sample(); const encryptedHeader = headers(encrypted);
+encryptedHeader.view.setUint16(6, 1, true); encryptedHeader.view.setUint16(encryptedHeader.central + 8, 1, true);
+zipCase('encrypted', encrypted, 'encryption|ZIP_ENCRYPTED');
+const symlink = sample(); const symlinkHeader = headers(symlink);
+symlink[symlinkHeader.central + 5] = 3;
+symlinkHeader.view.setUint32(symlinkHeader.central + 38, 0xa1ff0000, true);
+zipCase('symlink', symlink, 'symlink|ZIP_SYMLINK');
+const invalidName = sample(); const invalidNameHeader = headers(invalidName);
+invalidName[30] = 255; invalidName[invalidNameHeader.central + 46] = 255;
+zipCase('invalid-utf8-name', invalidName, 'utf-8|UTF8|ZIP_FILENAME_UTF8');
+const duplicateName = zipSync({ 'first.txt': Buffer.from('a'), 'other.txt': Buffer.from('b') }, { level: 0 });
+const duplicateHeader = headers(duplicateName);
+const secondCentral = duplicateHeader.central + 46 + 9;
+const secondLocal = duplicateHeader.view.getUint32(secondCentral + 42, true);
+duplicateName.set(Buffer.from('first.txt'), secondLocal + 30); duplicateName.set(Buffer.from('first.txt'), secondCentral + 46);
+zipCase('duplicate-member', duplicateName, 'duplicate|ZIP_DUPLICATE');
+for (const [name, offset, centralOffset] of [['local-flags', 6, 8], ['local-method', 8, 10], ['local-crc', 14, 16], ['local-size', 22, 24]]) {
+  const value = sample(); const h = headers(value); value[offset] ^= 1;
+  assert.notEqual(value[offset], value[h.central + centralOffset]);
+  zipCase(name, value, 'local/central|ZIP_INVALID', 'zip-integrity');
+}
+for (const level of [0, 6]) {
+  const value = encodeZIP(model, level); const h = headers(value);
+  h.view.setUint32(22, 1, true); h.view.setUint32(h.central + 24, 1, true);
+  zipCase(`forged-expanded-${level}`, value, 'size|limit|ZIP_INVALID', 'zip-integrity');
+}
+const malformed = zipSync({ 'sample.txt': Buffer.from('synthetic '.repeat(100)) }, { level: 6 });
+const malformedHeader = headers(malformed);
+malformed[30 + malformedHeader.view.getUint16(26, true) + malformedHeader.view.getUint16(28, true)] = 255;
+zipCase('malformed-deflate', malformed, 'invalid|error|DEFLATE|ZIP_INVALID', 'zip-integrity');
+zipCase('ratio-limit', zipSync({ 'ratio.txt': Buffer.alloc(2 * 1024 * 1024) }, { level: 6 }), 'ratio|ZIP_RATIO_LIMIT', 'resource');
 const files = encodeCSV(model);
 const raw = Object.fromEntries(Object.entries(files).map(([path, value]) => [path, Buffer.from(value)]));
 raw['frontmatter.csv'] = Buffer.concat([Buffer.from([239, 187, 191]), raw['frontmatter.csv']]);

@@ -5,6 +5,8 @@ from pathlib import Path
 import platform
 import re
 import sys
+import zipfile
+import zlib
 from xml.etree.ElementTree import ParseError
 from independent import load_json, decode_xml, decode_csv, decode_zip, validate
 
@@ -18,7 +20,7 @@ for item in cases:
         actual = (load_json(value) if item['kind'] == 'json' else decode_xml(value)
                   if item['kind'] == 'xml' else decode_csv(value) if item['kind'] == 'csv'
                   else decode_zip(base64.b64decode(value), item.get('options')))
-    except (ValueError, TypeError, AssertionError, ParseError) as error:
+    except (ValueError, TypeError, AssertionError, ParseError, zipfile.BadZipFile, zlib.error) as error:
         if item['layer'] == 'accepted' or not re.search(item['pattern'], str(error), re.I):
             failures.append((item['name'], item['layer'], str(error)))
         observations.append(dict(name=item['name'], layer=item['layer'], refusal=str(error)))

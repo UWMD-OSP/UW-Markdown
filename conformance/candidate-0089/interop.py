@@ -1,5 +1,6 @@
 """Run both directions against committed expectations; never refresh an oracle."""
 import copy
+import io
 import json
 from pathlib import Path
 import platform
@@ -35,6 +36,19 @@ for item in packet['source_cases'] + packet['direct_models']:
     (target / 'python-csv.json').write_text(json.dumps(encode_csv(expected), ensure_ascii=True), encoding='utf-8')
     (target / 'python-store.zip').write_bytes(encode_zip(expected, zipfile.ZIP_STORED))
     (target / 'python-deflate.zip').write_bytes(encode_zip(expected, zipfile.ZIP_DEFLATED))
+    class Streaming(io.BytesIO):
+        def seekable(self):
+            return False
+
+        def seek(self, *_args):
+            raise io.UnsupportedOperation('streaming writer')
+    stream = Streaming()
+    with zipfile.ZipFile(stream, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
+        for path, text in encode_csv(expected).items():
+            archive.writestr(path, text.encode('utf-8'))
+    streamed = stream.getvalue()
+    assert dump(decode_zip(streamed)) == dump(expected), ('streaming descriptors', name)
+    (target / 'python-streaming.zip').write_bytes(streamed)
     observations.append({'case': name, 'source': 'pass' if 'source' in item else 'not_applicable',
                          'node_to_python': ['json', 'xml', 'csv', 'store', 'deflate'],
                          'complete_model': 'pass', 'frozen_preimage': 'pass'})
