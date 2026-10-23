@@ -2195,3 +2195,8 @@ Current site guidance distinguishes validation issues from deal flags, documents
 bounded workbook input import and pack-less dictionary receipt checks, and
 derives specification page titles from the version matrix. The current-main
 scaffold reports one size warning and two screening-stage info notes.
+
+The RFC 0120–0124 integration has 1,343 indexed reference checks and 657
+portable CLI cases. The portable cases project the same corpus; they are not
+additional independent controls. Class-scoped dictionary counts remain 171
+calculations and eleven primary-size selectors.

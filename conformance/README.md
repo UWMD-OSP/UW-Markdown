@@ -15,15 +15,15 @@ describe content; they do not confer a tier claim.
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
 | Reader | 42 | 27 |
-| Verifier | 860 | 547 |
+| Verifier | 871 | 558 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
-| Representations | 150 | 0 |
+| Representations | 154 | 0 |
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
-| Starter products | 134 | 57 |
-| **Total** | **1,320** | **646** |
+| Starter products | 142 | 57 |
+| **Total** | **1,343** | **657** |
 
 ## How to self-certify
 
@@ -68,7 +68,7 @@ Accepted RFC 0088 adds 14 Verifier calc cases to the prior 1,106 default checks,
 with unchanged original expectations. They pin the selected primitive procedure,
 public versus internal exceptional values and retained IRR behavior. All 14 also
 run through actual CLI subprocesses. Portable cases project a subset of the same
-checks, so 364 is not an additional corpus. The index and generated cases are
+checks; they are not an additional corpus. The index and generated cases are
 checked for exact ownership, missing/duplicate results and generation drift.
 
 Accepted RFC 0093 and RFC 0094 each add four authored native Verifier cases.
