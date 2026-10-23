@@ -72,7 +72,7 @@ test('finite agreement and signature/backend failure have exact public boundarie
   await check('invalid-finite', expected('failed', ['RCP-01'], false), { receipt: signed(issued, true) });
   await check('missing-backend-finite', expected('unverifiable', ['RCP-08'], false), { backend: 'missing', calls: 0 });
 });
-test('subject, held inputs and pack admission retain precedence before authentication', async () => {
+test('subject and held inputs stay early; RFC 0123 pack admission follows authentication', async () => {
   await check('bad-source', expected('unverifiable', ['RCP-09'], false), { content: 'not an admitted record', receipt: signed(issued, true), calls: 0 });
   const different = structuredClone(issued); different.subject.digest = `sha256:${'0'.repeat(64)}`;
   await check('subject-mismatch', expected('failed', ['RCP-01'], false), { receipt: signed(different, true), calls: 0 });
@@ -81,8 +81,10 @@ test('subject, held inputs and pack admission retain precedence before authentic
   const referenced = structuredClone(issued); referenced.inputs_provenance = [{ source: 'market_data', document_id: 'test-input', digest: `sha256:${'1'.repeat(64)}` }];
   await check('held-input-mismatch', expected('failed', ['RCP-12'], false), { receipt: signed(referenced, true), inputs: { 'test-input': `sha256:${'2'.repeat(64)}` }, packs: [], calls: 0 });
   await check('missing-input', expected('unverifiable', ['RCP-11'], false), { receipt: signed(referenced, true), calls: 0 });
-  await check('unknown-pack', expected('unverifiable', ['RCP-05'], false), { receipt: signed(issued, true), packs: [], calls: 0 });
-  await check('wrong-pack-version', expected('unverifiable', ['RCP-06'], false), { receipt: signed(issued, true), packs: [{ ...pack, version: '2.0.0' }], calls: 0 });
+  await check('unknown-pack-invalid-signature', expected('failed', ['RCP-01'], false), { receipt: signed(issued, true), packs: [] });
+  await check('unknown-pack-authenticated', expected('unverifiable', ['RCP-05'], true), { packs: [] });
+  await check('wrong-pack-version-invalid-signature', expected('failed', ['RCP-01'], false), { receipt: signed(issued, true), packs: [{ ...pack, version: '2.0.0' }] });
+  await check('wrong-pack-version-authenticated', expected('unverifiable', ['RCP-06'], true), { packs: [{ ...pack, version: '2.0.0' }] });
 });
 test('authenticated finite coverage/value/engine comparison precedes results digest', async () => {
   const changed = structuredClone(issued); changed.computation.results[0].value = 3; changed.computation.results_digest = `sha256:${'0'.repeat(64)}`;

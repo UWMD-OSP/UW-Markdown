@@ -1,0 +1,28 @@
+{
+  "cs_issues": [
+    {
+      "code": "CS-02",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "tranches[0].rate"
+    },
+    {
+      "code": "CS-03",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "sizing"
+    },
+    {
+      "code": "CS-04",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "point_in_time"
+    },
+    {
+      "code": "CS-WATERFALL-UNSUPPORTED",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "hurdle"
+    }
+  ]
+}

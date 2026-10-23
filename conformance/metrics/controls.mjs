@@ -188,7 +188,7 @@ export function controls(root) {
     }],
     ['Lite-ratio-token-retains-stated-precision', () => {
       const liteSections = readLiteSections(root);
-      const source = '---\nuw_lite_version: 1.0\nasset_class: multifamily\n---\n- NOI: $120 <!-- uw:noi.net_operating_income -->\n- Debt service: $100 <!-- uw:debt.annual_debt_service -->\n- DSCR: 1.20x <!-- uw:debt.dscr -->\n';
+      const source = '---\nuw_lite_version: 1.0\nuw_version: "3.0"\nasset_class: multifamily\n---\n- NOI: $120 <!-- uw:noi.net_operating_income -->\n- Debt service: $100 <!-- uw:debt.annual_debt_service -->\n- DSCR: 1.20x <!-- uw:debt.dscr -->\n';
       const result = verifyExample(source, d, liteSections);
       assert.deepEqual(result.counts, { verified: 1, failed: 0, unverifiable: 0 });
       assert.equal(result.evidence[0].stated_decimals, 2);

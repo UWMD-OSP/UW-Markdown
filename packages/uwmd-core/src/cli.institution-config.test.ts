@@ -158,7 +158,7 @@ describe('RFC0097 actual standalone CLI admission', () => {
   });
   it('Lite validation also completes config preflight before presenting ordinary results', async () => {
     const { documents, config } = setup(); const file = resolve(documents, 'record.uw.md');
-    writeFileSync(file, '---\nuw_version: "1.0"\ndeal_name: Lite\n---\n\n# Lite\n'); writeFileSync(config, '{');
+    writeFileSync(file, '---\nuw_lite_version: 1.0\nuw_version: "3.0"\ndeal_name: Lite\n---\n\n# Lite\n'); writeFileSync(config, '{');
     const result = await run(['validate', file, '--json']);
     expect(result.status).toBe(1); expect(JSON.parse(result.stdout)).toEqual({ error: errorObject() });
   });

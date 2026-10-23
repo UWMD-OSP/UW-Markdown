@@ -58,7 +58,7 @@ export interface NullOptions {
 const DEFAULT_NULL = 'n/a';
 
 function toFiniteNumber(value: unknown): number | null {
-  if (value == null) return null;
+  if (typeof value !== 'number' && typeof value !== 'string') return null;
   const n = typeof value === 'number' ? value : Number(value);
   return Number.isFinite(n) ? n : null;
 }

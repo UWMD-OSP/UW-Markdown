@@ -40,6 +40,7 @@ function singleBlock(entry: UWEnvelopeSectionEntry | undefined): UWEnvelopeBlock
 const LITE = [
   '---',
   'uw_lite_version: 1.0',
+  'uw_version: "3.0"',
   'deal_id: uw_lite_test',
   'deal_name: Lite Test',
   'created: 2026-07-29T00:00:00Z',
@@ -74,7 +75,7 @@ describe('compileUWLite', () => {
     expect(result.envelope.sections['debt_structure']).toMatchObject({
       content: { loan_amount: 8_000_000 },
     });
-    expect(result.report.defaults).toContainEqual(
+    expect(result.report.defaults).not.toContainEqual(
       expect.objectContaining({ path: 'frontmatter.uw_version', value: '3.0' }),
     );
   });
@@ -102,10 +103,8 @@ describe('compileUWLite', () => {
   });
 
   it.each(['1.1', '2.0', '2.1', '4.0'])('refuses a Lite source stating uw_version %s', (version) => {
-    const source = LITE.replace('asset_class: multifamily', `asset_class: multifamily\nuw_version: "${version}"`);
-    const result = compileUWLite(parseUWLite(source));
-    expect(result.ok).toBe(false);
-    expect(result.report.issues).toContainEqual(expect.objectContaining({ code: 'UNSUPPORTED_FORMAT_VERSION' }));
+    const source = LITE.replace('uw_version: "3.0"', `uw_version: "${version}"`);
+    expect(() => compileUWLite(parseUWLite(source))).toThrow(expect.objectContaining({ code: 'UNSUPPORTED_FORMAT_VERSION' }));
   });
 
   it('preserves the complete Lite source in a namespaced extension', () => {
@@ -308,6 +307,7 @@ describe('size intensives cross the bridge (RFC 0027)', () => {
   const OFFICE_LITE = [
     '---',
     'uw_lite_version: 1.0',
+    'uw_version: "3.0"',
     'deal_id: uw_lite_office',
     'deal_name: Lite Office',
     'created: 2026-08-25T00:00:00Z',
@@ -351,5 +351,13 @@ describe('size intensives cross the bridge (RFC 0027)', () => {
         expect(litePaths.has(`property.${path}`), `${cls}: property.${path}`).toBe(true);
       }
     }
+  });
+});
+
+describe('RFC 0124 mutable Lite compilation admission', () => {
+  it.each([undefined, null, 3, false, '', '99.0'])('refuses a model declaration %s', value => {
+    const parsed = parseUWLite(LITE);
+    if (value === undefined) delete parsed.frontmatter.uw_version; else parsed.frontmatter.uw_version = value;
+    expect(() => compileUWLite(parsed)).toThrow(expect.objectContaining({ code: 'UNSUPPORTED_FORMAT_VERSION' }));
   });
 });

@@ -1,4 +1,5 @@
 ---
+uw_version: "3.0"
 uw_lite_version: 1.0 # the representation version
 deal_name: "Caf\u00e9 \"Tower\" at C:\\deals #2"
 deal_id: 'uw_lite_o''brien'

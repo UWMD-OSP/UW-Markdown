@@ -241,6 +241,10 @@ def project(actual, name: str | None):
             "issues": sorted(seen.values(), key=lambda i: (i["code"] or "", i["severity"] or "")),
             "deal_flags": sorted(flags.values(), key=lambda f: (f["code"] or "", f["band"] or "")),
         }
+    if name == "capital-admission":
+        return {"cs_issues": sorted(({k: i.get(k) for k in ("code", "severity", "section", "field")}
+            for i in actual.get("issues", []) if i["code"].startswith("CS-")),
+            key=lambda i: (i["code"], i["section"], i["field"]))}
     if name == "replacement-funding":
         verification = actual.get("replacement_funding_verification", {})
         result = {"state": verification.get("state")}
@@ -267,7 +271,8 @@ def project(actual, name: str | None):
         if isinstance(actual.get("error"), dict):
             return {"refused_code": actual["error"].get("code")}
         return {"verdict": actual.get("verdict"),
-                "codes": sorted({i.get("code") for i in actual.get("issues", [])})}
+                "codes": sorted({i.get("code") for i in actual.get("issues", [])}),
+                "recomputed_ids": sorted(r["calc_id"] for r in actual.get("recomputed", []))}
     if name == "property-cash-flow-assembly":
         # RFC 0115: a PropertyCashFlowAssembly, or its CALC-CF-ASSEMBLY refusal,
         # reduced to the fields the assembly baselines name.
@@ -304,7 +309,7 @@ def project(actual, name: str | None):
 # exactly. The case names the baseline fields read, from a closed set, because
 # a document fixture's `expected_codes` are validator codes, not verifier codes.
 
-VERDICT_FIELDS = ("verdict", "expected_code", "expected_codes", "refused_code")
+VERDICT_FIELDS = ("verdict", "expected_code", "expected_codes", "refused_code", "recomputed_ids")
 
 
 def verdict_codes(expected: dict, actual, fields: list[str]) -> list[str]:
@@ -318,7 +323,9 @@ def verdict_codes(expected: dict, actual, fields: list[str]) -> list[str]:
         if field not in expected:
             continue
         want = expected[field]
-        if field in ("verdict", "refused_code"):
+        if field == "recomputed_ids":
+            problems.extend(json_subset(want, actual.get(field), field))
+        elif field in ("verdict", "refused_code"):
             if actual.get(field) != want:
                 problems.append(f"{field}: {want!r} != {actual.get(field)!r}")
         else:

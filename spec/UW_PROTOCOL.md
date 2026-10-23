@@ -246,6 +246,15 @@ which needs an edit engine. A read-only reader could not satisfy it.
 
 ### II.2 Verifier
 
+RFC 0123 makes applicable builtin receipt calc_ids assertions of the selected
+rule set's dictionary definitions. Recompute these after authentication without
+a starter pack; expose only stated result ids. Pack availability cannot hide a
+dictionary mismatch or corrupt result digest. Unknown named-pack coverage still
+prevents an overall verified receipt (Receipt §5.1); full known-pack coverage
+retains RCP-02. Exact value/computed/unit and existing engine-identity/refusal
+precedence apply. No additional tolerance or wire field.
+
+
 A Verifier MUST satisfy all Reader requirements, and additionally:
 
 1. Claim `validate` and apply the Format validation rules (format spec
@@ -460,9 +469,10 @@ reserve schemas).
   run the subcommand once per variant.
 - **Receipts.** `verify-receipt` verifies as a Verifier holds the standard:
   without a calculation pack (packs are starter products, RFC 0078). A
-  receipt's results are its pack's outputs, so after the subject, rule-set and
-  referenced-input checks a pack-named receipt is `unverifiable` with
-  `RCP-05` (UW_RECEIPT §5.1 step 3). `--inputs` supplies the referenced-input
+  Verifier authenticates after subject, rule-set and held-input preflights,
+  then recomputes applicable dictionary-defined stated results (RFC 0123).
+  Unknown named-pack coverage remains unverifiable/RCP-05 only when no earlier
+  decisive dictionary disagreement, refusal or corrupt result digest applies. `--inputs` supplies the referenced-input
   digests the verifier holds (UW_RECEIPT §10); without it the verifier holds none.
   A receipt that cannot be read is refused with `{ error }`, code
   `RCP_MALFORMED`.
@@ -1472,6 +1482,11 @@ An implementation that verifies signatures adds `signing` to its
 does not claim `signing` skips the suite and remains conformant.
 
 ---
+
+RFC 0121 bounds Format CS-01 to tranche objects, required own id/class/position/
+amount and their existing types/domains, and id/position uniqueness. It is not
+blanket schema validation. Independent CS-02/02b/03/04 and waterfall owners keep
+their conditions and findings, including admitted builtin component stacks.
 
 ### V.12 Replacement-funding binding verification (RFC 0070)
 
@@ -4235,6 +4250,13 @@ with readiness-only DQ-06/info. Their exact fields, complete-pass ordering and
 admitted-parent suppression are normative in §III.6a. META-01/02/03 and ordinary
 issue/ProtocolError transport remain unchanged.
 
+RFC 0122 pins DQ-05 instant admission to Format §4.22's strict Gregorian date/
+explicit-offset grammar. Compare exact milliseconds after admission, without
+host-timezone or permissive parsing. Invalid last_checked contributes no DQ-05;
+an invalid supplied clock is the typed category validate operation refusal
+PROTO-VALIDATION-CLOCK, never a document finding or stale result. No financial
+convention or freshness threshold changes.
+
 ### XI.1 Selected institution-configuration operation errors (RFC0097)
 
 `VAL-INSTITUTION-CONFIG-UNREADABLE` and
@@ -4285,6 +4307,13 @@ A Reader MUST refuse absent or non-`"3.0"` uw_version at parse stage with `UNSUP
 ### XII.4 Protocol version skew
 
 A module MUST NOT load unless its requires_protocol range is satisfied by 4.1.0 and its requires_format range by 3.0. No earlier contract satisfies either range.
+
+RFC 0124 requires every Lite source to declare a kept uw_version. Parsing,
+compilation, canonicalization and adapters refuse absent/null/malformed or
+unsupported declarations with UNSUPPORTED_FORMAT_VERSION, never an implicit
+rule set. RCP-13 remains the receipt/subject rule-set mismatch; a subject that
+cannot canonicalize because its declaration is unsupported remains RCP-09.
+Models naming no kept rule set remain refused, including in-memory API models.
 
 ### XII.5 Rule sets (RFC 0111)
 

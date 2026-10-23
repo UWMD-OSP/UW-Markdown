@@ -158,3 +158,20 @@ describe('checkDataQuality — DQ-05: stale gaps', () => {
     expect(issues.find((i) => i.code === 'DQ-05')).toBeUndefined();
   });
 });
+
+describe('RFC 0122 DQ-05 boundaries', () => {
+  it.each([
+    ['2026-10-01', '2026-10-15', 14, false],
+    ['2026-10-01T00:00Z', '2026-10-15T00:00:00.001Z', 14, true],
+    ['2026-10-01T02:00+02:00', '2026-10-15T00:00Z', 14, false],
+    ['2026-10-01', '2026-10-03', 1, true],
+    ['2026-10-01', '2026-10-03', 2, false],
+    ['2026-02-30', '2026-10-15', 14, false],
+    ['2026-01-01T00:00', '2026-10-15', 14, false],
+  ] as const)('compares %s at %s', (last_checked, now, gap_staleness_days, stale) => {
+    const file = makeFile({ sections: { gaps: makeBlock('gaps', { items: [{ section: 'property', last_checked }] }) } });
+    const issues: ValidationMessage[] = [];
+    checkDataQuality(file, issues, { now, gap_staleness_days });
+    expect(issues.some(i => i.code === 'DQ-05')).toBe(stale);
+  });
+});

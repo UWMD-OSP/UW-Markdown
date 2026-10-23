@@ -1235,8 +1235,8 @@ async function runReceiptIssue() {
 
 // RFC 0115 D4: each verify scenario runs twice. With the builtin packs it is a
 // starter check (packs are starter products, RFC 0078). Without a pack it is
-// the Verifier check, `verify/<id> [pack-less]`: a pack-named result is RCP-05
-// unverifiable. Its expectation is expected-verdict-pack-less.json where the
+// the Verifier check, `verify/<id> [pack-less]`: RFC 0123 recomputes dictionary
+// assertions before retaining unavailable named-pack coverage as RCP-05. Its expectation is expected-verdict-pack-less.json where the
 // pack changes the outcome, otherwise the scenario's expected-verdict.json.
 async function runReceiptVerify(packLess = false) {
   for (const { id, dir } of receiptScenarios('verify')) {
@@ -1301,6 +1301,9 @@ async function runReceiptVerify(packLess = false) {
       continue;
     }
 
+    if (expected.recomputed_ids && JSON.stringify((result.recomputed ?? []).map(r => r.calc_id).sort()) !== JSON.stringify(expected.recomputed_ids)) {
+      record('receipts', scenario, 'fail', 'wrong recomputed result subset'); continue;
+    }
     const seen = new Set(result.issues.map((i) => i.code));
     const missing = (expected.expected_codes ?? []).filter((c) => !seen.has(c));
     if (missing.length > 0) {
@@ -2694,6 +2697,13 @@ async function runCapitalStack() {
     if (existsSync(join(dir, 'deal.uwx.md'))) {
       const expected = readCase(dir, 'expected.json');
       const codes = validatorCodes(join(dir, 'deal.uwx.md'));
+      if (expected.cs_issues) {
+        const actual = validateUWFile(parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'))).issues
+          .filter(i => i.code.startsWith('CS-')).map(({ code, severity, section, field }) => ({ code, severity, section, field }))
+          .sort((a, b) => `${a.code}:${a.section}:${a.field}`.localeCompare(`${b.code}:${b.section}:${b.field}`));
+        record('capital-stack', id, JSON.stringify(actual) === JSON.stringify(expected.cs_issues) ? 'pass' : 'fail', JSON.stringify(actual));
+        continue;
+      }
       const minOccurrences = expected.min_occurrences ?? 1;
       const short = (expected.expected_codes ?? []).filter(
         (c) => codes.filter((x) => x === c).length < minOccurrences);

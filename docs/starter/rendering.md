@@ -49,3 +49,10 @@ A compressed representation of the deal for dropping into an AI assistant. Inclu
 Omits: full unit-level rent roll data, full operating statement line items, pipeline log (included as a one-line summary instead).
 
 Target token count: < 8,000 tokens for Tier 1 deal, < 16,000 for full Tier 2 deal.
+
+Chat Sources & Uses reads the Format 4.8 stated scalar homes: sources.total,
+uses.total, sources.senior_loan, equity_metrics.equity_total,
+uses.closing_costs.total and uses.other_reserves. Other reserves are labelled
+explicitly and do not imply an escrow total. Display does not sum missing totals.
+Numeric displays use the missing marker for objects, arrays and other nonnumeric
+carriers, including the null-prototype objects reconstructed by CSV decoding.

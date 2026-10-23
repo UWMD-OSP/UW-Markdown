@@ -1,4 +1,7 @@
 {
-  "description": "A Lite document without frontmatter cannot declare its representation version.",
-  "expected_codes": ["LITE_FRONTMATTER_REQUIRED", "LITE_VERSION_REQUIRED"]
+  "description": "RFC 0124: no frontmatter means no explicit kept rule set; refuse rather than author a declaration.",
+  "expected_codes": [
+    "UNSUPPORTED_FORMAT_VERSION"
+  ],
+  "must_parse": false
 }
