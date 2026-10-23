@@ -1181,3 +1181,17 @@ describe('RFC 0088 authenticate-first receipt precedence', () => {
     expect(await parkview()).toBe(content);
   });
 });
+
+describe('RFC 0124 Lite receipt rule-set boundaries', () => {
+  it('keeps unsupported subjects RCP-09 and receipt mismatch RCP-13 ahead of pack/backend uncertainty', async () => {
+    const source = await liteDeal();
+    const receipt = await issueReceipt(source, { filename: LITE_DEAL, issued_at: ISSUED_AT });
+    for (const declaration of ['', 'uw_version: null\n', 'uw_version: 3.0\n', 'uw_version: "99.0"\n']) {
+      const bad = source.replace(/^uw_version:.*\r?\n/m, declaration);
+      expect((await verifyReceipt(receipt, bad, { filename: LITE_DEAL, packs: [] })).issues[0]!.code).toBe('RCP-09');
+    }
+    receipt.computation.rule_set = '99.0';
+    receipt.signature = { algorithm: 'ed25519', key_id: 'test', value: 'AA==' };
+    expect((await verifyReceipt(receipt, source, { filename: LITE_DEAL, packs: [] })).issues[0]!.code).toBe('RCP-13');
+  });
+});

@@ -23,7 +23,7 @@ function readExample(source, liteSections) {
   // An empty structured view over the Lite frontmatter; the anchors below fill it.
   // RFC 0124: parseUWLite already admitted the explicit kept rule set.
   const parsed = {
-    frontmatter: { uw_version: ...lite.frontmatter }, sections: {}, prose: {}, pipeline_log: [],
+    frontmatter: { ...lite.frontmatter }, sections: {}, prose: {}, pipeline_log: [],
     custom_calculations: [], custom_scenarios: [], extensions: {}, superseded: {}, raw: source,
   };
   const litePrecision = new Map();

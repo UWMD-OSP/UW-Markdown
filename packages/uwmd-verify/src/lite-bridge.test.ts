@@ -353,3 +353,11 @@ describe('size intensives cross the bridge (RFC 0027)', () => {
     }
   });
 });
+
+describe('RFC 0124 mutable Lite compilation admission', () => {
+  it.each([undefined, null, 3, false, '', '99.0'])('refuses a model declaration %s', value => {
+    const parsed = parseUWLite(LITE);
+    if (value === undefined) delete parsed.frontmatter.uw_version; else parsed.frontmatter.uw_version = value;
+    expect(() => compileUWLite(parsed)).toThrow(expect.objectContaining({ code: 'UNSUPPORTED_FORMAT_VERSION' }));
+  });
+});
