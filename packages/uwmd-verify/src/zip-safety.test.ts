@@ -1,6 +1,7 @@
 import { strToU8, zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
 import { extractZipSafely, inspectZipSafety } from './zip-safety.js';
+import { decodeUWDealPackageZip } from './deal-package-zip.js';
 
 const refuse = (code: string, message: string): never => { throw new Error(`${code}: ${message}`); };
 const archive = (level: 0 | 6 = 0) => zipSync({ 'sample.txt': strToU8('synthetic payload '.repeat(30)) }, { level });
@@ -27,6 +28,7 @@ describe('actual ZIP transport integrity (#544)', () => {
     view.setUint32(14, 0, true);
     view.setUint32(central + 16, 0, true);
     expect(() => extractZipSafely(bytes, {}, refuse)).toThrow(/ZIP_INVALID.*CRC/);
+    expect(() => decodeUWDealPackageZip(bytes)).toThrow(/PKG_ZIP_INVALID/);
   });
 
   it('rejects local/central filename, flags, method, CRC and size disagreement', () => {
