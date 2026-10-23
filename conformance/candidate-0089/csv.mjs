@@ -137,10 +137,12 @@ export function decodeCSV(input) {
   if (generator !== null) model.generator = generator;
   check(jcs(readJSON(doc[5])) === jcs(model.frontmatter.deal_id) && jcs(readJSON(doc[6])) === jcs(model.frontmatter.deal_name), 'CSV frontmatter echoes');
   const empty = readJSON(doc[8]); check(Array.isArray(empty), 'CSV empty slots');
+  const emptyAddresses = [];
   let previous = '';
   for (const record of empty) {
     check(object(record) && Object.keys(record).sort().join(',') === 'kind,path' && record.path > previous, 'CSV empty descriptor order/shape'); previous = record.path;
     const path = parts(record.path); check(path.length === 2 && ['sections', 'superseded'].includes(path[0]), 'CSV empty descriptor location');
+    emptyAddresses.push(path);
     check(record.kind === (path[0] === 'sections' ? 'object' : 'array'), 'CSV empty descriptor kind');
     put(model[path[0]], path[1], record.kind === 'array' ? [] : {});
   }
@@ -174,6 +176,8 @@ export function decodeCSV(input) {
     check(!seen.has(ref), 'CSV duplicate block'); seen.add(ref);
     const section = readJSON(sectionToken); const variant = readJSON(variantToken);
     check(typeof section === 'string' && (variant === null || typeof variant === 'string'), 'CSV identity types');
+    const path = parts(ref);
+    check(!emptyAddresses.some(empty => empty.length <= path.length && empty.every((part, index) => part === path[index])), 'CSV empty/nonempty overlap');
     const values = {};
     for (const scope of SCOPES) {
       const key = `${ref}\0${scope}`; check(valueRows.has(key), 'CSV missing scope');
@@ -183,7 +187,6 @@ export function decodeCSV(input) {
     check(!Object.hasOwn(values.content, '_meta') && !['annotation', 'content', 'prose'].some(key => Object.hasOwn(values['block-extra'], key)), 'CSV block reserved overlap');
     const block = { ...values['block-extra'], annotation: values.annotation, content: { _meta: values.meta, ...values.content } };
     if (prose.has(ref)) { block.prose = prose.get(ref); prose.delete(ref); }
-    const path = parts(ref);
     check(state === (collection === 'superseded' ? 'superseded' : 'current'), 'CSV state');
     if (collection !== 'extensions') check(mode === '', 'CSV extension mode outside extensions');
     if (collection === 'sections') {

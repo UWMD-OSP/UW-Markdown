@@ -40,12 +40,19 @@ export function admitJSONValue(value, depth = 0, parents = new Set()) {
   if (typeof value === 'number') { check(Number.isFinite(value), 'nonfinite binary64'); return; }
   check(typeof value === 'object' && !parents.has(value), 'non-JSON or cyclic model value');
   check(Array.isArray(value) || [null, Object.prototype].includes(Object.getPrototypeOf(value)), 'non-JSON object');
-  check(Reflect.ownKeys(value).every(key => typeof key === 'string'), 'non-JSON symbol key');
-  if (Array.isArray(value)) check(Object.keys(value).length === value.length && Object.keys(value).every((key, index) => key === String(index)), 'non-JSON array holes/extras');
+  const properties = Object.getOwnPropertyDescriptors(value);
+  const keys = Reflect.ownKeys(properties);
+  check(keys.every(key => typeof key === 'string'), 'non-JSON symbol key');
+  const array = Array.isArray(value);
+  const length = array ? properties.length.value : null;
+  if (array) check(keys.length === length + 1 && keys.every(key => key === 'length' || /^(?:0|[1-9][0-9]*)$/.test(key) && Number(key) < length), 'non-JSON array holes/extras');
   parents.add(value);
-  for (const key of Object.keys(value)) {
-    unicode(key); check(Object.hasOwn(Object.getOwnPropertyDescriptor(value, key), 'value'), 'non-JSON accessor');
-    admitJSONValue(value[key], depth + 1, parents);
+  for (const key of keys) {
+    const descriptor = properties[key];
+    if (array && key === 'length') continue; // Intrinsic nonenumerable array length is structural.
+    unicode(key); check(Object.hasOwn(descriptor, 'value'), 'non-JSON accessor');
+    check(descriptor.enumerable, 'non-JSON hidden property');
+    admitJSONValue(descriptor.value, depth + 1, parents);
   }
   parents.delete(value);
 }
@@ -221,7 +228,9 @@ export function projectSource(source) {
   }
   check(occurrences.length === physical.length && physical.every(block => occurrences.filter(value => value === block.content).length === 1), 'physical occurrence accounting');
   const model = { ...base, envelope_version: VERSION, extensions, superseded };
-  validateModel(model);
+  // Source authentication/receipt issuance has its own admission contract.
+  // Complete occurrence accounting must not impose full carrier/block schema.
+  admitJSONValue(model); jcs(model);
   return { model, physical_count: physical.length, accounted_count: occurrences.length };
 }
 

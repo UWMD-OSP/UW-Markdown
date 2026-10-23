@@ -485,6 +485,7 @@ def decode_csv(files):
         if ref in prose:
             block['prose'] = prose.pop(ref)
         path = parts(ref)
+        need(not any(path[:len(parts(item['path']))] == parts(item['path']) for item in empty), 'CSV empty/nonempty overlap')
         need(state == ('superseded' if collection == 'superseded' else 'current') and (collection == 'extensions' or mode == ''), 'CSV state/mode')
         if collection == 'sections':
             need(ordinal == '' and len(path) in (2, 3) and path[:2] == [collection, section], 'CSV section descriptor')
@@ -638,7 +639,9 @@ def project_source(raw):
         else:
             model['sections'][section] = peers if section in parallel else peers[None]
     model['superseded'] = histories
-    validate(model, False)
+    # Source accounting is distinct from full carrier/model admission.
+    admit_json(model)
+    dump(model)
     need(len(blocks(model)) == len(physical), 'physical accounting count')
     need(all(sum(row[7] is block for row in blocks(model)) == 1 for _, _, block in physical), 'physical occurrence accounting')
     return model

@@ -1,0 +1,61 @@
+{
+  "origin": "Independent RFC 0089 candidate review, reviewed candidate 22be4982be4e9cdb0d41cdc7dcb428bfd44a2a09",
+  "files": [
+    {
+      "file": "review-oracle.mjs",
+      "original_sha256": "e9a6bf217a56bfa83f72ba1d7f4b43bfbed6fac51c09a13ecd85e5c10376bce5",
+      "adapted_sha256": "0947f25969ac33613deca7c73f049b8a4e18f72d46ce1e953c24524c7ef9e221",
+      "changes": [
+        "LF normalization",
+        "relative import/input locations",
+        "cache output locations and directory creation only"
+      ]
+    },
+    {
+      "file": "review-probes.mjs",
+      "original_sha256": "b718cf3668316745f3162e2ba34964f8dd312f07ea5644629ac4c9adecaa875b",
+      "adapted_sha256": "58d0e377e059d1405db8447089d28a17500a76ee52fe9a1a0311c357c26f55ec",
+      "changes": [
+        "LF normalization",
+        "relative import/input locations",
+        "cache output locations and directory creation only"
+      ]
+    },
+    {
+      "file": "review-subjects.mjs",
+      "original_sha256": "0df03c7f62b41a8d4f5c1755552576a5d5d504831fa20c3d4949f751d62c1eb1",
+      "adapted_sha256": "095cd718f9451bc82df4179e10e4e321dba349d4985af07bc50095523bc80237",
+      "changes": [
+        "LF normalization",
+        "relative import/input locations",
+        "cache output locations and directory creation only"
+      ]
+    },
+    {
+      "file": "review-zip.mjs",
+      "original_sha256": "7f3166448b5f6a235eb0966e3398b619bbaed4aab4da32512e6bfd05e1628cd6",
+      "adapted_sha256": "da2c706ba5c4883aa9540ed027ba2d3b1701b5e8eb194acba9aeb4aed65c8e0c",
+      "changes": [
+        "LF normalization",
+        "relative import/input locations",
+        "cache output locations and directory creation only"
+      ]
+    },
+    {
+      "file": "review-auth-boundaries.mjs",
+      "original_sha256": "8717d02fe4a39719e3016b79130f96f9df913069964b8f49f9745550203513aa",
+      "adapted_sha256": "506dabf093cdbbd88428872bb799a1c5f7dbc9ad4e42eb8ba0be484124d206d6",
+      "changes": [
+        "LF normalization",
+        "relative import/input locations",
+        "cache output locations and directory creation only"
+      ]
+    },
+    {
+      "file": "source-oracles.json",
+      "original_sha256": "7ece483d661e1c7ccd9f1e16c65cf2ce9b34991d04e67e1145778537ab6385c3",
+      "changes": []
+    }
+  ],
+  "expectations": "Source and ZIP expectations and algorithms retained; path/output adaptation is builder work, not independent re-review."
+}

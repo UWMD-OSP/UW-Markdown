@@ -25,12 +25,12 @@ export function parseUWFile(source, options) {
 `);
 writeFileSync(resolve(runtime, 'envelope.js'), `
 export * from ${JSON.stringify(pathToFileURL(resolve(native, 'envelope.js')).href)};
-import { projectSource, digest, preimage, stamp } from ${JSON.stringify(model)};
+import { projectSource, digest, preimage } from ${JSON.stringify(model)};
 export const UW_ENVELOPE_VERSION = '2.0';
 export const toUWEnvelope = parsed => projectSource(parsed).model;
 export const computeEnvelopeDigest = async value => digest(value);
 export const canonicalizeUWEnvelope = preimage;
-export const stampEnvelopeDigest = async value => stamp(value);
+export const stampEnvelopeDigest = async value => ({ ...value, semantic_digest: digest(value) });
 `);
 const evidence = [];
 for (const name of originals) {
