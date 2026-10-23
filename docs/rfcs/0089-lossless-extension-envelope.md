@@ -108,6 +108,11 @@ lifecycle flag or erase their authored values. Unchanged builtin and append-only
 collection shapes/order remain unchanged. An extension with history but no
 current block has only a history slot, no invented active entry.
 
+History appends at each physical insertion event: active A, explicit history B,
+replacement active C produces history B,A; active A, replacement active C,
+explicit history B produces A,B. Do not collect all explicit history first and
+then append all overwritten priors.
+
 Keep physical block inventory distinct from current selection and prior-block
 storage. Every source block must be accounted for exactly once in its applicable
 collection before claiming a complete source projection; equal payload values
@@ -303,6 +308,20 @@ empty history slots use the closed sorted empty-collection descriptors, without
 legalizing schema-invalid empty builtin variant maps. Unknown outer members
 remain in the disjoint `extra_json` object. Semantic admission precedes comparing
 the received complete digest; a valid carrier never rescues an invalid model.
+
+Table row order is independent of semantic array order: readers reconstruct
+from the explicit canonical ordinal fields, including when descriptor/value
+rows arrive reversed. Unique JSON identity cells may use any admitted JSON
+token spelling. The manifest additionally declares
+`canonicalization_version:"2.0"`; it must agree with the selected regime.
+
+The candidate resource profile admits JSON value nesting below128 and XML
+inputs up to50 MiB; its ZIP defaults are50 MiB compressed,200 MiB expanded,
+100 members and the current100:1 ratio plus1 MiB slack policy. Limits may be
+configured within the transport API. Test and report boundary refusals;
+resource exhaustion is not a restriction of the abstract JSON value domain.
+Direct model APIs must refuse non-JSON values rather than silently drop
+undefined members, array holes, functions, accessors or cyclic references.
 
 **ZIP processing sequence.** Inspect central directory and local records and
 their agreement, then bounded STORE/DEFLATE extraction with actual-output-size
