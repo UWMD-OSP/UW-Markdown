@@ -97,7 +97,7 @@ changes. No land or other-class entry changes.
 
 ## Current contract and versions
 
-Only this draft and the explicitly requested example wording change here. The synchronized spec/dictionary/pack and conformance changes implement the
+The synchronized spec/dictionary/pack and conformance changes implement the
 accepted contract. No version
 is allocated; prelaunch packages remain 4.x under the owner rule. No historical
 artifact repair or compatibility path.
@@ -116,7 +116,7 @@ cent-boundary and source-precision controls under the existing quantizer.
 
 This implementation synchronizes Format property/valuation text, Protocol metric
 contract and executable mirror/descriptions, dictionary, generated dictionary,
-data-center builtin pack and Excel output/parity, independent Python selection,
+data-center builtin pack and Excel output/parity, independent Python calculation controls,
 metric conformance, size registry/`SIZE_INTENSIVES` secondary-path parity,
 wiki and changelog in one implementation PR. Update current
 counts from actual dictionary contents. No new API or external dependency.
