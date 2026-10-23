@@ -12,12 +12,15 @@ export function parseGapInstant(value: unknown): number | null {
   if (!date || date.year < 1) return null;
   let result = (dayOrdinal(date) - EPOCH) * 86_400_000;
   if (match[2] === undefined) return result;
-  const hour = Number(match[2]), minute = Number(match[3]), second = Number(match[4] ?? 0);
+  const hour = Number(match[2]);
+  const minute = Number(match[3]);
+  const second = Number(match[4] ?? 0);
   if (hour > 23 || minute > 59 || second > 59) return null;
   result += ((hour * 60 + minute) * 60 + second) * 1000 + Number((match[5] ?? '').padEnd(3, '0'));
   const zone = match[6]!;
   if (zone !== 'Z') {
-    const hours = Number(zone.slice(1, 3)), minutes = Number(zone.slice(4, 6));
+    const hours = Number(zone.slice(1, 3));
+    const minutes = Number(zone.slice(4, 6));
     if (hours > 23 || minutes > 59) return null;
     result -= (hours * 60 + minutes) * 60_000 * (zone[0] === '+' ? 1 : -1);
   }
