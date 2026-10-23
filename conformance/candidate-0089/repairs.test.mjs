@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process';
 import { candidate } from './build-runtime.mjs';
 import * as nativeSigning from '../../packages/uwmd-verify/dist/document-signatures.js';
 import * as nativeReceipts from '../../packages/uwmd-verify/dist/receipts.js';
-import { projectSource, validateModel, stamp, preimage, jcs, sha } from './model.mjs';
+import { projectSource, validateModel, stamp, preimage, digest, jcs, sha } from './model.mjs';
 import { encodeXML, decodeXML } from './xml.mjs';
 import { encodeCSV, decodeCSV, DOC, readCSV, writeCSV } from './csv.mjs';
 import { oracle, canon, sha as independentHash } from './reviewer/review-oracle.mjs';
@@ -169,7 +169,8 @@ test('F5 all own descriptors are inspected without invoking getters or erasing h
     const descriptor = kind === 'accessor' ? { get() { calls++; throw new TypeError('getter must never execute'); } }
       : { value: kind === 'undefined' ? undefined : kind === 'function' ? () => 1 : null };
     Object.defineProperty(parent, 'hidden', descriptor);
-    assert.throws(() => validateModel(model), /non-JSON/); assert.equal(calls, 0);
+    for (const admit of [validateModel, preimage, digest, encodeXML, encodeCSV]) assert.throws(() => admit(model), /non-JSON/);
+    assert.equal(calls, 0);
     observations.push({ finding: 'F5', onArray, kind, refusal: true, getter_calls: calls });
   }
   const model = structuredClone(empty); model.outer = Object.freeze([null, {}, []]);

@@ -173,6 +173,10 @@ export function validateModel(model, stamped = false) {
 }
 
 export function semantic(model) {
+  // Low-level commitments also admit descriptors before object spreading can
+  // invoke a getter or erase an unsupported hidden member. This is JSON-value
+  // admission only, not the full carrier schema imposed on source APIs.
+  admitJSONValue(model);
   const { generated_at: _time, generator: _generator, semantic_digest: _digest, ...value } = model;
   return value;
 }
