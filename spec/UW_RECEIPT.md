@@ -112,6 +112,10 @@ canonical form, serialized as `sha256:<lowercase hex>`.
 
 ### 3.2 Results
 
+RFC 0123: an applicable builtin calc_id asserts its selected rule-set dictionary
+definition. A producer using another definition MUST use another id; a starter
+pack cannot redefine standard meaning. Pack-less verification follows §5.1.
+
 `computation.results` **MUST** contain every calc the named pack declares as an
 output, and **MUST NOT** contain any value the pack did not compute. A receipt
 is not a place to carry hand-entered numbers.
@@ -191,12 +195,10 @@ Verifiers **MUST** apply these in order:
    `failed` (`RCP-13`); see §5.2.2. Like the digest, this compares the receipt
    with its own subject, so it is decided before the indeterminate group and
    before any signature check or recomputation.
-3. **Verifier cannot decide** → `unverifiable`: unknown pack (`RCP-05`), a
-   different version of the named pack (`RCP-06`), a signature with no
-   available backend (`RCP-08`), or a referenced input the verifier does not
-   hold (`RCP-11`). A verifier without a signing backend **MUST NOT**
-   silently ignore a signature, and one without a referenced input **MUST NOT**
-   silently ignore the reference.
+3. **Input/backend preflights** → unverifiable for unavailable referenced inputs
+   (RCP-11) or a signature without a backend (RCP-08). Preserve issue order:
+   unresolved inputs, pack availability/version when applicable, then backend.
+   RCP-05/06 alone MUST NOT prevent dictionary recomputation under RFC 0123.
 4. **Authenticate first (RFC 0088).** If a signature is supplied, verify it
    exactly once over the canonical signing payload **before any financial
    recomputation or recomputation-refusal verdict**. Invalid signature or malformed
@@ -210,20 +212,38 @@ Verifiers **MUST** apply these in order:
    *unless* the issuing engine identity also differs, in which case →
    `unverifiable` (`RCP-07`); see §5.3.
 6. **`results_digest` does not recompute** → `failed` (`RCP-04`).
-7. Otherwise → `verified`.
+7. If pack availability/version still prevents proof of complete named-pack
+   coverage, return unverifiable/RCP-05 or RCP-06 with the actual dictionary
+   subset in recomputed. Otherwise → verified.
 
-The earlier indeterminate group retains issue ordering: unavailable referenced
-inputs (RCP-11), pack availability/version (RCP-05/06), then absent signing backend
-(RCP-08). Malformed receipt wire values retain the typed transport refusal before
-these steps. Source/subject/held-input preflights remain earlier than supplied
-signature authentication. No wire/schema field or digest algorithm changes.
+Malformed wire values and source/subject/held-input preflights remain earlier
+than authentication. A supplied signature authenticates before any financial
+recomputation or refusal, including when a pack is unavailable. No backend
+means RCP-08 and no recomputed values; invalid signatures remain RCP-01.
+
+**Dictionary result identity (RFC 0123).** For the selected rule set and asset
+class, an applicable builtin calc_id asserts its dictionary definition,
+selectors, prerequisites, dependencies and reported-output quantization.
+Alternate definitions MUST use another id. A Verifier MUST recompute every such
+stated result without depending on the named starter pack, including when its
+version differs. Resolve dependency closure internally; expose only stated
+result ids, never unstated intermediates or invented record inputs. Compare
+value, computed status and unit exactly. Deterministic refusal remains RCP-03;
+finite disagreement retains the RCP-03/RCP-07 engine-identity rule. A real
+same-engine dictionary disagreement MUST NOT be masked by RCP-05/06.
+Recompute results_digest over the complete stated list independently of pack
+presence. Agreement of visible dictionary results cannot prove named-pack
+output coverage; pack-only or unknown coverage remains unverifiable. A known
+matching pack retains exact declared-output coverage RCP-02 and evaluation of
+its remaining pack-only outputs. No wire field or tolerance is added.
+
 
 ### 5.2 Tolerance
 
 Receipt results are the calculation's **reported outputs**, quantized once
 at its effective `round_to` under Protocol §VIII.5. Numeric and non-numeric
 results MUST agree by exact equality; there is no additional absolute or
-relative tolerance. Stated and recomputed results MUST also agree on `computed`.
+relative tolerance. Stated and recomputed results MUST also agree on `computed` and `unit`.
 Result digests remain over those full-precision reported outputs. The historical
 `1e-6 × max(1, |stated|, |recomputed|)` comparison is superseded; a verifier MUST
 NOT accept a different result merely because it falls within that old bound.
@@ -249,6 +269,11 @@ protocol version is the one identifier every conforming issuer shares.
 Absence means **unstated**, not non-conforming: a receipt issued before the
 field existed cannot retroactively claim a version. A verifier **MUST NOT**
 treat absence as a failure.
+
+RFC 0124 requires an explicit kept uw_version in Lite subjects too. A missing,
+null, malformed or unsupported declaration cannot canonicalize (RCP-09). It is
+not filled from uw_lite_version or the receipt. A valid subject whose receipt
+names another rule set retains failed/RCP-13 before pack/backend uncertainty.
 
 ### 5.2.2 Rule set
 

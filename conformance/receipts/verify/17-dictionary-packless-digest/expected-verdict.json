@@ -1,0 +1,9 @@
+{
+  "verdict": "failed",
+  "expected_codes": [
+    "RCP-04"
+  ],
+  "recomputed_ids": [
+    "cap_rate"
+  ]
+}

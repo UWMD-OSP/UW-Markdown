@@ -876,3 +876,5 @@ export type {
   DocumentSigningSubject, UWDocumentSignature, DocumentSignatureVerifier,
   DocumentSignatureResult, DocumentSignatureCode, DocumentSignatureIssue,
 } from './document-signatures.js';
+
+export { parseGapInstant, ValidationClockError } from './gap-instant.js';

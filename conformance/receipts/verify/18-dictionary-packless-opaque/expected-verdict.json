@@ -1,0 +1,9 @@
+{
+  "verdict": "unverifiable",
+  "expected_codes": [
+    "RCP-05"
+  ],
+  "recomputed_ids": [
+    "cap_rate"
+  ]
+}

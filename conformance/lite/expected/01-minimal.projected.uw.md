@@ -1,5 +1,6 @@
 ---
 uw_lite_version: 1.0
+uw_version: "3.0"
 deal_id: uw_lite_parkview
 deal_name: "Parkview Apartments"
 created: "2026-07-29T00:00:00Z"

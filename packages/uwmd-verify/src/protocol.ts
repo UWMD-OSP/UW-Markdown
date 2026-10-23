@@ -1303,6 +1303,7 @@ export const EXTENSION_SECTION_PREFIX = 'x_' as const;
 
 /** A class-scoped normative calculation; packs mirror these definitions. */
 export interface MetricDictionaryCalculation {
+  /** RFC 0123: an applicable receipt calc_id asserts this definition, independent of starter packs. */
   readonly id: string;
   readonly label: string;
   readonly asset_classes: readonly AssetClass[];
@@ -1643,7 +1644,7 @@ export type ProtocolErrorCategory =
 
 export interface ProtocolError {
   category: ProtocolErrorCategory;
-  code: string;                     // e.g. "PROTO-EDIT-001"
+  code: string;                     // e.g. PROTO-EDIT-001; RFC 0122 invalid clock: PROTO-VALIDATION-CLOCK
   message: string;
   /** Path into the owning input. For VAL-INSTITUTION-CONFIG-UNREADABLE and
    * VAL-INSTITUTION-CONFIG-MALFORMED this is the selected configuration,
@@ -1895,7 +1896,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     remediation: 'State only admitted finite claims, lexical schedule dates and typed tier rows; preserve the selected-floor requirements and do not infer distributions.',
     spec_ref: 'UW_FORMAT_SPEC.md §4.27 WF-16',
   },
-  { code: 'UNSUPPORTED_FORMAT_VERSION', severity: 'error', title: 'Unsupported format version', description: 'uw_version is absent or differs from 3.0.', remediation: 'State a Format 3.0 document; no other format version is admitted.', spec_ref: 'UW_FORMAT_SPEC.md §2.2 / UW_PROTOCOL.md §XII.3' },
+  { code: 'UNSUPPORTED_FORMAT_VERSION', severity: 'error', title: 'Unsupported format version', description: 'uw_version is absent, malformed or differs from the kept 3.0 rule set, including Lite sources (RFC 0124).', remediation: 'State a Format 3.0 document; no other format version is admitted.', spec_ref: 'UW_FORMAT_SPEC.md §2.2 / UW_PROTOCOL.md §XII.3' },
   { code: 'META-01', severity: 'error', title: 'Block is not in the Format 3.0 shape', description: 'A block uses a section_id wrapper member, lacks nested provenance and lifecycle, its canonical provenance.actor is absent, null, empty, or non-string; or admitted canonical _meta is misplaced, its present section is invalid/mismatched, or its required quality is absent/nonobject (RFC0093).', remediation: 'State the bare payload with inline nested _meta and _meta.section matching the fence, state canonical _meta first, provide its required quality object with explicit members, and state the actual author in _meta.provenance.actor as a nonempty string; do not infer an actor or other metadata.', spec_ref: 'UW_FORMAT_SPEC.md §2.4–§2.5' },
   { code: 'META-02', severity: 'error', title: 'Required review flag is not boolean', description: 'An admitted canonical quality object lacks a boolean human_review_required.', remediation: 'State _meta.quality.human_review_required explicitly as true or false; do not infer a flag.', spec_ref: 'UW_FORMAT_SPEC.md §2.5c' },
   { code: 'META-03', severity: 'error', title: 'Required superseded flag is not boolean', description: 'An admitted canonical lifecycle object lacks a boolean superseded.', remediation: 'State _meta.lifecycle.superseded explicitly as true or false; do not infer a flag.', spec_ref: 'UW_FORMAT_SPEC.md §2.5d' },
@@ -2228,7 +2229,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'CS-01', severity: 'error',
     title: 'Malformed capital-stack tranche',
-    description: 'A tranche omits a required field (id, class, position, amount) or repeats an id/position.',
+    description: 'RFC 0121: tranche object admission, required own id/class/position/amount, their existing types/domains and unique id/position only; coupon, sizing, point-in-time and waterfall retain separate owners.',
     remediation: 'Give every tranche a unique id, a valid class, a unique integer position, and a numeric amount.',
     spec_ref: '§4.24 CS-01',
   },

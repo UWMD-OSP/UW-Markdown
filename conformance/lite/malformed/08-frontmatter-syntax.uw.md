@@ -1,4 +1,5 @@
 ---
+uw_version: "3.0"
 uw_lite_version: 1.0
 deal_id: uw_lite_bad_frontmatter
 this line has no key separator

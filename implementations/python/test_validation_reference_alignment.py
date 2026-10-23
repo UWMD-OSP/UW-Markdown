@@ -256,12 +256,11 @@ CASES = {
     "tax07-unstated-value": (
         _doc(_tax(dict(kind="pilot", schedule=_SCHEDULE, stabilized_period="Y2"), value=None)),
         ("TAX-07",), []),
-    # DQ-05 (Format §4.22 is silent on date-only/offset-less stamps).
+    # RFC 0122: DQ-05 excludes local-time stamps.
     "dq05-date-only-and-local": (
         _doc(_gaps("2026-09-01", "2026-10-15", "2026-09-01T00:00:00", "2026-10-15T12:00", "2026-09-01T00:00:00Z",
                    "not a date")),
         ("DQ-05",), [("DQ-05", "info", "gaps", "items[0].last_checked"),
-                     ("DQ-05", "info", "gaps", "items[2].last_checked"),
                      ("DQ-05", "info", "gaps", "items[4].last_checked")]),
 }
 

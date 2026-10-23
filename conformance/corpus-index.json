@@ -6600,6 +6600,121 @@
       "suite": "cross-checks",
       "scenario": "cc-noi-16-positive-disagrees",
       "target": "verifier"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/16-rule-set-missing",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/17-rule-set-null",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/18-rule-set-numeric",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/19-rule-set-unsupported",
+      "target": "representations"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/14-dictionary-packless-clean",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/14-dictionary-packless-clean [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/15-dictionary-packless-wrong-value",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/15-dictionary-packless-wrong-value [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/16-dictionary-packless-wrong-unit",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/16-dictionary-packless-wrong-unit [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/17-dictionary-packless-digest",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/17-dictionary-packless-digest [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/18-dictionary-packless-opaque",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/18-dictionary-packless-opaque [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/19-dictionary-packless-other-engine",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/19-dictionary-packless-other-engine [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/20-dictionary-packless-no-backend",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/20-dictionary-packless-no-backend [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/21-dictionary-packless-refusal",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/21-dictionary-packless-refusal [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "0121-four-members",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "0121-independent-owners",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "0121-component",
+      "target": "verifier"
     }
   ]
 }

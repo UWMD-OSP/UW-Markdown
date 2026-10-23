@@ -1,5 +1,5 @@
 {
-  "description": "RFC 0115 D4: what a Verifier without a calculation pack determines for this receipt, derived by running the reference verifyReceipt with packs: []. The subject digest and referenced inputs agree, so the pack-named results cannot be recomputed (RCP-05, Receipt §5.1 step 3). expected-verdict.json keeps the pack-based starter expectation.",
+  "description": "RFC 0115 D4: what a Verifier without a calculation pack determines for this receipt, derived by running the reference verifyReceipt with packs: []. Applicable dictionary results are recomputed after authentication; unavailable named-pack coverage remains RCP-05 when no earlier decisive result applies (RFC 0123). expected-verdict.json keeps the pack-based starter expectation.",
   "verdict": "unverifiable",
   "expected_codes": [
     "RCP-05"

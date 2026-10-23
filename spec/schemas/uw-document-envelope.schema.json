@@ -46,7 +46,7 @@
       "properties": {
         "uw_version": {
           "const": "3.0",
-          "description": "Format 3.0 is the only admitted document version (RFC 0081); it agrees with format_version."
+          "description": "Format 3.0 is the kept rule set; the explicit uw_version agrees with format_version. RFC 0124 requires this declaration in Lite sources too; no representation-version fallback."
         },
         "deal_id": {
           "type": "string"

@@ -1,0 +1,28 @@
+{
+  "id": "verifier__receipts__verify-21-dictionary-packless-refusal__verify-receipt",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-receipts"
+  ],
+  "command": "verify-receipt",
+  "args": [
+    "receipt.json",
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/receipts/verify/21-dictionary-packless-refusal",
+  "expect": {
+    "kind": "verdict-codes",
+    "file": "expected-verdict.json",
+    "project": "receipt-verification",
+    "fields": [
+      "verdict",
+      "expected_codes",
+      "refused_code",
+      "recomputed_ids"
+    ],
+    "exit_code": 1
+  }
+}

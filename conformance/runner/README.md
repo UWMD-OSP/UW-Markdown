@@ -231,3 +231,7 @@ The generated hedge cases use `project: "replacement-funding"`.
 The driver compares structural HDG/ESC codes and a separate verification
 state/reason/code projection, plus the process exit code. It never merges async
 HDG-09 into structural errors. Cases preserve exact authored source bytes.
+
+RFC 0123 receipt cases may request recomputed_ids in verdict-codes. This is an
+exact ordered list after projection sorting, with multiplicity retained; it
+proves the actual dictionary subset was returned, alongside verdict/code checks.

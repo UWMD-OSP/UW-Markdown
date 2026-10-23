@@ -55,6 +55,15 @@ quotes, and a whitespace-preceded `#` outside quotes begins a comment.
 spelling of `1.0` and the string `"1.0"` identify the same representation
 version.
 
+RFC 0124 additionally requires an explicit non-null uw_version string naming a
+kept financial rule set (currently "3.0"). The Format scalar semantics apply;
+unquoted numeric 3.0 is not that string. Missing, null, malformed or unsupported
+declarations refuse with UNSUPPORTED_FORMAT_VERSION at parse, compile,
+canonicalization and registered-source boundaries. The bridge carries that
+declared value and MUST NOT fill a default. uw_lite_version selects only the
+representation grammar, never financial behavior. Creation tools may author an
+explicit declaration for a new record; reading/conversion may not invent one.
+
 ## 4. Fields, values, and units
 
 Example:
@@ -144,7 +153,7 @@ implementation **MUST NOT** stamp one in place of the other.
 
 Canonicalization version 1.1 requires the exact percent scaling of §4.1; it is the only admitted Lite canonicalization. The Lite grammar version remains 1.0. A verifier observing both a digest disagreement and a canonicalization-version disagreement MUST report RCP-10 (unverifiable), never infer that the record changed (UW_RECEIPT §5.5).
 
-The bridge compiles every builtin class into Format 3.0: bare fenced objects with inline nested _meta. An explicit uw_version must name 3.0; no alternate version is passed through.
+The bridge compiles every builtin class into the explicitly declared kept Format rule set: currently 3.0, bare fenced objects with inline nested _meta. RFC 0124 supersedes the undeclared-Lite fallback in RFC 0081 D12; no missing declaration or alternate version is passed through.
 
 ## 7. Canonical rendering
 

@@ -260,3 +260,13 @@ class ReaderTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class LiteDeclarationTests(unittest.TestCase):
+    def test_shared_lite_sources_never_get_an_implicit_rule_set(self):
+        for name in ['16-rule-set-missing','17-rule-set-null','18-rule-set-numeric','19-rule-set-unsupported']:
+            path=Path(__file__).resolve().parents[2]/'conformance/lite/malformed'/(name+'.uw.md')
+            raw=path.read_bytes()
+            with self.subTest(name=name),self.assertRaises(ReaderError) as caught:
+                parse(raw,filename=path.name)
+            self.assertEqual(caught.exception.code,'UNSUPPORTED_FORMAT_VERSION')
+            self.assertEqual(path.read_bytes(),raw)
