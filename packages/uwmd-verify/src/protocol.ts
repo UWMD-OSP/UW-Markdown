@@ -1643,7 +1643,7 @@ export type ProtocolErrorCategory =
 
 export interface ProtocolError {
   category: ProtocolErrorCategory;
-  code: string;                     // e.g. "PROTO-EDIT-001"
+  code: string;                     // e.g. PROTO-EDIT-001; RFC 0122 invalid clock: PROTO-VALIDATION-CLOCK
   message: string;
   /** Path into the owning input. For VAL-INSTITUTION-CONFIG-UNREADABLE and
    * VAL-INSTITUTION-CONFIG-MALFORMED this is the selected configuration,

@@ -8,7 +8,7 @@ import re
 
 from uwmd_binding_sources import finite
 from uwmd_document_sources import metadata_blocks
-from uwmd_instant import epoch_milliseconds, instant_milliseconds
+from uwmd_instant import epoch_milliseconds, validation_now_milliseconds
 from uwmd_currency import inspect_document_currency
 from uwmd_reader import APPEND
 from uwmd_source_validation import _inspect_source_roles, _metadata_routing
@@ -309,18 +309,9 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
         if stage == "scope" and not selected.externalized:
             for path in _scope_missing_fields(prop, document):
                 ledger.issue("DQ-04", "error", "" if "|" in path else "property", path, "Scope-stage required field is absent")
-    if now is None:
-        instant = datetime.now(timezone.utc)
-    elif isinstance(now, datetime):
-        instant = now
-    else:
-        instant = datetime.fromisoformat(now.replace("Z", "+00:00"))
-    if instant.tzinfo is None:
-        raise ValueError("Validation freshness time must have a timezone")
-    now_ms = instant_milliseconds(instant)
+    now_ms = validation_now_milliseconds(now)
     for index, gap in enumerate(gaps):
-        # Format §4.22 is silent on date-only/offset-less last_checked; the
-        # reference's ECMAScript reading applies (uwmd_instant).
+        # RFC 0122: strict, calendar-valid dates or explicitly offset instants.
         checked = epoch_milliseconds(gap.get("last_checked")) if isinstance(gap, dict) else None
         if checked is None:
             continue

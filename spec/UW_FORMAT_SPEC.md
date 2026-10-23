@@ -3615,6 +3615,18 @@ A gap entry names a missing or low-quality field by `(section, field_path)` and 
 
 **Auto-maintenance.** When an editor (a starter product since RFC 0078, Protocol §II.4) is invoked with the `--maintain-gaps` flag, the editor runs `inferGaps()` after every successful write and either updates the existing `gaps` section or creates one. The auto-write is stamped `_meta.provenance.source: 'system/gaps-maintainer'` and `_meta.provenance.actor: 'system'` so it is filterable from human-authored entries.
 
+**DQ-05 instants (RFC 0122).** Admit calendar-valid YYYY-MM-DD at UTC midnight,
+or YYYY-MM-DDTHH:mm[:ss[.fraction]] with uppercase Z or signed +HH:mm/-HH:mm.
+Years are 0001–9999; hours 00–23, minutes/seconds 00–59, offset hours 00–23 and
+minutes 00–59. Fraction requires seconds and has 1–3 digits, right-padded to
+milliseconds. Missing seconds mean zero. Reject whitespace, unpadded fields,
+local-time or textual forms, day overflow, 24:00, leap seconds and trailing text.
+Invalid/absent last_checked adds no DQ-05; existing structural owners remain.
+Explicit clock strings use the same grammar; invalid supplied clocks refuse
+with category validate / PROTO-VALIDATION-CLOCK, even without gaps. The host's
+current instant remains the default; the strict older-than threshold remains
+14 days unless the existing institution override applies.
+
 **Validator codes.** A `provisional` block with no matching gap entry triggers `DQ-01`; a `partial` block with no `_overrides` triggers `DQ-03`; consuming a provisional block at a stage whose policy is `halt` triggers `DQ-02`; a stale entry (older than the institution's freshness threshold) triggers `DQ-05`. See Protocol §III.6a.
 
 ---
