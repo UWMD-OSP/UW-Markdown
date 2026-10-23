@@ -52,7 +52,7 @@ After acceptance, a Verifier MUST select this entry for `data_center`:
 ```
 
 This is the office/industrial definition and comparison contract, applied to one
-additional class. Use label `Price / SF`. RFC 0099's existing canonical homes,
+additional class. Use the existing label `Price / SqFt`. RFC 0099's existing canonical homes,
 `quick_metrics.price_per_sqft`, `valuation.price_per_sf` and
 `valuation.purchase_price_per_sqft` all bind the same metric. Check every stated
 home and current variant separately. Retain Protocol VIII.2 section selection;
@@ -70,9 +70,16 @@ mismatch is failed. Lack of source precision retains existing refusal behavior.
 The optional `property.area_measurement` declaration (RFC 0114) retains its
 current meaning; no area conversion or new required measurement declaration.
 
-This changes neither the data-center primary-size selector
-`property.critical_it_load_kw` nor `price_per_kw`, `price_per_commissioned_kw`
-or their existing consistency checks. No land or other-class entry changes.
+Register `rentable_square_feet` in the data-center size entry's `secondary`
+array, mirrored by `SIZE_INTENSIVES` and the property-size description. Current
+main's data-center secondary array is empty; this explicit registry addition is
+required so RFC 0100's denominator lookup recognizes the new SF metric. The
+field is already in the class-independent Format 5.5 SIZE-01 table; add no new
+size finding or mandatory area requirement.
+
+The primary-size path stays `property.critical_it_load_kw`. Neither
+`price_per_kw`, `price_per_commissioned_kw` nor their existing consistency checks
+changes. No land or other-class entry changes.
 
 ## Decisions for acceptance
 
@@ -81,7 +88,7 @@ or their existing consistency checks. No land or other-class entry changes.
 | D1 | Denominator | Explicit property.rentable_square_feet only | Office/industrial price_per_sqft; owner fifth set |
 | D2 | Binding | Existing price_per_sqft id and closed aliases | RFC 0099, no label inference |
 | D3 | Precision/null | $; round_to 2; minimum 2; positive_size_denominator | RFCs 0079/0100; same SF definition |
-| D4 | Primary size | Remains commissioned critical IT kW | RFC 0080 and current primary-size dictionary |
+| D4 | Size registry | Keep commissioned critical IT kW primary; add rentable_square_feet as an explicit secondary | RFC 0080 primary identity; RFC 0100 denominator lookup needs a registered size |
 | D5 | Example | Describe stated rentable SF as secondary; builtin commissioned kW remains primary; no numeric edits | Owner wording correction; RFC 0114 |
 
 ## Current contract and versions
@@ -96,7 +103,8 @@ artifact repair or compatibility path.
 Add portable metric cases for correct/wrong SF statements, all existing homes,
 agreeing quick metric with disagreeing section copy, missing/null/zero/negative
 area, ambiguous property/valuation selection, and distinct current variants.
-Prove kW-only inputs never supply missing area; changing kW alone does not change
+Prove secondary-registry parity and negative rentable area are guarded. kW-only
+inputs never supply missing area; changing kW alone does not change
 this SF metric. Keep existing primary-size and kW controls unchanged. Include
 cent-boundary and source-precision controls under the existing quantizer.
 
@@ -105,7 +113,8 @@ cent-boundary and source-precision controls under the existing quantizer.
 After acceptance synchronize Format property/valuation text, Protocol metric
 contract and executable mirror/descriptions, dictionary, generated dictionary,
 data-center builtin pack and Excel output/parity, independent Python selection,
-metric conformance, wiki and changelog in one implementation PR. Update current
+metric conformance, size registry/`SIZE_INTENSIVES` secondary-path parity,
+wiki and changelog in one implementation PR. Update current
 counts from actual dictionary contents. No new API or external dependency.
 
 ## Alternatives considered
