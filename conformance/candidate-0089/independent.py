@@ -642,8 +642,18 @@ def project_source(raw):
     # Source accounting is distinct from full carrier/model admission.
     admit_json(model)
     dump(model)
-    need(len(blocks(model)) == len(physical), 'physical accounting count')
-    need(all(sum(row[7] is block for row in blocks(model)) == 1 for _, _, block in physical), 'physical occurrence accounting')
+    # Enumerate accounted source occurrences without entering carrier/schema admission.
+    accounted = []
+    for entry in model['sections'].values():
+        accounted.extend([entry] if 'annotation' in entry and 'content' in entry else entry.values())
+    for entry in model['extensions'].values():
+        accounted.extend([entry['block']] if entry['mode'] == 'single' else [item['block'] for item in entry['blocks']])
+    for collection in ARRAYS:
+        accounted.extend(model[collection])
+    for history in model['superseded'].values():
+        accounted.extend(history)
+    need(len(accounted) == len(physical), 'physical accounting count')
+    need(all(sum(item is block for item in accounted) == 1 for _, _, block in physical), 'physical occurrence accounting')
     return model
 
 
