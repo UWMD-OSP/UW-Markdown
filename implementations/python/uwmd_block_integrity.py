@@ -145,6 +145,10 @@ async def _assess(blocks, chains, unsupported, hash_provider):
         seen_hash, previous = False, None
         for index in chain:
             integrity, block = metadata[index], blocks[index]
+            if previous is None and integrity.get("parent_hash") is not None:
+                result["issues"].append(_issue("INT-01", "error", block.section,
+                    "First retained block declares a predecessor that is absent.",
+                    None, integrity.get("parent_hash")))
             if previous is not None and integrity.get("parent_hash") != previous.get("content_hash"):
                 result["issues"].append(_issue("INT-01", "error", block.section,
                     "Parent hash differs from the immediately prior retained block's content hash.",
@@ -183,7 +187,8 @@ async def verify_block_integrity(document, *, hash_provider=None):
     return local unsupported assessment, while every physical block retains V.9
     evidence. `ok` is a strict local summary (warnings also make it false), never
     a signature/authenticity, complete V.10 domain or integrity-profile claim.
-    Root/orphan-parent behavior is unchanged: no predecessor is invented.
+    RFC 0085 refuses a non-null parent on the first retained hashed block;
+    a null/absent parent makes no claim about history-origin completeness.
     """
     snapshot = copy.deepcopy(document)
     chains, unsupported = _file_chains(snapshot.source.blocks)

@@ -94,6 +94,7 @@ export function portableOwner(suite, scenario, operation) {
     ? scenario.startsWith('malformed-') ? `malformed/${scenario.slice('malformed-'.length)}` : `${scenario} [${operation}]`
     // RFC 0115 D4: a portable receipt case is the pack-less Verifier check.
     : suite === 'receipts' && scenario.startsWith('verify-') ? `verify/${scenario.slice('verify-'.length)} [pack-less]`
+    : suite === 'signing' && scenario.startsWith('block-') ? `blocks/${scenario.slice('block-'.length)}`
     : scenario;
   const found = index.get(key(suite, referenceScenario));
   if (!found) throw new Error(`Portable case has no corpus owner: ${suite}/${referenceScenario}`);

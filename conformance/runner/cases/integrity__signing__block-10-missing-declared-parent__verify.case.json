@@ -1,0 +1,24 @@
+{
+  "id": "integrity__signing__block-10-missing-declared-parent__verify",
+  "target": "integrity",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "integrity",
+    "signing"
+  ],
+  "command": "verify",
+  "args": [
+    "deal.uwx.md",
+    "--integrity",
+    "--signing",
+    "--keystore",
+    "../../keys/keystore.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/signing/blocks/10-missing-declared-parent",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/signing/blocks/10-missing-declared-parent/cli.expected.json",
+    "exit_code": 1
+  }
+}

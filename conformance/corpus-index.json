@@ -6715,6 +6715,66 @@
       "suite": "capital-stack",
       "scenario": "0121-component",
       "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-tampered",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-missing-area",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-zero-area",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-negative-area",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-data-center-sf-nonnumeric-area",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-land-carry-noi-negative-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-land-carry-noi-tampered",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-land-carry-noi-missing-egi",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-land-carry-noi-missing-opex",
+      "target": "verifier"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/10-missing-declared-parent",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/11-null-parent-root",
+      "target": "integrity"
     }
   ]
 }

@@ -6,71 +6,158 @@
       "example": "Agave-Court-Apts-Scottsdale-AZ.uwx.md",
       "edits": [],
       "expect": [
-        { "path": "valuation.going_in_cap_rate", "state": "verified" },
-        { "path": "quick_metrics.cap_rate", "state": "verified" }
+        {
+          "path": "valuation.going_in_cap_rate",
+          "state": "verified"
+        },
+        {
+          "path": "quick_metrics.cap_rate",
+          "state": "verified"
+        }
       ]
     },
     {
       "name": "cap_rate-going-in-disagrees-quick-agrees",
       "example": "Agave-Court-Apts-Scottsdale-AZ.uwx.md",
-      "edits": [{ "section": "valuation", "find": "\"going_in_cap_rate\": 0.0542", "replace": "\"going_in_cap_rate\": 0.0596" }],
+      "edits": [
+        {
+          "section": "valuation",
+          "find": "\"going_in_cap_rate\": 0.0542",
+          "replace": "\"going_in_cap_rate\": 0.0596"
+        }
+      ],
       "expect": [
-        { "path": "valuation.going_in_cap_rate", "state": "failed" },
-        { "path": "quick_metrics.cap_rate", "state": "verified" }
+        {
+          "path": "valuation.going_in_cap_rate",
+          "state": "failed"
+        },
+        {
+          "path": "quick_metrics.cap_rate",
+          "state": "verified"
+        }
       ],
       "failed": 1
     },
     {
       "name": "cap_rate-unbound-look-alike-is-not-a-statement",
       "example": "Agave-Court-Apts-Scottsdale-AZ.uwx.md",
-      "edits": [{ "section": "valuation", "find": "\"going_in_cap_rate\": 0.0542,", "replace": "\"going_in_cap_rate\": 0.0542,\n  \"cap_rate_trailing\": 0.9,"  }],
-      "expect": [{ "path": "valuation.going_in_cap_rate", "state": "verified" }],
-      "absent": ["valuation.cap_rate_trailing"],
+      "edits": [
+        {
+          "section": "valuation",
+          "find": "\"going_in_cap_rate\": 0.0542,",
+          "replace": "\"going_in_cap_rate\": 0.0542,\n  \"cap_rate_trailing\": 0.9,"
+        }
+      ],
+      "expect": [
+        {
+          "path": "valuation.going_in_cap_rate",
+          "state": "verified"
+        }
+      ],
+      "absent": [
+        "valuation.cap_rate_trailing"
+      ],
       "failed": 0
     },
     {
       "name": "price_per_unit-agrees",
       "example": "Parkview-Apts-Glendale-AZ.uwx.md",
       "edits": [],
-      "expect": [{ "path": "valuation.purchase_price_per_unit", "state": "verified" }]
+      "expect": [
+        {
+          "path": "valuation.purchase_price_per_unit",
+          "state": "verified"
+        }
+      ]
     },
     {
       "name": "price_per_unit-disagrees",
       "example": "Parkview-Apts-Glendale-AZ.uwx.md",
-      "edits": [{ "section": "valuation", "find": "\"purchase_price_per_unit\": 150000", "replace": "\"purchase_price_per_unit\": 165000" }],
-      "expect": [{ "path": "valuation.purchase_price_per_unit", "state": "failed" }],
+      "edits": [
+        {
+          "section": "valuation",
+          "find": "\"purchase_price_per_unit\": 150000",
+          "replace": "\"purchase_price_per_unit\": 165000"
+        }
+      ],
+      "expect": [
+        {
+          "path": "valuation.purchase_price_per_unit",
+          "state": "failed"
+        }
+      ],
       "failed": 1
     },
     {
       "name": "price_per_sqft-price-per-sf-agrees",
       "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
       "edits": [],
-      "expect": [{ "path": "valuation.price_per_sf", "state": "verified" }]
+      "expect": [
+        {
+          "path": "valuation.price_per_sf",
+          "state": "verified"
+        }
+      ]
     },
     {
       "name": "price_per_sqft-price-per-sf-disagrees",
       "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
-      "edits": [{ "section": "valuation", "find": "\"price_per_sf\": 194.74", "replace": "\"price_per_sf\": 214.21" }],
-      "expect": [{ "path": "valuation.price_per_sf", "state": "failed" }],
+      "edits": [
+        {
+          "section": "valuation",
+          "find": "\"price_per_sf\": 194.74",
+          "replace": "\"price_per_sf\": 214.21"
+        }
+      ],
+      "expect": [
+        {
+          "path": "valuation.price_per_sf",
+          "state": "failed"
+        }
+      ],
       "failed": 1
     },
     {
       "name": "price_per_sqft-purchase-price-per-sqft-agrees",
       "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
-      "edits": [{ "section": "valuation", "find": "\"price_per_sf\": 194.74,", "replace": "\"price_per_sf\": 194.74,\n  \"purchase_price_per_sqft\": 194.74," }],
+      "edits": [
+        {
+          "section": "valuation",
+          "find": "\"price_per_sf\": 194.74,",
+          "replace": "\"price_per_sf\": 194.74,\n  \"purchase_price_per_sqft\": 194.74,"
+        }
+      ],
       "expect": [
-        { "path": "valuation.purchase_price_per_sqft", "state": "verified" },
-        { "path": "valuation.price_per_sf", "state": "verified" }
+        {
+          "path": "valuation.purchase_price_per_sqft",
+          "state": "verified"
+        },
+        {
+          "path": "valuation.price_per_sf",
+          "state": "verified"
+        }
       ],
       "failed": 0
     },
     {
       "name": "price_per_sqft-purchase-price-per-sqft-disagrees",
       "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
-      "edits": [{ "section": "valuation", "find": "\"price_per_sf\": 194.74,", "replace": "\"price_per_sf\": 194.74,\n  \"purchase_price_per_sqft\": 214.21," }],
+      "edits": [
+        {
+          "section": "valuation",
+          "find": "\"price_per_sf\": 194.74,",
+          "replace": "\"price_per_sf\": 194.74,\n  \"purchase_price_per_sqft\": 214.21,"
+        }
+      ],
       "expect": [
-        { "path": "valuation.purchase_price_per_sqft", "state": "failed" },
-        { "path": "valuation.price_per_sf", "state": "verified" }
+        {
+          "path": "valuation.purchase_price_per_sqft",
+          "state": "failed"
+        },
+        {
+          "path": "valuation.price_per_sf",
+          "state": "verified"
+        }
       ],
       "failed": 1
     },
@@ -78,32 +165,72 @@
       "name": "noi_per_sqft-agrees",
       "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
       "edits": [],
-      "expect": [{ "path": "noi_model.noi_per_sf", "state": "verified" }]
+      "expect": [
+        {
+          "path": "noi_model.noi_per_sf",
+          "state": "verified"
+        }
+      ]
     },
     {
       "name": "noi_per_sqft-disagrees",
       "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
-      "edits": [{ "section": "noi_model", "find": "\"noi_per_sf\": 13.63", "replace": "\"noi_per_sf\": 14.99" }],
-      "expect": [{ "path": "noi_model.noi_per_sf", "state": "failed" }],
+      "edits": [
+        {
+          "section": "noi_model",
+          "find": "\"noi_per_sf\": 13.63",
+          "replace": "\"noi_per_sf\": 14.99"
+        }
+      ],
+      "expect": [
+        {
+          "path": "noi_model.noi_per_sf",
+          "state": "failed"
+        }
+      ],
       "failed": 1
     },
     {
       "name": "occupancy-property-disagrees-rent-roll-agrees",
       "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
-      "edits": [{ "section": "property", "find": "\"occupancy_pct\": 0.94", "replace": "\"occupancy_pct\": 0.85" }],
+      "edits": [
+        {
+          "section": "property",
+          "find": "\"occupancy_pct\": 0.94",
+          "replace": "\"occupancy_pct\": 0.85"
+        }
+      ],
       "expect": [
-        { "path": "property.occupancy_pct", "state": "failed" },
-        { "path": "rent_roll.occupancy_pct", "state": "verified" }
+        {
+          "path": "property.occupancy_pct",
+          "state": "failed"
+        },
+        {
+          "path": "rent_roll.occupancy_pct",
+          "state": "verified"
+        }
       ],
       "failed": 1
     },
     {
       "name": "occupancy-rent-roll-disagrees-property-agrees",
       "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
-      "edits": [{ "section": "rent_roll", "find": "\"occupancy_pct\": 0.94", "replace": "\"occupancy_pct\": 0.85" }],
+      "edits": [
+        {
+          "section": "rent_roll",
+          "find": "\"occupancy_pct\": 0.94",
+          "replace": "\"occupancy_pct\": 0.85"
+        }
+      ],
       "expect": [
-        { "path": "rent_roll.occupancy_pct", "state": "failed" },
-        { "path": "property.occupancy_pct", "state": "verified" }
+        {
+          "path": "rent_roll.occupancy_pct",
+          "state": "failed"
+        },
+        {
+          "path": "property.occupancy_pct",
+          "state": "verified"
+        }
       ],
       "failed": 1
     },
@@ -111,13 +238,29 @@
       "name": "revpor-agrees",
       "example": "Ocotillo-Senior-Living-Chandler-AZ.uwx.md",
       "edits": [],
-      "expect": [{ "path": "noi_model.revpor_monthly", "state": "verified" }]
+      "expect": [
+        {
+          "path": "noi_model.revpor_monthly",
+          "state": "verified"
+        }
+      ]
     },
     {
       "name": "revpor-disagrees",
       "example": "Ocotillo-Senior-Living-Chandler-AZ.uwx.md",
-      "edits": [{ "section": "noi_model", "find": "\"revpor_monthly\": 7583.0188679245", "replace": "\"revpor_monthly\": 8341.3207547170" }],
-      "expect": [{ "path": "noi_model.revpor_monthly", "state": "failed" }],
+      "edits": [
+        {
+          "section": "noi_model",
+          "find": "\"revpor_monthly\": 7583.0188679245",
+          "replace": "\"revpor_monthly\": 8341.3207547170"
+        }
+      ],
+      "expect": [
+        {
+          "path": "noi_model.revpor_monthly",
+          "state": "failed"
+        }
+      ],
       "failed": 1
     },
     {
@@ -125,55 +268,126 @@
       "example": "Parkview-Apts-Glendale-AZ.uwx.md",
       "edits": [],
       "expect": [
-        { "path": "debt_structure.sizing_metrics.dscr_underwritten", "state": "verified" },
-        { "path": "debt_structure.sizing_metrics.ltv", "state": "verified" },
-        { "path": "debt_structure.sizing_metrics.debt_yield", "state": "verified" }
+        {
+          "path": "debt_structure.sizing_metrics.dscr_underwritten",
+          "state": "verified"
+        },
+        {
+          "path": "debt_structure.sizing_metrics.ltv",
+          "state": "verified"
+        },
+        {
+          "path": "debt_structure.sizing_metrics.debt_yield",
+          "state": "verified"
+        }
       ]
     },
     {
       "name": "dscr-sizing-disagrees",
       "example": "Parkview-Apts-Glendale-AZ.uwx.md",
-      "edits": [{ "section": "debt_structure", "find": "\"dscr_underwritten\": 1.109", "replace": "\"dscr_underwritten\": 1.220" }],
+      "edits": [
+        {
+          "section": "debt_structure",
+          "find": "\"dscr_underwritten\": 1.109",
+          "replace": "\"dscr_underwritten\": 1.220"
+        }
+      ],
       "expect": [
-        { "path": "debt_structure.sizing_metrics.dscr_underwritten", "state": "failed" },
-        { "path": "quick_metrics.dscr", "state": "verified" }
+        {
+          "path": "debt_structure.sizing_metrics.dscr_underwritten",
+          "state": "failed"
+        },
+        {
+          "path": "quick_metrics.dscr",
+          "state": "verified"
+        }
       ],
       "failed": 1
     },
     {
       "name": "ltv-sizing-disagrees",
       "example": "Parkview-Apts-Glendale-AZ.uwx.md",
-      "edits": [{ "section": "debt_structure", "find": "\"ltv\": 0.7,", "replace": "\"ltv\": 0.77," }],
-      "expect": [{ "path": "debt_structure.sizing_metrics.ltv", "state": "failed" }],
+      "edits": [
+        {
+          "section": "debt_structure",
+          "find": "\"ltv\": 0.7,",
+          "replace": "\"ltv\": 0.77,"
+        }
+      ],
+      "expect": [
+        {
+          "path": "debt_structure.sizing_metrics.ltv",
+          "state": "failed"
+        }
+      ],
       "failed": 1
     },
     {
       "name": "debt_yield-sizing-disagrees",
       "example": "Parkview-Apts-Glendale-AZ.uwx.md",
-      "edits": [{ "section": "debt_structure", "find": "\"debt_yield\": 0.0787", "replace": "\"debt_yield\": 0.0866" }],
-      "expect": [{ "path": "debt_structure.sizing_metrics.debt_yield", "state": "failed" }],
+      "edits": [
+        {
+          "section": "debt_structure",
+          "find": "\"debt_yield\": 0.0787",
+          "replace": "\"debt_yield\": 0.0866"
+        }
+      ],
+      "expect": [
+        {
+          "path": "debt_structure.sizing_metrics.debt_yield",
+          "state": "failed"
+        }
+      ],
       "failed": 1
     },
     {
       "name": "hospitality-gop-component-identity-agrees",
       "example": "Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md",
       "edits": [],
-      "expect": [{ "path": "components.hospitality.gross_operating_profit", "state": "verified" }]
+      "expect": [
+        {
+          "path": "components.hospitality.gross_operating_profit",
+          "state": "verified"
+        }
+      ]
     },
     {
       "name": "senior-housing-labor-component-identity-agrees",
       "example": "Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md",
-      "edits": [{ "section": "components", "find": "{\n", "replace": "{\n  \"senior_housing\": { \"total_labor_expense\": 1850000 },\n" }],
-      "expect": [{ "path": "components.senior_housing.total_labor_expense", "state": "verified" }],
+      "edits": [
+        {
+          "section": "components",
+          "find": "{\n",
+          "replace": "{\n  \"senior_housing\": { \"total_labor_expense\": 1850000 },\n"
+        }
+      ],
+      "expect": [
+        {
+          "path": "components.senior_housing.total_labor_expense",
+          "state": "verified"
+        }
+      ],
       "failed": 0
     },
     {
       "name": "price_per_commissioned_kw-frontmatter-drift-alone-verifies",
       "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
-      "edits": [{ "section": "frontmatter", "find": "purchase_price:    160000000", "replace": "purchase_price:    192000000" }],
+      "edits": [
+        {
+          "section": "frontmatter",
+          "find": "purchase_price:    160000000",
+          "replace": "purchase_price:    192000000"
+        }
+      ],
       "expect": [
-        { "path": "valuation.price_per_commissioned_kw", "state": "verified" },
-        { "path": "valuation.price_per_kw", "state": "verified" }
+        {
+          "path": "valuation.price_per_commissioned_kw",
+          "state": "verified"
+        },
+        {
+          "path": "valuation.price_per_kw",
+          "state": "verified"
+        }
       ],
       "failed": 0
     },
@@ -181,12 +395,26 @@
       "name": "price_per_commissioned_kw-from-drifted-frontmatter-fails",
       "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
       "edits": [
-        { "section": "frontmatter", "find": "purchase_price:    160000000", "replace": "purchase_price:    192000000" },
-        { "section": "valuation", "find": "\"price_per_commissioned_kw\": 16000", "replace": "\"price_per_commissioned_kw\": 19200" }
+        {
+          "section": "frontmatter",
+          "find": "purchase_price:    160000000",
+          "replace": "purchase_price:    192000000"
+        },
+        {
+          "section": "valuation",
+          "find": "\"price_per_commissioned_kw\": 16000",
+          "replace": "\"price_per_commissioned_kw\": 19200"
+        }
       ],
       "expect": [
-        { "path": "valuation.price_per_commissioned_kw", "state": "failed" },
-        { "path": "valuation.price_per_kw", "state": "verified" }
+        {
+          "path": "valuation.price_per_commissioned_kw",
+          "state": "failed"
+        },
+        {
+          "path": "valuation.price_per_kw",
+          "state": "verified"
+        }
       ],
       "failed": 1
     },
@@ -258,6 +486,174 @@
         }
       ],
       "failed": 1
+    },
+    {
+      "name": "data-center-sf-agrees",
+      "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
+      "edits": [],
+      "expect": [
+        {
+          "path": "valuation.price_per_sf",
+          "state": "verified"
+        }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "data-center-sf-tampered",
+      "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "valuation",
+          "find": "\"price_per_sf\": 888.89",
+          "replace": "\"price_per_sf\": 900.00"
+        }
+      ],
+      "expect": [
+        {
+          "path": "valuation.price_per_sf",
+          "state": "failed"
+        }
+      ],
+      "failed": 1
+    },
+    {
+      "name": "data-center-sf-missing-area",
+      "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "property",
+          "find": "\"rentable_square_feet\": 180000",
+          "replace": "\"rentable_square_feet\": null"
+        }
+      ],
+      "expect": [
+        {
+          "path": "valuation.price_per_sf",
+          "state": "unverifiable"
+        }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "data-center-sf-zero-area",
+      "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "property",
+          "find": "\"rentable_square_feet\": 180000",
+          "replace": "\"rentable_square_feet\": 0"
+        }
+      ],
+      "expect": [
+        {
+          "path": "valuation.price_per_sf",
+          "state": "unverifiable"
+        }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "data-center-sf-negative-area",
+      "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "property",
+          "find": "\"rentable_square_feet\": 180000",
+          "replace": "\"rentable_square_feet\": -180000"
+        }
+      ],
+      "expect": [
+        {
+          "path": "valuation.price_per_sf",
+          "state": "unverifiable"
+        }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "data-center-sf-nonnumeric-area",
+      "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "property",
+          "find": "\"rentable_square_feet\": 180000",
+          "replace": "\"rentable_square_feet\": \"180000\""
+        }
+      ],
+      "expect": [
+        {
+          "path": "valuation.price_per_sf",
+          "state": "unverifiable"
+        }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "land-carry-noi-negative-agrees",
+      "example": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+      "edits": [],
+      "expect": [
+        {
+          "path": "noi_model.net_operating_income",
+          "state": "verified"
+        }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "land-carry-noi-tampered",
+      "example": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "noi_model",
+          "find": "\"net_operating_income\": -272000",
+          "replace": "\"net_operating_income\": -299200"
+        }
+      ],
+      "expect": [
+        {
+          "path": "noi_model.net_operating_income",
+          "state": "failed"
+        }
+      ],
+      "failed": 1
+    },
+    {
+      "name": "land-carry-noi-missing-egi",
+      "example": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "noi_model",
+          "find": "\"effective_gross_income\": 18000",
+          "replace": "\"effective_gross_income\": null"
+        }
+      ],
+      "expect": [
+        {
+          "path": "noi_model.net_operating_income",
+          "state": "unverifiable"
+        }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "land-carry-noi-missing-opex",
+      "example": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+      "edits": [
+        {
+          "section": "noi_model",
+          "find": "\"total_operating_expenses\": 290000",
+          "replace": "\"total_operating_expenses\": null"
+        }
+      ],
+      "expect": [
+        {
+          "path": "noi_model.net_operating_income",
+          "state": "unverifiable"
+        }
+      ],
+      "failed": 0
     }
   ]
 }

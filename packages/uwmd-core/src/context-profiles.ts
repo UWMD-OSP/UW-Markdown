@@ -15,7 +15,6 @@ import { hasBlockShape } from './block-kind.js';
 // docs page for cache-strategy guidance.
 
 import type { ParsedUWFile, UWBlock } from '@uwmd/verify';
-import { compact } from './compactor.js';
 
 export type ContextProfile = 'summary' | 'live' | 'compact' | 'full' | 'relevant';
 
@@ -26,8 +25,6 @@ export interface BuildContextOptions {
   maxTokens?: number;
   /** Force minified JSON output where applicable. */
   minify?: boolean;
-  /** Include superseded blocks. Default: only `full`. */
-  includeSuperseded?: boolean;
   /** Strip every block's _meta to shave bytes. Default: true (preserve _meta). */
   includeMeta?: boolean;
 }
@@ -160,9 +157,8 @@ function buildCompact(parsed: ParsedUWFile, opts: BuildContextOptions): ContextR
 }
 
 function buildFull(parsed: ParsedUWFile, opts: BuildContextOptions): ContextResult {
-  // Whole file, byte-for-byte. compactor.compact() strips superseded by default;
-  // for `full` we want the raw input preserved, so use parsed.raw directly.
-  const content = opts.includeSuperseded === false ? compact(parsed) : parsed.raw;
+  // Full records retain every supplied byte (RFC 0085).
+  const content = parsed.raw;
   const sectionsIncluded = allSectionIds(parsed);
   return finalize(content, 'full', sectionsIncluded, { ...opts, maxTokens: undefined });
 }

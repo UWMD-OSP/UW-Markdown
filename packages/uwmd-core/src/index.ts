@@ -21,7 +21,7 @@ export { loadUWSourceFile, loadEditableUWXFile, type LoadedUWSource } from './so
 // Receipts issued through core name `@uwmd/core` as their issuer (RFC 0083).
 export { issueReceipt } from './receipt-engine.js';
 
-export { compact, diff } from './compactor.js';
+export { diff } from './compactor.js';
 export { render, UnsupportedRenderFormatError, UnsupportedLocaleError, InvalidCurrencyCodeError } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
 export { renderReportHtml, REPORT_CSS } from './report.js';

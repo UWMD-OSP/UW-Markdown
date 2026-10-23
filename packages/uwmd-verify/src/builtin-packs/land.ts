@@ -40,6 +40,13 @@ export const LAND_PACK: ModuleManifest = {
   asset_classes: ['land'],
   calculations: [
     {
+      "id": "land_carry_noi",
+      "label": "Land carry NOI",
+      "formula": "noi_model.income.effective_gross_income - noi_model.expenses.total_operating_expenses",
+      "unit": "$",
+      "deterministic": true
+    },
+    {
       id: 'price_per_acre',
       label: 'Price / Gross Acre',
       formula: 'valuation.purchase_price / property.gross_acres',

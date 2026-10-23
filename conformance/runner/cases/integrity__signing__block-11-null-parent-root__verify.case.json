@@ -1,0 +1,24 @@
+{
+  "id": "integrity__signing__block-11-null-parent-root__verify",
+  "target": "integrity",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "integrity",
+    "signing"
+  ],
+  "command": "verify",
+  "args": [
+    "deal.uwx.md",
+    "--integrity",
+    "--signing",
+    "--keystore",
+    "../../keys/keystore.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/signing/blocks/11-null-parent-root",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/signing/blocks/11-null-parent-root/cli.expected.json",
+    "exit_code": 0
+  }
+}

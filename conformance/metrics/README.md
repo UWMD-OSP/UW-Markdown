@@ -67,7 +67,7 @@ replace this baseline.
 
 ## Current example findings
 
-There are **187 verified, 0 failed, 0 unverifiable** numeric statements.
+There are **189 verified, 0 failed, 0 unverifiable** numeric statements.
 All 35 former precision disagreements now verify. Riverside LTC remains the
 literal `0.6`; it verifies at the 1% leverage minimum. No tokens were padded to
 clear findings. Agave's original `0.4938` verifies against its stated $48.6M
@@ -80,7 +80,7 @@ is unchanged. Missing-input/type/refusal cases remain controls.
 | `Cactus-Crossing-Retail-Mesa-AZ.uwx.md` | 14 | 0 | 0 |
 | `Desert-Palms-MHC-Apache-Junction-AZ.uwx.md` | 14 | 0 | 0 |
 | `Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md` | 14 | 0 | 0 |
-| `Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md` | 30 | 0 | 0 |
+| `Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md` | 31 | 0 | 0 |
 | `Mill-Ave-Commons-Student-Tempe-AZ.uwx.md` | 14 | 0 | 0 |
 | `Ocotillo-Senior-Living-Chandler-AZ.uwx.md` | 15 | 0 | 0 |
 | `Parkview-Apts-Glendale-AZ.uw.md` | 2 | 0 | 0 |

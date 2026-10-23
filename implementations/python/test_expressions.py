@@ -175,7 +175,7 @@ class ExpressionTests(unittest.TestCase):
 
     def test_normative_dictionary_formulas_reproduce_declared_static_input_sets(self):
         dictionary = json.loads((ROOT / "spec/metrics/builtin.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(dictionary["calculations"]), 171)
+        self.assertEqual(len(dictionary["calculations"]), 173)
         for declaration in dictionary["calculations"]:
             with self.subTest(id=declaration["id"], classes=declaration["asset_classes"]):
                 tree = parse_expression(declaration["formula"])
