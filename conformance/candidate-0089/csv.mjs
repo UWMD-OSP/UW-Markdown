@@ -46,10 +46,6 @@ function parts(pointer) {
     check(esc(key) === segment, 'CSV pointer alias'); return key;
   });
 }
-function at(value, keys) {
-  for (const key of keys) { check(value !== undefined && Object.hasOwn(value, key), 'CSV missing path'); value = value[key]; }
-  return value;
-}
 const kind = value => value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
 export function flatten(value, pointer = '') {
   const type = kind(value);

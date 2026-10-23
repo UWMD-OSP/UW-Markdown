@@ -227,7 +227,7 @@ export function projectSource(source) {
 
 export function portable(model) {
   const block = input => {
-    const { _meta, _notes: _notes, ...content } = input.content;
+    const { _meta, _notes, ...content } = input.content;
     return { ...(has(input.content, '_meta') ? { meta: _meta } : {}), content };
   };
   const result = {};

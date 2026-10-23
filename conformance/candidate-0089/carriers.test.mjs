@@ -10,7 +10,7 @@ import { lexical, encodeXML, decodeXML } from './xml.mjs';
 import { DOC, BLOCK, VALUE, readCSV, writeCSV, flatten, encodeCSV, decodeCSV, encodeZIP, decodeZIP } from './csv.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
-export const evidence = resolve(root, 'node_modules/.cache/rfc0089-evidence');
+const evidence = resolve(root, 'node_modules/.cache/rfc0089-evidence');
 mkdirSync(evidence, { recursive: true });
 const packet = JSON.parse(readFileSync(new URL('./cases.json', import.meta.url), 'utf8'));
 const cases = [...packet.source_cases, ...packet.direct_models];
@@ -182,7 +182,7 @@ test('D4 CSV table order is independent of semantic ordinals and JSON token spel
 });
 
 test('D4 direct model admission cannot silently erase non-JSON values', () => {
-  for (const value of [undefined, NaN, Infinity, new Date(), [undefined], Array(1), () => 1]) {
+  for (const value of [undefined, Number.NaN, Number.POSITIVE_INFINITY, new Date(), [undefined], Array(1), () => 1]) {
     const changed = structuredClone(model); changed.outer = value;
     assert.throws(() => validateModel(changed));
   }
