@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/debt-rate-hedge.schema.json",
   "title": "debt-rate-hedge",
-  "description": "RFC 0081 G1 / Format §4.7. instrument and strike_rate required; the terms group is all-or-none. premium may be stated without terms. HDG-06–10 and replacement funding evaluate only with the terms group. HDG-02 refuses reserved instruments; HDG-03 rate type is semantic. A member stated as null is not stated: replacement_funding: null requires no terms group.",
+  "description": "RFC 0081 G1 / Format \u00c2\u00a74.7. instrument and strike_rate required; the terms group is all-or-none. premium may be stated without terms. HDG-06\u00e2\u20ac\u201c10 and replacement funding evaluate only with the terms group. HDG-02 refuses reserved instruments; HDG-03 rate type is semantic. A member stated as null is not stated: replacement_funding: null requires no terms group.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -123,7 +123,8 @@
             }
           }
         }
-      ]
+      ],
+      "description": "RFC 0120: binding verification preserves applicable existing CF findings for the exact selected physical cash-flow source alongside HDG/ESC/CUR; unrelated or superseded sources are excluded."
     }
   },
   "allOf": [
