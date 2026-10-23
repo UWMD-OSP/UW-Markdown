@@ -2629,6 +2629,24 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "deterministic": true
     },
     {
+      "id": "price_per_sqft",
+      "label": "Price / SqFt",
+      "asset_classes": [
+        "data_center"
+      ],
+      "formula": "valuation.purchase_price / property.rentable_square_feet",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.rentable_square_feet"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "minimum_stated_decimals": 2,
+      "section_roles": {},
+      "null_semantics": "positive_size_denominator",
+      "deterministic": true
+    },
+    {
       "id": "cap_rate",
       "label": "Cap Rate",
       "asset_classes": [
@@ -3435,7 +3453,9 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {},
       "null_semantics": "finite_stated_number",
       "path": "critical_it_load_kw",
-      "secondary": []
+      "secondary": [
+        "rentable_square_feet"
+      ]
     },
     {
       "id": "total_sites",

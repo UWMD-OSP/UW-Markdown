@@ -1031,7 +1031,9 @@ denominator, not an absence. Validated by `CC-13` (§5.3) as a warning.
 Field notes:
 
 - `rentable_square_feet` — rentable area (RSF); the primary size field for
-  `office` and `industrial`.
+  `office` and `industrial`, and a registered secondary for `data_center`
+  (RFC 0125). Data-center price_per_sqft uses only this explicit rentable area;
+  critical IT kW stays primary. No area is inferred from kW or raised floor.
 - `gross_leasable_area` — GLA in square feet; the primary size field for
   `retail`.
 - `net_rentable_square_feet` — NRSF; the primary size field for
@@ -1899,6 +1901,10 @@ from `jurisdiction`, which is a label.
 **Purpose:** Value conclusions using income approach, with third-party appraisal cross-check.  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `noi_model`, `market_analysis`
+
+For data centers, `price_per_sf` and `purchase_price_per_sqft` state the
+dictionary price_per_sqft against explicit property.rentable_square_feet
+(RFC 0125, Protocol II.2); no power-to-area conversion is implied.
 
 ```json
 {

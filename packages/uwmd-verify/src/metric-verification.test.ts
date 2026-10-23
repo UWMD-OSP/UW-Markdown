@@ -270,3 +270,44 @@ describe('verifyStatedMetrics — public surface', () => {
     expect(browserSurface.verifyStatedMetrics).toBe(verifyStatedMetrics);
   });
 });
+
+// RFC 0125: the secondary area never falls back to power or another area.
+describe('data-center price per explicit rentable SF', () => {
+  const definition = () => metric('price_per_sqft', 'data_center');
+  const source = () => {
+    const p = simple();
+    p.frontmatter.asset_class = 'data_center';
+    p.sections.property = block('property', { rentable_square_feet: 3, critical_it_load_kw: 50, raised_floor_sf: 7 });
+    p.sections.valuation = block('valuation', { purchase_price: 1000, price_per_sf: 333.33, purchase_price_per_sqft: 333.34 });
+    return p;
+  };
+  it('checks every explicit home independently with existing cent precision', () => {
+    const p = source();
+    p.frontmatter.quick_metrics = { price_per_sqft: 333.33 };
+    const statedDecimals = new Map([['quick_metrics.price_per_sqft', 2], ['valuation.price_per_sf', 2], ['valuation.purchase_price_per_sqft', 2]]);
+    const outcomes = verifyStatedMetrics(p, { statedDecimals }).evidence.filter(e => e.id === 'price_per_sqft');
+    expect(outcomes.map(e => [e.path, e.state])).toEqual([
+      ['quick_metrics.price_per_sqft', 'verified'], ['valuation.price_per_sf', 'verified'], ['valuation.purchase_price_per_sqft', 'failed'],
+    ]);
+    expect(verifyStatedMetric(definition(), p, 333.33, undefined, 0).state).toBe('verified');
+    (p.sections.property as UWBlock).content.critical_it_load_kw = 900;
+    expect(verifyStatedMetric(definition(), p, 333.33, undefined, 2).state).toBe('verified');
+  });
+  it('never substitutes power or raised-floor area for an unusable rentable area', () => {
+    for (const value of [undefined, null, 0, -3, '3']) {
+      const p = source();
+      (p.sections.property as UWBlock).content.rentable_square_feet = value;
+      expect(verifyStatedMetric(definition(), p, 333.33, undefined, 2).state).toBe('unverifiable');
+    }
+    const p = source();
+    (p.sections.property as UWBlock).content.rentable_square_feet = -3;
+    expect(verifyStatedMetric(definition(), p, -333.33, undefined, 2).reason).toBe('negative_size_denominator');
+  });
+  it('locks an explicit variant and refuses ambiguity instead of selecting by order', () => {
+    const p = source(); const a = block('property', { rentable_square_feet: 3 }); const b = block('property', { rentable_square_feet: 4 });
+    p.sections.property = { first: a, second: b };
+    expect(verifyStatedMetric(definition(), p, 333.33, undefined, 2).reason).toBe('CALC-RESOLVE-002');
+    expect(verifyStatedMetric(definition(), p, 333.33, { property: 'first' }, 2).state).toBe('verified');
+    expect(verifyStatedMetric(definition(), p, 333.33, { property: 'second' }, 2).state).toBe('failed');
+  });
+});

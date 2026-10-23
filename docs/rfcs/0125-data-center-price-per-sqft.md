@@ -1,7 +1,7 @@
 ---
 rfc: 0125
 title: Verify data-center purchase price per stated rentable square foot
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-22
 affects:
@@ -13,6 +13,11 @@ affects:
 ---
 
 # RFC 0125: Verify data-center purchase price per stated rentable square foot
+
+## Owner ruling — 2026-10-22 (sixth set)
+
+Accepted as drafted by the owner, including option C+D for RFC 0085.
+This PR records the ruling and implements the synchronized current contract.
 
 ## Summary
 

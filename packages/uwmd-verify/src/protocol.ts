@@ -1389,7 +1389,7 @@ export const SIZE_INTENSIVES: Readonly<Record<string, SizeIntensive>> = Object.f
   hospitality:     Object.freeze({ path: 'keys',                     label: 'Keys',        unit: 'keys',  secondary: Object.freeze([]) }),
   student_housing: Object.freeze({ path: 'total_beds',               label: 'Beds',        unit: 'beds',  secondary: Object.freeze(['total_units']) }),
   senior_housing:  Object.freeze({ path: 'total_units',              label: 'Units',       unit: 'units', secondary: Object.freeze(['total_beds']) }),
-  data_center: Object.freeze({ path: 'critical_it_load_kw', label: 'Critical IT kW', unit: 'kW', secondary: Object.freeze([]) }),
+  data_center: Object.freeze({ path: 'critical_it_load_kw', label: 'Critical IT kW', unit: 'kW', secondary: Object.freeze(['rentable_square_feet']) }),
   manufactured_housing: Object.freeze({ path: 'total_sites', label: 'Sites', unit: 'sites', secondary: Object.freeze([]) }),
   land:            Object.freeze({ path: 'gross_acres',              label: 'Gross acres', unit: 'acres', secondary: Object.freeze(['usable_acres', 'entitled_units']) }),
 });

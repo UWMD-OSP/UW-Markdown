@@ -149,7 +149,7 @@ and how it gets accepted.
 | [0122](./0122-strict-gap-instants.md) | Make DQ-05 date parsing deterministic | accepted | format, protocol, core, conformance |
 | [0123](./0123-dictionary-receipt-recomputation.md) | Recompute dictionary-defined receipt results without a starter pack | accepted | format, protocol, core, conformance |
 | [0124](./0124-explicit-rule-set-declarations.md) | Require an explicit rule-set declaration in every source representation | accepted | format, protocol, core, conformance |
-| [0125](./0125-data-center-price-per-sqft.md) | Verify data-center purchase price per stated rentable square foot | draft | format, protocol, core, conformance |
+| [0125](./0125-data-center-price-per-sqft.md) | Verify data-center purchase price per stated rentable square foot | accepted | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
