@@ -1,5 +1,5 @@
-import { strToU8, unzipSync, zipSync } from 'fflate';
-import { inspectZipSafety } from './zip-safety.js';
+import { strToU8, zipSync } from 'fflate';
+import { extractZipSafely } from './zip-safety.js';
 import type { UWCodec } from './codec.js';
 import {
   assertUWEnvelope,
@@ -8,7 +8,7 @@ import {
   type UWDocumentEnvelope,
   type UWEnvelopeBlock,
 } from './envelope.js';
-import { sha256TextHex } from './integrity.js';
+import { sha256TextHex, sha256BytesHex } from './integrity.js';
 
 export const UW_CSV_BUNDLE_VERSION = '1.0.0' as const;
 export const UW_CSV_BUNDLE_MEDIA_TYPE = 'application/vnd.uwmd.csv-bundle+zip' as const;
@@ -237,37 +237,46 @@ export async function decodeUWCSVBundle(
   bundle: UWCSVBundle,
   options: UWCSVDecodeOptions = {},
 ): Promise<UWDocumentEnvelope> {
-  const entries = Object.entries(bundle.files);
+  const bytes = Object.fromEntries(Object.entries(bundle.files).map(([path, text]) => [path, strToU8(text)]));
+  const manifest = await verifyBundleInventory(bytes, options);
+  return decodeBundleContents(bundle, manifest);
+}
+
+async function verifyBundleInventory(
+  files: Record<string, Uint8Array>, options: UWCSVDecodeOptions,
+): Promise<BundleManifest> {
+  const entries = Object.entries(files);
   const maxFiles = options.maxFiles ?? MAX_FILES;
   if (entries.length > maxFiles) {
     throw new UWCSVError('CSV_FILE_LIMIT', `Bundle contains ${entries.length} files; limit is ${maxFiles}.`);
   }
   let totalBytes = 0;
-  for (const [path, text] of entries) {
+  for (const [path, bytes] of entries) {
     assertSafeBundlePath(path);
-    totalBytes += strToU8(text).byteLength;
+    totalBytes += bytes.byteLength;
   }
   const maxBytes = options.maxUncompressedBytes ?? MAX_UNCOMPRESSED_BYTES;
   if (totalBytes > maxBytes) {
     throw new UWCSVError('CSV_SIZE_LIMIT', `Bundle expands to ${totalBytes} bytes; limit is ${maxBytes}.`);
   }
 
-  const manifestText = bundle.files['manifest.json'];
+  const manifestBytes = files['manifest.json'];
+  const manifestText = manifestBytes ? decodeUTF8(manifestBytes) : undefined;
   if (!manifestText) throw new UWCSVError('CSV_MANIFEST_MISSING', 'manifest.json is required.');
   const manifest = parseManifest(manifestText);
   const listed = new Set<string>();
   for (const file of manifest.files) {
     if (listed.has(file.path)) throw new UWCSVError('CSV_MANIFEST_DUPLICATE', `Manifest repeats ${file.path}.`);
     listed.add(file.path);
-    const text = bundle.files[file.path];
-    if (text === undefined) throw new UWCSVError('CSV_FILE_MISSING', `${file.path} is listed but missing.`);
-    if (strToU8(text).byteLength !== file.bytes) {
+    const bytes = files[file.path];
+    if (bytes === undefined) throw new UWCSVError('CSV_FILE_MISSING', `${file.path} is listed but missing.`);
+    if (bytes.byteLength !== file.bytes) {
       throw new UWCSVError('CSV_SIZE_MISMATCH', `${file.path} byte length does not match manifest.`);
     }
-    const digest = `sha256:${await sha256TextHex(text)}`;
+    const digest = `sha256:${await sha256BytesHex(bytes)}`;
     if (digest !== file.sha256) throw new UWCSVError('CSV_HASH_MISMATCH', `${file.path} hash does not match manifest.`);
   }
-  for (const path of Object.keys(bundle.files)) {
+  for (const path of Object.keys(files)) {
     if (path !== 'manifest.json' && !listed.has(path)) {
       throw new UWCSVError('CSV_FILE_UNLISTED', `${path} is not listed in manifest.`);
     }
@@ -276,6 +285,12 @@ export async function decodeUWCSVBundle(
     if (!listed.has(required)) throw new UWCSVError('CSV_FILE_MISSING', `${required} is required.`);
   }
 
+  return manifest;
+}
+
+async function decodeBundleContents(
+  bundle: UWCSVBundle, manifest: BundleManifest,
+): Promise<UWDocumentEnvelope> {
   const documentRows = decodeCSV(requiredFile(bundle, 'document.csv'));
   assertHeader(documentRows, [
     'envelope_version',
@@ -406,25 +421,14 @@ export async function decodeUWCSVZip(
   input: Uint8Array,
   options: UWCSVDecodeOptions = {},
 ): Promise<UWDocumentEnvelope> {
-  inspectZip(input, options);
-  let inflated: Record<string, Uint8Array>;
-  try {
-    inflated = unzipSync(input);
-  } catch (error) {
-    throw new UWCSVError('CSV_ZIP_INVALID', `Could not extract ZIP: ${String(error)}`);
-  }
-  const decoder = new TextDecoder('utf-8', { fatal: true });
-  const files: Record<string, string> = {};
-  try {
-    for (const path of Object.keys(inflated).sort()) {
-      assertSafeBundlePath(path);
-      files[path] = decoder.decode(inflated[path]);
-    }
-  } catch (error) {
-    if (error instanceof UWCSVError) throw error;
-    throw new UWCSVError('CSV_UTF8_INVALID', `Bundle files must be UTF-8: ${String(error)}`);
-  }
-  return decodeUWCSVBundle({ files }, options);
+  const inflated = extractZipSafely(input, options, (violation, message) => {
+    throw new UWCSVError(`CSV_${violation}`, message);
+  });
+  // Inventory exact bytes before UTF-8 decoding can consume a BOM.
+  const manifest = await verifyBundleInventory(inflated, options);
+  const files: Record<string, string> = Object.create(null);
+  for (const path of Object.keys(inflated).sort()) files[path] = decodeUTF8(inflated[path]!);
+  return decodeBundleContents({ files }, manifest);
 }
 
 export const UW_CSV_BUNDLE_CODEC: UWCodec<Uint8Array> = {
@@ -644,17 +648,9 @@ function currentSectionBlock(envelope: UWDocumentEnvelope, section: string): UWE
 // Delegates to the shared inspector so the Deal Package cannot drift into a
 // second, subtly different set of archive rules. Every semantic violation maps
 // to `CSV_` + its name, which reproduces the previous codes exactly.
-function inspectZip(input: Uint8Array, options: UWCSVDecodeOptions): void {
-  inspectZipSafety(
-    input,
-    {
-      maxCompressedBytes: options.maxCompressedBytes ?? MAX_COMPRESSED_BYTES,
-      maxFiles: options.maxFiles ?? MAX_FILES,
-      maxUncompressedBytes: options.maxUncompressedBytes ?? MAX_UNCOMPRESSED_BYTES,
-      maxCompressionRatio: options.maxCompressionRatio ?? MAX_COMPRESSION_RATIO,
-    },
-    (violation, message) => { throw new UWCSVError(`CSV_${violation}`, message); },
-  );
+function decodeUTF8(bytes: Uint8Array): string {
+  try { return new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
+  catch (error) { throw new UWCSVError('CSV_UTF8_INVALID', `Bundle files must be UTF-8: ${String(error)}`); }
 }
 
 function parseManifest(text: string): BundleManifest {

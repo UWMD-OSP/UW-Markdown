@@ -25,7 +25,10 @@ currency/unit suffix; CSV uses two decimal percent and three decimal DSCR displa
 Reading commands use core's Node-only `loadUWSourceFile`: UWX keeps its raw
 bytes, Lite compiles through its bridge, and JSON/XML/CSV decode through the
 codec registry. CSV reconstruction preserves own JSON content members, including
-prototype-named keys, while placing authoritative metadata first. Byte-preserving
+prototype-named keys, while placing authoritative metadata first. ZIP readers
+reconcile local/central headers, bound actual expanded output and check CRCs;
+CSV inventory byte counts/hashes cover the original payload before UTF-8/BOM
+handling (#544). STORE and DEFLATE remain supported. Byte-preserving
 source writers require UWX and report
 `SOURCE_EDIT_UNSUPPORTED` otherwise. Document signatures authenticate only the
 original UWX source; other representations receive `INT-14`.
