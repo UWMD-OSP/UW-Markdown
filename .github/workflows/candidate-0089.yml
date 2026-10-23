@@ -35,7 +35,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Exact source, carrier, refusal, authentication and consumer controls
-        run: node --test conformance/candidate-0089/carriers.test.mjs conformance/candidate-0089/authentication.test.mjs conformance/candidate-0089/refusals.test.mjs conformance/candidate-0089/consumers.test.mjs
+        run: node --test --test-concurrency=1 conformance/candidate-0089/carriers.test.mjs conformance/candidate-0089/authentication.test.mjs conformance/candidate-0089/refusals.test.mjs conformance/candidate-0089/consumers.test.mjs conformance/candidate-0089/repairs.test.mjs conformance/candidate-0089/reviewer.test.mjs
       - uses: actions/upload-artifact@v6
         if: always()
         with:

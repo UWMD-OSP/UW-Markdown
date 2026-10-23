@@ -6,15 +6,16 @@ import {createHash} from 'node:crypto';
 import {projectSource,preimage,digest} from '../model.mjs';
 
 // No candidate parser, projector, canonicalizer or frozen expectation is used to derive these values.
-export const canon=v=>v===null||typeof v!=='object'?JSON.stringify(v):Array.isArray(v)?'['+v.map(canon).join(',')+']':'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canon(v[k])).join(',')+'}';
-export const sha=s=>'sha256:'+createHash('sha256').update(s,'utf8').digest('hex');
+export const canon=v=>v===null||typeof v!=='object'?JSON.stringify(v):Array.isArray(v)?`[${v.map(canon).join(',')}]`:`{${Object.keys(v).sort().map(k=>`${JSON.stringify(k)}:${canon(v[k])}`).join(',')}}`;
+export const sha=s=>`sha256:${createHash('sha256').update(s,'utf8').digest('hex')}`;
 export function oracle(source){
  const header=/^---\r?\n([\s\S]*?)\r?\n---/.exec(source);assert.ok(header);
  const frontmatter={};for(const line of header[1].split(/\r?\n/)){const [_,key,text]=/^([^:]+):\s*(.*)$/.exec(line);frontmatter[key]=JSON.parse(text);}
  const model={envelope_version:'2.0',format_version:'3.0',frontmatter,sections:{},pipeline_log:[],custom_calculations:[],custom_scenarios:[],extensions:{},superseded:{}};
  const blocks=[];const body=source.slice(header[0].length);let end=0;
  for(const match of body.matchAll(/^```json uw:section=(\S+)([^\n]*)\n([\s\S]*?)^```\s*$/gm)){
-   const annotation={section:match[1]};for(const tok of match[2].trim().split(/\s+/).filter(Boolean)){const i=tok.indexOf('=');let k=tok.slice(0,i),v=tok.slice(i+1);annotation[k]=k==='v'?Number(v):k==='superseded'?v==='true':v;}
+   const annotation={section:match[1]};for(const tok of match[2].trim().split(/\s+/).filter(Boolean)){const i=tok.indexOf('=');const k=tok.slice(0,i);
+const v=tok.slice(i+1);annotation[k]=k==='v'?Number(v):k==='superseded'?v==='true':v;}
    const prose=body.slice(end,match.index).trim();end=match.index+match[0].length;
    blocks.push({annotation,content:JSON.parse(match[3]),...(prose?{prose}:{})});
  }
@@ -37,7 +38,8 @@ export function oracle(source){
 const packet=JSON.parse(fs.readFileSync(new URL('../cases.json', import.meta.url),'utf8'));
 const records=[];
 for(const item of packet.source_cases){
- const {model,blocks}=oracle(item.source);const expected_preimage=canon(model),expected_digest=sha(expected_preimage);
+ const {model,blocks}=oracle(item.source);const expected_preimage=canon(model);
+const expected_digest=sha(expected_preimage);
  const actual=projectSource(item.source);
  const full=structuredClone(model);full.generated_at='2000-01-01T00:00:00Z';full.generator='candidate';
  records.push({name:item.name,physical_count:blocks.length,expected_model:full,expected_preimage,expected_digest,

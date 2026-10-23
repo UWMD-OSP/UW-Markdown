@@ -4,57 +4,63 @@
     {
       "file": "review-oracle.mjs",
       "original_sha256": "e9a6bf217a56bfa83f72ba1d7f4b43bfbed6fac51c09a13ecd85e5c10376bce5",
-      "adapted_sha256": "0947f25969ac33613deca7c73f049b8a4e18f72d46ce1e953c24524c7ef9e221",
+      "adapted_sha256": "d2a5c241ee0c11429ac5882917b40c3ae4e12ae68508b47599835b2bac3ed726",
       "changes": [
         "LF normalization",
         "relative import/input locations",
-        "cache output locations and directory creation only"
+        "cache output locations and directory creation only",
+        "Mechanical Biome template/declaration style transformations; expected values and routing/ZIP algorithms unchanged"
       ]
     },
     {
       "file": "review-probes.mjs",
       "original_sha256": "b718cf3668316745f3162e2ba34964f8dd312f07ea5644629ac4c9adecaa875b",
-      "adapted_sha256": "58d0e377e059d1405db8447089d28a17500a76ee52fe9a1a0311c357c26f55ec",
+      "adapted_sha256": "a4dbcd12fdacb07f85c9918a5a4914f9a45993c75afe1d60ccf29fba74f88698",
       "changes": [
         "LF normalization",
         "relative import/input locations",
-        "cache output locations and directory creation only"
+        "cache output locations and directory creation only",
+        "Mechanical Biome template/declaration style transformations; expected values and routing/ZIP algorithms unchanged"
       ]
     },
     {
       "file": "review-subjects.mjs",
       "original_sha256": "0df03c7f62b41a8d4f5c1755552576a5d5d504831fa20c3d4949f751d62c1eb1",
-      "adapted_sha256": "095cd718f9451bc82df4179e10e4e321dba349d4985af07bc50095523bc80237",
+      "adapted_sha256": "8cf0fc3fa86aea9820534f2a51f4052c210e03dbb176cc73a2a76fa6e26623b3",
       "changes": [
         "LF normalization",
         "relative import/input locations",
-        "cache output locations and directory creation only"
+        "cache output locations and directory creation only",
+        "Mechanical Biome template/declaration style transformations; expected values and routing/ZIP algorithms unchanged"
       ]
     },
     {
       "file": "review-zip.mjs",
       "original_sha256": "7f3166448b5f6a235eb0966e3398b619bbaed4aab4da32512e6bfd05e1628cd6",
-      "adapted_sha256": "da2c706ba5c4883aa9540ed027ba2d3b1701b5e8eb194acba9aeb4aed65c8e0c",
+      "adapted_sha256": "819288e084f64e8bcce16610496d73057debf08bd3005494eb6df6e40d0e1767",
       "changes": [
         "LF normalization",
         "relative import/input locations",
-        "cache output locations and directory creation only"
+        "cache output locations and directory creation only",
+        "Mechanical Biome template/declaration style transformations; expected values and routing/ZIP algorithms unchanged"
       ]
     },
     {
       "file": "review-auth-boundaries.mjs",
       "original_sha256": "8717d02fe4a39719e3016b79130f96f9df913069964b8f49f9745550203513aa",
-      "adapted_sha256": "506dabf093cdbbd88428872bb799a1c5f7dbc9ad4e42eb8ba0be484124d206d6",
+      "adapted_sha256": "1a5ee062dbae0f87ef5d4a8136118d98f90e8d611688fe9fcb13354a768deec5",
       "changes": [
         "LF normalization",
         "relative import/input locations",
-        "cache output locations and directory creation only"
+        "cache output locations and directory creation only",
+        "Mechanical Biome template/declaration style transformations; expected values and routing/ZIP algorithms unchanged"
       ]
     },
     {
       "file": "source-oracles.json",
       "original_sha256": "7ece483d661e1c7ccd9f1e16c65cf2ce9b34991d04e67e1145778537ab6385c3",
-      "changes": []
+      "changes": [],
+      "adapted_sha256": "7ece483d661e1c7ccd9f1e16c65cf2ce9b34991d04e67e1145778537ab6385c3"
     }
   ],
   "expectations": "Source and ZIP expectations and algorithms retained; path/output adaptation is builder work, not independent re-review."
