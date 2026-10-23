@@ -721,3 +721,9 @@ RFC 0117 extends the closed SIZE-01 table to declared mixed-use component
 sizes and applies positive_size_denominator to the eight component per-size
 metrics. Validation checks all current blocks; metric verification resolves
 the selected component block without defaults or aggregation.
+
+Whole-source reserve-draw binding refuses digest admission when the current
+Envelope would omit repeated or historical extension blocks (#545). It returns
+unverifiable/digest_unavailable without refreshing a plan or introducing the
+draft RFC 0089 representation. Representable singleton extensions retain their
+existing behavior.

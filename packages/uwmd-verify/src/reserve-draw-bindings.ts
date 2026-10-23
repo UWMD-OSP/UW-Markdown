@@ -9,7 +9,7 @@ import type {
   ReserveAccounts,
 } from './protocol.js';
 import { isCurrencyCode } from './protocol.js';
-import { blockPayload } from './parser.js';
+import { blockPayload, parseUWFile, parsedPhysicalBlocks } from './parser.js';
 import {
   sectionBlocks,
   isBindingDigest,
@@ -189,6 +189,26 @@ export async function verifyReserveDrawBindings(
   );
   if (issues.length) return result('unverifiable', 'invalid_structure');
   try {
+    // The current Envelope cannot represent repeated/historical extension blocks.
+    // Refuse a whole-source binding rather than hash a projection that dropped one.
+    // This is an admission guard; RFC 0089's tagged representation is not activated.
+    const physical = snapshot.raw
+      ? parsedPhysicalBlocks(parseUWFile(snapshot.raw))
+      : parsedPhysicalBlocks(parsed);
+    const extensions = new Set<string>();
+    for (const block of [...physical, ...Object.values(snapshot.extensions)]) {
+      const section = block.annotation.section;
+      if (!section.startsWith('x_')) continue;
+      if (block.annotation.superseded === true || block.meta?.lifecycle?.superseded === true) {
+        return result('unverifiable', 'digest_unavailable');
+      }
+    }
+    for (const block of physical) {
+      const section = block.annotation.section;
+      if (!section.startsWith('x_')) continue;
+      if (extensions.has(section)) return result('unverifiable', 'digest_unavailable');
+      extensions.add(section);
+    }
     source_digest = await computeEnvelopeDigest(toUWEnvelope(snapshot));
   } catch {
     return result('unverifiable', 'digest_unavailable');
