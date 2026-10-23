@@ -135,7 +135,8 @@ DSCR evidence is synthesized. Independent Python and reference results agree.
 
 This implementation synchronizes Format 4.5 shared-basis text, Protocol metric
 contract and executable mirror/descriptions, dictionary and generated copy,
-land pack/Excel parity, same-block statement selection, Python verifier,
+land pack/Excel parity, same-block statement selection, independent Python
+calculation controls (the current implementation claims Reader, not full Verifier),
 conformance, wiki and changelog. No new API/dependency or invented diagnostic.
 Other-class NOI identities require separate review; this proposal does not
 change their dictionary applicability.
