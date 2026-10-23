@@ -175,31 +175,41 @@ Issue the receipt when you are finished editing, and send it with the file.
 
 ## What is inside
 
-Abridged from the conformance corpus — the values are real, the results list is
-trimmed to two of the pack's eight outputs:
+Current receipt excerpt from the reference CLI, with the result list trimmed
+to two of the eight outputs and other envelope members omitted:
 
 ```json
 {
-  "receipt_version": "1.0",
+  "receipt_version": "1.1",
   "subject": {
     "representation": "uwx-markdown",
+    "representation_version": "1.0",
     "canonicalization": "uw-envelope-semantic",
-    "digest": "sha256:caa73f0e1dc38cf536149ff5dbdfbd72e21fad6263f6574adeea99f8803822f2"
+    "canonicalization_version": "1.0",
+    "digest": "sha256:d6d385866e5ed70f78776974810adc2ae0c3348b728a0c92df75610ef6f14be0"
   },
   "computation": {
     "pack": "org.uwmd.pack.multifamily",
-    "pack_version": "1.0.0",
-    "engine": "@uwmd/core",
-    "engine_version": "1.1.2",
+    "pack_version": "1.0.2",
+    "engine": "@uwmd/verify",
+    "engine_version": "0.2.1",
+    "protocol_version": "4.1.0",
+    "rule_set": "3.0",
     "results": [
-      { "calc_id": "dscr", "value": 1.2637362637362637, "unit": "x", "computed": true },
-      { "calc_id": "ltv", "value": 0.65, "unit": "%", "computed": true }
+      {
+        "calc_id": "cap_rate",
+        "value": 0.055088,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "cash_on_cash",
+        "value": 0.04189,
+        "unit": "%",
+        "computed": true
+      }
     ]
-  },
-  "policy": { "policy_set": "builtin", "validation": { "errors": 0, "warnings": 5 } },
-  "issued_at": "2026-08-09T00:00:00Z",
-  "issuer": "conformance",
-  "signature": null
+  }
 }
 ```
 
