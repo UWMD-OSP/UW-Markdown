@@ -32,15 +32,17 @@ const resultSchema = ajv.compile(
   JSON.parse(read('spec/schemas/reserve-draw-binding-verification.schema.json')),
 );
 describe('RFC 0065 source-addressed reserve draw binding', () => {
-  it('refuses a whole-source plan when repeated extension peers were lost before hashing (#545)', async () => {
+  it.each([
+    ['base', 'detail'], ['detail', 'base'], [undefined, 'default'], ['default', undefined], ['base', 'base'],
+  ])('refuses a whole-source plan over repeated physical extensions (%s/%s, #545)', async (firstVariant, secondVariant) => {
     const { parsed, plan } = fixture('many-to-many-partial');
-    const extension = (variant: string, marker: number, role = false) =>
-      `\n\n\`\`\`json uw:section=x_probe variant=${variant}\n${JSON.stringify({
+    const extension = (variant: string | undefined, marker: number, role = false) =>
+      `\n\n\`\`\`json uw:section=x_probe${variant === undefined ? '' : ` variant=${variant}`}\n${JSON.stringify({
         _meta: { section: 'x_probe', lifecycle: { revision: 1, superseded: false } },
         ...(role ? { _role: 'primary' } : {}), marker,
       })}\n\`\`\`\n`;
-    const first = parseUWFile(parsed.raw + extension('base', 1, true) + extension('detail', 2));
-    const changed = parseUWFile(parsed.raw + extension('base', 999, true) + extension('detail', 2));
+    const first = parseUWFile(parsed.raw + extension(firstVariant, 1, true) + extension(secondVariant, 2));
+    const changed = parseUWFile(parsed.raw + extension(firstVariant, 999, true) + extension(secondVariant, 2));
     plan!.source_digest = await envelope.computeEnvelopeDigest(envelope.toUWEnvelope(first));
     const frozenPlan = structuredClone(plan);
     expect(first.raw).not.toBe(changed.raw);
@@ -54,7 +56,7 @@ describe('RFC 0065 source-addressed reserve draw binding', () => {
     expect(plan).toEqual(frozenPlan);
   });
 
-  it('does not apply the document-signature role bans to representable singleton extensions', async () => {
+  it('retains representable singleton extensions and refuses historical ones', async () => {
     const { parsed, plan } = fixture('many-to-many-partial');
     const source = `${parsed.raw}\n\n\`\`\`json uw:section=x_probe variant=detail\n${JSON.stringify({
       _meta: { section: 'x_probe', lifecycle: { revision: 1, superseded: false } },
