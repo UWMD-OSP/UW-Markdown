@@ -849,3 +849,7 @@ payloads, issue order, institution configuration and tier claims are outside it.
 ## Draft RFC 0120
 
 [Preserve selected-source cash-flow structural findings](../rfcs/0120-selected-source-structural-findings.md) is pending owner review. Its proposed controls are not current conformance requirements.
+
+RFC 0120 preserves existing CF diagnostics for the exact selected replacement-
+funding source. Portable hedge controls assert structural code multiplicity;
+other variants and superseded blocks remain outside that bounded claim.

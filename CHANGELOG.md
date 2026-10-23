@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Draft RFC 0120: preserve selected-source cash-flow structural findings; pending owner review, with no implementation.
+- Implement accepted RFC 0120: preserve selected-source cash-flow structural findings; pending owner review, with no implementation.
 
 - Fix direct verify-packages invocation on Windows: resolve npm-cli.js and run
   it through Node rather than executing npm.cmd. Add direct Windows CI coverage.

@@ -320,3 +320,18 @@ class ReplacementFundingTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+    def test_rfc0120_selected_findings_even_beside_invalid_reference(self):
+        doc = case()
+        index = next(i for i,b in enumerate(doc.source.blocks) if b.section == "cash_flow_series")
+        doc = alter(doc, index, lambda p: p.update(stated_metrics=dict(xirr=0.1)))
+        doc = change_hedge(doc, lambda h: h["replacement_funding"]["cash_flow_ref"].update(row_index=-1))
+        result = verify(doc)
+        self.assertEqual(result["reason"], "invalid_structure")
+        self.assertEqual([i["code"] for i in result["structural_issues"] if i["code"].startswith("CF-")], ["CF-03"])
+
+    def test_rfc0120_selected_cf_multiplicity(self):
+        doc = case()
+        index = next(i for i,b in enumerate(doc.source.blocks) if b.section == "cash_flow_series")
+        doc = alter(doc, index, lambda p: p["series"][0].update(date="2028-02-30", amount="invalid"))
+        result = verify(doc)
+        self.assertEqual([i["code"] for i in result["structural_issues"] if i["code"].startswith("CF-")], ["CF-01", "CF-01"])

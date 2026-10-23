@@ -2723,7 +2723,7 @@ function checkLeaseUpSchedule(parsed: ParsedUWFile, issues: ValidationMessage[],
 // every variant is checked — a downside series with a gapped date is just as
 // malformed as a base one.
 
-function checkCashFlowContent(
+export function checkCashFlowContent(
   content: Record<string, unknown>,
   variant: string,
   issues: ValidationMessage[],

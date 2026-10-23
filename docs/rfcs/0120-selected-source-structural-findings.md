@@ -1,7 +1,7 @@
 ---
 rfc: 0120
 title: Preserve selected-source cash-flow structural findings
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-22
 affects:
@@ -13,13 +13,12 @@ affects:
 
 # RFC 0120: Preserve selected-source cash-flow structural findings
 
-## Recommendation
+## Resolution
 
-Accept this bounded clarification of Protocol V.12. The owner accepted the
-selected-source recommendation on 2026-10-22; this draft supplies the exact
-contract for review before implementation.
+Accepted as drafted by the owner on 2026-10-22 (fourth set). This PR implements
+the bounded selected-source clarification of Protocol V.12.
 
-## Proposed contract
+## Contract
 
 For replacement-funding verification, `structural_issues` MUST include existing
 CF findings that apply to the exact cash-flow source selected by the binding,
@@ -39,7 +38,7 @@ but malformed source is `invalid_structure`. Both expose the applicable findings
 that can be established. `crypto_unavailable` with valid structure retains an
 empty structural list. A verified binding remains a bounded binding claim.
 
-## Decisions proposed
+## Decisions
 
 | Question | Recommendation | Precedent |
 |---|---|---|
@@ -47,7 +46,7 @@ empty structural list. A verified binding remains a bounded binding claim.
 | Change finding identities or invent a new code? | No; project existing findings without rewriting them | RFC 0104 field ownership and multiplicity |
 | Missing source plus malformed reference? | Keep unresolvable_source precedence | V.12.3 and the reference correction in issue #516 |
 
-## Implementation and conformance after acceptance
+## Implementation and conformance
 
 Update Protocol V.12, its executable mirror and any affected result-schema
 explanation together. Share source selection with validation rather than
@@ -65,4 +64,4 @@ validator. Both alternatives are rejected by the recommendation.
 
 ## Status
 
-Draft only. No runtime or normative contract change is included in this PR.
+Accepted and implemented in this PR under standing merge approval.
