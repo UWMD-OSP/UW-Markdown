@@ -605,9 +605,9 @@ Exit Value: ${money(deepGet(c, 'exit_value') ?? deepGet(c, 'terminal_value'))}`)
   if (su) {
     const c = su.content;
     sections.push(`## SOURCES & USES
-Total Sources: ${money(deepGet(c, 'total_sources'))} | Total Uses: ${money(deepGet(c, 'total_uses'))}
-Loan: ${money(deepGet(c, 'sources.loan_amount') ?? deepGet(c, 'sources.debt_proceeds'))} | Equity: ${money(deepGet(c, 'sources.equity'))}
-Purchase: ${money(deepGet(c, 'uses.purchase_price'))} | Closing Costs: ${money(deepGet(c, 'uses.closing_costs'))} | Reserves: ${money(deepGet(c, 'uses.reserves'))}`);
+Total Sources: ${money(deepGet(c, 'sources.total'))} | Total Uses: ${money(deepGet(c, 'uses.total'))}
+Loan: ${money(deepGet(c, 'sources.senior_loan'))} | Equity: ${money(deepGet(c, 'equity_metrics.equity_total'))}
+Purchase: ${money(deepGet(c, 'uses.purchase_price'))} | Closing Costs: ${money(deepGet(c, 'uses.closing_costs.total'))} | Other Reserves: ${money(deepGet(c, 'uses.other_reserves'))}`);
   }
 
   // ── Market Analysis (abbreviated) ────────────────────────────────────────

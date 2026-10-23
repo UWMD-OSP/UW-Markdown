@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { evaluateCalc, parseUWFile, validateUWFile } from '@uwmd/verify';
+import { evaluateCalc, parseUWFile, validateUWFile, encodeUWCSVZip, decodeUWCSVZip, toUWEnvelope, fromUWEnvelope } from '@uwmd/verify';
 import type { UWBlock } from '@uwmd/verify';
 import { render, UnsupportedRenderFormatError, type RenderOptions } from './renderer.js';
 
@@ -545,5 +545,25 @@ describe('render — chat NOI reads only the §4.5 paths (RFC 0081 §7)', () => 
       'NOI: $570,000',
       'OpEx Ratio: 0.4124',
     ]);
+  });
+});
+
+
+describe('CSV chat source/uses regression #538', () => {
+  it.each(['Parkview-Apts-Glendale-AZ', 'parkview-reviewed'])('renders %s through the CSV ZIP reader without coercing nested objects', async name => {
+    const source = readFileSync(resolve(__dirname, '../../../examples', `${name}.uwx.md`), 'utf8');
+    const original = parseUWFile(source);
+    const envelope = toUWEnvelope(original);
+    const decoded = fromUWEnvelope(await decodeUWCSVZip(await encodeUWCSVZip(envelope)));
+    const before = JSON.stringify(decoded);
+    const result = render(decoded, { format: 'chat' });
+    expect(result.content).toBe(render(original, { format: 'chat' }).content);
+    expect(JSON.stringify(decoded)).toBe(before);
+    expect(result.content).not.toContain('[object Object]');
+    if (name === 'Parkview-Apts-Glendale-AZ') {
+      expect(result.content).toMatch(/Closing Costs: (?:USD |\$)139,000/);
+      expect(result.content).toMatch(/Loan: (?:USD |\$)5,040,000/);
+      expect(result.content).toMatch(/Other Reserves: (?:USD |\$)5,000/);
+    }
   });
 });

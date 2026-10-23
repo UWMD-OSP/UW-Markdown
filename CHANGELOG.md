@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Fix CSV chat rendering of nested sources/uses amounts; read canonical stated totals and refuse numeric object coercion.
+
 - Apply the public/private paperwork policy and enforce the tracked-content
   identity guard in required CI, with only the named public-handle exceptions.
 
