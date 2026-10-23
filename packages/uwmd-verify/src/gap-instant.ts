@@ -25,6 +25,7 @@ export function parseGapInstant(value: unknown): number | null {
 }
 
 export class ValidationClockError extends Error implements ProtocolError {
+  declare cause?: string;
   readonly category = 'validate' as const;
   readonly code = 'PROTO-VALIDATION-CLOCK';
   constructor() { super('The supplied validation clock is not an RFC 0122 instant.'); this.name = 'ValidationClockError'; }

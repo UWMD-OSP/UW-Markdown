@@ -846,9 +846,9 @@ fixed test clock. CI runs it on Node 20 with the existing Python runtime. This
 is development evidence alongside the portable CLI driver; messages, evidence
 payloads, issue order, institution configuration and tier claims are outside it.
 
-## Draft RFC 0122
+## RFC 0122
 
-[Make DQ-05 date parsing deterministic](../rfcs/0122-strict-gap-instants.md) is pending owner review. Its proposed controls are not current conformance requirements.
+The owner accepted the full strict DQ-05 grammar and typed clock refusal on 2026-10-22. TypeScript, Python and schema controls share the admitted instant vectors.
 
 RFC 0122 shares strict date/offset controls across TypeScript and Python; invalid
 supplied clocks refuse before returning findings, even when gaps are absent.

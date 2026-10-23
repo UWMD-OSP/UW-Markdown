@@ -8,7 +8,10 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Implement accepted RFC 0122: make dq-05 date parsing deterministic; pending owner review, with no implementation.
+- Implement accepted RFC 0122: strict calendar/offset DQ-05 instants and typed invalid-clock refusal.
+
+- Apply the public/private paperwork policy and enforce the tracked-content
+  identity guard in required CI, with only the named public-handle exceptions.
 
 - Fix direct verify-packages invocation on Windows: resolve npm-cli.js and run
   it through Node rather than executing npm.cmd. Add direct Windows CI coverage.
@@ -222,7 +225,7 @@ protocol, and each package each carry an independent semver).
 - Scrub RFC records for public launch: every RFC's `author` is now `UWMD maintainers`;
   the owner's personal name, private adopter identifiers, branch names and
   private-repository references leave RFC prose; owner and phase logs collapse
-  into one `## Resolution` section; Golden Deal citations are restated
+  into one `## Resolution` section; review corpus citations are restated
   generically; RFC 0068 is marked superseded by RFC 0080. No decision,
   normative text, code or version changes.
 
@@ -691,10 +694,10 @@ protocol, and each package each carry an independent semver).
 
 ### Removed
 
-- Remove Bancroft agent execution from `@uwmd/core` and the `uwmd` CLI (owner
+- Remove retired agent host agent execution from `@uwmd/core` and the `uwmd` CLI (owner
   decision; RFC 0078 classes the agents as a starter product). Removed: the
-  runner (`runBancroftAgent`, `runBancroftAgentStreaming`, `BancroftRunOptions`,
-  `BancroftRunResult`, `ProgressEvent`), the tool schemas
+  runner (`runretired agent hostAgent`, `runretired agent hostAgentStreaming`, `retired agent hostRunOptions`,
+  `retired agent hostRunResult`, `ProgressEvent`), the tool schemas
   (`WRITE_UW_SECTION_TOOL`, `WRITE_MULTIPLE_SECTIONS_TOOL`,
   `MULTI_SECTION_LAYERS`, `ToolOutput`), the provider seam (`AgentProviderError`,
   `AgentProvider`, `AgentRequest`, `AgentCompletion`, `AgentToolCall`,
@@ -715,7 +718,7 @@ protocol, and each package each carry an independent semver).
   --agent-id/--agent-version`. An unknown command, `uwmd run` included, now
   exits 1 before any file I/O instead of printing the help text with exit 0.
 
-- Implement RFC 0112: remove the Bancroft layer vocabulary from the standard.
+- Implement RFC 0112: remove the retired agent host layer vocabulary from the standard.
   **Format:** §1.2 no longer names a required producer tool; §1.3 is deleted;
   frontmatter `pipeline_state` and its L3 rule are removed (workflow position
   stays in `status` and `deal_stage`; a record that still carries the member
@@ -736,7 +739,7 @@ protocol, and each package each carry an independent semver).
   `agent-host`; the glossary drops "Layer". **Libraries:** `@uwmd/core`
   removes `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`,
   `isContextReady`, `getLayerDependencies`, the `AgentContext`,
-  `BancroftPrompt` and `LayerDefinition` types, `uwmd layers` (now an unknown
+  `retired agent hostPrompt` and `LayerDefinition` types, `uwmd layers` (now an unknown
   command), `agents/L0b-prompt.md`, `RunOptions.updatePipelineState`, the
   chat render's pipeline-state block, the `summary` context profile's
   `pipeline_state` member and `init`'s `pipeline_state` scaffold;
@@ -1644,7 +1647,7 @@ Every backward-compatibility path is deleted, with no alias, shim or deprecation
 - `UWMeta` is the nested schema shape (`section`, `provenance`, `quality`, `lifecycle`, optional `integrity`), with new exported types `UWProvenance`, `UWQuality`, `UWLifecycle`, `UWIntegrity` and `UWMetaPatch`. `block.meta` is the parsed `_meta` object; `blockPayload` returns a copy of the block minus its reserved members. An `EditOperation`'s `meta` is a `UWMetaPatch` (provenance and quality members only; the host owns `section`, `lifecycle` and `integrity`). Field overrides are read from the block's `_overrides` member.
 - Writers emit bare Format 3.0 with `_meta` first: `init`, the editor, the pipeline log, the Lite compiler for all twelve classes, and `.uwpart.md` parts, which now state `uw_version: "3.0"` (Composition §2.1, `uwpart.schema.json`). The web viewer reads `_meta.lifecycle.superseded`; the web editor reads and writes `_overrides`.
 - Exported `SUPPORTED_FORMAT_VERSIONS` and `SUPPORTED_PROTOCOL_VERSIONS`. The docs site and version guards read the spec labels from them.
-- Agent writes never carry `_overrides`: the Bancroft host, `writeAgentBlock` and `applyEdit` under an `agent/*` source drop it, so model output cannot state a per-field override the cascade would honor as `user_override` (invariant 5). Human edits, including the web editor's, still write `_overrides`.
+- Agent writes never carry `_overrides`: the retired agent host host, `writeAgentBlock` and `applyEdit` under an `agent/*` source drop it, so model output cannot state a per-field override the cascade would honor as `user_override` (invariant 5). Human edits, including the web editor's, still write `_overrides`.
 - The cascade's effective tag is `_overrides[].resolution`, then the block's `provenance.resolution`, then `manual` for a `manual` actor. An `_overrides` entry that states only an actor `source` no longer shadows the block's resolution.
 - The public `canonicalize` is plain RFC 8785 JCS. It no longer strips `content_hash` or `signature` from objects that look like a `_meta`; the block digest excludes the whole `_meta` member instead.
 - A frontmatter `modules` entry that is not an object with an `id` (for example a bare module id) is reported as `MOD-DEPENDENCY-UNDECLARED` (warning) instead of being read as a dependency.
@@ -1782,7 +1785,7 @@ The sections below give each change in full.
 
 ### RFC 0079 — stated metric precision and one cash-on-cash definition
 
-- Implements Jared's revised directions (2026-10-10): every dictionary entry gains a minimum comparison precision; Protocol §VIII.5.1 checks the unrounded result at `min(max(stated_decimals, minimum_stated_decimals), round_to)`. Coarse statements verify or fail at the minimum instead of becoming unverifiable. Cap rate/debt yield/cash-on-cash minimums are 3 fractional decimals (0.1%); no double rounding or new tolerance. Reporting/Excel rounding is unchanged.
+- Implements the owner's revised directions (2026-10-10): every dictionary entry gains a minimum comparison precision; Protocol §VIII.5.1 checks the unrounded result at `min(max(stated_decimals, minimum_stated_decimals), round_to)`. Coarse statements verify or fail at the minimum instead of becoming unverifiable. Cap rate/debt yield/cash-on-cash minimums are 3 fractional decimals (0.1%); no double rounding or new tolerance. Reporting/Excel rounding is unchanged.
 - Every class's LTV uses loan / stated underwritten value, with a purchase-price fallback, matching CC-02 and capital-stack `ltv_through`. Restores Agave's correct `0.4938` figures and original notes; no other example LTV changes. Multifamily pack moves to 1.0.2; the other nine corrected packs move to 1.0.1. Excel inputs/formulas follow in lockstep.
 - All nine income-class cash-on-cash definitions use stated Y1 levered flow / total equity with the lazy NOI-minus-debt-service fallback. **Non-multifamily producers now need to state `sources_uses.equity_metrics.equity_total` for cash-on-cash.** Eight examples declare it equal to their sole non-debt sponsor-equity line, an identity of stated fields documented in each `_notes`; Agave's ambiguous stack remains uncomputed.
 - Retains Sonoran's two proven DSCR corrections (`1.3153` → `1.3161`). The lender fixture reports all remaining failures/absent-input findings. Core/browser export the comparison helper; all-class LTV/cash-on-cash Excel parity and precision boundaries remain protected. Carried by Protocol 3.0.0.
@@ -2024,7 +2027,7 @@ The sections below give each change in full.
   by Protocol 2.24.0.
 - RFC status is accepted (merge is acceptance), with all R1–R8 decisions recorded.
   Adds warning-only conformance and CLI/core regressions. Resolves #255
-  (StackUW UPSTREAM-022); broader subtype and legacy-default wording work is deferred.
+  (StackUW adopter report 022); broader subtype and legacy-default wording work is deferred.
 
 ## [2.19.0] - 2026-10-08
 
@@ -2088,7 +2091,7 @@ The sections below give each change in full.
   `default` or `base`. With the junior keyed `base`, the junior was read, and
   the senior's outright replacement funding passed unchecked. They now share
   the `senior` preference CC-02/03/05/09 already use (format §5.3 and §4.7,
-  protocol §V.12.1 step 1). Reported by StackUW as #266 (UPSTREAM-024).
+  protocol §V.12.1 step 1). Reported by StackUW as #266 (adopter report 024).
 - **API.** `CROSS_CHECK_ROLE_PREFERENCE` gains eleven frozen entries,
   `HDG-01`–`HDG-10` and `ESC-04`, each `{ debt_structure: "senior" }`. No
   other export or type changes.
@@ -2139,7 +2142,7 @@ The sections below give each change in full.
   mean the whole equity stack or common's residual after the pref. The web
   editor re-foots the block on every edit, so it overwrote a stated common
   residual with `exit_value_net − loan_balance_at_exit`. Reported by StackUW
-  as #278 (UPSTREAM-025).
+  as #278 (adopter report 025).
 - **Meaning (unchanged footing):** proceeds to the whole equity stack,
   preferred and common, after all debt. `loan_balance_at_exit` is every debt
   repaid from the sale, so mezzanine is included when a `capital_stack` is
@@ -2363,7 +2366,7 @@ The sections below give each change in full.
 ### Renamed identifiers (draft RFC 0073; no contract change)
 
 - **Issue #263 is triaged against the current contract** (StackUW
-  `UPSTREAM-023`). The
+  `adopter report 023`). The
   [renamed-identifier review](docs/reviews/2026-10-04-renamed-identifiers.md)
   and its reproduction script show three things:
   - Renaming only a module id leaves old documents resolved. Protocol §X.2.2
@@ -2433,7 +2436,7 @@ The sections below give each change in full.
     accepted list to the spec line.
   - `InitOptions` gains an optional `scenario`.
   - **What it does not do.** It gives no `scenario` value a meaning; the format
-    defines none yet. Issue #255 (StackUW `UPSTREAM-022`) asks for that, and it
+    defines none yet. Issue #255 (StackUW `adopter report 022`) asks for that, and it
     needs an RFC. The validator still does not read the field.
   - The `@uwmd/cli` README listed `uwmd init <file>`; `init` takes no
     positional, so it now reads `uwmd init [--output <file>]`.
@@ -2694,7 +2697,7 @@ preparation evidence are recorded in
 
 ### Implemented contract — Protocol 2.20.0 (RFC 0069)
 
-Jared accepted RFC 0069 as a whole on **2026-10-02** and authorized
+the owner accepted RFC 0069 as a whole on **2026-10-02** and authorized
 implementation. Format stays **2.0**. Published core/CLI **2.16.0** carry
 stable Protocol **2.20.0**. RFC 0069 is `implemented` following independent
 post-publication verification.
@@ -2751,7 +2754,7 @@ post-publication verification.
   No contract, version, baseline, generated case or conformance count changes.
 
 - **RFC 0066 fixtures `variant-05` and `variant-11` no longer pass a
-  fence-order reader** (StackUW's UPSTREAM-021). Both used to put the block
+  fence-order reader** (StackUW's adopter report 021). Both used to put the block
   their `calc-context.json` names in the last fence. A reader that checked the
   name and then kept the last fence therefore passed both, in both runners.
   - **The change.** Each fixture appends a third `junior` fence,
@@ -2771,7 +2774,7 @@ post-publication verification.
 ### Release process
 
 - **A release tag now lands on a tree whose records about its own generation
-  are final** (StackUW's UPSTREAM-020). At `v2.14.0` and `v2.15.0`, the tagged
+  are final** (StackUW's adopter report 020). At `v2.14.0` and `v2.15.0`, the tagged
   tree still calls that generation unreleased:
   - `VERSIONS.md` labels core/CLI, signing and batch
     `(candidate; published <previous>)` and the Protocol `(accepted, unreleased)`;
@@ -2882,7 +2885,7 @@ The `v2.15.0` tag published core/CLI **2.15.0**, signing **0.2.19** and batch
 
 ### Accepted contract — Protocol 2.19.0 (RFC 0066)
 
-Jared made three owner decisions on **2026-10-02**:
+the owner made three owner decisions on **2026-10-02**:
 
 - **D1** is the selection rule and `CALC-RESOLVE-002`.
 - **D2** is a per-calculation `senior` preference on the lender-side metrics,
@@ -2947,7 +2950,7 @@ Core/CLI **2.14.0** pair with Protocol **2.18.0** and unchanged
 Format **2.0**. Signing **0.2.18** and batch **0.8.13** repin core; the
 unpublished Excel, report, lake and module manifests also receive exact local
 repins. Receipt issuance baselines and the frozen verification fixture use the
-new engine version. Jared authorized the `v2.14.0` tag on 2026-10-02 after
+new engine version. the owner authorized the `v2.14.0` tag on 2026-10-02 after
 reconfirming the four npm trusted publishers.
 
 ### Released
@@ -2998,7 +3001,7 @@ The `v2.14.0` tag published core/CLI **2.14.0**, signing **0.2.18** and batch
 
 ### Accepted additive contract — Protocol 2.18.0 (RFC 0063)
 
-- Jared accepted RFC 0063 at `f04b34ab5606264424bddc02b09ced256a09bbcc` on
+- the owner accepted RFC 0063 at `f04b34ab5606264424bddc02b09ced256a09bbcc` on
   **2026-09-24**. The optional closed `disposition_period_rule` plan member
   preserves legacy behavior when absent or `within_final_period` and admits
   the exact exclusive upper monthly/quarterly source-period boundary with
@@ -3020,7 +3023,7 @@ The `v2.14.0` tag published core/CLI **2.14.0**, signing **0.2.18** and batch
   CALC-PERIOD-002 for a repeated requested date; a unique date resolves even
   when another date repeats. Other registered series and whole-column Excel
   duplicate guards retain their existing rules.
-- Jared accepted RFC 0062 on **2026-09-24**, retaining **2.17.1** as normative
+- the owner accepted RFC 0062 on **2026-09-24**, retaining **2.17.1** as normative
   errata. The reference implementation and tests integrated on canonical `main`
   at `e49eb43` shipped in this release; status is **implemented**. Format stays
   2.0; package versions and exact workspace pins are recorded above. Core/CLI
@@ -3657,7 +3660,7 @@ two **0.1.0** reference modules remain outside the publication workflow.
   (`errors` / `blocked` → 1) and `tier-1/09-returns-tax-basis/validate`
   expects 1. Implementations that followed the prose were failing that case;
   implementations that followed the case were contradicting the prose
-  (raised app-side as underwriter.cc TASK-1121).
+  (raised app-side as underwriter.cc private task 1121).
 
 ### Added
 
@@ -3770,14 +3773,14 @@ two **0.1.0** reference modules remain outside the publication workflow.
   the summary line; `--json` carries the record. New exports:
   `CROSS_CHECK_RULE_IDS`, `CROSS_CHECK_VARIANT_PREFERENCE`,
   `CrossCheckCoverage`, `CrossCheckSkipReason`. Tier-1 fixture
-  `08-variant-cross-checks`. Raised by underwriter.cc as UPSTREAM-005.
+  `08-variant-cross-checks`. Raised by underwriter.cc as adopter report 005.
 - **`dcf.returns.tax_basis` (RFC 0038).** A closed, optional declaration —
   `pre_tax` (default when absent) or `after_tax` — of the basis every metric
   in `dcf.returns` is stated on, so two documents' IRRs can be told apart
   from a spread. Unregistered values are `RT-01` (error) in the new `RT-NN`
   family. New exports: `RETURN_TAX_BASES`, `DEFAULT_RETURN_TAX_BASIS`,
   `ReturnTaxBasis`, `getReturnTaxBasis()`. Tier-1 fixture
-  `09-returns-tax-basis`. Raised by underwriter.cc as UPSTREAM-006.
+  `09-returns-tax-basis`. Raised by underwriter.cc as adopter report 006.
 
 ## [2.4.0] - 2026-09-04
 
@@ -3824,7 +3827,7 @@ two **0.1.0** reference modules remain outside the publication workflow.
   matching §II.5's normative text, which says an implementation whose
   capabilities do not stack into a clean tier SHOULD "publish capabilities
   and omit a tier claim rather than round down". The schema's `required`
-  array contradicted the spec (UPSTREAM-003, reported by underwriter.cc);
+  array contradicted the spec (adopter report 003, reported by underwriter.cc);
   the spec wins. `ImplementationManifest.tier` is now optional in
   `@uwmd/core` accordingly.
 
@@ -4312,7 +4315,7 @@ assumption set (fractions, never percents), the period array, and a
 
 ### Clarified — RFC 0032: `_meta.provisional` and signing (no version moves)
 
-Answered the adopter question tracked upstream-side as UPSTREAM-002
+Answered the adopter question tracked upstream-side as adopter report 002
 (underwriter.cc): § V.7's provisional obligation stays a SHOULD, on purpose.
 `_meta.provisional` is inside canonical block JSON, so stamping it moves
 `content_hash` and any § V.11 signature — and the spec now says plainly that
@@ -4326,7 +4329,7 @@ as the § V.9 wording fix.
 
 ### Clarified — RFC 0033: `capital_stack` is one point in time (no version moves)
 
-Answered the adopter question tracked upstream-side as UPSTREAM-003
+Answered the adopter question tracked upstream-side as adopter report 003
 (underwriter.cc): a ground-up deal's construction loan and its permanent
 takeout are one senior position in time sequence, and § 4.24 as written forced
 the producer to choose between double-counting them as concurrent tranches and
@@ -6111,7 +6114,7 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
   (`complete()`, optional `stream()`, neutral request/completion types) with no
   vendor import; `agents/providers/anthropic.ts` is now the only file importing
   `@anthropic-ai/sdk`, reached through a **dynamic** import so a host bringing
-  its own provider never loads it. `BancroftRunOptions` gains `provider` and
+  its own provider never loads it. `retired agent hostRunOptions` gains `provider` and
   `apiKey` becomes optional — additive; existing callers are unaffected.
   Streaming falls back to `complete()` for providers that cannot stream.
 - **Recorded-replay Tier-4 conformance (T10).** Tier-4 was shape-and-lint only:
@@ -6126,7 +6129,7 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
   naming the changed field — so a cassette doubles as a prompt-drift detector.
   What it does not prove, and says so in its README, is that any particular
   model produces the recorded answer.
-- **`RunOptions.timestamp` / `RunOptions.logEntryId` and `BancroftRunOptions.now`.**
+- **`RunOptions.timestamp` / `RunOptions.logEntryId` and `retired agent hostRunOptions.now`.**
   Agent output was previously non-reproducible: `_meta.timestamp`, `duration_ms`,
   and a random log-entry suffix differed every run, which is why replay could not
   assert on a document at all. A constant clock now freezes all three. Real runs
@@ -6749,7 +6752,7 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
   - **Phase 3 — Integrity (hashes + chains + `uwmd verify`).** New [`packages/uwmd-core/src/integrity-canonical.ts`](./packages/uwmd-core/src/integrity-canonical.ts) implements RFC 8785 (JCS) JSON canonicalization — vendored ~40 LOC, zero dependencies — with the documented exclusion of `_meta.content_hash` and `_meta.signature` from the hash input. New [`packages/uwmd-core/src/integrity.ts`](./packages/uwmd-core/src/integrity.ts) exports `computeBlockHash`, `verifyChain`, `verifyProvenance`, returning typed `IntegrityIssue[]` with codes `INT-01` (parent_hash mismatch), `INT-03` (partial chain), `INT-04` (content_hash recompute mismatch), `POL-01` (unauthorized actor per `BUILTIN_EDIT_POLICIES`), `POL-02` (`section_replace` where `section_supersede` required). New `applyEditAsync` recomputes `content_hash` on every write when `options.integrity` is enabled and rejects edits whose `ctx.parentHash` is stale with `INT-02`. Crypto split: Node `crypto.createHash` and Web Crypto `subtle.digest` produce byte-identical hashes verified in `integrity-canonical.test.ts`. New `uwmd verify <file> [--integrity] [--policy] [--validate] [--json]` subcommand combines all three checks; `uwmd validate --integrity` also opts in inline.
   - **Phase 4 — Context profiles for AI consumption.** New [`packages/uwmd-core/src/context-profiles.ts`](./packages/uwmd-core/src/context-profiles.ts) exports `buildContext(parsed, profile, opts?)` returning a `ContextResult` with `{content, tokenEstimate, profile, sectionsIncluded, truncated}`. Five normative profiles defined in new protocol §X "Context profiles": `summary` (frontmatter + quick_metrics + pipeline_state + gaps, ≤600 tokens), `live` (all non-superseded, prose included), `compact` (all non-superseded, JSON-only, minified, stable→volatile section order, ≤55% of `live` tokens), `full` (every byte), `relevant` (filtered to `opts.sections`). Stable→volatile compact ordering targets prompt-cache-friendly prefixes for adopters using LLMs at scale. `buildAgentContext` rewritten as a thin shim over `buildContext(parsed, layer.consumed_profile, {sections: layer.reads})` — external `AgentContext` shape preserved. `BANCROFT_LAYERS` entries gained a `consumed_profile` field. New `uwmd render --profile=summary|live|compact|full|relevant [--sections=…] [--max-tokens=N] [--no-meta]` flag.
   - **Phase 5 — Refinement engine (dependency graph + perturbation VOI + L0a / L0b agents).** New [`packages/uwmd-core/src/calc/dependencies.ts`](./packages/uwmd-core/src/calc/dependencies.ts) exports `getExprDependencies(ast)` and `extractDependencyGraph(parsed, {packs?})` which walks every `MULTIFAMILY_PACK` calc plus every `custom_calculations[]` entry into a `DependencyGraph` of `(outputs: calc → inputs, inputs: input → calcs, formulas)`. New [`packages/uwmd-core/src/refinement.ts`](./packages/uwmd-core/src/refinement.ts) exports `rankGaps(parsed, opts?)` returning `RankGapsResult` with `by_voi[]` ranked by value-of-information and `by_stage_blocking[]` for non-numeric completeness gaps. The perturbation method evaluates each provisional input at its low / central / high values using interval arithmetic across the dependency graph, computes today's output range, then computes the collapsed range if the gap were known; VOI = today − collapsed, summed across affected outputs. Question templates ship in `defaults.ts` co-located with the ranges. Diagnostics surface non-monotonic outputs as warnings. Two new pipeline layers: `L0a Scope` (prerequisites: none; reads `property`; writes `noi_model`, `debt_structure`, `valuation`, `market_analysis`, `gaps`; `consumed_profile: summary`) and `L0b Scope Refinement` (prerequisites: `L0a`; reads `*`; writes `property`, `noi_model`, `debt_structure`, `gaps`; `consumed_profile: compact`). New `uwmd scope <file>` deterministically resolves every required input via the cascade and stamps results provisional at `deal_stage: scope`. New `uwmd refine <file> [--targets=...] [--top=N] [--json]` runs `rankGaps` and prints / emits the ranking. L0b prompt template at [`packages/uwmd-core/src/agents/L0b-prompt.md`](./packages/uwmd-core/src/agents/L0b-prompt.md).
-  - **Phase 6 — Conformance corpus + RFC drafts.** New conformance fixtures: tier-1 `04-scope-only.uw.md` (back-of-napkin scope file), and six new malformed fixtures (`04-broken-chain` → `INT-01`, `06-wrong-actor` → `POL-01` with sibling `policies.json`, `07-replace-where-supersede-required` → `POL-02`, `08-provisional-without-gap` → `DQ-01`, `09-partial-without-overrides` → `DQ-03`). New tier-2 fixtures: `gaps-section-update` (post-write maintainer hook), `parent-hash-stamp` (integrity-aware edit), `stale-parent-rejected` (negative-path `INT-02`). New tier-3 mode: `dependency-graph-multifamily` exercises `extractDependencyGraph`. New tier-4 fixtures: `l0a-scope-deterministic` (shape contract for the scope agent's writes) and `consumer-profile-contract` (verifies every Bancroft layer declares the right `consumed_profile`). The conformance runner ([`scripts/run-conformance.mjs`](./scripts/run-conformance.mjs)) gained async dispatch, integrity / policy code multiplexing on tier-1 malformed via `verifyChain` + `verifyProvenance`, optional `<id>.policies.json` and `<id>.options.json` siblings on tier-1/tier-2 fixtures, `expected-error.json` for negative-path tier-2 fixtures, `runTier3Refinement` / `runTier4Profile` modes, and a `<volatile>` mask on `content_hash` strings (which canonicalize over a per-run timestamp). Final tally: 29 conformance fixtures pass, 0 fail.
+  - **Phase 6 — Conformance corpus + RFC drafts.** New conformance fixtures: tier-1 `04-scope-only.uw.md` (back-of-napkin scope file), and six new malformed fixtures (`04-broken-chain` → `INT-01`, `06-wrong-actor` → `POL-01` with sibling `policies.json`, `07-replace-where-supersede-required` → `POL-02`, `08-provisional-without-gap` → `DQ-01`, `09-partial-without-overrides` → `DQ-03`). New tier-2 fixtures: `gaps-section-update` (post-write maintainer hook), `parent-hash-stamp` (integrity-aware edit), `stale-parent-rejected` (negative-path `INT-02`). New tier-3 mode: `dependency-graph-multifamily` exercises `extractDependencyGraph`. New tier-4 fixtures: `l0a-scope-deterministic` (shape contract for the scope agent's writes) and `consumer-profile-contract` (verifies every retired agent host layer declares the right `consumed_profile`). The conformance runner ([`scripts/run-conformance.mjs`](./scripts/run-conformance.mjs)) gained async dispatch, integrity / policy code multiplexing on tier-1 malformed via `verifyChain` + `verifyProvenance`, optional `<id>.policies.json` and `<id>.options.json` siblings on tier-1/tier-2 fixtures, `expected-error.json` for negative-path tier-2 fixtures, `runTier3Refinement` / `runTier4Profile` modes, and a `<volatile>` mask on `content_hash` strings (which canonicalize over a per-run timestamp). Final tally: 29 conformance fixtures pass, 0 fail.
   - **Deferred / discussed** — five items intentionally captured as RFC drafts rather than implementation in this train: [RFC 0009](./docs/rfcs/0009-meta-v2-reorg.md) (`_meta` v2 sub-object reorganization, the only proposed breaking change; deferred to v2.0 with back-compat parser shim), [RFC 0010](./docs/rfcs/0010-signed-blocks.md) (`_meta.integrity.signature` as a separate `@uwmd/signing` package; explicit non-goal as everyday open-standard usage), [RFC 0011](./docs/rfcs/0011-capability-tokens.md) (JWT-style scoped capability tokens for write authorization in orchestrator-bound deployments), [RFC 0013](./docs/rfcs/0013-corpus-retrieval.md) (per-section embedding sidecar for portfolio-scale "find similar deals", v3 territory), and a new "Range types and napkin mode" subsection added to [RFC 0005](./docs/rfcs/0005-stochastic-calculations.md) framing the v1.1 perturbation engine as the v1.1 approximation of a stochastic v2. Other items explicitly NOT pursued and documented in the architectural review's out-of-scope catalog: per-field provenance everywhere (rejected — `field_overrides` is the chosen mid-point), calc-engine confidence propagation (deferred indefinitely — math is murky), pure-halt mode for required fields (rejected — partial data is the norm), compiled binary `.uwc` format (rejected with extended explanation), AST cache files (deferred until measured parsing speed becomes a problem), per-block telemetry (no current adopter need), asset-class default tables for non-multifamily (one pack per RFC; office / retail / industrial follow), and `MarketDataLookup` reference implementation (interface only — adopters bring CoStar / Yardi / internal).
 - **Calc engine v1.1 (Phase B)** — protocol version bumped to `1.1.0` with two additive Tier-3 changes. (1) Grammar gains short-circuiting logical operators `&&` and `||` between conditional and comparison precedence levels, with full null propagation (any null operand → null) and `CALC-TYPE-001` on non-boolean operands; the right side is only evaluated when the left does not determine the result. (2) Built-in function set expands by 10: math (`abs`, `floor`, `ceil`, `sqrt`, `pow`, `log`, `exp`) and financial (`fv`, `pv`, `nper`). All new financials use the same unsigned convention as the existing `pmt` (positive `pv` = loan balance, positive `pmt` = periodic payment) and admit zero-rate edge cases by closed-form fallback. Spec updated at [`spec/UW_PROTOCOL_v1.md`](./spec/UW_PROTOCOL_v1.md) §VIII.1 (EBNF) and §VIII.3 (builtin table). Backwards-compatible: every v1.0.0 expression continues to parse and evaluate identically.
 

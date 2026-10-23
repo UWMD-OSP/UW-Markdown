@@ -10,7 +10,7 @@ on `main` (`e49eb43`). The latest release tag is annotated object
 2.13.0, signing 0.2.17 and batch 0.8.12. GitHub has no open PRs or issues at
 this check.
 
-Remote `codex/work` is 70 commits behind `main` with zero unique commits.
+Remote `work/work` is 70 commits behind `main` with zero unique commits.
 `preserve/docs-reconcile-256d085` is 56 behind with one docs-only unique commit
 (`256d085`, touching `ROADMAP.md` and `docs/wiki/13-status.md`). That commit
 described the then-current v2.10.0 and RFC 0049/0054/0055/0056 state; later

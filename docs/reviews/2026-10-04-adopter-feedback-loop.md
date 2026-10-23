@@ -1,7 +1,7 @@
 # Adopter feedback loop: intake, triage and the case against a report envelope
 
 Review date: **2026-10-04** (America/Phoenix). Status: **implemented on
-branch `claude/adopter-feedback-loop`. Process and tooling only.** No Format,
+branch `work/adopter-feedback-loop`. Process and tooling only.** No Format,
 Protocol, schema, conformance, calc or financial-semantics change.
 
 The adopter-facing result is [Reporting problems and feedback](../FEEDBACK.md).
@@ -24,7 +24,7 @@ Protocol 2.21.0, core/CLI 2.17.0.
 | GitHub Discussions | Disabled. The public RFC comment venue is still an open owner decision ([handoff](https://github.com/UWMD-OSP/UW-Markdown/blob/e997d8291e96984d337aaa0c606b38448581f811/docs/handoff/HUMAN-public-rfc-venue.md)). |
 | PR template | Present. It said "Link the issue this resolves", without saying how. |
 | Issues filed | One ever (#146, closed). |
-| StackUW findings | Reached the repo as owner-relayed briefs and re-vendor findings carrying StackUW's own IDs (`UPSTREAM-002`…`UPSTREAM-021`). Those IDs are cited in the CHANGELOG, RFCs 0032/0037/0038/0066/0069, and test names. None went through an issue. |
+| StackUW findings | Reached the repo as owner-relayed briefs and re-vendor findings carrying StackUW's own IDs (`adopter report 002`…`adopter report 021`). Those IDs are cited in the CHANGELOG, RFCs 0032/0037/0038/0066/0069, and test names. None went through an issue. |
 
 ### Drift found
 
@@ -98,7 +98,7 @@ all the normative sources together with the introducing RFC, its fixtures,
 the CHANGELOG and the release records. It then corrects whichever artifact
 departs from that behavior. When the evidence doesn't establish the behavior,
 or reconciling the sources would change required behavior, the report gets
-`needs-rfc`. UPSTREAM-003 (2.3.0) is one case where the spec text held the
+`needs-rfc`. adopter report 003 (2.3.0) is one case where the spec text held the
 intended behavior and the schema was corrected. It sets no general rule that
 the spec prevails.
 
@@ -106,15 +106,15 @@ Every previous StackUW finding classifies cleanly under this test:
 
 | Finding | Classification under the new taxonomy | What happened |
 |---|---|---|
-| UPSTREAM-002 | `spec` → `needs-rfc` | RFC 0032 |
-| UPSTREAM-003 | `drift` (a schema `required` array disagreed with the intended manifest behavior) | Fixed by PR |
-| UPSTREAM-005 | `spec-ambiguity` + `needs-rfc` | RFC 0037 |
-| UPSTREAM-006 | `spec-ambiguity` + `needs-rfc` | RFC 0038 |
-| UPSTREAM-014 | `enhancement` + `needs-rfc` | RFC 0069 |
-| UPSTREAM-015 | `bug` (packs read a §4.5 object as a scalar) | Fixed by PR, with regression tests |
-| UPSTREAM-016 | `spec-ambiguity` + `needs-rfc` | RFC 0066 |
-| UPSTREAM-020 | `bug` (release records not final at the tag) | Fixed by PR (release tooling) |
-| UPSTREAM-021 | `conformance-gap` (fixtures passed a fence-order reader) | Fixed by PR, no contract change |
+| adopter report 002 | `spec` → `needs-rfc` | RFC 0032 |
+| adopter report 003 | `drift` (a schema `required` array disagreed with the intended manifest behavior) | Fixed by PR |
+| adopter report 005 | `spec-ambiguity` + `needs-rfc` | RFC 0037 |
+| adopter report 006 | `spec-ambiguity` + `needs-rfc` | RFC 0038 |
+| adopter report 014 | `enhancement` + `needs-rfc` | RFC 0069 |
+| adopter report 015 | `bug` (packs read a §4.5 object as a scalar) | Fixed by PR, with regression tests |
+| adopter report 016 | `spec-ambiguity` + `needs-rfc` | RFC 0066 |
+| adopter report 020 | `bug` (release records not final at the tag) | Fixed by PR (release tooling) |
+| adopter report 021 | `conformance-gap` (fixtures passed a fence-order reader) | Fixed by PR, no contract change |
 
 ## Is a machine-readable feedback envelope warranted?
 

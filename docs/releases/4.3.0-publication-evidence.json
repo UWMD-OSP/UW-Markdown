@@ -1,4 +1,5 @@
 {
+  "_public_redaction_note": "Identity-bearing observations were redacted; this retained historical file is not release proof.",
   "verified_at": "2026-10-15T23:22:20Z",
   "verification_date_local": "2026-10-15",
   "timezone": "America/Phoenix",
@@ -12,7 +13,7 @@
     "annotated": true,
     "signed": false,
     "message": "4.3.0",
-    "tagger": "Jared <jared@uwmd.org>",
+    "tagger": "[redacted tagger identity]",
     "tagger_date": "2026-10-15T23:08:58Z",
     "transport": "Local git tag created; git push failed DNS. GitHub Git API created byte-identical annotated object and refs/tags/v4.3.0. Normal push-triggered release.yml ran; no workflow/publisher bypass."
   },

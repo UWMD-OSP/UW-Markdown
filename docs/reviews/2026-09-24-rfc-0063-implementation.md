@@ -1,6 +1,6 @@
 # RFC 0063 implementation verification
 
-Owner acceptance: Jared accepted `f04b34ab5606264424bddc02b09ced256a09bbcc`
+Owner acceptance: the owner accepted `f04b34ab5606264424bddc02b09ced256a09bbcc`
 on 2026-09-24 and authorized local implementation. RFC status is **accepted**,
 not implemented, until shipped. This record does not authorize push or release.
 
@@ -44,7 +44,7 @@ unchanged. Published core/CLI 2.13.0 still implement Protocol 2.17.0.
   CLI tests use the existing plan-file command for each cadence. Existing
   RFC 0062 and other-series/Excel protections remain in the regression suites.
 
-## Private Golden Deal probes
+## Private review corpus probes
 
 Probes reuse the frozen source-attributed inputs from the completed boundary
 review. Private paths, identities and financial values remain outside this repo.
@@ -77,4 +77,4 @@ The first verification pass exposed stale receipt protocol labels, one runner
 lint issue and missing site registration for this review page. Those were
 corrected and the affected gates rerun successfully. No financial expectation
 was regenerated or relaxed. The 26-case exact legacy comparison and private
-Golden Deal probe results are retained in local verification artifacts.
+review corpus probe results are retained in local verification artifacts.

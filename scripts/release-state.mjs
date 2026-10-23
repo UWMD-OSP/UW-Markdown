@@ -1,6 +1,8 @@
+// Public proof: CHANGELOG, VERSIONS, GitHub Releases and npm provenance.
+// Preparation/evidence files are private and never inputs to this gate.
 // What a release's records may say about it, and when.
 //
-// StackUW's re-vendor of v2.15.0 found (its UPSTREAM-020) that the v2.14.0 and
+// StackUW's re-vendor of v2.15.0 found (its adopter report 020) that the v2.14.0 and
 // v2.15.0 tags carry trees that still call their own generation a candidate:
 //
 //   - VERSIONS.md reads "(candidate; published <previous>)" on core/CLI,
