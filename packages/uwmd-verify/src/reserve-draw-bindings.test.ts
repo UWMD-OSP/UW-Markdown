@@ -32,6 +32,43 @@ const resultSchema = ajv.compile(
   JSON.parse(read('spec/schemas/reserve-draw-binding-verification.schema.json')),
 );
 describe('RFC 0065 source-addressed reserve draw binding', () => {
+  it('refuses a whole-source plan when repeated extension peers were lost before hashing (#545)', async () => {
+    const { parsed, plan } = fixture('many-to-many-partial');
+    const extension = (variant: string, marker: number, role = false) =>
+      `\n\n\`\`\`json uw:section=x_probe variant=${variant}\n${JSON.stringify({
+        _meta: { section: 'x_probe', lifecycle: { revision: 1, superseded: false } },
+        ...(role ? { _role: 'primary' } : {}), marker,
+      })}\n\`\`\`\n`;
+    const first = parseUWFile(parsed.raw + extension('base', 1, true) + extension('detail', 2));
+    const changed = parseUWFile(parsed.raw + extension('base', 999, true) + extension('detail', 2));
+    plan!.source_digest = await envelope.computeEnvelopeDigest(envelope.toUWEnvelope(first));
+    const frozenPlan = structuredClone(plan);
+    expect(first.raw).not.toBe(changed.raw);
+    expect(await envelope.computeEnvelopeDigest(envelope.toUWEnvelope(changed))).toBe(plan!.source_digest);
+    for (const input of [first, changed, structuredClone(changed)]) {
+      const result = await verifyReserveDrawBindings(input, plan);
+      expect(result).toMatchObject({ state: 'unverifiable', reason: 'digest_unavailable', source_digest: null });
+      expect(result.evidence).toEqual([]);
+      expect(resultSchema(result)).toBe(true);
+    }
+    expect(plan).toEqual(frozenPlan);
+  });
+
+  it('does not apply the document-signature role bans to representable singleton extensions', async () => {
+    const { parsed, plan } = fixture('many-to-many-partial');
+    const source = `${parsed.raw}\n\n\`\`\`json uw:section=x_probe variant=detail\n${JSON.stringify({
+      _meta: { section: 'x_probe', lifecycle: { revision: 1, superseded: false } },
+      _role: 'primary', marker: 1,
+    })}\n\`\`\`\n`;
+    const singleton = parseUWFile(source);
+    plan!.source_digest = await envelope.computeEnvelopeDigest(envelope.toUWEnvelope(singleton));
+    expect((await verifyReserveDrawBindings(singleton, plan)).state).toBe('verified');
+    const historical = parseUWFile(source.replace('"superseded":false', '"superseded":true'));
+    expect(await verifyReserveDrawBindings(historical, plan)).toMatchObject({
+      state: 'unverifiable', reason: 'digest_unavailable', source_digest: null,
+    });
+  });
+
   it('leaves a legacy document without accounts or a plan exactly unchanged', async () => {
     const parsed = parseUWFile(read('docs/examples/property-cash-flow-synthetic.uwx.md'));
     const plan = JSON.parse(

@@ -12,6 +12,10 @@ protocol, and each package each carry an independent semver).
   check CSV inventory hashes on original bytes before UTF-8 BOM handling,
   preserving STORE and DEFLATE support in CSV and deal-package readers.
 
+- Guard #545: reserve-draw plans report digest_unavailable when repeated or
+  historical extension source blocks cannot be represented by the current
+  Envelope; retain the original plan and do not automatically rebind.
+
 - RFC 0125: verify data-center price per explicit rentable SF at every bound
   home; register rentable area as secondary while keeping kW primary. Mirror
   the dictionary in the pack and live workbook; infer no area from power.
