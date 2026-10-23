@@ -846,9 +846,9 @@ fixed test clock. CI runs it on Node 20 with the existing Python runtime. This
 is development evidence alongside the portable CLI driver; messages, evidence
 payloads, issue order, institution configuration and tier claims are outside it.
 
-## Draft RFC 0120
+## RFC 0120
 
-[Preserve selected-source cash-flow structural findings](../rfcs/0120-selected-source-structural-findings.md) is pending owner review. Its proposed controls are not current conformance requirements.
+Accepted on 2026-10-22: existing CF findings from the exact selected physical binding source are preserved, with unrelated/superseded sources excluded.
 
 RFC 0120 preserves existing CF diagnostics for the exact selected replacement-
 funding source. Portable hedge controls assert structural code multiplicity;
