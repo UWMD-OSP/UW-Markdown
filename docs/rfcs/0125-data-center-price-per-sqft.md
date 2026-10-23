@@ -16,15 +16,14 @@ affects:
 
 ## Owner ruling — 2026-10-22 (sixth set)
 
-Accepted as drafted by the owner, including option C+D for RFC 0085.
+Accepted as drafted by the owner, D1–D5 stand as written.
 This PR records the ruling and implements the synchronized current contract.
 
 ## Summary
 
 Extend the existing `price_per_sqft` dictionary definition to `data_center`,
 using only explicit `property.rentable_square_feet`. Keep commissioned critical
-IT kW as primary size. **Draft for owner acceptance; no implementation.** The
-owner's fifth-set ruling requests this proposal, not normative activation.
+IT kW as primary size. **Accepted by the owner; implemented by this PR.** The sixth-set ruling accepts this contract.
 Recommendation: accept D1–D5 as written.
 
 ## Motivation
@@ -39,7 +38,7 @@ without changing numbers or authoring an unstated measurement standard.
 
 ## Proposed change
 
-After acceptance, a Verifier MUST select this entry for `data_center`:
+A Verifier MUST select this entry for `data_center`:
 
 ```json
 {
@@ -98,8 +97,8 @@ changes. No land or other-class entry changes.
 
 ## Current contract and versions
 
-Only this draft and the explicitly requested example wording change here. No
-spec/schema/dictionary/pack/receipt behavior changes until acceptance. No version
+Only this draft and the explicitly requested example wording change here. The synchronized spec/dictionary/pack and conformance changes implement the
+accepted contract. No version
 is allocated; prelaunch packages remain 4.x under the owner rule. No historical
 artifact repair or compatibility path.
 
@@ -115,7 +114,7 @@ cent-boundary and source-precision controls under the existing quantizer.
 
 ## Reference implementation
 
-After acceptance synchronize Format property/valuation text, Protocol metric
+This implementation synchronizes Format property/valuation text, Protocol metric
 contract and executable mirror/descriptions, dictionary, generated dictionary,
 data-center builtin pack and Excel output/parity, independent Python selection,
 metric conformance, size registry/`SIZE_INTENSIVES` secondary-path parity,
@@ -130,7 +129,7 @@ Add a data-center-only id: needlessly duplicates the identical rentable-SF rule.
 
 ## Unresolved questions
 
-Owner acceptance of D1–D5. No further formula or tolerance is delegated to the
+D1–D5 are accepted. No further formula or tolerance is delegated to the
 implementer. Implementation evidence follows the synchronized contract.
 
 ## Prior art

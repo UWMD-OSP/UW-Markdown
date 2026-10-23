@@ -410,7 +410,7 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense an
 
 ## Valuation {#valuation}
 
-`price_per_sf` uses the explicitly stated `property.rentable_square_feet` as a secondary price comparison. The primary pricing denominator remains commissioned critical IT kW, through the builtin `price_per_commissioned_kw` calculation. No conversion between kW, rentable area and raised-floor area is implied. RFC 0125 proposes adding the SF figure to data-center dictionary verification; that extension is not yet accepted.
+`price_per_sf` uses the explicitly stated `property.rentable_square_feet` as a secondary price comparison. The primary pricing denominator remains commissioned critical IT kW, through the builtin `price_per_commissioned_kw` calculation. No conversion between kW, rentable area and raised-floor area is implied. RFC 0125 binds the SF figure to data-center dictionary verification.
 
 ```json uw:section=valuation source=manual ts=2026-09-09T11:00:00Z v=1 confidence=high
 {
