@@ -8,7 +8,7 @@ dist/
 .idea/
 *.tsbuildinfo
 coverage/
-.claude/
+.claude
 
 # Workspace members (packages/*) resolve through the root package-lock.json.
 # Nested lockfiles drift from the root resolution. Tools/* are NOT workspace

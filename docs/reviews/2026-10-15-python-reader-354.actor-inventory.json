@@ -1100,145 +1100,145 @@
   "integrator_render_outputs": [
     {
       "path": "conformance/documents/expected/05-land-stage-overlay.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\05-land-stage-overlay.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "40c4f5aafb80f0e8313cf1b13b85fd39cad11f0402ad9242dc2655386a472ef2",
       "candidate_actual_and_governed_sha256": "d530c6c71ebb320a525e0f4eb022197c5d0d4acaac358140a1d439fce2390339"
     },
     {
       "path": "conformance/documents/expected/05-land-stage-overlay.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\05-land-stage-overlay.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "bd52635a274a0399b7e9443714ffa2f143ad3aaa58b9a0ed0198d59958025067",
       "candidate_actual_and_governed_sha256": "45bec43648fec9d64d3209b564325fe9ef8974fe6e916aaf17698efccf2eb984"
     },
     {
       "path": "conformance/documents/expected/06-mixed-use-stage-overlay.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\06-mixed-use-stage-overlay.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "a1f717f7dea7def86a9b356932e92774dd48303be7bdb700bfdf2c1810196de1",
       "candidate_actual_and_governed_sha256": "a4d48dc1278f80936dff9ffb5faec7655a7ac8f54ab94b3e625ddba5e0e38d0e"
     },
     {
       "path": "conformance/documents/expected/06-mixed-use-stage-overlay.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\06-mixed-use-stage-overlay.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "c80d15fb17f40f774afd0c8d4cb9dcffcf6b28647af36ba423180137640ee646",
       "candidate_actual_and_governed_sha256": "85d5a9e490287f5590befcce7e0baaf8d328dbac5148c5e7474ec85fa196e940"
     },
     {
       "path": "conformance/documents/expected/07-stage-overlay-control.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\07-stage-overlay-control.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "5d3e7976a3994d9bcf453102b36a9ba3639ec42fac88a2a80f9b3b561ce1137e",
       "candidate_actual_and_governed_sha256": "f021cee0ec637a6a10e4f248b3522a00e8f009329d1d427b7bffa39d7332f3ff"
     },
     {
       "path": "conformance/documents/expected/07-stage-overlay-control.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\07-stage-overlay-control.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "aed1149a6d3cd7e9ca33e5a6633cab6ec650d55520f2267c46c9fa407858b7b1",
       "candidate_actual_and_governed_sha256": "95337e35002ba50d9796a581abadcdd61fcb7f9a150c5fdaf939c0f46b633ca2"
     },
     {
       "path": "conformance/documents/expected/08-variant-cross-checks.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\08-variant-cross-checks.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "22b41f98957eb0495b16627325d151ea1e1ae69cf7d64b248c957eafb1a42d63",
       "candidate_actual_and_governed_sha256": "0bdc147590b7ebffa0083321a961d159b5e2dadc1200f3303b6b70caea2b0470"
     },
     {
       "path": "conformance/documents/expected/08-variant-cross-checks.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\08-variant-cross-checks.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "5ed7e8c554215c2da25ef1f2b994af848090d765588149f489bb22657d523c2d",
       "candidate_actual_and_governed_sha256": "0f1b6fcba42311b8e01e413c9db7a188e9fb0dee8381d66ed15b35b4d5212256"
     },
     {
       "path": "conformance/documents/expected/09-returns-tax-basis.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\09-returns-tax-basis.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "59c1da8af7498a58b61d925953f626c696edddca5eb1e95bad71e4798602fd55",
       "candidate_actual_and_governed_sha256": "0aa24f5a3d8bace5b187f844d536bc379a96e087f84b6cffdc202721e34e84aa"
     },
     {
       "path": "conformance/documents/expected/09-returns-tax-basis.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\09-returns-tax-basis.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "35f3dff788f7865124c95133c6963efd76100fe00e20a82ee34d1c2884a57b3e",
       "candidate_actual_and_governed_sha256": "d4c0269b07de5a6cc5b8ad0ddb1797d49184dfee15318927d3198a66499f6ea3"
     },
     {
       "path": "conformance/documents/expected/10-declared-roles.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\10-declared-roles.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "df8db11d086c4739cdbf0adada1497ff8ae86368cd192a6abe2e36eb01cecc63",
       "candidate_actual_and_governed_sha256": "4a8db78eb677a7ac696485cbb11271c09e4c12c1f85c81c9ad9b23a34c7308f1"
     },
     {
       "path": "conformance/documents/expected/10-declared-roles.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\10-declared-roles.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "d8eadf8a1669a02222451f3e11501bad68dfc99b93775aaac96303c0f37a19e4",
       "candidate_actual_and_governed_sha256": "8d7a2f5d7a428fed8d967d35f9bdeeffa29f9d0e6bcfca0218ac36ad6c7463a4"
     },
     {
       "path": "conformance/documents/expected/11-role-collision.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\11-role-collision.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "f02379496ed5ed716adbc3b92b31ad37ad06d58c87cb4032ec1c878538dfab2a",
       "candidate_actual_and_governed_sha256": "7853537bd1cb59c216e4b9d5a2e45f150dbbdb6c273aa6282fce7d2905612826"
     },
     {
       "path": "conformance/documents/expected/11-role-collision.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\11-role-collision.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "0c23e2e3c2123f4186b8cf5998f6943db4f217442b8d5933f8f88279aa0e1a8b",
       "candidate_actual_and_governed_sha256": "6741c5663b162415470c3a4d31cf440d8caee1cafec333036a4629eb41ff6014"
     },
     {
       "path": "conformance/documents/expected/12-role-eligibility.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\12-role-eligibility.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "58ccdf4f4f067fc08249b59ff962050171de1c1e1eb001054a9b06886322594e",
       "candidate_actual_and_governed_sha256": "23ed8571588eb65df59585803b45ef2b7040f8977124950ca4eaacd84afadc69"
     },
     {
       "path": "conformance/documents/expected/12-role-eligibility.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\12-role-eligibility.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "19bb0433aea6c0bae7b59af84c26a8f469dec5a5ed2affa6c9f1359c96f7c539",
       "candidate_actual_and_governed_sha256": "2b8fda4fad23b097f68da0c95eba4728c20f2a8c80a08b249781ebced9287c8c"
     },
     {
       "path": "conformance/documents/expected/13-period-identities.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\13-period-identities.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "7bac31980ea27b9b5abd173ff43e8a75ed803c415604342f2196d97d09d75358",
       "candidate_actual_and_governed_sha256": "d5e9effaeb6d40db4e3517badf70614e740dd3cbe24609ed858a0f413912a34e"
     },
     {
       "path": "conformance/documents/expected/13-period-identities.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\13-period-identities.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "1d3d510dab5aa55550c5b82c00c20e78c66cf98bd4f45a3768770e655810049d",
       "candidate_actual_and_governed_sha256": "60134cfa6b09abee3a96c1958d1287abe37f74cfdf073918c76cc166d23e21fa"
     },
     {
       "path": "conformance/documents/expected/14-student-bed-counts.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\14-student-bed-counts.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "418dad93050b1cd5ed3b852db5a58d89238a8677237987ba519bd981edfa0e47",
       "candidate_actual_and_governed_sha256": "79daabd6b1171a47e231ec816b7fe354ef2e408f95b65ce7134f88c3ac2fa67f"
     },
     {
       "path": "conformance/documents/expected/14-student-bed-counts.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\14-student-bed-counts.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "9d428af414d7e3c03b72de541305fc6c83bc68126a8c13840e0417af35ab9618",
       "candidate_actual_and_governed_sha256": "f1d8cf26490afc84c272d829d4728a37bf8a51d479f005aeb0077c0190e9572e"
     },
     {
       "path": "conformance/documents/expected/15-student-bed-counts-inconsistent.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\15-student-bed-counts-inconsistent.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "48e9946de2e1a21ddff6d2a57bd23346138244b0934a8834d0a1fa3cef0f1454",
       "candidate_actual_and_governed_sha256": "fe0e32818eccd603c9528338c319203431ace45323c3fa00155e1725555d1b3c"
     },
     {
       "path": "conformance/documents/expected/15-student-bed-counts-inconsistent.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\15-student-bed-counts-inconsistent.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "2f57691d8e943a3769654cb5cbc5ab90a60968b57acf788702fa53352c999a20",
       "candidate_actual_and_governed_sha256": "c648f8201d6e8783d3a272298df8347ae39a2b62ccf72c35c0fb7a02c88dafdd"
     },
     {
       "path": "conformance/documents/expected/17-exit-proceeds-junior-capital.rendered-chat.txt",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\17-exit-proceeds-junior-capital.rendered-chat.txt",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "b21efab7d85c2e6f1d3573e0014e426a5ddc4f67a19efb51bda2c8fcb298d9a9",
       "candidate_actual_and_governed_sha256": "5f5576e9b7404fcf1d92d4a420468ad4b9b3e5e84df70b69b9d28ad69e8c1529"
     },
     {
       "path": "conformance/documents/expected/17-exit-proceeds-junior-capital.rendered-summary.md",
-      "integrator_output_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-render-candidate\\17-exit-proceeds-junior-capital.rendered-summary.md",
+      "integrator_output_path": "[redacted local path]",
       "original_sha256": "79c5c1f2515b3c71c4a73087e9c5fce4631df711ed5377e3590af8a69569fc91",
       "candidate_actual_and_governed_sha256": "fea4a69971abd0be92a9f6376c4a23704dbcddaa1bd496f7ac9823ca932a9077"
     }
@@ -1246,238 +1246,238 @@
   "raw_evidence": [
     {
       "name": "baseline-catalog.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-catalog.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 1327398,
       "sha256": "75fe74925e8028073b355dfba1e96a14798db1994a2d46f2235beeb30ddd38ff",
       "excluded_reason": null
     },
     {
       "name": "baseline-cli-v2.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-cli-v2.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 2051683,
       "sha256": "4dcad77a49d179a8b988f893c597edeca998a5d74fa1ce2f52b36a82ce5151d8",
       "excluded_reason": null
     },
     {
       "name": "baseline-cli-v2.json.journal.jsonl",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-cli-v2.json.journal.jsonl",
+      "absolute_path": "[redacted local path]",
       "bytes": 813906,
       "sha256": "b1e831aa282fad299a2a6e5cbbed1faa180a653f79ec273b16f22db43627b0be",
       "excluded_reason": null
     },
     {
       "name": "baseline-cli-v2.log",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-cli-v2.log",
+      "absolute_path": "[redacted local path]",
       "bytes": 198,
       "sha256": "938744f19283512740200c0b0f71025c2f57700728408789e3ebe9020c5244c7",
       "excluded_reason": null
     },
     {
       "name": "baseline-cli.json.journal.jsonl",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-cli.json.journal.jsonl",
+      "absolute_path": "[redacted local path]",
       "bytes": 190004,
       "sha256": "fe6cddc8bd6121a5f93490521cb1d5366d1183ca88db264a08764bc9497aee07",
       "excluded_reason": "Partial initial CLI capture before path resolution refusal, excluded."
     },
     {
       "name": "baseline-cli.log",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-cli.log",
+      "absolute_path": "[redacted local path]",
       "bytes": 1154,
       "sha256": "afde4fc5af41e3bcfbcbef344a204959fa8c8f5cd4a583c601698ee333105d8d",
       "excluded_reason": "Initial expectation-relative-path harness refusal, excluded; corrected v2 capture used."
     },
     {
       "name": "baseline-controls-final.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-controls-final.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 145195,
       "sha256": "49ecde54cffd7a4a2a4248cff29ce71ecca8e3d4a3155056c1f6cce14b073b38",
       "excluded_reason": null
     },
     {
       "name": "baseline-controls-v2.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-controls-v2.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 146565,
       "sha256": "99cb97c681d3931b22cd9d4d664fa2712ca10768950ffde22d2bbe3a5aa35164",
       "excluded_reason": "Superseded bounded controls; explicit Unicode and hidden-wrapper control corrected."
     },
     {
       "name": "baseline-controls.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-controls.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 145413,
       "sha256": "6caa96e41214e0d8f3c7ca545651f1b18005af8609f81659dfe2be26862754f5",
       "excluded_reason": "Superseded bounded controls."
     },
     {
       "name": "baseline-native.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-native.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 3740480,
       "sha256": "a1a448b3f8a6c91116e03fd1b7f7822ca25bbd17283e5f2ef72080cee75a9c38",
       "excluded_reason": null
     },
     {
       "name": "baseline-native.json.journal.jsonl",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-native.json.journal.jsonl",
+      "absolute_path": "[redacted local path]",
       "bytes": 2204942,
       "sha256": "c43d67c00fff4fa374bb18b34e324a9e86d7f864c5e55f9e55f12868f77e7382",
       "excluded_reason": null
     },
     {
       "name": "baseline-native.log",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-native.log",
+      "absolute_path": "[redacted local path]",
       "bytes": 201,
       "sha256": "cce20e63cdac26b71b3c28ba6c69b12149e2ce0d1ce5a555d493667164741bf6",
       "excluded_reason": null
     },
     {
       "name": "baseline-sources-v2.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-sources-v2.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 4041315,
       "sha256": "b701da243f3b840164abe6cddc841bf1ef61500582b6974ff1de3f144b464937",
       "excluded_reason": null
     },
     {
       "name": "baseline-sources.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-sources.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 3986517,
       "sha256": "e689e9385289e9cefe43a594553b42e19e87c091a6d4dfe70ef5f5652181210c",
       "excluded_reason": "Superseded source capture: helper file changed during execution; observer SHA ambiguity."
     },
     {
       "name": "baseline-unit-v2.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-unit-v2.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 8640714,
       "sha256": "d3df6846e4fd14ea190a4321d4312aba02a03560ec4bcec829e02b4377e1c08f",
       "excluded_reason": null
     },
     {
       "name": "baseline-unit-v2.json.journal.jsonl",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-unit-v2.json.journal.jsonl",
+      "absolute_path": "[redacted local path]",
       "bytes": 5613067,
       "sha256": "f2deecd5dbe954920be8fd118c0fca446ecafb79b751be930b9d0ce4ca29ec0d",
       "excluded_reason": null
     },
     {
       "name": "baseline-unit-v2.log",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-unit-v2.log",
+      "absolute_path": "[redacted local path]",
       "bytes": 8934,
       "sha256": "f730b9c5ad13e32bc912a61bf1e36f70c5926dea6562bcb34be71f02c59de511",
       "excluded_reason": null
     },
     {
       "name": "baseline-unit.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-unit.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 7627708,
       "sha256": "cf599f3afa7de6ab7f00dbf6ad05059fe04d70398546032cab99e42f5058d649",
       "excluded_reason": "Initial monorepo-cwd harness failure, excluded from valid coverage."
     },
     {
       "name": "baseline-unit.json.journal.jsonl",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-unit.json.journal.jsonl",
+      "absolute_path": "[redacted local path]",
       "bytes": 5153432,
       "sha256": "78f364dca4c9c38fc224f1650cac10d2cd5d610fda0a56192be00377497d25c2",
       "excluded_reason": "Initial monorepo-cwd harness failure, excluded from valid coverage."
     },
     {
       "name": "baseline-unit.log",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\baseline-unit.log",
+      "absolute_path": "[redacted local path]",
       "bytes": 84033,
       "sha256": "2ebcf10b042b5959f76a9904b6ace47ca2c387474c3e14c3514b400d3295fa56",
       "excluded_reason": "Initial monorepo-cwd harness failure, excluded from valid coverage."
     },
     {
       "name": "candidate-cli.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-cli.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 2211068,
       "sha256": "530a4465a627bc8eb52ce7c652ef94f4226871b71f32f6e6973c7cb4c83ba266",
       "excluded_reason": null
     },
     {
       "name": "candidate-cli.json.journal.jsonl",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-cli.json.journal.jsonl",
+      "absolute_path": "[redacted local path]",
       "bytes": 871070,
       "sha256": "c18508101c48834bbdb424a2a00586aa36ec1b4339fdca2db87c8f2cf347d21f",
       "excluded_reason": null
     },
     {
       "name": "candidate-cli.log",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-cli.log",
+      "absolute_path": "[redacted local path]",
       "bytes": 196,
       "sha256": "c3c0ea927d0400761ee9ba83249fa71c34457b3751cc00cc64493298340cab1e",
       "excluded_reason": null
     },
     {
       "name": "candidate-controls-final.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-controls-final.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 157534,
       "sha256": "bb6b9248187b679dd817ff8eb0389d7ede04072ed7005006a506a3972735c2cb",
       "excluded_reason": null
     },
     {
       "name": "candidate-controls.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-controls.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 158483,
       "sha256": "8f6e73d518e98061c45afed3a65073cec0c59e3ca831192b16e14492a938bb59",
       "excluded_reason": "Superseded bounded controls; explicit Unicode and hidden-wrapper control corrected."
     },
     {
       "name": "candidate-native.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-native.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 3986799,
       "sha256": "cff43c70acb282732706a919c1232a3c8612ed1b7145e241f2f8c799b7c93e7b",
       "excluded_reason": null
     },
     {
       "name": "candidate-native.json.journal.jsonl",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-native.json.journal.jsonl",
+      "absolute_path": "[redacted local path]",
       "bytes": 2380962,
       "sha256": "d8538c0a429b23e2bfa005ca0297e5d10c044a70f9d8be3a71b037781560259e",
       "excluded_reason": null
     },
     {
       "name": "candidate-native.log",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-native.log",
+      "absolute_path": "[redacted local path]",
       "bytes": 202,
       "sha256": "edd2b9435fd1f0c9dd69d99c16c5f548e1029e957b43f13e77053c4167f5954e",
       "excluded_reason": null
     },
     {
       "name": "candidate-sources.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-sources.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 4328983,
       "sha256": "6e1090f02f0ca7e6b535d0d08fd9cec4ce4fc866a2861cb8204de479dc2b1599",
       "excluded_reason": null
     },
     {
       "name": "candidate-unit.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-unit.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 9447952,
       "sha256": "3f887affe067391e1e089400ef0fb5ef7e17e8cdd08693b7b9847f9acc2fde2d",
       "excluded_reason": null
     },
     {
       "name": "candidate-unit.json.journal.jsonl",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-unit.json.journal.jsonl",
+      "absolute_path": "[redacted local path]",
       "bytes": 6141124,
       "sha256": "a196d8660a620bf8e64e42a8aee693fa289ff37da0b5770a712c6f231ae81211",
       "excluded_reason": null
     },
     {
       "name": "candidate-unit.log",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\candidate-unit.log",
+      "absolute_path": "[redacted local path]",
       "bytes": 8951,
       "sha256": "7752df047da687b5df52608057ad0b646f145cf65dd4c6f84660fb511b5d929c",
       "excluded_reason": null
     },
     {
       "name": "same-input-receipt.json",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\same-input-receipt.json",
+      "absolute_path": "[redacted local path]",
       "bytes": 102498,
       "sha256": "13e812689e55ff91f3a6aa2aef4720c7731909c9df175733820055296384e2e8",
       "excluded_reason": null
     },
     {
       "name": "actor-observer-receipt-probe-source.mjs",
-      "absolute_path": "C:\\Users\\jared\\AppData\\Local\\Temp\\uwmd-actor-inventory-b2-oz8wt578\\actor-observer-receipt-probe-source.mjs",
+      "absolute_path": "[redacted local path]",
       "bytes": 32004,
       "sha256": "c389b722280f4a6628b321736bad91170e4517178e2ee81c7016bfc92b294949",
       "excluded_reason": null

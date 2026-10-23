@@ -1,7 +1,7 @@
 # Renamed identifiers: what issue #263 needs from the contract
 
 - **Date:** 2026-10-04
-- **Issue:** [#263](https://github.com/UWMD-OSP/UW-Markdown/issues/263) (StackUW `UPSTREAM-023`)
+- **Issue:** [#263](https://github.com/UWMD-OSP/UW-Markdown/issues/263) (StackUW `adopter report 023`)
 - **Base:** `main` at `83248a61af770221781a6504f9acddca579076d4`
 - **Reproduction:** [`2026-10-04-renamed-identifiers.repro.mjs`](./2026-10-04-renamed-identifiers.repro.mjs)
   (run after `npm run build`; exits 1 if any finding stops reproducing)
@@ -189,7 +189,7 @@ These are outside #263 and are recorded, not fixed, here.
    error. The module runtime then threads both results into one
    `prior_results` map by calc id (`module-runtime.ts:61-77`), so the later
    module's value wins by registry order. §VII.3 forbids exactly that.
-   **Resolved on 2026-10-05** on branch `claude/vii3-module-conflicts`. The
+   **Resolved on 2026-10-05** on branch `work/vii3-module-conflicts`. The
    registry refuses unrelated conflicts with `PROTO-MOD-080`–`082`, and
    `conformance/modules/registry/` pins all three namespaces. R1 in the
    repro now asserts the refusal. What a dependent override means is split

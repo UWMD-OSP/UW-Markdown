@@ -1,6 +1,6 @@
 # Bounded underwriting agent skills
 
-UW Markdown ships five starter workflow skills in `.codex/skills`.
+UW Markdown ships five starter workflow skills in `the skills subdirectory of the local agent configuration`.
 Each returns structured `EditOperation` proposals for a host to
 validate and apply. No skill performs financial math. A producer uses its own
 deterministic modeling tools; a receiver can verify stated results with

@@ -7,12 +7,12 @@ Status: historical advisory evidence; RFC 0063 subsequently accepted and impleme
 ## Owner direction after integration
 
 This review was integrated and pushed to canonical main at
-`22d993b5c5d6d3710a60af1ab9e5e0cf987cdda4`. Jared subsequently directed a
+`22d993b5c5d6d3710a60af1ab9e5e0cf987cdda4`. the owner subsequently directed a
 [RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md) for explicit
 final-period exclusive-boundary admission across **both monthly and quarterly**
 cadences. That resolves the two scope choices recorded below and supersedes
 the original monthly-only recommendation. It does not authorize cash after
-disposition. Jared subsequently accepted RFC 0063 at `f04b34a` and authorized
+disposition. the owner subsequently accepted RFC 0063 at `f04b34a` and authorized
 local implementation on 2026-09-24. Its status is now `accepted`, unreleased;
 the source implementation prepares Protocol 2.18.0. See the
 [verification record](2026-09-24-rfc-0063-implementation.md). Release is not authorized.
@@ -26,7 +26,7 @@ Recommend an **optional admission rule for disposition exactly at the final
 monthly source period's exclusive end**, while retaining RFC 0045's closed
 acquisition/disposition cash interval. The evidence does **not** establish a
 need for cash after the economic sale date. A separate settlement horizon is
-premature. Jared decides whether to pursue this narrow extension or retain
+premature. the owner decides whether to pursue this narrow extension or retain
 existing dated-series verification alone.
 
 The [completed corpus review](../reviews/2026-09-24-completed-golden-corpus-validation.md)
@@ -93,7 +93,7 @@ covers late exits, post-hold cash, false reserve assertions, stable same-day
 ordering, monthly/quarterly cases and optional sale deductions. Existing
 [assembly conformance](https://github.com/UWMD-OSP/UW-Markdown/tree/dd3029d6125c9d1c7509b9906099bf93af11c034/conformance/property-cash-flow-assembly) includes
 `post-sale-cash`: a synthetic reserve return one day after disposition correctly
-refuses `date_horizon`. That engineering negative case is not Golden Deal
+refuses `date_horizon`. That engineering negative case is not review corpus
 evidence for legalizing delayed reserves.
 
 ## Existing surfaces and non-problems

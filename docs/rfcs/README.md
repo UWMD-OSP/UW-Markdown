@@ -136,7 +136,7 @@ and how it gets accepted.
 | [0109](./0109-financial-validity-deal-flags.md) | Report financial-validity findings as deal flags, not record errors | accepted | format, protocol, core, conformance, tooling |
 | [0110](./0110-financial-validity-entry-band.md) | Name the §4.17 financial_validity entry's band "band", as RFC 0109 does | accepted | format, conformance |
 | [0111](./0111-verify-under-declared-rule-set.md) | Verify each record under the rule set of the version it declares | accepted | format, protocol, conformance, core |
-| [0112](./0112-remove-bancroft-vocabulary.md) | Remove the Bancroft layer vocabulary from the standard | accepted | format, protocol, core, conformance, tooling |
+| [0112](./0112-remove-bancroft-vocabulary.md) | Remove the retired agent host layer vocabulary from the standard | accepted | format, protocol, core, conformance, tooling |
 | [0113](./0113-paid-room-nights.md) | Define hospitality occupied room nights as paid room nights sold | accepted | format, conformance |
 | [0114](./0114-area-measurement-standard.md) | Record the area measurement standard behind per-area metrics | accepted | format, protocol, core, conformance |
 | [0115](./0115-portable-verifier-cases.md) | Portable conformance subcommands for every Verifier obligation | accepted | protocol, conformance, core |

@@ -240,7 +240,7 @@ export interface ImplementationManifest {
    * (Protocol 3.0, RFC 0078). OPTIONAL per §II.5: an implementation whose
    * capabilities do not stack into a tier SHOULD publish `capabilities` and
    * omit this field rather than round down (or up). The schema requiring it
-   * was a defect (UPSTREAM-003, reported by underwriter.cc) — the spec's
+   * was a defect (adopter report 003, reported by underwriter.cc) — the spec's
    * normative text always allowed the omission.
    */
   tier?: ConformanceTier;

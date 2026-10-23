@@ -3,7 +3,7 @@
 Research date: **2026-10-02** (America/Phoenix). Status: **analysis only; owner review required**.
 This is not an RFC, acceptance, implementation authorization, or release plan.
 
-Follow-up: Jared selected a funding discriminator plus exact cash-row binding
+Follow-up: the owner selected a funding discriminator plus exact cash-row binding
 for drafting, then accepted the frozen `29c42c7` contract on 2026-10-02.
 See [accepted RFC 0070](../rfcs/0070-replacement-cap-funding-and-payment-binding.md);
 implementation still requires separate authorization.
@@ -47,41 +47,41 @@ linkage without pricing, forecasting, or inventing funding.
   the pre-existing untracked `docs/handoff/2026-09-28-rfc-0064-owner-steps.md`
   remains untouched. This research does not stash or delete another session's file.
 - Research uses the designated separate checkout `../uwmd-codex`, on
-  **`codex/outright-cap-research`**, based on current origin/main. Only this
+  **`work/outright-cap-research`**, based on current origin/main. Only this
   brief, the research script and its evidence output are research changes.
 
 ## StackUW evidence, independently checked
 
-Canonical adopter repository: `jaredmaxey/underwriter-app`.
-Read remote TASK-3294, Q-1297 and the cap cash-series code through the GitHub
+Canonical adopter repository: `[redacted public handle]/private-adopter-repository`.
+Read remote private task 3294, Q-1297 and the cap cash-series code through the GitHub
 connector. A read-only remote master lookup returned
 **`9a6dfb9fad0f307df10031fef8ca49ced111afd8`**, matching the local adopter HEAD
 and origin/master. Source files had no local modifications.
 
 Evidence at that snapshot:
 
-- [TASK-3294](https://github.com/jaredmaxey/underwriter-app/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/tasks/queue/TASK-3294.md)
+- [private task 3294]([redacted private repository]/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/tasks/queue/private task 3294.md)
   is SCOPED; its independent review records the unresolved contract.
-- [Q-1297](https://github.com/jaredmaxey/underwriter-app/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/decisions/Q-1297.md)
-  is open and blocks TASK-3294 and TASK-3295.
-- [Bridge schema](https://github.com/jaredmaxey/underwriter-app/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/packages/underwriting-engine/src/modules/debt-senior/bridge/schema.ts)
+- [Q-1297]([redacted private repository]/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/decisions/Q-1297.md)
+  is open and blocks private task 3294 and private task 3295.
+- [Bridge schema]([redacted private repository]/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/packages/underwriting-engine/src/modules/debt-senior/bridge/schema.ts)
   states `atMonth` as a 1-indexed loan month, `estimatedCost` as a modeled
   dollar estimate, and `escrowMonthly` as an explicit funding distinction.
-- [Bridge compute](https://github.com/jaredmaxey/underwriter-app/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/packages/underwriting-engine/src/modules/debt-senior/bridge/compute.ts)
+- [Bridge compute]([redacted private repository]/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/packages/underwriting-engine/src/modules/debt-senior/bridge/compute.ts)
   lines 393–427 builds the cash series after applied refinance is known.
   Outright replacement adds `estimatedCost` at `months[atMonth - 1]` if the
   bridge has not already been retired. Escrowed replacement deposits over the
   preceding months, makes no additional purchase-month charge, and returns the
   funded balance if refinance retires the bridge first.
-- [Model tests](https://github.com/jaredmaxey/underwriter-app/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/packages/underwriting-engine/src/modules/debt-senior/bridge/__tests__/rateCap.test.ts)
+- [Model tests]([redacted private repository]/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/packages/underwriting-engine/src/modules/debt-senior/bridge/__tests__/rateCap.test.ts)
   exercise a $400,000 initial cap, 24-month initial term, and an outright
   $300,000 purchase in loan month 25. The deterministic engine produces
   `rateCapCostByYear = [400000, 0, 300000, 0, 0]`.
-- The distinct [export fixture](https://github.com/jaredmaxey/underwriter-app/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/packages/underwriting-engine/src/export/__tests__/rate-cap-export.test.ts)
+- The distinct [export fixture]([redacted private repository]/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/packages/underwriting-engine/src/export/__tests__/rate-cap-export.test.ts)
   uses $400,000 initially and **$360,000 in month 25**, without cap escrow.
   Its existing exported row is `{date: "2002-01-01", amount: -360000,
   kind: "debt_service", label: "rate_cap_replacement_purchase"}`.
-- [Current exporter projection](https://github.com/jaredmaxey/underwriter-app/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/packages/underwriting-engine/src/export/spec-projection.ts)
+- [Current exporter projection]([redacted private repository]/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/packages/underwriting-engine/src/export/spec-projection.ts)
   still emits the adopter's producer-side draft `rate_cap`, including
   `funding: "outright"`. That is not released UWMD RFC 0056's `rate_hedge`.
   Stack's historic producer proposal named RFC 0051 is not the canonical
@@ -91,7 +91,7 @@ Evidence at that snapshot:
 `DEFAULT_FORECAST_START = "2000-01-01"` when no acquisition date is supplied
 (`src/ledger/build.ts`). It is a deterministic model anchor, not independent
 evidence of a real deal closing or purchase date. The factual adopter requirement
-is demonstrated at **loan month 25**. TASK-3294's stated-close/date work is still
+is demonstrated at **loan month 25**. private task 3294's stated-close/date work is still
 needed to export actual calendar dates. This research never substitutes that
 anchor or the export clock for a real deal date.
 
@@ -446,10 +446,10 @@ node scripts/run-conformance.mjs --tier=hedge,cash-flow --json
 ## RFC status, StackUW disposition and owner action
 
 **No RFC number allocated; no RFC drafted or accepted.** Research branch:
-`codex/outright-cap-research`. The accompanying chat records the commit ID.
+`work/outright-cap-research`. The accompanying chat records the commit ID.
 
-**TASK-3294 should remain SCOPED awaiting the upstream contract** (option 1).
-TASK-3295 remains SCOPED behind its durable DONE dependency. Q-1297 stays open.
+**private task 3294 should remain SCOPED awaiting the upstream contract** (option 1).
+private task 3295 remains SCOPED behind its durable DONE dependency. Q-1297 stays open.
 A named refusal would be an explicit product-contract amendment, not an upstream
 solution; this research does not authorize that choice. Preserve current model
 cash and existing behavior while the task is unadmitted. Do not fabricate escrow,
@@ -463,11 +463,11 @@ requires its timing and stated amount or an unambiguous link to that stated cash
 row, and ships conformance proving the outright and legacy escrow branches,
 conflicts/refusals, and unchanged initial-premium semantics. Stack then vendors
 that released pairing, resolves Q-1297 against the released contract, refreshes
-TASK-3294 admission/scope, supplies an actual calendar anchor, and proves export
+private task 3294 admission/scope, supplies an actual calendar anchor, and proves export
 validation plus unchanged model cash. An accepted or implemented-but-unreleased
 RFC alone does not unblock it.
 
-**Jared's decisions:** select the payment carrier and funding discriminator
+**the owner's decisions:** select the payment carrier and funding discriminator
 before drafting; settle any zero-payment and timing-order semantics the selected
 shape needs; approve the explicit opt-in Protocol-minor compatibility treatment.
 Acceptance, implementation authorization and eventual release remain subsequent

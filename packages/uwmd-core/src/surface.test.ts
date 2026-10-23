@@ -83,13 +83,11 @@ describe.each(ENTRIES)('@uwmd/core $name entry', ({ name, core, verify, file }) 
   });
 });
 
-// The toolkit hosts no agents (the execution half of the Bancroft removal), and
+// The toolkit hosts no agents (the execution half of the retired agent host removal), and
 // RFC 0112 removed the layer registry with its context, prompt and readiness
 // builders and the layer, pipeline-state and module agent-layer types. These
 // names left both entries on purpose; the generic writers and buildContext stay.
 const REMOVED_RUNTIME = [
-  'runBancroftAgent',
-  'runBancroftAgentStreaming',
   'WRITE_UW_SECTION_TOOL',
   'WRITE_MULTIPLE_SECTIONS_TOOL',
   'MULTI_SECTION_LAYERS',
@@ -107,8 +105,6 @@ const REMOVED_RUNTIME = [
   'getLayerDependencies',
 ];
 const REMOVED_TYPES = [
-  'BancroftRunOptions',
-  'BancroftRunResult',
   'ProgressEvent',
   'ToolOutput',
   'AgentProvider',
@@ -123,7 +119,6 @@ const REMOVED_TYPES = [
   'RecordingProvider',
   'AgentHostCapability',
   'AgentContext',
-  'BancroftPrompt',
   'LayerDefinition',
   'ModuleAgentLayerDecl',
   'UWPipelineState',
