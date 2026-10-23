@@ -1,5 +1,6 @@
 ---
 uw_lite_version: 1.0
+uw_version: "3.0"
 deal_id: uw_lite_normalization
 deal_name: "Prose And Normalization"
 created: "2026-08-08T00:00:00Z"
