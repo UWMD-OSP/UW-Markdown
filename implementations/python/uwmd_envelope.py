@@ -376,18 +376,21 @@ def flatten(value, pointer=''):
 
 def unflatten(rows):
     nodes = {}
+    children_by_parent = {}
     for pointer, t, token in rows:
         path = tuple(parts(pointer))
         need(path not in nodes, 'duplicate CSV path')
         value = load_json(token)
         need(kind(value) == t and (t not in ('object', 'array') or len(value) == 0), 'CSV node type/hidden values')
         nodes[path] = (t, value)
+        if path:
+            children_by_parent.setdefault(path[:-1], []).append(path)
     used = set()
     def build(path):
         need(path in nodes, 'CSV missing root/parent')
         used.add(path)
         t, value = nodes[path]
-        children = [key for key in nodes if len(key) == len(path) + 1 and key[:-1] == path]
+        children = children_by_parent.get(path, [])
         if t not in ('array', 'object'):
             need(not children, 'CSV scalar children')
             return value
@@ -405,6 +408,10 @@ def table(text, header):
     field = r'(?:"(?:[^"]|"")*"|[^",\r\n]*)'
     record = field + r'(?:,' + field + r')*'
     need(re.fullmatch(record + r'(?:(?:\r\n|\n)' + record + r')*(?:\r\n|\n)?', text), 'CSV quote/record grammar')
+    # The stdlib default is only 128KiB. A field cannot exceed its already
+    # received table; raise the process-global ceiling without lowering an
+    # adopter's larger limit. ZIP/resource and raw-inventory guards stay separate.
+    csv.field_size_limit(max(csv.field_size_limit(), len(text)))
     result = list(csv.reader(io.StringIO(text, newline=''), strict=True))
     need(result and result[0] == header and all(len(row) == len(header) for row in result), 'CSV header/width')
     return result[1:]

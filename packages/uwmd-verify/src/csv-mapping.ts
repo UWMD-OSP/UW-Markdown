@@ -57,18 +57,25 @@ export function flatten(value: any, pointer = ''): string[][] {
   return rows;
 }
 export function unflatten(rows: string[][]): any {
-  const nodes = new Map<string, {keys: string[]; type: string; value: any}>();
+  type Node = {keys: string[]; type: string; value: any};
+  const nodes = new Map<string, Node>();
+  const childrenByParent = new Map<string, Node[]>();
   for (const [pointer, type, token] of rows) {
     const keys = parts(pointer); const id = jcs(keys);
     check(!nodes.has(id), 'CSV duplicate decoded path');
     const value = readJSON(token); check(kind(value) === type, 'CSV node type');
     check((type !== 'object' && type !== 'array') || Object.keys(value).length === 0, 'CSV hidden container values');
-    nodes.set(id, { keys, type, value });
+    const node = { keys, type, value }; nodes.set(id, node);
+    if (keys.length) {
+      const parent = jcs(keys.slice(0, -1));
+      const children = childrenByParent.get(parent) ?? [];
+      children.push(node); childrenByParent.set(parent, children);
+    }
   }
   let visited = 0;
   function build(keys: string[]): any {
     const node = nodes.get(jcs(keys)); check(node, 'CSV missing parent/root'); visited++;
-    const children = [...nodes.values()].filter(item => item.keys.length === keys.length + 1 && item.keys.slice(0, -1).every((key, index) => key === keys[index]));
+    const children = childrenByParent.get(jcs(keys)) ?? [];
     if (node.type !== 'object' && node.type !== 'array') { check(children.length === 0, 'CSV scalar children'); return node.value; }
     const out: any = node.type === 'array' ? [] : {};
     if (node.type === 'array') children.sort((a, b) => Number(a.keys.at(-1)) - Number(b.keys.at(-1)));
