@@ -725,10 +725,11 @@ evidence; profile accounting/transport allocation follows section6a.
 Do not reuse capital-stack codes for unrelated rows or add a generic fallback.
 
 Count distinct **assertions**, not JSON cells, formula operations or repeated
-checks on one target. Each assertion has one stable identity with exact
-source/variant/period/method/target bindings, applicable assurance scope,
-conventions, precision, verdict and reason/typed evidence. A row may expose
-multiple named relationships, but their dependent operations do not multiply the
+checks on one target. Each assertion has one normalized source/variant/period/
+loan/target identity under section6a, one terminal verdict and reason/typed
+evidence. Methods, applicable assurance scope, conventions, precision and ordered
+input bindings belong to its relationships, not extra target identities. A row
+may expose multiple named relationships, but their dependent operations do not multiply the
 number of verified figures. Report relationship results separately from terminal
 assertion counts, and group assertion counts by verdict and row family, including
 rows stated with no defined identity. Those rows remain visible as unverifiable;
