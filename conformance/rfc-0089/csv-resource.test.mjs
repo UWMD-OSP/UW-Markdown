@@ -23,3 +23,9 @@ test('long prose and opaque extension strings survive actual CSV and ZIP round t
  for(const actual of [await api.decodeUWCSVBundle(await api.encodeUWCSVBundle(model)),await api.decodeUWCSVZip(await api.encodeUWCSVZip(model))])assert.equal(api.canonicalizeUWEnvelope(actual),expected);
  writeFileSync(new URL('csv-long-value.json',folder),`${JSON.stringify({prose_characters:150000,opaque_characters:150000,status:'pass'})}\n`);
 });
+
+test('CSV flattening carries a wide child inventory without argument-list overflow',()=>{
+ const value={units:Array.from({length:22000},(_,i)=>({id:String(i),rent:1000,area:500,occupied:true,label:'synthetic'}))};
+ const start=performance.now();const rows=flatten(value);assert.equal(rows.length,132002);assert.deepEqual(unflatten(rows),value);
+ writeFileSync(new URL('csv-wide-inventory.json',folder),`${JSON.stringify({units:22000,rows:rows.length,milliseconds:performance.now()-start,status:'pass'})}\n`);
+});

@@ -52,8 +52,8 @@ const kind = (value: any) => value === null ? 'null' : Array.isArray(value) ? 'a
 export function flatten(value: any, pointer = ''): string[][] {
   const type = kind(value);
   const rows = [[pointer, type, jcs(type === 'object' ? {} : type === 'array' ? [] : value)]];
-  if (type === 'array') value.forEach((child: any, index: number) => rows.push(...flatten(child, `${pointer}/${index}`)));
-  if (type === 'object') for (const key of Object.keys(value).sort()) rows.push(...flatten(value[key], `${pointer}/${esc(key)}`));
+  if (type === 'array') value.forEach((child: any, index: number) => { for (const row of flatten(child, `${pointer}/${index}`)) rows.push(row); });
+  if (type === 'object') for (const key of Object.keys(value).sort()) for (const row of flatten(value[key], `${pointer}/${esc(key)}`)) rows.push(row);
   return rows;
 }
 export function unflatten(rows: string[][]): any {
