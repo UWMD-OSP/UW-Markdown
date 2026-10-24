@@ -208,13 +208,18 @@ class ReaderTests(unittest.TestCase):
                                   ('uw:section=' + section + ' superseded=true').encode())
                 raw = HEADER + old + block(section, {"n": 2}, variant="current")
                 result = parse(raw).projection()
+                if section in ("pipeline_log", "custom_calculations", "custom_scenarios"):
+                    # The accepted contract preserves append-only arrays even
+                    # when an entry carries a history flag. No occurrence drops.
+                    self.assertNotIn(section,result["superseded"])
+                    entries=result[section]
+                    self.assertEqual([v["n"] if section=="pipeline_log" else v["content"]["n"] for v in entries],[1,2])
+                    continue
                 self.assertEqual([v["content"]["n"] for v in result["superseded"][section]], [1])
                 if section == "operating_statement":
                     self.assertEqual(set(result["sections"][section]), {"current"})
                 elif section == "x_future":
                     self.assertEqual(result["extensions"][section]["block"]["content"]["n"], 2)
-                elif section in ("pipeline_log", "custom_calculations", "custom_scenarios"):
-                    self.assertEqual(len(result[section]), 1)
                 else:
                     self.assertEqual(result["sections"][section]["content"]["n"], 2)
 

@@ -183,7 +183,8 @@ test('F5 all own descriptors are inspected without invoking getters or erasing h
         for (const kind of ['undefined', 'function', 'accessor', 'json-data']) {
             const model = structuredClone(empty);
             let calls = 0;
-            const parent = onArray ? (model.outer = []) : model;
+            if(onArray)model.outer=[];
+            const parent = onArray ? model.outer : model;
             const descriptor = kind === 'accessor' ? { get() { calls++; throw new TypeError('getter must never execute'); } }
                 : { value: kind === 'undefined' ? undefined : kind === 'function' ? () => 1 : null };
             Object.defineProperty(parent, 'hidden', descriptor);

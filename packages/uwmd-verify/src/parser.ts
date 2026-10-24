@@ -573,7 +573,7 @@ function routeBlock(
 
   // Extension sections (x_ prefix)
   if (sectionId.startsWith('x_')) {
-    const prior = () => (result.superseded[sectionId] ??= []);
+    const prior = () => { result.superseded[sectionId] ??= []; return result.superseded[sectionId]; };
     if (annotation.superseded === true || block.meta?.lifecycle?.superseded === true) {
       prior().push(block);
       return;

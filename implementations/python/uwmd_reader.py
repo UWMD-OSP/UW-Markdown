@@ -54,10 +54,10 @@ class Document:
         # history order; no metadata or annotation mutation to label history.
         for block in self.source.blocks:
             section, projected = block.section, _projection(block)
-            if _superseded(block):
-                output["superseded"].setdefault(section, []).append(projected)
-            elif section in APPEND:
+            if section in APPEND:
                 output[section].append(block.parsed.value if section == "pipeline_log" else projected)
+            elif _superseded(block):
+                output["superseded"].setdefault(section, []).append(projected)
             elif section.startswith("x_"):
                 current = output["extensions"].get(section)
                 if section in parallel:
