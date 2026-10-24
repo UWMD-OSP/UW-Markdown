@@ -32,7 +32,7 @@ import {
 } from '@uwmd/verify';
 
 const encoder = new TextEncoder();
-const DEAL_TEXT = "---\nuw_version: \"3.0\"\ndeal_id: d1\n---\n";
+const DEAL_TEXT = "---\nuw_version: \"3.0\"\ndeal_id: d1\ndeal_name: Synthetic package carrier\n---\n";
 const PDF_BYTES = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0xff, 0xfe, 0x80, 0x00, 0x7f]);
 
 async function buildManifest(): Promise<UWDealPackageManifest> {

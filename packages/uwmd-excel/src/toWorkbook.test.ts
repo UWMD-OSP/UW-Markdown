@@ -847,7 +847,8 @@ describe.each([...new Map([...CASES.map(c => c.layout), MIXED_USE_LAYOUT, DATA_C
       const valuation = (parsed.sections['valuation'] as UWBlock).content;
       const debt = (parsed.sections['debt_structure'] as UWBlock).content;
       valuation['purchase_price'] = 100_000;
-      valuation['underwritten_value'] = underwritten;
+      if(underwritten===undefined)delete valuation['underwritten_value'];
+      else valuation['underwritten_value'] = underwritten;
       debt['loan_amount'] = 75_000;
       const wb = await toWorkbook(parsed);
       const mixed = layout.assetClass === 'mixed_use';

@@ -1,3 +1,4 @@
+import { extensionBlocks } from './extension-entry.js';
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { buildMeta } from './metadata.js';
@@ -92,7 +93,7 @@ describe('RFC0091 required canonical metadata booleans', () => {
     delete parsed.extensions.x_old;
     const added = doc(bad()).sections.property as UWBlock;
     parsed.sections.property = added;
-    parsed.extensions.x_alias = added;
+    parsed.extensions.x_alias = { mode: 'single', block: added };
     expect(flags(parsed).map(i => i.section)).toEqual(['x_old', 'x_old', 'property', 'property']);
     canonical(added).quality.human_review_required = false;
     canonical(added).lifecycle.superseded = true;
@@ -106,20 +107,23 @@ describe('RFC0091 required canonical metadata booleans', () => {
   it('checks model-only collection order and equal-valued distinct objects without duplicating identities', () => {
     const parsed = JSON.parse(JSON.stringify(doc(payload()))) as ParsedUWFile;
     parsed.sections = {};
-    const make = (id: string) => parseUWFile(header + fence(id, bad(id))).extensions[id];
+    const make = (id: string) => extensionBlocks(parseUWFile(header + fence(id, bad(id))).extensions[id]!)[0]!;
     parsed.sections.x_section = make('x_section');
     parsed.superseded.x_history = [make('x_history')];
     parsed.pipeline_log = [make('x_append')];
     parsed.custom_calculations = [make('x_calc')];
     parsed.custom_scenarios = [make('x_scenario')];
-    parsed.extensions = { x_one: make('x_same'), x_two: make('x_same') };
+    parsed.extensions = { x_one: { mode: 'single', block: make('x_same') }, x_two: { mode: 'single', block: make('x_same') } };
     expect(flags(parsed).filter(i => i.code === 'META-02').map(i => i.section)).toEqual(['x_section', 'x_history', 'x_append', 'x_calc', 'x_scenario', 'x_one', 'x_two']);
   });
 
   it('does not invent lost peers for cloned models or change readiness/completeness rules', () => {
     const parsed = parseUWFile(header + fence('x_peer', bad('x_peer'), 'v=1') + fence('x_peer', payload('x_peer'), 'v=2'));
     expect(flags(parsed)).toHaveLength(2);
-    expect(flags(JSON.parse(JSON.stringify(parsed)) as ParsedUWFile)).toEqual([]);
+    const clone = JSON.parse(JSON.stringify(parsed)) as ParsedUWFile;
+    expect(flags(clone)).toHaveLength(2); // Explicit retained history survives cloning.
+    delete clone.superseded.x_peer;
+    expect(flags(clone)).toEqual([]); // No hidden physical evidence is invented.
     const good = validateUWFile(doc(payload()));
     const invalid = validateUWFile(doc(bad()));
     expect(invalid.stage_readiness).toEqual(good.stage_readiness);

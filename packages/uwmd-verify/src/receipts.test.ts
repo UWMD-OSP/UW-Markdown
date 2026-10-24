@@ -1007,7 +1007,7 @@ describe('JCS Unicode admission at receipt boundaries', () => {
     await expect(resolveReceiptSubject(invalid, { filename: 'unicode.uwx.md' })).rejects.toThrow(/SOURCE_BLOCK_MALFORMED/);
   });
 
-  it('preserves the existing valid receipt subject and results without rebaselining', async () => {
+  it('matches the explicitly authored current subject while retaining the independent results commitment', async () => {
     const fixture = resolve(__dirname, '../../../conformance/receipts/issue/01-uwx-multifamily');
     const raw = await readFile(resolve(fixture, 'deal.uwx.md'), 'utf8');
     const expected = JSON.parse(await readFile(resolve(fixture, 'expected-receipt.json'), 'utf8')) as UWReceipt;

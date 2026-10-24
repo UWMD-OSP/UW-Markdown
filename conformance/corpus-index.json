@@ -6775,6 +6775,111 @@
       "suite": "signing",
       "scenario": "blocks/11-null-parent-root",
       "target": "integrity"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "named-default-single [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "named-default-role-one-peer [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "peers-base-detail [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "peers-detail-base [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "null-then-default [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "default-then-null [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "history-only [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "role-only-in-history [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "revision-nine-then-one [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "explicit-before-implicit-prior [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "implicit-prior-before-explicit [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "equal-physical-extensions [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "builtin-mixed-history [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "builtin-reverse-history [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "equal-physical-builtins [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "builtin-revision-nine-then-one [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "all-source-collections [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "native-complete-carriers",
+      "target": "representations"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "authentication-and-admission",
+      "target": "representations"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "retained-review-controls",
+      "target": "representations"
+    },
+    {
+      "suite": "extension-envelope",
+      "scenario": "production-consumer-routes",
+      "target": "representations"
     }
   ]
 }

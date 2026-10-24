@@ -1,0 +1,38 @@
+{
+  "provenance": "Builder-authored explicit synthetic sources for normal implementation review finding4366110801; absent, null and mismatched metadata remain parseable source facts, with no full-carrier admission claim.",
+  "cases": [
+    {
+      "name": "absent",
+      "source": "---\nuw_version: \"3.0\"\ndeal_id: synthetic-source-facts\ndeal_name: Synthetic source facts\ncreated: \"2026-10-23T00:00:00Z\"\nlast_modified: \"2026-10-23T00:00:00Z\"\nproperty_address: 1 Fictional Test Way\ncity: Synthetic City\nstate: AZ\nzip: \"00000\"\nasset_class: multifamily\n---\n```json uw:section=property\n{\"total_units\":1}\n```\n",
+      "meta_present": false,
+      "meta": null
+    },
+    {
+      "name": "null",
+      "source": "---\nuw_version: \"3.0\"\ndeal_id: synthetic-source-facts\ndeal_name: Synthetic source facts\ncreated: \"2026-10-23T00:00:00Z\"\nlast_modified: \"2026-10-23T00:00:00Z\"\nproperty_address: 1 Fictional Test Way\ncity: Synthetic City\nstate: AZ\nzip: \"00000\"\nasset_class: multifamily\n---\n```json uw:section=property\n{\"total_units\":1,\"_meta\":null}\n```\n",
+      "meta_present": true,
+      "meta": null
+    },
+    {
+      "name": "mismatch",
+      "source": "---\nuw_version: \"3.0\"\ndeal_id: synthetic-source-facts\ndeal_name: Synthetic source facts\ncreated: \"2026-10-23T00:00:00Z\"\nlast_modified: \"2026-10-23T00:00:00Z\"\nproperty_address: 1 Fictional Test Way\ncity: Synthetic City\nstate: AZ\nzip: \"00000\"\nasset_class: multifamily\n---\n```json uw:section=property\n{\"total_units\":1,\"_meta\":{\"section\":\"debt_structure\",\"provenance\":{\"source\":\"manual\",\"actor\":\"synthetic\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"lifecycle\":{\"revision\":1,\"superseded\":false}}}\n```\n",
+      "meta_present": true,
+      "meta": {
+        "section": "debt_structure",
+        "provenance": {
+          "source": "manual",
+          "actor": "synthetic",
+          "timestamp": "2026-10-23T00:00:00Z"
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      }
+    }
+  ]
+}

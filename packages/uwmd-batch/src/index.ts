@@ -2,7 +2,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { relative, resolve, sep } from 'node:path';
 import {
   computeEnvelopeDigest,
-  flattenEnvelopeBlockValues,
+  flattenUWSourceBlockValues,
   parseUWFile,
   toUWEnvelope,
   type UWBlockValueRow,
@@ -156,7 +156,7 @@ export function projectUnderwritingQueue(
 
 /**
  * One row of the corpus-level fact table: a normative `block_values` row
- * (UW CSV Bundle spec §3, via `flattenEnvelopeBlockValues`) prefixed with the
+ * (UW CSV Bundle spec §3 scopes, via `flattenUWSourceBlockValues`) prefixed with the
  * deal's identity — path, `deal_id`, `asset_class`, semantic digest, and
  * validation verdict. The durable key for a fact is
  * `(semantic_digest, block_ref, scope, pointer)`; `path` and `deal_id` are
@@ -207,7 +207,7 @@ export async function buildUWMDFactTable(inputDirectory: string): Promise<UWMDFa
       const frontmatter = parsed.frontmatter as Record<string, unknown>;
       const deal_id = stringOrNull(frontmatter.deal_id);
       const asset_class = stringOrNull(frontmatter.asset_class);
-      for (const fact of flattenEnvelopeBlockValues(envelope)) {
+      for (const fact of flattenUWSourceBlockValues(parsed)) {
         rows.push({ path, deal_id, asset_class, semantic_digest: digest, valid, ...fact });
       }
       included += 1;

@@ -734,8 +734,12 @@ editing. Parse and representation conversion MUST preserve this annotation.
 the standard multi-variant section registry. Collect before choosing a version,
 so fence order cannot discard an unannotated peer. Superseded roles do not
 activate selection. Role-free Markdown retains its existing routing behavior;
-removing a section's last role ends this opt-in. UW JSON envelopes already
-represent variant maps on every section.
+removing a section's last role ends this opt-in. UW JSON Envelope2.0 uses exact tagged extension entries under RFC0089;
+builtin variant maps keep their existing shape. Ordinary extension projection
+retains exact nullable variant identity and physical-event history order,
+including peers without a role. A history-only extension has no invented
+current block. Every physical occurrence appears exactly once. See
+[Envelope2.0](UW_ENVELOPE.md) and Protocol§II.6a.6 for the portable minimum.
 
 ---
 

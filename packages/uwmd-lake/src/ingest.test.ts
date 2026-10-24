@@ -4,7 +4,7 @@ import { parseUWFile, toUWEnvelope } from '@uwmd/verify';
 import { describe, expect, it } from 'vitest';
 import { lakeInputFromEnvelope, readBatchFactJSONL, readBlockValuesCSV } from './ingest.js';
 
-const EXAMPLE = join(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md');
+const EXAMPLE = join(__dirname, '../../../conformance/rfc-0089/fixtures/complete-current.uwx.md');
 const DIGEST = 'sha256:2b1f1a2f3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7';
 
 describe('lakeInputFromEnvelope', () => {

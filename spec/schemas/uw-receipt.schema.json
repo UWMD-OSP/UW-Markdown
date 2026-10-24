@@ -33,7 +33,7 @@
         },
         "canonicalization": {
           "enum": ["uw-lite-financial", "uw-envelope-semantic"],
-          "description": "Named canonical form the digest covers. `uw-lite-financial` is UW_LITE_SPEC §6; `uw-envelope-semantic` is the Document Envelope 1.0 semantic value under RFC 8785."
+          "description": "Named canonical form the digest covers. `uw-lite-financial` is UW_LITE_SPEC §6; `uw-envelope-semantic` is the Document Envelope 2.0 semantic value under RFC 8785."
         },
         "canonicalization_version": {
           "type": "string",

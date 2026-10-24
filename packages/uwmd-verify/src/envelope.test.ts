@@ -87,6 +87,29 @@ describe('UW Document Envelope', () => {
     const stamped = await stampEnvelopeDigest(toUWEnvelope(document()));
     expect((await verifyEnvelopeDigest(stamped)).valid).toBe(true);
   });
+  it('rejects self-deleting and volatile getters before any public semantic copy', async () => {
+    for (const key of ['outer', 'generator', 'generated_at', 'semantic_digest']) {
+      const value = toUWEnvelope(document()); let calls = 0;
+      Object.defineProperty(value, key, { enumerable: true, configurable: true, get() {
+        calls++; delete value[key]; return 'synthetic';
+      } });
+      expect(() => areEnvelopesEquivalent(value, value)).toThrow(/JSON/);
+      await expect(computeEnvelopeDigest(value)).rejects.toThrow(/JSON/);
+      await expect(stampEnvelopeDigest(value)).rejects.toThrow(/JSON/);
+      expect(calls).toBe(0);
+    }
+  });
+  it('snapshots before async hashing and stamps normal/frozen models consistently', async () => {
+    const value = toUWEnvelope(document());
+    const pending = stampEnvelopeDigest(value);
+    singleBlock(value.sections.property).content.total_units = 999;
+    const result = await pending;
+    expect(singleBlock(result.sections.property).content.total_units).toBe(24);
+    expect(result.semantic_digest).toBe(await computeEnvelopeDigest(result));
+    const frozen = Object.freeze(toUWEnvelope(document()));
+    const stamped = await stampEnvelopeDigest(frozen);
+    expect(stamped.semantic_digest).toBe(await computeEnvelopeDigest(stamped));
+  });
 });
 
 describe('RFC 0085 full-record exports', () => {

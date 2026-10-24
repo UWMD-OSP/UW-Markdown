@@ -1,130 +1,48 @@
-# UW XML Mapping 1.0
+# UW XML Mapping 2.0
 
-**Status:** Release candidate
-**Representation ID:** `uw-xml`
-**Representation version:** `1.0.0`
-**Media type:** `application/vnd.uwmd.document+xml`
-**File extension:** `.uw.xml`
-**Namespace:** `https://uwmd.org/ns/document/1`
+**Status:** Accepted contract (RFC 0089)  
+**Representation ID/version:** `uw-xml` / `2.0.0`  
+**Media type:** `application/vnd.uwmd.document+xml`  
+**File extension:** `.uw.xml`  
+**Namespace:** `https://uwmd.org/ns/document/2`
 
-## 1. Scope
+## 1. Total model mapping
 
-UW XML is a deterministic, model-fidelity encoding of the UW Document Envelope
-1.0. It preserves every envelope value, including unknown extension members,
-JSON scalar types, array order, prose, provenance, and superseded history. It
-does not preserve the original Markdown byte stream.
+UW XML encodes the entire [Envelope 2.0](UW_ENVELOPE.md), including unknown outer/block values, exact tagged extensions, annotations, metadata, prose and history. It does not preserve Markdown bytes. The root is `document` in the mapping namespace, with exactly the unqualified attributes `envelope-version="2.0"` and `format-version="3.0"`. It has exactly one `value` child encoding the entire model; root versions must agree with the enclosed model.
 
-The envelope contract and semantic-equivalence rules are defined by RFC 0014.
-This document defines only the XML mapping. The XSD in
-`spec/schemas/uw-document-envelope.xsd` provides structural tooling support;
-the codec performs the normative type, duplicate-member, envelope, and digest
-checks that XSD 1.0 cannot express.
+Every element is in the mapping namespace. Namespace prefixes are arbitrary admitted XML names, including default namespaces; element matching uses expanded names. Mapping attributes are unqualified. Reserved XML/XMLNS bindings, undeclared prefixes, duplicate expanded attributes and unexpected mapping names/attributes refuse.
 
-## 2. Document element
+## 2. Values and strings
 
-The document MUST be UTF-8 XML 1.0 with this root:
+`value` has exactly one unqualified attribute `type`, one of `object`, `array`, `string`, `number`, `boolean`, `null`.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<uw:document xmlns:uw="https://uwmd.org/ns/document/1"
-             envelope-version="1.0"
-             format-version="3.0">
-  <!-- envelope members -->
-</uw:document>
-```
-
-`envelope_version` and `format_version` map to the two required root
-attributes. Every other envelope member maps to a child element.
-
-## 3. Values
-
-Every value element MUST carry `uw:type`, with exactly one of `object`, `array`,
-`string`, `number`, `boolean`, or `null`.
-
-| Envelope value | XML form |
+| Type | Content |
 |---|---|
-| object | Child members inside an element with `uw:type="object"` |
-| array | Ordered, repeated `<uw:item>` children inside `uw:type="array"` |
-| string | XML character data inside `uw:type="string"` |
-| number | A finite JSON-number lexical value inside `uw:type="number"` |
-| boolean | Exactly `true` or `false` inside `uw:type="boolean"` |
-| null | An empty element with `uw:type="null"` |
+| object | Ordered `member` children, each with exactly `name-json` and one `value` child |
+| array | Ordered `value` children |
+| string | Canonical ASCII JSON string lexical token S below |
+| number | Finite JCS number token, with negative zero encoded as `0` |
+| boolean | `true` or `false` |
+| null | Empty content |
 
-Empty strings, empty objects, empty arrays, and null remain distinct. Absent
-members remain distinct from present null members. Non-finite numbers are not
-part of the envelope value model and MUST be rejected.
+Object members may be received in any order; decoded duplicate names refuse before construction. The deterministic encoder sorts object keys in UTF-16 code-unit order and preserves array order. Object/array structure permits XML whitespace only between child elements. Scalar whitespace is data and must satisfy its token grammar.
 
-## 4. Object member names
-
-A member name matching `[A-Za-z_][A-Za-z0-9._-]*`, except the reserved names
-`item` and `member`, maps directly to an element in the UW namespace. All other
-names MUST use `uw:member` with the exact key in a `name` attribute. Consumers
-MUST restore that attribute value as the object key and MUST reject duplicate
-keys after restoration.
+S starts/ends with double quotes. Escape quote as `\"` and backslash as `\\`. Encode every UTF-16 code unit below U+0020 or at/above U+007F as lowercase `\u` plus four hex digits, including DEL. Supplementary characters use paired surrogate escapes; unpaired surrogates refuse. Other printable ASCII is literal. Short escapes and alternate spellings refuse. Decode XML entities/references exactly once, then decode the JSON string token and require its re-encoding to equal S. This preserves JSON NUL and noncharacters through lawful lexical escapes without admitting illegal XML characters.
 
 ```xml
-<uw:frontmatter uw:type="object">
-  <uw:deal_id uw:type="string">deal-123</uw:deal_id>
-</uw:frontmatter>
-<uw:member uw:type="object" name="vendor/path">
-  <uw:member uw:type="string" name="space key">preserved</uw:member>
-</uw:member>
+<uw:document xmlns:uw="https://uwmd.org/ns/document/2" envelope-version="2.0" format-version="3.0"><uw:value type="object">...</uw:value></uw:document>
 ```
 
-No key sanitization, case folding, or namespace interpretation is permitted.
+The ellipsis above is explanatory, not a valid document value. Actual contents must reconstruct a full schema-admitted, stamped Envelope.
 
-## 5. Deterministic encoding
+## 3. XML admission and limits
 
-The reference encoder MUST:
+Use UTF-8, XML 1.0 Fifth Edition character/Name/namespace rules. One initial BOM is permitted. An optional declaration is allowed only at the original start after that BOM, with lowercase `xml`, required `version='1.0'`, optional UTF-8 encoding (case-insensitive value) and optional `standalone='yes'|'no'` in that order. XML whitespace and either quote delimiter follow XML declaration grammar; malformed declarations refuse. End-of-line normalization precedes reference decoding. Literal attribute tabs/newlines normalize to spaces; referenced whitespace is retained.
 
-1. emit the XML declaration and `uw:document` root exactly as shown above;
-2. order known top-level members as `generated_at`, `generator`,
-   `semantic_digest`, `frontmatter`, `sections`, `pipeline_log`,
-   `custom_calculations`, `custom_scenarios`, `extensions`, `superseded`, then
-   unknown members in Unicode code-unit sort order;
-3. sort nested object keys in Unicode code-unit order;
-4. preserve array order;
-5. use two-space indentation, LF line endings, and a final LF;
-6. escape XML text and attributes without changing their decoded values; and
-7. encode finite numbers using the JavaScript/JSON shortest round-trippable
-   lexical form, with negative zero encoded as `0`.
+The five predefined entities and valid decimal/hex numeric references decode once in text, attributes and namespace values. `&#0;`, invalid scalar references and illegal literal XML characters refuse. DTDs, entity declarations, comments, other processing instructions, external resources and transforms are forbidden. Reject structural mixed content, malformed names, unmatched tags, extra roots and trailing non-whitespace. Do not narrow Fifth Edition name admission to the host XML library's older name table.
 
-Whitespace used to indent object and array content is not part of the envelope.
-Whitespace inside a string value is significant.
+Reference limits are 50 MiB input, JSON value depth less than128 and XML syntax depth less than384. The independent Python reader validates names/characters and performs an injective prefix-token alpha-renaming before ElementTree; it does not transform values or references and does not call Node. Conformance exercises Python3.12.3 and the selected3.12 runtime separately on Windows/Linux.
 
-## 6. Integrity
+## 4. Integrity and API
 
-Before encoding, the writer MUST stamp `semantic_digest` using the Envelope 1.0
-canonical semantic digest. A decoder receiving a digest MUST verify it before
-returning the document. Consequently, semantically equivalent UW JSON and UW
-XML documents have the same digest even though their bytes differ.
-
-## 7. Secure decoding
-
-Conforming decoders MUST disable or reject DTDs, entity declarations, external
-entities, external resource loading, and executable transforms. They MUST set
-finite input-size and nesting-depth limits and MUST reject duplicate object
-members, undeclared value types, unexpected attributes/elements, invalid XML
-1.0 characters, and digest mismatches.
-
-The reference codec defaults to 10 MiB and 64 value levels. It rejects any
-input containing a `DOCTYPE` or `ENTITY` declaration before XML parsing. XML's
-five predefined entities and numeric character references remain supported.
-
-## 8. Reference API and CLI
-
-`@uwmd/core` exports `UW_XML_CODEC`, `stringifyUWXml`, `parseUWXml`,
-`parseUWXmlVerified`, and the shared `CORE_CODEC_REGISTRY`. Registry and CLI
-decoding use the verified entry point; the general parser permits unsigned XML
-for inspection while still verifying any digest it receives.
-
-```sh
-uwmd convert deal.uwx.md --to uw-xml
-uwmd convert deal.uw.xml --to uw-json
-uwmd convert deal.uw.json --to xml --stdout
-uwmd formats --json
-```
-
-Input representation is detected from `.uwx.md`, `.uw.md`, `.uw.json`, or `.uw.xml`.
-Machine inputs must carry a valid semantic digest. `json` and `xml` are CLI
-aliases for the canonical `uw-json` and `uw-xml` representation IDs.
+Writers admit the full carrier model and stamp the complete semantic subject. Decoders perform grammar, duplicate-name and model admission before digest comparison, and require a matching stamp. `stringifyUWXml`, `parseUWXml`, `parseUWXmlVerified` and `UW_XML_CODEC` expose the same current regime. The XSD supplies structural tooling only; exact S, namespace, type/content, schema and digest checks remain decoder obligations.

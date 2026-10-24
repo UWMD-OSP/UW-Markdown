@@ -1,0 +1,25 @@
+{
+  "scope": "Selected source-evidence conformance route; full call/data-flow review inventory is retained privately",
+  "nodes": [
+    {
+      "id": "packages/uwmd-lake/src/plan.ts#planSourceEvidence",
+      "classification": "identity propagation/storage",
+      "public_export": "packages/uwmd-lake/src/index.ts",
+      "route": [
+        "planLakeLoad",
+        "planSourceEvidence",
+        "LakeStatement",
+        "executeLakeLoad",
+        "LakeClient.query"
+      ],
+      "conflict_key": [
+        "semantic_digest",
+        "evidence_id"
+      ],
+      "fresh_verification": false
+    }
+  ],
+  "limits": [
+    "Opaque supplied identities and query clients are not authenticated by storage."
+  ]
+}

@@ -13,6 +13,7 @@ import type {
   ConfidenceLevel,
 } from './types.js';
 import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
+import { compareExtensionIdentity } from './extension-entry.js';
 import { maskQuotedScalar, readYamlScalar, YAML_SCALAR_FAILURE_FEATURE } from './yaml-scalar.js';
 
 // RFC 0090: retain pre-reduction block references for bounded metadata admission.
@@ -572,7 +573,24 @@ function routeBlock(
 
   // Extension sections (x_ prefix)
   if (sectionId.startsWith('x_')) {
-    result.extensions[sectionId] = block;
+    const prior = () => { result.superseded[sectionId] ??= []; return result.superseded[sectionId]; };
+    if (annotation.superseded === true || block.meta?.lifecycle?.superseded === true) {
+      prior().push(block);
+      return;
+    }
+    const existing = result.extensions[sectionId];
+    if (roleVariantSections.has(sectionId)) {
+      const variant = annotation.variant ?? null;
+      const blocks = existing?.mode === 'variants' ? existing.blocks : [];
+      const index = blocks.findIndex(record => record.variant === variant);
+      if (index >= 0) { prior().push(blocks[index]!.block); blocks[index] = { variant, block }; }
+      else blocks.push({ variant, block });
+      blocks.sort((a, b) => compareExtensionIdentity(a.variant, b.variant));
+      result.extensions[sectionId] = { mode: 'variants', blocks };
+    } else {
+      if (existing?.mode === 'single') prior().push(existing.block);
+      result.extensions[sectionId] = { mode: 'single', block };
+    }
     return;
   }
 

@@ -1,3 +1,4 @@
+import { extensionBlocks } from './extension-entry.js';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildMeta } from './metadata.js';
@@ -123,7 +124,7 @@ describe('RFC0094 exact canonical metadata leaves', () => {
     const parsed = parseUWFile(raw);
     expect(leaves(parsed).map(i => i.section)).toEqual(ids.flatMap(id => [id, id, id]));
     const added = parseUWFile(source({ _meta: bad() })).sections.property as UWBlock;
-    parsed.sections.extra = added; parsed.extensions.alias = added; parsed.extensions.equal = structuredClone(added);
+    parsed.sections.extra = added; parsed.extensions.alias = { mode: 'single', block: added }; parsed.extensions.equal = { mode: 'single', block: structuredClone(added) };
     expect(leaves(parsed).map(i => i.section)).toEqual([...ids, 'extra', 'equal'].flatMap(id => [id, id, id]));
     expect(parsed.raw).toBe(raw);
   });
@@ -140,7 +141,10 @@ describe('RFC0094 exact canonical metadata leaves', () => {
     expect(leaves(before)).toEqual([]);
     const physical = parseUWFile(header + fence('x_peer', { _meta: bad('x_peer') }) + fence('x_peer', { _meta: meta('x_peer') }));
     expect(leaves(physical)).toHaveLength(3);
-    expect(leaves(JSON.parse(JSON.stringify(physical)) as ParsedUWFile)).toEqual([]);
+    const clone = JSON.parse(JSON.stringify(physical)) as ParsedUWFile;
+    expect(leaves(clone)).toHaveLength(3);
+    delete clone.superseded.x_peer;
+    expect(leaves(clone)).toEqual([]);
   });
 
   it('checks composed root/consumed part physical refs and synthesized model refs without unused parts', () => {

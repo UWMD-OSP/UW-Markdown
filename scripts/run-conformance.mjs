@@ -166,7 +166,9 @@ function canonicalParsed(parsed) {
     custom_calculations: parsed.custom_calculations.map(projectBlock),
     custom_scenarios: parsed.custom_scenarios.map(projectBlock),
     extensions: Object.fromEntries(
-      Object.entries(parsed.extensions).map(([id, b]) => [id, projectBlock(b)])
+      Object.entries(parsed.extensions).map(([id, entry]) => [id, entry.mode === 'single'
+        ? {mode:'single',block:projectBlock(entry.block)}
+        : {mode:'variants',blocks:entry.blocks.map(({variant,block})=>({variant,block:projectBlock(block)}))}])
     ),
     superseded: Object.fromEntries(
       Object.entries(parsed.superseded).map(([id, blocks]) => [id, blocks.map(projectBlock)])
@@ -4280,6 +4282,23 @@ function runCrossChecks() {
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
+  'extension-envelope': async () => {
+    const packet=readCase(join(CONFORMANCE_DIR,'rfc-0089'),'cases.json');
+    for(const item of packet.source_cases.filter(item=>item.name!=='empty')) {
+      const expected=readCase(join(CONFORMANCE_DIR,'rfc-0089/portable/expected'),`${item.name}.json`);
+      const actual=canonicalParsed(parseUWFile(item.source));
+      record('extension-envelope',`${item.name} [parse]`,isDeepStrictEqual(actual,expected)?'pass':'fail','Fixed reviewed model projected to the Protocol minimum');
+    }
+    for(const [name,files] of [
+      ['native-complete-carriers',['production.test.mjs']],
+      ['authentication-and-admission',['source-boundaries.test.mjs','authentication.test.mjs','closure-production.test.mjs','integration-review.test.mjs','csv-resource.test.mjs']],
+      ['retained-review-controls',['retained-probes.test.mjs']],
+      ['production-consumer-routes',['routes.test.mjs']],
+    ]) {
+      const result=spawnSync(process.execPath,['--test','--test-concurrency=1',...files.map(file=>`conformance/rfc-0089/${file}`)],{cwd:ROOT,encoding:'utf8',timeout:300000,maxBuffer:8_000_000});
+      record('extension-envelope',name,result.status===0?'pass':'fail',result.status===0?'Production controls passed':`${result.stdout}\n${result.stderr}`);
+    }
+  },
   'documents': async () => { runDocuments(); await runMalformedDocuments(); },
   'starter-editor': async () => { await runEditor(); },
   'calc': async () => { runCalculations(); await runRefinement(); },

@@ -116,8 +116,8 @@ class ReplacementFundingTests(unittest.TestCase):
         changed=alter(document,2,lambda p:p.update(label="different",day_count="actual/360",
             stated_metrics={"total_net":999},_notes="different",_meta={"anything":"retained"}))
         self.assertEqual(verify(changed),verify(document))
-        # Reuse source blocks mechanically; unrelated x_ variants trigger the
-        # known Envelope shape boundary but cannot enter this V.12 preimage.
+        # Reuse source blocks mechanically; unrelated x_ variants change the
+        # complete whole-source identity but cannot enter this V.12 preimage.
         raw=changed.source.raw
         for variant in (b"alpha",b"beta"):
             full={"_meta":{"section":"x_peer","provenance":{"source":"manual","actor":"reviewer",
@@ -125,8 +125,7 @@ class ReplacementFundingTests(unittest.TestCase):
                 "lifecycle":{"revision":1,"superseded":False}},"_role":"primary","arbitrary":1}
             raw+=b'\n```json uw:section=x_peer variant='+variant+b' source=manual ts=2026-10-03T00:00:00Z v=1 confidence=high\n'+json.dumps(full).encode()+b'\n```\n'
         extension=parse(raw)
-        with self.assertRaises(EnvelopeError):
-            source_digest(extension)
+        self.assertNotEqual(source_digest(extension),source_digest(document))
         self.assertEqual(verify(extension),verify(document))
         historical=parse(document.source.raw+b'\n```json uw:section=cash_flow_series variant=cap-cash superseded=true\n{"series":[]}\n```\n')
         self.assertEqual(verify(historical),verify(document))

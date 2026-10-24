@@ -1,3 +1,4 @@
+import { extensionBlocks } from './extension-entry.js';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -170,8 +171,8 @@ describe('RFC0095 physical/model/source order and result boundaries', () => {
   it('keeps MODEL canonical replacement authoritative and exact refs distinct from equal content', () => {
     const text = source({ _meta: meta() }); const parsed = parseUWFile(text); const b = parsed.sections.property as UWBlock;
     b.content._meta = bad('property');
-    parsed.extensions.x_alias = b;
-    parsed.extensions.x_copy = { ...b };
+    parsed.extensions.x_alias = { mode: 'single', block: b };
+    parsed.extensions.x_copy = { mode: 'single', block: { ...b } };
     expect(fields(parsed, 'META-05')).toEqual(['_meta.provenance.notes', '_meta.provenance.notes']);
     expect(fields(parsed, 'META-06')).toEqual(['_meta.provenance.agent_id', '_meta.provenance.agent_id']);
     expect(findings(text)).toEqual([]);
@@ -181,7 +182,9 @@ describe('RFC0095 physical/model/source order and result boundaries', () => {
   it('does not invent source refs on copied models or consult stale raw for replacements', () => {
     const parsed = parseUWFile(header + fence('x_lost', { _meta: bad('x_lost') }) + fence('x_lost', { _meta: meta('x_lost') }));
     expect(findings(parsed)).toHaveLength(2);
-    expect(findings({ ...parsed })).toEqual([]);
+    expect(findings({ ...parsed })).toHaveLength(2); // Retained history is now explicit model data.
+    const withoutHistory = { ...parsed, superseded: {} };
+    expect(findings(withoutHistory)).toEqual([]);
     expect(parsedPhysicalBlocks({ ...parsed })).toEqual([]);
   });
   it('completes META04 before all META05 then META06, then role/source issues without global sorting', () => {

@@ -5,7 +5,7 @@ import { dirname, resolve } from 'node:path';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { afterAll, beforeAll, describe, it, expect, vi } from 'vitest';
-import { quantizeDecimal, evaluateCalc, parseUWFile, parseCalculationContext, decodeUWDealPackageZip, encodeUWDealPackageZip, sha256BytesHex } from '@uwmd/core';
+import { quantizeDecimal, evaluateCalc, parseUWFile, parseCalculationContext, decodeUWDealPackageZip, encodeUWDealPackageZip, sha256BytesHex, computeEnvelopeDigest, toUWEnvelope, parseUWXml } from '@uwmd/core';
 
 // These tests exercise built executables, stdout/stderr and exit codes.
 vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
@@ -13,6 +13,7 @@ vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI_BIN = resolve(__dirname, '..', 'bin', 'uwmd.mjs');
 const FIXTURE = resolve(__dirname, '..', '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md');
+const CARRIER_FIXTURE = resolve(__dirname, '../../../conformance/rfc-0089/fixtures/complete-current.uwx.md');
 const LITE_FIXTURE = resolve(
   __dirname,
   '..',
@@ -509,7 +510,7 @@ describe('uwmd CLI', () => {
     });
 
     it('exports a document envelope that retains the asset class', async () => {
-      const r = await runCli(['export', fixture, '--stdout']);
+      const r = await runCli(['export', assetClass==='multifamily'?CARRIER_FIXTURE:fixture, '--stdout']);
       expect(r.status).toBe(0);
       expect(JSON.parse(r.stdout)).toMatchObject({
         frontmatter: { asset_class: assetClass },
@@ -518,11 +519,16 @@ describe('uwmd CLI', () => {
     });
   });
 
+  it('refuses retained invalid carrier metadata without rewriting source bytes',async()=>{
+    const before=readFileSync(FIXTURE);const result=await runCli(['export',FIXTURE,'--stdout']);
+    expect(result.status).toBe(1);expect(result.stderr).toContain('ENVELOPE_INVALID_SCHEMA');expect(readFileSync(FIXTURE)).toEqual(before);
+  });
+
   it('exports a digested UW Document Envelope to stdout', async () => {
-    const r = await runCli(['export', FIXTURE, '--stdout']);
+    const r = await runCli(['export', CARRIER_FIXTURE, '--stdout']);
     expect(r.status).toBe(0);
     const exported = JSON.parse(r.stdout);
-    expect(exported.envelope_version).toBe('1.0');
+    expect(exported.envelope_version).toBe('2.0');
     expect(exported.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(exported).not.toHaveProperty('uwjson_version');
     expect(exported).not.toHaveProperty('prose');
@@ -534,31 +540,32 @@ describe('uwmd CLI', () => {
     const exported = JSON.parse(r.stdout);
     expect(exported.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(exported.sections.valuation.content.purchase_price).toBe(12_500_000);
-    expect(exported.extensions.x_uw_lite_source.content.markdown).toContain(
+    expect(exported.extensions.x_uw_lite_source.block.content.markdown).toContain(
       '# Acquisition',
     );
   });
 
 
   it('converts Markdown to deterministic UW XML on stdout', async () => {
-    const r = await runCli(['convert', FIXTURE, '--to', 'uw-xml', '--stdout']);
+    const r = await runCli(['convert', CARRIER_FIXTURE, '--to', 'uw-xml', '--stdout']);
     expect(r.status).toBe(0);
-    expect(r.stdout).toMatch(/^<\?xml version="1\.0" encoding="UTF-8"\?>/);
-    expect(r.stdout).toContain('<uw:document xmlns:uw="https://uwmd.org/ns/document/1"');
-    expect(r.stdout).toMatch(/<uw:semantic_digest uw:type="string">sha256:[0-9a-f]{64}<\/uw:semantic_digest>/);
+    expect(r.stdout).toContain('<uw:document xmlns:uw="https://uwmd.org/ns/document/2" envelope-version="2.0" format-version="3.0">');
+    const decoded=await parseUWXml(r.stdout);
+    expect(decoded.envelope_version).toBe('2.0');
+    expect(decoded.semantic_digest).toBe(await computeEnvelopeDigest(toUWEnvelope(parseUWFile(readFileSync(CARRIER_FIXTURE,'utf8')))));
   });
 
   it('converts verified UW XML back to UW JSON', async () => {
     const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-'));
     try {
-      const xml = await runCli(['convert', FIXTURE, '--to', 'xml', '--stdout']);
+      const xml = await runCli(['convert', CARRIER_FIXTURE, '--to', 'xml', '--stdout']);
       expect(xml.status).toBe(0);
       const xmlPath = resolve(temp, 'deal.uw.xml');
       writeFileSync(xmlPath, xml.stdout, 'utf8');
       const json = await runCli(['convert', xmlPath, '--to', 'json', '--stdout']);
       expect(json.status).toBe(0);
       const envelope = JSON.parse(json.stdout);
-      expect(envelope.envelope_version).toBe('1.0');
+      expect(envelope.envelope_version).toBe('2.0');
       expect(envelope.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
     } finally {
       rmSync(temp, { recursive: true, force: true });
@@ -567,7 +574,7 @@ describe('uwmd CLI', () => {
   it('converts Markdown to a CSV bundle ZIP and back to verified JSON', async () => {
     const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-csv-'));
     try {
-      const zip = await runCliBinary(['convert', FIXTURE, '--to', 'csv', '--stdout']);
+      const zip = await runCliBinary(['convert', CARRIER_FIXTURE, '--to', 'csv', '--stdout']);
       expect(zip.status).toBe(0);
       expect(zip.stdout.subarray(0, 4)).toEqual(Buffer.from([0x50, 0x4b, 0x03, 0x04]));
       const zipPath = resolve(temp, 'deal.uw.csv.zip');
@@ -780,7 +787,7 @@ describe('uwmd CLI', () => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-export-'));
       try {
         const dealPath = resolve(temp, 'deal.uwx.md');
-        writeFileSync(dealPath, readFileSync(FIXTURE, 'utf8'), 'utf8');
+        writeFileSync(dealPath, readFileSync(CARRIER_FIXTURE, 'utf8'), 'utf8');
         const r = await runCli(['export', dealPath]);
         expect(r.status).toBe(0);
         expect(r.stdout).toContain('deal.uw.json');
@@ -822,17 +829,7 @@ describe('uwmd CLI', () => {
 });
 
 describe('composition — compose, resolve, and --resolved (RFC 0021)', () => {
-  const INLINE = resolve(
-    __dirname,
-    '..',
-    '..',
-    '..',
-    'conformance',
-    'composition',
-    'resolve',
-    'inline-vs-external',
-    'inline.uwx.md',
-  );
+  const INLINE = resolve(__dirname, '../../../examples/standalone/authored-2026-10-17/inline-deal.uwx.md');
 
   const template = mkdtempSync(resolve(tmpdir(), 'uwmd-compose-template-'));
   beforeAll(async () => {
@@ -884,7 +881,7 @@ describe('composition — compose, resolve, and --resolved (RFC 0021)', () => {
       const b = await runCli(['export', roundTrip, '--stdout']);
       expect(a.status).toBe(0);
       expect(b.status).toBe(0);
-      expect(JSON.parse(b.stdout).digest).toBe(JSON.parse(a.stdout).digest);
+      expect(JSON.parse(b.stdout).semantic_digest).toBe(JSON.parse(a.stdout).semantic_digest);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
@@ -1312,21 +1309,45 @@ describe('package verify checks semantic digests (RFC 0018; launch audit D-10)',
   const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-'));
   afterAll(() => rmSync(temp, { recursive: true, force: true }));
 
-  it('verifies the shipped demo package, exit 0', async () => {
-    const r = await runCli(['package', 'verify', DEMO]);
+  async function currentPackage() {
+    const bytes=new Uint8Array(readFileSync(CARRIER_FIXTURE));
+    const part=new TextEncoder().encode('Synthetic part bytes; no semantic verification is claimed.\n');
+    const digest=await computeEnvelopeDigest(toUWEnvelope(parseUWFile(new TextDecoder().decode(bytes))));
+    return {
+      manifest:{package_version:'1.0' as const,package_id:'pkg:synthetic:current',members:[
+        {id:'deal:synthetic',path:'records/synthetic.uwx.md',role:'underwriting' as const,media_type:'text/vnd.uwmd.extended+markdown',sha256:`sha256:${await sha256BytesHex(bytes)}`,semantic_digest:digest},
+        {id:'part:synthetic',path:'parts/synthetic.uwpart.md',role:'model_encoding' as const,media_type:'text/vnd.uwmd.part+markdown',sha256:`sha256:${await sha256BytesHex(part)}`},
+      ],links:[]},payloads:{'records/synthetic.uwx.md':bytes,'parts/synthetic.uwpart.md':part},
+    };
+  }
+
+  it('verifies a freshly authored current-subject package, exit 0', async () => {
+    const path=resolve(temp,'current.uwpkg.zip');writeFileSync(path,await encodeUWDealPackageZip(await currentPackage()));
+    const r = await runCli(['package', 'verify', path]);
     expect(r.status).toBe(0);
-    expect(r.stdout).toContain('VERIFIED - standalone-demo.uwpkg.zip');
+    expect(r.stdout).toContain('VERIFIED - current.uwpkg.zip');
     expect(r.stdout).not.toContain('unverifiable');
-    const json = await runCli(['package', 'verify', DEMO, '--json']);
+    const json = await runCli(['package', 'verify', path, '--json']);
     expect(json.status).toBe(0);
     expect(JSON.parse(json.stdout)).toEqual({ status: 'verified', errors: [], unverifiable_members: [] });
   });
 
+  it('read-only verification refuses the retained demo package identities without repairing it',async()=>{
+    const before=readFileSync(DEMO);const result=await runCli(['package','verify',DEMO,'--json']);
+    expect(result.status).toBe(1);
+    expect(JSON.parse(result.stdout).errors.map(({code,pointer}: {code:string;pointer:string})=>({code,pointer}))).toEqual([
+      {code:'PKGVER-003',pointer:'deal:parkview'},
+      {code:'PKGVER-003',pointer:'lease:anchor-tenant'},
+      {code:'PKGVER-003',pointer:'note:rent-roll-review'},
+    ]);
+    expect(readFileSync(DEMO)).toEqual(before);
+  });
+
   it('fails a member whose content changed under a stale semantic digest, exit 1', async () => {
-    const decoded = decodeUWDealPackageZip(new Uint8Array(readFileSync(DEMO)));
-    const member = decoded.manifest.members.find((m) => m.id === 'deal:parkview')!;
+    const decoded = decodeUWDealPackageZip(await encodeUWDealPackageZip(await currentPackage()));
+    const member = decoded.manifest.members.find((m) => m.id === 'deal:synthetic')!;
     const text = new TextDecoder().decode(decoded.payloads[member.path]);
-    const altered = text.replace('deal_name: Parkview Standalone Kit — Inline', 'deal_name: Parkview Standalone Kit — Altered');
+    const altered = text.replace('Synthetic current carrier', 'Synthetic altered carrier');
     expect(altered).not.toBe(text);
     decoded.payloads[member.path] = new TextEncoder().encode(altered);
     member.sha256 = `sha256:${await sha256BytesHex(decoded.payloads[member.path]!)}`;
@@ -1336,12 +1357,12 @@ describe('package verify checks semantic digests (RFC 0018; launch audit D-10)',
     const r = await runCli(['package', 'verify', stale]);
     expect(r.status).toBe(1);
     expect(r.stdout).toContain('FAILED - stale.uwpkg.zip');
-    expect(r.stdout).toContain('PKGVER-003 [deal:parkview]');
+    expect(r.stdout).toContain('PKGVER-003 [deal:synthetic]');
     const json = await runCli(['package', 'verify', stale, '--json']);
     expect(json.status).toBe(1);
     expect(JSON.parse(json.stdout)).toEqual({
       status: 'failed',
-      errors: [expect.objectContaining({ category: 'package', code: 'PKGVER-003', pointer: 'deal:parkview' })],
+      errors: [expect.objectContaining({ category: 'package', code: 'PKGVER-003', pointer: 'deal:synthetic' })],
       unverifiable_members: [],
     });
   });
@@ -1349,8 +1370,8 @@ describe('package verify checks semantic digests (RFC 0018; launch audit D-10)',
   it('reports a digest it cannot compute as unverifiable, not failed, exit 0', async () => {
     // A stated semantic digest on a representation the CLI does not
     // canonicalize (a .uwpart.md fragment) is evidence it cannot check.
-    const decoded = decodeUWDealPackageZip(new Uint8Array(readFileSync(DEMO)));
-    const member = decoded.manifest.members.find((m) => m.id === 'part:rent-roll-210')!;
+    const decoded = decodeUWDealPackageZip(await encodeUWDealPackageZip(await currentPackage()));
+    const member = decoded.manifest.members.find((m) => m.id === 'part:synthetic')!;
     expect(member.semantic_digest).toBeUndefined();
     member.semantic_digest = `sha256:${'0'.repeat(64)}`;
     const unchecked = resolve(temp, 'unchecked.uwpkg.zip');
@@ -1359,9 +1380,9 @@ describe('package verify checks semantic digests (RFC 0018; launch audit D-10)',
     const r = await runCli(['package', 'verify', unchecked]);
     expect(r.status).toBe(0);
     expect(r.stdout).toContain('UNVERIFIABLE - unchecked.uwpkg.zip');
-    expect(r.stdout).toContain('(unverifiable) part:rent-roll-210');
+    expect(r.stdout).toContain('(unverifiable) part:synthetic');
     const json = await runCli(['package', 'verify', unchecked, '--json']);
     expect(json.status).toBe(0);
-    expect(JSON.parse(json.stdout)).toEqual({ status: 'unverifiable', errors: [], unverifiable_members: ['part:rent-roll-210'] });
+    expect(JSON.parse(json.stdout)).toEqual({ status: 'unverifiable', errors: [], unverifiable_members: ['part:synthetic'] });
   });
 });

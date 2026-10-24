@@ -83,7 +83,7 @@ Computed: 7/8
 Uncomputed: cash_on_cash
 Uncomputed metrics evaluated to no value, typically because their structured inputs are absent. The receipt records both computed and uncomputed result statuses.
 Missing inputs are a completeness gap; they do not indicate a receipt/hash verification failure.
-Canonicalization: uw-envelope-semantic@1.0
+Canonicalization: uw-envelope-semantic@2.0
 Document hash: <digest>
 Results hash: <digest>
 Receipt/hash verification: not checked against a prior receipt.

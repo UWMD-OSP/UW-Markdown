@@ -19,7 +19,7 @@ import { LakeError } from './schema.js';
 /** The columns `block_values.csv` is required to carry (UW CSV Bundle §3). */
 const BLOCK_VALUE_COLUMNS = ['block_ref', 'scope', 'pointer', 'json_type', 'value_json'] as const;
 
-const SCOPES = new Set(['annotation', 'meta', 'content']);
+const SCOPES = new Set(['annotation', 'meta', 'content', 'block-extra']);
 const JSON_TYPES = new Set(['object', 'array', 'string', 'number', 'boolean', 'null']);
 
 /** Identity columns that every fact row from a single document shares. */
@@ -81,7 +81,7 @@ export function readBlockValuesCSV(csv: string, identity: LakeDocumentIdentity):
     const scope = cell('scope');
     const json_type = cell('json_type');
     if (!SCOPES.has(scope)) {
-      throw new LakeError('LAKE_CSV_SCOPE', `block_values.csv row ${line} has scope "${scope}", which is not annotation, meta, or content.`);
+      throw new LakeError('LAKE_CSV_SCOPE', `block_values.csv row ${line} has scope "${scope}", which is not annotation, meta, content, or block-extra.`);
     }
     if (!JSON_TYPES.has(json_type)) {
       throw new LakeError('LAKE_CSV_JSON_TYPE', `block_values.csv row ${line} has json_type "${json_type}", which is not a JSON value type.`);

@@ -2557,90 +2557,93 @@
   ],
   "extensions": {
     "x_lender_matrix": {
-      "meta": {
-        "section": "x_lender_matrix",
-        "provenance": {
-          "source": "manual",
-          "actor": "analyst",
-          "agent_id": null,
-          "agent_version": null,
-          "timestamp": "2026-04-24T10:00:00Z",
-          "notes": null
+      "mode": "single",
+      "block": {
+        "meta": {
+          "section": "x_lender_matrix",
+          "provenance": {
+            "source": "manual",
+            "actor": "analyst",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-04-24T10:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
-        "quality": {
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": [],
-          "partial": false,
-          "provisional": false
-        },
-        "lifecycle": {
-          "revision": 1,
-          "superseded": false
-        }
-      },
-      "content": {
-        "render_hint": {
-          "include_in_output": false,
-          "output_label": "Lender Outreach Log",
-          "output_position": "appendix",
-          "after_section_id": null,
-          "visible_tiers": [
-            "analyst"
-          ]
-        },
-        "schema_version": null,
         "content": {
-          "lenders": [
-            {
-              "name": "Javelina Commercial Bank",
-              "contact": "Sarah M., CRE Lending",
-              "status": "term_sheet_verbal",
-              "loan_amount_quoted": 5040000,
-              "rate_quoted": "5.875% fixed",
-              "term_years": 5,
-              "amortization": 30,
-              "io_months_offered": 12,
-              "ltv_max": 0.7,
-              "recourse": "partial",
-              "origination_fee": "1.0%",
-              "notes": "Preferred lender. Verbally confirmed 12mo IO; exploring 24mo IO — answer expected by 4/28. Relationship lender, familiar with our other deals.",
-              "next_step": "Follow up 4/28 re: 24mo IO availability",
-              "last_contact": "2026-04-22"
-            },
-            {
-              "name": "Desert Plains Bank",
-              "contact": "Mike T., Commercial RE",
-              "status": "indicative_terms_received",
-              "loan_amount_quoted": 5040000,
-              "rate_quoted": "6.125% fixed",
-              "term_years": 5,
-              "amortization": 30,
-              "io_months_offered": 0,
-              "ltv_max": 0.7,
-              "recourse": "full",
-              "origination_fee": "0.75%",
-              "notes": "Higher rate, no IO, full recourse. Less competitive. Keep as backup.",
-              "next_step": "Hold — only engage if Javelina Commercial falls through",
-              "last_contact": "2026-04-20"
-            },
-            {
-              "name": "Copperline Community Bank",
-              "contact": "Direct outreach, no response yet",
-              "status": "outreach_sent",
-              "loan_amount_quoted": null,
-              "rate_quoted": null,
-              "term_years": null,
-              "amortization": null,
-              "io_months_offered": null,
-              "ltv_max": null,
-              "recourse": null,
-              "origination_fee": null,
-              "notes": "Smaller community bank, known for competitive multifamily terms in Phoenix. Sent package 4/23.",
-              "next_step": "Follow up 4/28 if no response",
-              "last_contact": "2026-04-23"
-            }
-          ]
+          "render_hint": {
+            "include_in_output": false,
+            "output_label": "Lender Outreach Log",
+            "output_position": "appendix",
+            "after_section_id": null,
+            "visible_tiers": [
+              "analyst"
+            ]
+          },
+          "schema_version": null,
+          "content": {
+            "lenders": [
+              {
+                "name": "Javelina Commercial Bank",
+                "contact": "Sarah M., CRE Lending",
+                "status": "term_sheet_verbal",
+                "loan_amount_quoted": 5040000,
+                "rate_quoted": "5.875% fixed",
+                "term_years": 5,
+                "amortization": 30,
+                "io_months_offered": 12,
+                "ltv_max": 0.7,
+                "recourse": "partial",
+                "origination_fee": "1.0%",
+                "notes": "Preferred lender. Verbally confirmed 12mo IO; exploring 24mo IO — answer expected by 4/28. Relationship lender, familiar with our other deals.",
+                "next_step": "Follow up 4/28 re: 24mo IO availability",
+                "last_contact": "2026-04-22"
+              },
+              {
+                "name": "Desert Plains Bank",
+                "contact": "Mike T., Commercial RE",
+                "status": "indicative_terms_received",
+                "loan_amount_quoted": 5040000,
+                "rate_quoted": "6.125% fixed",
+                "term_years": 5,
+                "amortization": 30,
+                "io_months_offered": 0,
+                "ltv_max": 0.7,
+                "recourse": "full",
+                "origination_fee": "0.75%",
+                "notes": "Higher rate, no IO, full recourse. Less competitive. Keep as backup.",
+                "next_step": "Hold — only engage if Javelina Commercial falls through",
+                "last_contact": "2026-04-20"
+              },
+              {
+                "name": "Copperline Community Bank",
+                "contact": "Direct outreach, no response yet",
+                "status": "outreach_sent",
+                "loan_amount_quoted": null,
+                "rate_quoted": null,
+                "term_years": null,
+                "amortization": null,
+                "io_months_offered": null,
+                "ltv_max": null,
+                "recourse": null,
+                "origination_fee": null,
+                "notes": "Smaller community bank, known for competitive multifamily terms in Phoenix. Sent package 4/23.",
+                "next_step": "Follow up 4/28 if no response",
+                "last_contact": "2026-04-23"
+              }
+            ]
+          }
         }
       }
     }

@@ -115,14 +115,14 @@ Narrative prose for the current property block.
 \`\`\`
 `;
 
-describe('.uw.json 1.0', () => {
+describe('.uw.json 2.0', () => {
   it('uses the shared envelope without duplicating prose or _meta', () => {
     const document = toUWJson(parseUWFile(FIXTURE), {
       generatedAt: '2026-01-03T12:00:00Z',
     });
     const property = document.sections['property'] as UWEnvelopeBlock;
 
-    expect(document.envelope_version).toBe('1.0');
+    expect(document.envelope_version).toBe('2.0');
     expect(document.format_version).toBe('3.0');
     expect(property.content['total_units']).toBe(24);
     expect(((property.content['_meta'] as Record<string, unknown>)['lifecycle'] as Record<string, unknown>)['revision']).toBe(2);
@@ -161,7 +161,7 @@ describe('.uw.json 1.0', () => {
       /ENVELOPE_UNSUPPORTED_VERSION/,
     );
     const envelope = (format_version: string, uw_version: string) => JSON.stringify({
-      envelope_version: '1.0',
+      envelope_version: '2.0',
       format_version,
       frontmatter: { uw_version },
       sections: { property: { annotation: { section: 'property' }, content: {} } },
@@ -171,7 +171,7 @@ describe('.uw.json 1.0', () => {
       extensions: {},
       superseded: {},
     });
-    expect(() => parseUWJson(envelope('3.0', '3.0'))).toThrow(/ENVELOPE_MISSING_META/);
+    expect(() => parseUWJson(envelope('3.0', '3.0'))).toThrow(/ENVELOPE_INVALID_SCHEMA/);
     // One format (RFC 0081 D1): either version statement naming another is refused.
     expect(() => parseUWJson(envelope('1.1', '3.0'))).toThrow(/UNSUPPORTED_FORMAT_VERSION/);
     expect(() => parseUWJson(envelope('3.0', '2.1'))).toThrow(/UNSUPPORTED_FORMAT_VERSION/);
@@ -182,7 +182,7 @@ describe('.uw.json 1.0', () => {
   });
 
   it('publishes a discoverable model-fidelity codec', () => {
-    expect(UW_JSON_REPRESENTATION_VERSION).toBe('1.0.0');
+    expect(UW_JSON_REPRESENTATION_VERSION).toBe('2.0.0');
     expect(UW_JSON_MEDIA_TYPE).toBe('application/vnd.uwmd.document+json');
     expect(UW_JSON_CODEC.descriptor.fidelity).toBe('model');
     expect(UW_JSON_CODEC.descriptor.file_extensions).toContain('.uw.json');

@@ -10,12 +10,14 @@
 
 import {
   CONFORMANCE_PROFILES,
+  CORE_CODEC_REGISTRY,
   FORMAT_VERSION,
   PROTOCOL_VERSION,
   SUPPORTED_LOCALES,
   type ConformanceProfile,
   type ImplementationManifest,
   type ViewerCapability,
+  type RepresentationDescriptor,
 } from '@uwmd/verify';
 import { CORE_VERSION } from './version.js';
 
@@ -40,6 +42,7 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
   // 0112 removed the `agent-host` capability from the vocabulary.
   tier: 'verifier',
   profiles: Object.freeze([...CONFORMANCE_PROFILES]) as ConformanceProfile[],
+  representations: Object.freeze(CORE_CODEC_REGISTRY.list()) as RepresentationDescriptor[],
   capabilities: Object.freeze([
     'parse',
     'validate',

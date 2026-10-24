@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { projectUWParse } from '@uwmd/verify';
 import { hasBlockShape } from './block-kind.js';
 import {
   verifyReserveDrawBindings,
@@ -191,43 +192,7 @@ async function cmdParse(file: string, flags: Record<string, string | boolean>): 
   const loaded = await loadSource(file);
   const parsed = flags['strict'] && loaded.representation === UWX_REPRESENTATION_ID
     ? parseUWFile(content, { strict: true }) : loaded.parsed;
-  // `sections` and `superseded` are emitted in the §II.6a.6 conformance
-  // projection — `{ meta, content }` per block, one such object per variant
-  // for a multi-variant section — NOT as in-memory UWBlocks:
-  //
-  //   * `meta` is the document's `_meta` verbatim (only the keys it carried).
-  //   * `content` is the block minus `_meta` and `_overrides`: the bare
-  //     payload (Format §2.4), with `_role` and `_notes` when stated.
-  //
-  // Reader artifacts (fence annotation, prose, line numbers, rawJson) are
-  // deliberately not emitted per section: §II.6a.6 lists them as MUST NOT be
-  // required, and emitting them here is how they end up required.
-  const projectBlock = (block: UWBlock): { meta: Record<string, unknown>; content: unknown } => {
-    const { _meta, _overrides: _ov, ...rest } = block.content;
-    return { meta: (_meta as Record<string, unknown> | undefined) ?? {}, content: rest };
-  };
-  const isBlock = (v: unknown): v is UWBlock =>
-    hasBlockShape(v);
-  const projectEntry = (entry: UWBlock | { [variant: string]: UWBlock }) =>
-    isBlock(entry)
-      ? projectBlock(entry)
-      : Object.fromEntries(
-          Object.entries(entry).map(([variant, block]) => [variant, projectBlock(block)])
-        );
-  const output = {
-    frontmatter: parsed.frontmatter,
-    sections: Object.fromEntries(
-      Object.entries(parsed.sections).map(([id, entry]) => [id, projectEntry(entry)])
-    ),
-    prose: parsed.prose,
-    pipeline_log: parsed.pipeline_log.map(b => b.content),
-    custom_calculations: parsed.custom_calculations,
-    custom_scenarios: parsed.custom_scenarios,
-    extensions: Object.fromEntries(Object.entries(parsed.extensions).map(([id, block]) => [id, projectBlock(block)])),
-    superseded: Object.fromEntries(
-      Object.entries(parsed.superseded).map(([id, blocks]) => [id, blocks.map(projectBlock)])
-    ),
-  };
+  const output = projectUWParse(parsed);
   console.log(JSON.stringify(output, null, flags['compact'] ? 0 : 2));
 }
 

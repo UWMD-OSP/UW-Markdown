@@ -50,22 +50,40 @@ class Document:
         role_sections = {block.section for block in active if "_role" in block.parsed.value}
         variant_sections = {block.section for block in active if "variant" in dict(block.attributes)}
         parallel = PARALLEL | (role_sections & variant_sections)
+        # RFC 0089: exact extension modes/nullable identities and physical-event
+        # history order; no metadata or annotation mutation to label history.
         for block in self.source.blocks:
             section, projected = block.section, _projection(block)
-            if _superseded(block):
-                output["superseded"].setdefault(section, []).append(projected)
-            elif section in APPEND:
-                # Pipeline entries are complete append-only log objects. The
-                # other two collections retain the II.6a wrapped block shape.
+            if section in APPEND:
                 output[section].append(block.parsed.value if section == "pipeline_log" else projected)
+            elif _superseded(block):
+                output["superseded"].setdefault(section, []).append(projected)
             elif section.startswith("x_"):
+                current = output["extensions"].get(section)
                 if section in parallel:
-                    output["extensions"].setdefault(section, {})[dict(block.attributes).get("variant", "default")] = projected
+                    identity = dict(block.attributes).get("variant")
+                    if current is None:
+                        current = {"mode": "variants", "blocks": []}
+                        output["extensions"][section] = current
+                    prior = next((item for item in current["blocks"] if item["variant"] == identity), None)
+                    if prior is not None:
+                        output["superseded"].setdefault(section, []).append(prior["block"])
+                        current["blocks"].remove(prior)
+                    current["blocks"].append({"variant": identity, "block": projected})
+                    current["blocks"].sort(key=lambda item: (item["variant"] is not None, (item["variant"] or "").encode("utf-16-be")))
                 else:
-                    output["extensions"][section] = projected
+                    if current is not None:
+                        output["superseded"].setdefault(section, []).append(current["block"])
+                    output["extensions"][section] = {"mode": "single", "block": projected}
             elif section in parallel:
-                output["sections"].setdefault(section, {})[dict(block.attributes).get("variant", "default")] = projected
+                variants = output["sections"].setdefault(section, {})
+                key = dict(block.attributes).get("variant", "default")
+                if key in variants:
+                    output["superseded"].setdefault(section, []).append(variants[key])
+                variants[key] = projected
             else:
+                if section in output["sections"]:
+                    output["superseded"].setdefault(section, []).append(output["sections"][section])
                 output["sections"][section] = projected
         return output
 

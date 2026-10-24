@@ -1,0 +1,1603 @@
+{
+  "method": "raw synthetic fenced JSON plus restricted header observer; D1/D2 event routing; recursive sorted JSON and node:crypto, no candidate parser/JCS/freezer",
+  "records": [
+    {
+      "name": "empty",
+      "physical_count": 0,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {},
+        "superseded": {},
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "expected_digest": "sha256:a229bbb17a659267c26d1bfb5f1fa586312b8266b709b2fdf03a2f918aeb919d",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "named-default-single",
+      "physical_count": 1,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_probe": {
+            "mode": "single",
+            "block": {
+              "annotation": {
+                "section": "x_probe",
+                "variant": "default"
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            }
+          }
+        },
+        "superseded": {},
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{\"x_probe\":{\"block\":{\"annotation\":{\"section\":\"x_probe\",\"variant\":\"default\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":1}},\"mode\":\"single\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "expected_digest": "sha256:a4be1075c5516352c381a0707edea14d798cfad65bfc379f260dc54af4732ef8",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "named-default-role-one-peer",
+      "physical_count": 1,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_probe": {
+            "mode": "variants",
+            "blocks": [
+              {
+                "variant": "default",
+                "block": {
+                  "annotation": {
+                    "section": "x_probe",
+                    "variant": "default"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_probe",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "synthetic",
+                        "timestamp": "2026-10-23T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "marker": 1,
+                    "_role": "primary"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "superseded": {},
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{\"x_probe\":{\"blocks\":[{\"block\":{\"annotation\":{\"section\":\"x_probe\",\"variant\":\"default\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"_role\":\"primary\",\"marker\":1}},\"variant\":\"default\"}],\"mode\":\"variants\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "expected_digest": "sha256:1a578e218d7e869ada09e07b59d7bddd9c9bfbc92dff8ea481a53ae07c44ef30",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "peers-base-detail",
+      "physical_count": 2,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_probe": {
+            "mode": "variants",
+            "blocks": [
+              {
+                "variant": "base",
+                "block": {
+                  "annotation": {
+                    "section": "x_probe",
+                    "variant": "base"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_probe",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "synthetic",
+                        "timestamp": "2026-10-23T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "marker": 1,
+                    "_role": "primary"
+                  }
+                }
+              },
+              {
+                "variant": "detail",
+                "block": {
+                  "annotation": {
+                    "section": "x_probe",
+                    "variant": "detail"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_probe",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "synthetic",
+                        "timestamp": "2026-10-23T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "marker": 2
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "superseded": {},
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{\"x_probe\":{\"blocks\":[{\"block\":{\"annotation\":{\"section\":\"x_probe\",\"variant\":\"base\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"_role\":\"primary\",\"marker\":1}},\"variant\":\"base\"},{\"block\":{\"annotation\":{\"section\":\"x_probe\",\"variant\":\"detail\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":2}},\"variant\":\"detail\"}],\"mode\":\"variants\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "expected_digest": "sha256:a6280898dd00d33b7fff64ec976ba9e50a8a2063980c01ff10ec5f5f185a9c4c",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "peers-detail-base",
+      "physical_count": 2,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_probe": {
+            "mode": "variants",
+            "blocks": [
+              {
+                "variant": "base",
+                "block": {
+                  "annotation": {
+                    "section": "x_probe",
+                    "variant": "base"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_probe",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "synthetic",
+                        "timestamp": "2026-10-23T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "marker": 1,
+                    "_role": "primary"
+                  }
+                }
+              },
+              {
+                "variant": "detail",
+                "block": {
+                  "annotation": {
+                    "section": "x_probe",
+                    "variant": "detail"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_probe",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "synthetic",
+                        "timestamp": "2026-10-23T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "marker": 2
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "superseded": {},
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{\"x_probe\":{\"blocks\":[{\"block\":{\"annotation\":{\"section\":\"x_probe\",\"variant\":\"base\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"_role\":\"primary\",\"marker\":1}},\"variant\":\"base\"},{\"block\":{\"annotation\":{\"section\":\"x_probe\",\"variant\":\"detail\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":2}},\"variant\":\"detail\"}],\"mode\":\"variants\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "expected_digest": "sha256:a6280898dd00d33b7fff64ec976ba9e50a8a2063980c01ff10ec5f5f185a9c4c",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "null-then-default",
+      "physical_count": 2,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_probe": {
+            "mode": "variants",
+            "blocks": [
+              {
+                "variant": null,
+                "block": {
+                  "annotation": {
+                    "section": "x_probe"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_probe",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "synthetic",
+                        "timestamp": "2026-10-23T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "marker": 1,
+                    "_role": "primary"
+                  }
+                }
+              },
+              {
+                "variant": "default",
+                "block": {
+                  "annotation": {
+                    "section": "x_probe",
+                    "variant": "default"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_probe",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "synthetic",
+                        "timestamp": "2026-10-23T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "marker": 2
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "superseded": {},
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{\"x_probe\":{\"blocks\":[{\"block\":{\"annotation\":{\"section\":\"x_probe\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"_role\":\"primary\",\"marker\":1}},\"variant\":null},{\"block\":{\"annotation\":{\"section\":\"x_probe\",\"variant\":\"default\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":2}},\"variant\":\"default\"}],\"mode\":\"variants\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "expected_digest": "sha256:c8182c6059f820e6240f9f3f679f762fdf46a711eb94f6d4bb4b193a21660f1d",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "default-then-null",
+      "physical_count": 2,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_probe": {
+            "mode": "variants",
+            "blocks": [
+              {
+                "variant": null,
+                "block": {
+                  "annotation": {
+                    "section": "x_probe"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_probe",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "synthetic",
+                        "timestamp": "2026-10-23T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "marker": 1,
+                    "_role": "primary"
+                  }
+                }
+              },
+              {
+                "variant": "default",
+                "block": {
+                  "annotation": {
+                    "section": "x_probe",
+                    "variant": "default"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_probe",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "synthetic",
+                        "timestamp": "2026-10-23T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "marker": 2
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "superseded": {},
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{\"x_probe\":{\"blocks\":[{\"block\":{\"annotation\":{\"section\":\"x_probe\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"_role\":\"primary\",\"marker\":1}},\"variant\":null},{\"block\":{\"annotation\":{\"section\":\"x_probe\",\"variant\":\"default\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":2}},\"variant\":\"default\"}],\"mode\":\"variants\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "expected_digest": "sha256:c8182c6059f820e6240f9f3f679f762fdf46a711eb94f6d4bb4b193a21660f1d",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "history-only",
+      "physical_count": 1,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {},
+        "superseded": {
+          "x_probe": [
+            {
+              "annotation": {
+                "section": "x_probe",
+                "superseded": true
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  }
+                },
+                "marker": 0
+              }
+            }
+          ]
+        },
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{\"x_probe\":[{\"annotation\":{\"section\":\"x_probe\",\"superseded\":true},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":true},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":0}}]}}",
+      "expected_digest": "sha256:9e69b6538516b2b7bb9db2925448e7f5bb1b8dd284fe7c4f43b5e19c1f1c8957",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "role-only-in-history",
+      "physical_count": 2,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_probe": {
+            "mode": "single",
+            "block": {
+              "annotation": {
+                "section": "x_probe",
+                "variant": "default"
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            }
+          }
+        },
+        "superseded": {
+          "x_probe": [
+            {
+              "annotation": {
+                "section": "x_probe",
+                "variant": "base",
+                "superseded": true
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  }
+                },
+                "marker": 0,
+                "_role": "primary"
+              }
+            }
+          ]
+        },
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{\"x_probe\":{\"block\":{\"annotation\":{\"section\":\"x_probe\",\"variant\":\"default\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":1}},\"mode\":\"single\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{\"x_probe\":[{\"annotation\":{\"section\":\"x_probe\",\"superseded\":true,\"variant\":\"base\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":true},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"_role\":\"primary\",\"marker\":0}}]}}",
+      "expected_digest": "sha256:d4b1b93453d99ea65301e5bb85f29f8eed6648c24bbeb5d99a4cd8108791b154",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "revision-nine-then-one",
+      "physical_count": 2,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_probe": {
+            "mode": "variants",
+            "blocks": [
+              {
+                "variant": "base",
+                "block": {
+                  "annotation": {
+                    "section": "x_probe",
+                    "variant": "base"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_probe",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "synthetic",
+                        "timestamp": "2026-10-23T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "marker": 2,
+                    "_role": "primary"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "superseded": {
+          "x_probe": [
+            {
+              "annotation": {
+                "section": "x_probe",
+                "variant": "base",
+                "v": 9
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 9,
+                    "superseded": false
+                  }
+                },
+                "marker": 1,
+                "_role": "primary"
+              }
+            }
+          ]
+        },
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{\"x_probe\":{\"blocks\":[{\"block\":{\"annotation\":{\"section\":\"x_probe\",\"variant\":\"base\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"_role\":\"primary\",\"marker\":2}},\"variant\":\"base\"}],\"mode\":\"variants\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{\"x_probe\":[{\"annotation\":{\"section\":\"x_probe\",\"v\":9,\"variant\":\"base\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":9,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"_role\":\"primary\",\"marker\":1}}]}}",
+      "expected_digest": "sha256:6e263910ae7b54bc12d47d5a326dae4741039edbf43f8eb247d5ea0d6013c7e6",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "explicit-before-implicit-prior",
+      "physical_count": 3,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_probe": {
+            "mode": "single",
+            "block": {
+              "annotation": {
+                "section": "x_probe"
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 3
+              }
+            }
+          }
+        },
+        "superseded": {
+          "x_probe": [
+            {
+              "annotation": {
+                "section": "x_probe",
+                "superseded": true
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  }
+                },
+                "marker": 2
+              }
+            },
+            {
+              "annotation": {
+                "section": "x_probe"
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            }
+          ]
+        },
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{\"x_probe\":{\"block\":{\"annotation\":{\"section\":\"x_probe\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":3}},\"mode\":\"single\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{\"x_probe\":[{\"annotation\":{\"section\":\"x_probe\",\"superseded\":true},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":true},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":2}},{\"annotation\":{\"section\":\"x_probe\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":1}}]}}",
+      "expected_digest": "sha256:72c0ef01baa428cee8475b234906af162eff36ae6f08d37b305fbf3f385b6f06",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "implicit-prior-before-explicit",
+      "physical_count": 3,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_probe": {
+            "mode": "single",
+            "block": {
+              "annotation": {
+                "section": "x_probe"
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 3
+              }
+            }
+          }
+        },
+        "superseded": {
+          "x_probe": [
+            {
+              "annotation": {
+                "section": "x_probe"
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            },
+            {
+              "annotation": {
+                "section": "x_probe",
+                "superseded": true
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  }
+                },
+                "marker": 2
+              }
+            }
+          ]
+        },
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{\"x_probe\":{\"block\":{\"annotation\":{\"section\":\"x_probe\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":3}},\"mode\":\"single\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{\"x_probe\":[{\"annotation\":{\"section\":\"x_probe\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":1}},{\"annotation\":{\"section\":\"x_probe\",\"superseded\":true},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":true},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":2}}]}}",
+      "expected_digest": "sha256:7765a81a70e1cbe9dd65e5ddcd138ffee7642ee92196d0d4f802fdd957ed01e8",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "equal-physical-extensions",
+      "physical_count": 2,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_probe": {
+            "mode": "single",
+            "block": {
+              "annotation": {
+                "section": "x_probe"
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            }
+          }
+        },
+        "superseded": {
+          "x_probe": [
+            {
+              "annotation": {
+                "section": "x_probe"
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_probe",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            }
+          ]
+        },
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{\"x_probe\":{\"block\":{\"annotation\":{\"section\":\"x_probe\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":1}},\"mode\":\"single\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{\"x_probe\":[{\"annotation\":{\"section\":\"x_probe\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_probe\"},\"marker\":1}}]}}",
+      "expected_digest": "sha256:973777090f26bef5af85dd41df5759c50199d6c4c3cbc375e8b3d4231d6d7918",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "builtin-mixed-history",
+      "physical_count": 3,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {
+          "property": {
+            "annotation": {
+              "section": "property"
+            },
+            "content": {
+              "_meta": {
+                "section": "property",
+                "provenance": {
+                  "source": "manual",
+                  "actor": "synthetic",
+                  "timestamp": "2026-10-23T00:00:00Z"
+                },
+                "quality": {
+                  "confidence": "high",
+                  "human_review_required": false
+                },
+                "lifecycle": {
+                  "revision": 1,
+                  "superseded": false
+                }
+              },
+              "marker": 3
+            }
+          }
+        },
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {},
+        "superseded": {
+          "property": [
+            {
+              "annotation": {
+                "section": "property",
+                "superseded": true
+              },
+              "content": {
+                "_meta": {
+                  "section": "property",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  }
+                },
+                "marker": 2
+              }
+            },
+            {
+              "annotation": {
+                "section": "property"
+              },
+              "content": {
+                "_meta": {
+                  "section": "property",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            }
+          ]
+        },
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{\"property\":{\"annotation\":{\"section\":\"property\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":3}}},\"superseded\":{\"property\":[{\"annotation\":{\"section\":\"property\",\"superseded\":true},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":true},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":2}},{\"annotation\":{\"section\":\"property\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":1}}]}}",
+      "expected_digest": "sha256:2ba1517433a3d3981edc16ac519a6a57e86b581218d338d0d65141a2c9c61634",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "builtin-reverse-history",
+      "physical_count": 3,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {
+          "property": {
+            "annotation": {
+              "section": "property"
+            },
+            "content": {
+              "_meta": {
+                "section": "property",
+                "provenance": {
+                  "source": "manual",
+                  "actor": "synthetic",
+                  "timestamp": "2026-10-23T00:00:00Z"
+                },
+                "quality": {
+                  "confidence": "high",
+                  "human_review_required": false
+                },
+                "lifecycle": {
+                  "revision": 1,
+                  "superseded": false
+                }
+              },
+              "marker": 3
+            }
+          }
+        },
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {},
+        "superseded": {
+          "property": [
+            {
+              "annotation": {
+                "section": "property"
+              },
+              "content": {
+                "_meta": {
+                  "section": "property",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            },
+            {
+              "annotation": {
+                "section": "property",
+                "superseded": true
+              },
+              "content": {
+                "_meta": {
+                  "section": "property",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  }
+                },
+                "marker": 2
+              }
+            }
+          ]
+        },
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{\"property\":{\"annotation\":{\"section\":\"property\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":3}}},\"superseded\":{\"property\":[{\"annotation\":{\"section\":\"property\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":1}},{\"annotation\":{\"section\":\"property\",\"superseded\":true},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":true},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":2}}]}}",
+      "expected_digest": "sha256:9496cf0a7558eb4a8b3a8ab5d8a1bbb9760db9caa6510ed4f47203f2880ef29b",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "equal-physical-builtins",
+      "physical_count": 2,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {
+          "property": {
+            "annotation": {
+              "section": "property"
+            },
+            "content": {
+              "_meta": {
+                "section": "property",
+                "provenance": {
+                  "source": "manual",
+                  "actor": "synthetic",
+                  "timestamp": "2026-10-23T00:00:00Z"
+                },
+                "quality": {
+                  "confidence": "high",
+                  "human_review_required": false
+                },
+                "lifecycle": {
+                  "revision": 1,
+                  "superseded": false
+                }
+              },
+              "marker": 1
+            }
+          }
+        },
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {},
+        "superseded": {
+          "property": [
+            {
+              "annotation": {
+                "section": "property"
+              },
+              "content": {
+                "_meta": {
+                  "section": "property",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            }
+          ]
+        },
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{\"property\":{\"annotation\":{\"section\":\"property\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":1}}},\"superseded\":{\"property\":[{\"annotation\":{\"section\":\"property\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":1}}]}}",
+      "expected_digest": "sha256:901947593a3e7de5b51b2e772fdbd59d34f7c55400664e33c9c0916f0ccb510d",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "builtin-revision-nine-then-one",
+      "physical_count": 2,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {
+          "property": {
+            "annotation": {
+              "section": "property"
+            },
+            "content": {
+              "_meta": {
+                "section": "property",
+                "provenance": {
+                  "source": "manual",
+                  "actor": "synthetic",
+                  "timestamp": "2026-10-23T00:00:00Z"
+                },
+                "quality": {
+                  "confidence": "high",
+                  "human_review_required": false
+                },
+                "lifecycle": {
+                  "revision": 1,
+                  "superseded": false
+                }
+              },
+              "marker": 2
+            }
+          }
+        },
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {},
+        "superseded": {
+          "property": [
+            {
+              "annotation": {
+                "section": "property",
+                "v": 9
+              },
+              "content": {
+                "_meta": {
+                  "section": "property",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 9,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            }
+          ]
+        },
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"2.0\",\"extensions\":{},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{\"property\":{\"annotation\":{\"section\":\"property\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":2}}},\"superseded\":{\"property\":[{\"annotation\":{\"section\":\"property\",\"v\":9},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":9,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":1}}]}}",
+      "expected_digest": "sha256:f5a65a617dc0db8b5f4afef1be1f8988d3d012190f95aba59832eacbc08434b5",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    },
+    {
+      "name": "all-source-collections",
+      "physical_count": 8,
+      "expected_model": {
+        "envelope_version": "2.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "synthetic-complete-record",
+          "deal_name": "Synthetic complete record"
+        },
+        "sections": {
+          "property": {
+            "annotation": {
+              "section": "property"
+            },
+            "content": {
+              "_meta": {
+                "section": "property",
+                "provenance": {
+                  "source": "manual",
+                  "actor": "synthetic",
+                  "timestamp": "2026-10-23T00:00:00Z"
+                },
+                "quality": {
+                  "confidence": "high",
+                  "human_review_required": false
+                },
+                "lifecycle": {
+                  "revision": 1,
+                  "superseded": false
+                }
+              },
+              "marker": 1
+            }
+          },
+          "operating_statement": {
+            "t12": {
+              "annotation": {
+                "section": "operating_statement",
+                "variant": "t12"
+              },
+              "content": {
+                "_meta": {
+                  "section": "operating_statement",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            },
+            "uw": {
+              "annotation": {
+                "section": "operating_statement",
+                "variant": "uw"
+              },
+              "content": {
+                "_meta": {
+                  "section": "operating_statement",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 2
+              }
+            }
+          }
+        },
+        "pipeline_log": [
+          {
+            "annotation": {
+              "section": "pipeline_log"
+            },
+            "content": {
+              "_meta": {
+                "section": "pipeline_log",
+                "provenance": {
+                  "source": "manual",
+                  "actor": "synthetic",
+                  "timestamp": "2026-10-23T00:00:00Z"
+                },
+                "quality": {
+                  "confidence": "high",
+                  "human_review_required": false
+                },
+                "lifecycle": {
+                  "revision": 1,
+                  "superseded": false
+                }
+              },
+              "marker": 1
+            }
+          }
+        ],
+        "custom_calculations": [
+          {
+            "annotation": {
+              "section": "custom_calculations"
+            },
+            "content": {
+              "_meta": {
+                "section": "custom_calculations",
+                "provenance": {
+                  "source": "manual",
+                  "actor": "synthetic",
+                  "timestamp": "2026-10-23T00:00:00Z"
+                },
+                "quality": {
+                  "confidence": "high",
+                  "human_review_required": false
+                },
+                "lifecycle": {
+                  "revision": 1,
+                  "superseded": false
+                }
+              },
+              "marker": 1
+            }
+          }
+        ],
+        "custom_scenarios": [
+          {
+            "annotation": {
+              "section": "custom_scenarios"
+            },
+            "content": {
+              "_meta": {
+                "section": "custom_scenarios",
+                "provenance": {
+                  "source": "manual",
+                  "actor": "synthetic",
+                  "timestamp": "2026-10-23T00:00:00Z"
+                },
+                "quality": {
+                  "confidence": "high",
+                  "human_review_required": false
+                },
+                "lifecycle": {
+                  "revision": 1,
+                  "superseded": false
+                }
+              },
+              "marker": 1
+            }
+          }
+        ],
+        "extensions": {
+          "x_all": {
+            "mode": "single",
+            "block": {
+              "annotation": {
+                "section": "x_all"
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_all",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "marker": 1
+              }
+            }
+          }
+        },
+        "superseded": {
+          "property": [
+            {
+              "annotation": {
+                "section": "property",
+                "superseded": true
+              },
+              "content": {
+                "_meta": {
+                  "section": "property",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "synthetic",
+                    "timestamp": "2026-10-23T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  }
+                },
+                "marker": 0
+              }
+            }
+          ]
+        },
+        "generated_at": "2000-01-01T00:00:00Z",
+        "generator": "candidate"
+      },
+      "expected_preimage": "{\"custom_calculations\":[{\"annotation\":{\"section\":\"custom_calculations\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"custom_calculations\"},\"marker\":1}}],\"custom_scenarios\":[{\"annotation\":{\"section\":\"custom_scenarios\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"custom_scenarios\"},\"marker\":1}}],\"envelope_version\":\"2.0\",\"extensions\":{\"x_all\":{\"block\":{\"annotation\":{\"section\":\"x_all\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_all\"},\"marker\":1}},\"mode\":\"single\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"synthetic-complete-record\",\"deal_name\":\"Synthetic complete record\",\"uw_version\":\"3.0\"},\"pipeline_log\":[{\"annotation\":{\"section\":\"pipeline_log\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"pipeline_log\"},\"marker\":1}}],\"sections\":{\"operating_statement\":{\"t12\":{\"annotation\":{\"section\":\"operating_statement\",\"variant\":\"t12\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"operating_statement\"},\"marker\":1}},\"uw\":{\"annotation\":{\"section\":\"operating_statement\",\"variant\":\"uw\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"operating_statement\"},\"marker\":2}}},\"property\":{\"annotation\":{\"section\":\"property\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":1}}},\"superseded\":{\"property\":[{\"annotation\":{\"section\":\"property\",\"superseded\":true},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":true},\"provenance\":{\"actor\":\"synthetic\",\"source\":\"manual\",\"timestamp\":\"2026-10-23T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"property\"},\"marker\":0}}]}}",
+      "expected_digest": "sha256:81344042bbc6bd1c3280361fc4ed7fffbdfc6a30c1d3222e6354ba188e70de0e",
+      "candidate_equal": true,
+      "builder_expected_equal": true
+    }
+  ]
+}

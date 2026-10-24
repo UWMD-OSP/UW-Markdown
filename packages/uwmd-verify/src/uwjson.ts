@@ -1,3 +1,5 @@
+import { readJSON } from './carrier-values.js';
+import { assertJSONValue } from './json-admission.js';
 import type { UWCodec } from './codec.js';
 import {
   assertUWEnvelope,
@@ -10,7 +12,7 @@ import {
 } from './envelope.js';
 import type { ParsedUWFile } from './types.js';
 
-export const UW_JSON_REPRESENTATION_VERSION = '1.0.0' as const;
+export const UW_JSON_REPRESENTATION_VERSION = '2.0.0' as const;
 export const UW_JSON_MEDIA_TYPE = 'application/vnd.uwmd.document+json' as const;
 
 export class UWJsonError extends Error {
@@ -33,6 +35,8 @@ export function toUWJson(
 }
 
 export function stringifyUWEnvelope(envelope: UWDocumentEnvelope): string {
+  assertJSONValue(envelope);
+  assertUWEnvelope(envelope);
   return `${JSON.stringify(envelope, null, 2)}\n`;
 }
 
@@ -53,7 +57,7 @@ export async function stringifyUWJsonWithDigest(
 export function parseUWJson(text: string): UWDocumentEnvelope {
   let value: unknown;
   try {
-    value = JSON.parse(text);
+    value = readJSON(text);
   } catch (error) {
     throw new UWJsonError('JSON_INVALID', `Not valid JSON: ${String(error)}`);
   }
@@ -89,6 +93,6 @@ export const UW_JSON_CODEC: UWCodec<string> = {
     fidelity: 'model',
     representation_version: UW_JSON_REPRESENTATION_VERSION,
   },
-  encode: async (envelope) => stringifyUWEnvelope(await stampEnvelopeDigest(envelope)),
+  encode: async (envelope) => { assertUWEnvelope(envelope); return stringifyUWEnvelope(await stampEnvelopeDigest(envelope)); },
   decode: parseUWJsonVerified,
 };

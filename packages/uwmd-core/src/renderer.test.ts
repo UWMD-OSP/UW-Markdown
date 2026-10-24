@@ -550,8 +550,8 @@ describe('render — chat NOI reads only the §4.5 paths (RFC 0081 §7)', () => 
 
 
 describe('CSV chat source/uses regression #538', () => {
-  it.each(['Parkview-Apts-Glendale-AZ', 'parkview-reviewed'])('renders %s through the CSV ZIP reader without coercing nested objects', async name => {
-    const source = readFileSync(resolve(__dirname, '../../../examples', `${name}.uwx.md`), 'utf8');
+  it('renders a fresh synthetic source/uses model through the CSV ZIP reader without coercing nested objects', async () => {
+    const source = readFileSync(resolve(__dirname, '../../../conformance/rfc-0089/fixtures/complete-current.uwx.md'), 'utf8');
     const original = parseUWFile(source);
     const envelope = toUWEnvelope(original);
     const decoded = fromUWEnvelope(await decodeUWCSVZip(await encodeUWCSVZip(envelope)));
@@ -560,10 +560,8 @@ describe('CSV chat source/uses regression #538', () => {
     expect(result.content).toBe(render(original, { format: 'chat' }).content);
     expect(JSON.stringify(decoded)).toBe(before);
     expect(result.content).not.toContain('[object Object]');
-    if (name === 'Parkview-Apts-Glendale-AZ') {
       expect(result.content).toMatch(/Closing Costs: (?:USD |\$)139,000/);
       expect(result.content).toMatch(/Loan: (?:USD |\$)5,040,000/);
       expect(result.content).toMatch(/Other Reserves: (?:USD |\$)5,000/);
-    }
   });
 });

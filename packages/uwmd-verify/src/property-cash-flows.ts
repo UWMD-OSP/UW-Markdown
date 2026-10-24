@@ -1,3 +1,5 @@
+import { JSONValueError } from './json-admission.js';
+import { UWEnvelopeError } from './envelope.js';
 // RFC 0045 / Protocol VIII.9.6: assemble stated cash rows, never infer economics.
 import type { ParsedUWFile, UWBlock } from './types.js';
 import type {
@@ -233,7 +235,7 @@ export async function assemblePropertyCashFlows(
   } catch (e) {
     if (e instanceof LeaseUpCashFlowProjectionError)
       refuse('verification', 'Lease-up projection refused.', pointer('lease_up_schedule', plan.lease_up.source_variant), { lease_up: e.proto });
-    if (e instanceof Error && e.message.startsWith('canonicalize:'))
+    if (e instanceof JSONValueError || e instanceof UWEnvelopeError || e instanceof Error && e.message.startsWith('canonicalize:'))
       refuse('structure', 'The source envelope contains a value that cannot be canonicalized.', 'sections');
     throw e;
   }

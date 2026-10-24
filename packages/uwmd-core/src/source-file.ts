@@ -17,7 +17,9 @@ export async function loadUWSourceFile(file: string): Promise<LoadedUWSource> {
   const codec = CORE_CODEC_REGISTRY.findByFileName(file);
   if (codec) {
     const bytes = await readFile(file);
-    const input = codec.descriptor.id === 'uw-csv-bundle' ? new Uint8Array(bytes) : bytes.toString('utf8');
+    let input: string | Uint8Array;
+    try { input = codec.descriptor.id === 'uw-csv-bundle' ? new Uint8Array(bytes) : new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes); }
+    catch { throw new UWSourceRepresentationError('SOURCE_UTF8_INVALID', 'Carrier bytes must be valid UTF-8.'); }
     const envelope = await codec.decode(input);
     return { representation: codec.descriptor.id, envelope, parsed: fromUWEnvelope(envelope) };
   }

@@ -1,0 +1,193 @@
+{
+  "frontmatter": {
+    "uw_version": "3.0",
+    "deal_id": "synthetic-complete-record",
+    "deal_name": "Synthetic complete record"
+  },
+  "sections": {
+    "property": {
+      "meta": {
+        "section": "property",
+        "provenance": {
+          "source": "manual",
+          "actor": "synthetic",
+          "timestamp": "2026-10-23T00:00:00Z"
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "marker": 1
+      }
+    },
+    "operating_statement": {
+      "t12": {
+        "meta": {
+          "section": "operating_statement",
+          "provenance": {
+            "source": "manual",
+            "actor": "synthetic",
+            "timestamp": "2026-10-23T00:00:00Z"
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
+        },
+        "content": {
+          "marker": 1
+        }
+      },
+      "uw": {
+        "meta": {
+          "section": "operating_statement",
+          "provenance": {
+            "source": "manual",
+            "actor": "synthetic",
+            "timestamp": "2026-10-23T00:00:00Z"
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
+        },
+        "content": {
+          "marker": 2
+        }
+      }
+    }
+  },
+  "prose": {},
+  "pipeline_log": [
+    {
+      "_meta": {
+        "section": "pipeline_log",
+        "provenance": {
+          "source": "manual",
+          "actor": "synthetic",
+          "timestamp": "2026-10-23T00:00:00Z"
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "marker": 1
+    }
+  ],
+  "custom_calculations": [
+    {
+      "meta": {
+        "section": "custom_calculations",
+        "provenance": {
+          "source": "manual",
+          "actor": "synthetic",
+          "timestamp": "2026-10-23T00:00:00Z"
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "marker": 1
+      }
+    }
+  ],
+  "custom_scenarios": [
+    {
+      "meta": {
+        "section": "custom_scenarios",
+        "provenance": {
+          "source": "manual",
+          "actor": "synthetic",
+          "timestamp": "2026-10-23T00:00:00Z"
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "marker": 1
+      }
+    }
+  ],
+  "extensions": {
+    "x_all": {
+      "mode": "single",
+      "block": {
+        "meta": {
+          "section": "x_all",
+          "provenance": {
+            "source": "manual",
+            "actor": "synthetic",
+            "timestamp": "2026-10-23T00:00:00Z"
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
+        },
+        "content": {
+          "marker": 1
+        }
+      }
+    }
+  },
+  "superseded": {
+    "property": [
+      {
+        "meta": {
+          "section": "property",
+          "provenance": {
+            "source": "manual",
+            "actor": "synthetic",
+            "timestamp": "2026-10-23T00:00:00Z"
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": true
+          }
+        },
+        "content": {
+          "marker": 0
+        }
+      }
+    ]
+  }
+}

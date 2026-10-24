@@ -64,7 +64,7 @@ export interface LakeDocumentInput {
 export interface LakeFactInput {
   semantic_digest: string;
   block_ref: string;
-  scope: 'annotation' | 'meta' | 'content';
+  scope: 'annotation' | 'meta' | 'content' | 'block-extra';
   pointer: string;
   json_type: 'object' | 'array' | 'string' | 'number' | 'boolean' | 'null';
   value_json: string;
@@ -396,6 +396,10 @@ export function planPackage(schema: string, manifest: Record<string, unknown>): 
   return statements;
 }
 
+/** Stores the supplied identity and uses (semantic_digest,evidence_id) for conflicts.
+ * This is propagation/storage, not fresh source or Envelope verification.
+ * planLakeLoad delegates here; executeLakeLoad forwards the resulting SQL/params.
+ */
 export function planSourceEvidence(schema: string, evidence: LakeSourceEvidenceInput): LakeStatement {
   const digest = requireText(
     evidence.semantic_digest,

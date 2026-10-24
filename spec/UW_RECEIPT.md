@@ -92,7 +92,7 @@ configuration.
 
 ### 3.1 Canonicalizations
 
-`subject.canonicalization` names the canonical form the digest covers. Version
+`subject.canonicalization` names the canonical form the digest covers.
 This specification defines two:
 
 | Name | Applies to | Definition |
@@ -104,6 +104,11 @@ Both bind to a *semantic* form rather than raw bytes. Lite receipts bind the
 financial canonical form. Structured envelope receipts also cover annotations,
 inline metadata, superseded history and retained section prose. Cosmetic
 serialization changes preserving that canonical value do not change its digest.
+RFC0089 coordinates the structured subject with Envelope2.0 and
+`canonicalization_version: "2.0"`; Lite's financial canonicalization remains
+separately versioned and scoped. Source projection performs complete occurrence
+accounting without importing full carrier schema admission; receipt issuance
+retains its own validation-count/issuance rules.
 Protocol §V.13 reuses the envelope subject for computation-independent document
 authentication; that detached artifact is not a computation receipt.
 

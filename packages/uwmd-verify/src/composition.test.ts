@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { stringifyUWX } from './lite-bridge.js';
 import { describe, expect, it } from 'vitest';
 import {
   CompositionError,
@@ -539,4 +542,13 @@ describe('externalizeSection — I-1 read backwards', () => {
       }),
     ).toThrow(/no section 'debt'/);
   });
+});
+
+it('externalized producer annotation survives actual UWX serialization exactly', () => {
+  const inline = parseUWFile(readFileSync(resolve(process.cwd(), '../../examples/standalone/authored-2026-10-17/inline-deal.uwx.md'), 'utf8'));
+  const {document} = externalizeSection(inline, {section: 'rent_roll', collectionKey: 'unit_id', collectionPath: 'units', partIdPrefix: 'synthetic'});
+  const model = toUWEnvelope(document);
+  const source = stringifyUWX(model);
+  expect(source).toContain('external=true');
+  expect(canonicalizeUWEnvelope(toUWEnvelope(parseUWFile(source)))).toBe(canonicalizeUWEnvelope(model));
 });
