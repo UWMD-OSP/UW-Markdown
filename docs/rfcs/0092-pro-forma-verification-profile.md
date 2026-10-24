@@ -24,7 +24,10 @@ RFC 0078 D1/D7 stand. The approved convention registry gains the owner's
 2026-10-17 addition, per-loan `ltv_basis`. **Draft, docs only:** no implementation,
 profile claim, schema, dictionary rule, diagnostic or receipt behavior activates.
 The owner's 2026-10-23 ruling resolves U3–U7 for the bounded admissions in
-section3a. U1/U9 and independent review remain gates before final acceptance.
+section3a. U1 membership and U9 coverage/transport recommendations remain PENDING
+owner, with independent composed-procedure/spreadsheet evidence and finding
+closure required before final acceptance. The independent clause review found
+bounded clarification needs; this revision proposes repairs, not acceptance.
 
 ## Owner ruling — 2026-10-23, U3–U7
 
@@ -85,7 +88,7 @@ pro-forma profile.
 
 ## Motivation
 
-At main `2168b504beb1b8a5446eec0f8347b61458054c6e`, the normative
+At production main `495220e7fa569659aaadcab0f06574d09a570703`, the normative
 [dictionary](../../spec/metrics/builtin.json) has 173 class-scoped calculations,
 and no IRR, NPV, equity-multiple, debt-service, amortization or
 exit-value metric. Its single-period ratios, amounts and intensives do not bind
@@ -120,7 +123,11 @@ Sources:
   proposal, and the three-option per-loan `ltv_basis` addition.
 - [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356) and accepted RFC 0088
   [#357](https://github.com/UWMD-OSP/UW-Markdown/pull/357) own numerical procedures.
-  RFC 0089 remains draft in [#368](https://github.com/UWMD-OSP/UW-Markdown/pull/368).
+  RFC 0089 is accepted and implemented by
+  [#368](https://github.com/UWMD-OSP/UW-Markdown/pull/368), production commit
+  `495220e7fa569659aaadcab0f06574d09a570703`. Reuse its complete Envelope2.0
+  and whole-source canonicalization2.0 boundaries; no financial-profile
+  acceptance follows from that representation work.
 - [#354](https://github.com/UWMD-OSP/UW-Markdown/issues/354) owns independent
   Python verification; its Reader and selected verification capabilities are
   not a full Verifier-tier or pro-forma profile claim.
@@ -182,7 +189,12 @@ No defaults or workflow assumptions fill gaps. Retain read-only source evidence.
 Selection follows Protocol VIII.2/VIII.2a and RFC 0040/0066: period identity,
 not array position; exact requested variant; existing duplicate/ambiguity typed
 refusals. Unselected peers cannot supply missing inputs. Record bindings against
-one source snapshot. No new Envelope, canonicalizer or signing admission is implied.
+one admitted source/model snapshot using accepted [Envelope2.0](../../spec/UW_ENVELOPE.md).
+The complete `uw-envelope-semantic` subject uses canonicalization2.0; portable
+projections, V9/V11/V12, receipt results and signing inputs keep their separately
+specified scopes. A selected-stream arithmetic result does not authenticate
+unselected peers or the whole model. No new digest, receipt subject,
+canonicalizer or signing admission is implied.
 
 | L1 row/input | Existing home first | Missing detail |
 |---|---|---|
@@ -352,8 +364,8 @@ months. For payment q=1…K interest-only applies; amortization starts at K+1.
 Refinance/takeout resets, within-year transitions, floating paths, draws,
 capitalized interest and cash sweeps need separately admitted procedures.
 
-The first opening balance MUST equal that same loan's L at close; every later
-opening comes from the preceding stated closing balance. At amortization start
+The first opening balance MUST equal that same loan's L at close; later
+openings follow the explicit scheduled/payment/retirement distinction below. At amortization start
 use that chained opening principal B and fix the payment once:
 `PMT=B/n` if i=0, otherwise `(B*i)/(1-P(1+i,-n))`, in the written association.
 This reuses UWMD VIII.3's **positive** PMT convention, not a producer calc
@@ -362,7 +374,8 @@ loan-term extension, payoff or continuation beyond supplied schedule rows.
 For each monthly row, `I_q=B_open*i`; during IO `principal_q=0` and
 `payment_q=I_q`; afterward `principal_q=min(PMT-I_q,B_open)` and
 `payment_q=I_q+principal_q`. Then `B_close=B_open-principal_q` and the next
-opening equals that close. Interest, principal and payments are positive
+opening equals that close unless an explicitly bound payoff retires the loan
+as below. Interest, principal and payments are positive
 magnitudes subtracted from investor cash. Do not round monthly cash to cents.
 Annual service sums the explicitly bound actual payments left to right from
 +0. A constant-payment sizing figure remains a distinct binding, never silently
@@ -377,6 +390,55 @@ balloon/payoff binds explicitly to the post-scheduled-payment balance and its
 own payment; count it once, not again as scheduled principal. No maturity flow
 is generated. Land summary-to-stream intake retains its earlier scope and does
 not assert that land has this mortgage schedule.
+
+**Monthly horizon and retirement admission (proposed clarification, not U1
+membership).** Bind the same selected loan's stated `loan_term_years` to maturity
+month H=`loan_term_years*12`, a positive integer, and an explicitly stated
+assessment horizon h (positive integer, h<=H). Missing maturity/horizon is
+unverifiable for the complete schedule assertion; do not derive a new extension
+from amortization n or an asset label. A shorter h verifies only that stated
+interval, never the remaining loan term or an unstated payoff. A conflicting
+supplied maturity identity is retained as contradictory evidence.
+
+Payment identity is `(selected_loan_address, loan_relative_month q)`, with explicit
+integer q and the corresponding full-month timeline binding. In the admitted
+interval require exactly one scheduled-payment row per consecutive q starting
+at1, through h or an earlier explicitly paid full retirement. Validate before
+any deduplication. Repeated references to one physical event cannot double its
+payment; two different rows declaring the same payment identity are ambiguous,
+even when amounts agree. Gapped rows or a missing preceding balance make the
+continuity-dependent assertion unverifiable; never fill a row or reset the
+opening from the original loan. Rows outside the stated horizon, after H, or
+contradicting a paid retirement cannot earn verification under this procedure.
+Retain an independently decidable finite disagreement as failed evidence rather
+than hiding it behind a missing/unsupported neighboring row.
+
+Name the written recurrence's `B_close` **post-scheduled-payment balance**. A
+separate payoff/balloon amount is not that row's scheduled principal again.
+Bind its exact source event, loan, month and currency and an explicit declaration
+that it is paid; an estimate/remaining balance alone is not a payment. For a
+stated full retirement at q_R the separately paid principal payoff must equal
+that row's post-scheduled-payment balance under U7, with disjoint payment-event
+membership. Define the **post-payoff balance** as that balance minus the bound
+paid principal payoff. Full retirement leaves zero, and there are no later
+active scheduled-payment rows for that same loan. If no payoff occurs at a row,
+its post-payoff balance equals its post-scheduled-payment balance. Any next
+admitted opening chains from the preceding post-payoff balance, not the balance
+before a paid retirement. A fully amortized zero balance likewise cannot support
+a later active payment pretending the old loan is outstanding. A separate
+zero-balance observation is not an additional scheduled payment.
+
+Missing payoff remains missing. Scheduled rows through H can have independently
+checked arithmetic while the maturity/payoff relationship remains unverifiable
+if it asserts retirement without a payment. Do not fabricate a balloon, an
+extension, refinance, curtailment policy or continuation after maturity. Partial
+curtailments/continuations need separately admitted procedures; this clarification
+supplies no new procedure for them. For the review witness L1200/r0/n24/K12/H12,
+a stated full payoff1200 at q12 leaves post-payoff zero; q13 opening1200 is a
+contradictory continuation, not another admissible payment of that retired loan.
+Without that payoff, q13 is still outside H; neither case authorizes generating
+or extending the stream. Nominal/12, full n after IO, whole-year K and the
+written unrounded PMT/interest/principal associations above are unchanged.
 
 Debt yield declares both basis axes. For L1, denominator is the same selected
 loan's positive `loan_amount` at close, not a post/pre-payment balance or total
@@ -487,8 +549,8 @@ inventory rows do not become executable by appearing in this table.
 
 ### 4a. U1 disposition — bounded initial identity scope
 
-U1 is developed here from accepted state-and-verify precedent, subject to final
-RFC review. The initial L1 scope is **return/method binding first**, plus optional
+U1 is a concrete recommendation from accepted state-and-verify precedent,
+**PENDING owner membership decision** and final evidence review. The initial L1 scope is **return/method binding first**, plus optional
 declared-ledger coverage and individually enumerated identities below. It does
 not activate every candidate in section4. U2 imposes no minimum document row set.
 The implementation must support the entire accepted initial vocabulary even
@@ -519,6 +581,111 @@ procedure evidence. Include the land summary-to-stated-stream assertion as that
 individually justified intake, without schedule generation or land DSCR/cap rate.
 Outside-scope statements remain visible as unverifiable, not omitted. U1 is an
 acceptance gate on this proposed membership, not a reopened numerical convention.
+
+### 4b. Exact proposed U1 vocabulary — PENDING owner
+
+Recommend these fifteen entries: fourteen financial identity tokens plus one
+non-arithmetic membership assessment. These are proposed profile relationship
+tokens, not new dictionary metric ids, schema activation or a claim that an
+implementation exists. Reused identities inherit their entire accepted native
+contract, not only a formula. In particular stack and lease-up fixed comparison
+quanta below are not overwritten by new-identity U7 minima. All named required
+inputs, explicit selections and applicable declarations must be admitted before
+a native helper can supply a default. A target is compared directly using the
+same selected inputs, never accepted by copying a native section's verdict.
+
+Common selectors: exact current section variant (unlabelled null remains distinct
+from `default`), target pointer, admitted period identity and selected loan where
+applicable, all resolved within one source/model snapshot. Bind currency and
+source numeric precision where their identity requires them. A method label
+cannot choose a stream, loan or missing context. Original ordered stream rows
+remain distinct, including equal-date/equal-value rows. A completely absent
+numeric target is not a fabricated zero assertion; declared-ledger obligations
+are accounted separately. Evidence S1–S6 denotes the independent comparison
+bundles described after the table, all still incomplete before acceptance.
+
+| Proposed token | Exact bound inputs / selectors / applicable declarations | Unit and comparison | Domain, refusal and remaining evidence |
+|---|---|---|---|
+| `total_net` | One selected `cash_flow_series` original ordered finite amounts, dates and explicit `day_count=actual/365f`; `cash_flow_timing=dated`. | Series currency, native fixed2 decimals. | Native nonempty/valid/nondecreasing dated-row admission; ordered sum. Missing/invalid stream stays unverifiable, no inferred calendar. S1. |
+| `moic` | Same exact selected original stream; separate positive inflows and negative outflows as native VIII.9, no inferred gross events from a different net stream. | x, native fixed4 decimals. | No outflows is unverifiable, not zero/infinite/failed by a new policy. Same-day distinct rows survive; signs/netting cannot be rewritten. S1. |
+| `xnpv` | Same selected dated stream and explicit finite rate>-1; `actual/365f`, dated timing; compare the actual bound headline target. | Series currency, native fixed2 decimals. | Native negative-power multiplication, original order, domain/refusal states; no annual-positive-power division substitution. Missing rate/stream is unverifiable; native procedure refusal retains failed evidence. S1. |
+| `xirr` | Same selected dated stream; dated timing, `irr_frequency=xirr`, explicit `actual/365f` and first-row anchor. | Fraction, native fixed6 decimals. | Exact VIII.9.3 bracket/endpoints/stopping/refusal behavior. Native no-bracket/procedure refusal is failed, not a new generic unavailable state. S1. |
+| `coverage` | One exact `capital_stack.sizing` target with `fn=coverage`, `over` selecting one existing tranche id, selected stated NOI and that tranche's accepted cash-service inputs. | x, native fixed2 decimals. | Exact native stabilized annual cash-service contract; missing/zero service or missing NOI is unverifiable. Not an actual IO-payment schedule. S2. |
+| `blended_coverage` | `fn=blended_coverage`, exact `through` position and ordered qualifying tranches, selected NOI and native service dependencies. | x, native fixed2 decimals. | Native through-selection/service sum and refusal behavior; no alternate tranche/period substitution. S2. |
+| `debt_yield_through` | `fn=debt_yield_through`, exact `through`, selected NOI and native debt-tranche amounts at/above that position. | Fraction, native fixed4 decimals. | Missing/zero accepted denominator remains unavailable; not the new per-period NCF/current-balance candidate. S2. |
+| `ltc_through` | `fn=ltc_through`, exact `through` debt membership and selected total project cost. | Fraction, native fixed4 decimals. | Native stack context/domain; no value/price fallback for missing/zero cost. Distinct from per-loan `ltv`. S2. |
+| `ltv_through` | `fn=ltv_through`, exact `through` debt membership and selected native total value. | Fraction, native fixed4 decimals. | Native stack context/domain; no cost substitution or per-loan basis relabelling. S2. |
+| `weighted_cost` | `fn=weighted_cost`, whole-stack `over=*` and exact original tranche order, amounts and native eligible stated rates. | Fraction, native fixed4 decimals. | Reuse native eligible-rate membership and amount-weighted association; zero eligible base is unverifiable. Do not infer a missing rate or select a different stack. S2. |
+| `net_cash_flow` | Selected `lease_up_schedule`, admitted monthly/quarterly period key, exact target and signed `rent_revenue`, `concessions`, `ti_lc_capex`. | Currency, native fixed2 decimals. | Accepted ordered signed addition, all three components required. Missing component is unverifiable; do not change signs or annualize. S3. |
+| `final_occupied_sf` | Selected lease-up `stabilized_summary.occupied_sf` target against its admitted final schedule period's `occupied_sf`. | sqft, native fixed2 decimals. | Exact ordered/valid period domain; missing final value is unverifiable. No invented occupancy path or size conversion. S3. |
+| `final_occupancy_rate` | Selected lease-up summary rate; exact native occupied-SF source (final row, or explicitly stated summary fallback when native contract permits), and bound `leaseUpContext.total_sf` under the size registry. | Fraction, native fixed4 decimals. | Native missing/zero sqft-denominator behavior and dimensional limits. Retain summary/final dependency findings; never infer SF from kW/units or claim a trajectory achieved. S3. |
+| `ltv` | The same selected loan's direct explicit `ltv_basis`, `loan_amount` and exactly one selected price/value/project-cost home in section3. | Fraction, existing dictionary m2/r6 and source-token comparison. | Three owner-directed denominator choices; missing/unknown basis or missing/null chosen denominator unverifiable, no fallback. Existing zero-division/domain evidence retained; no new negative-value policy. Changes the existing all-class id even outside profile claims; no parallel metric. S4. |
+| `declared_ledger_membership` | Explicit optional acquisition-ledger universe, canonical source-event/row addresses, required roles and exact binding/exclusion declarations in this snapshot. | Membership only; no monetary quantum or extra numeric assertions. | No inferred transaction completeness. Required unbound/duplicate/conflicting membership produces visible gaps/findings; distinct equal-value events remain distinct. No monetary reconciliation. Proposed gap-sensitive exit is separately PENDING U9. S5. |
+
+S1 requires independently authored dated-stream comparisons for all four metrics,
+method/stream/target substitutions, same-day gross versus net, domain/refusal and
+fixed quanta. S2 requires all six native stack verbs, selector/dependency and
+zero/missing controls at their native2/4-place boundaries, including exact
+service/eligible-rate composition. S3 requires all three native lease-up
+identities, signed components, final-period and native summary fallback,
+size-context/missing-input and2/4-place controls. S4 requires every LTV basis,
+selected-loan/denominator binding, absence/no-fallback and m2/r6 token controls.
+S5 requires independent declared-universe/role/address membership expectations,
+collisions/gaps/exclusions and U9 paper vectors; it has no fictional spreadsheet
+arithmetic positive. Independently review its membership mapping alongside each
+complete numeric fixture. Existing arithmetic/API review is partial evidence
+only; actual spreadsheet/composed evidence remains absent for these complete
+fixtures. All evidence must record the provenance and recalculation listed in
+Conformance impact before final acceptance.
+
+No new annual-periodic IRR/NPV, lender monthly IRR, monthly mortgage schedule,
+NOI/NCF bridge, per-period DSCR/DY, exit, gross-equity-multiple or year-1 CoC
+identity enters this initial vocabulary merely through section3a or4. Unknown,
+custom and input-only targets remain inventoried/unverifiable. A single empty
+native result cannot turn zero inventoried target assertions into assurance.
+
+### 4c. Explicit land stated-stream intake — separate pending U1 choice
+
+Propose stable token `stated_debt_service_sum` for the owner-requested land
+summary-to-authored-stream intake. It is **not admitted by the fifteen-entry
+recommendation**. Recommend retaining this visible candidate and asking the
+owner separately whether it is a sixteenth initial member, contingent on its
+complete independent evidence S6 before final acceptance. Neither the original
+intake nor the settled U3–U7 conventions implicitly makes that choice. Until an
+explicit membership decision, retain the land statement as
+`identity_not_defined`/unverifiable; do not omit it or earn a positive from a
+numeric summary alone.
+
+Its proposed exact target is one selected land loan's
+`debt_structure.annual_debt_service`. Bind the original positive-magnitude
+stated payment components in declared source order, a single exact loan address,
+explicit annual interval boundaries/period key, currency, scope and current
+variant. Each component binds a canonical event/row address and role
+(interest, scheduled principal, separately paid principal payoff/balloon or fee).
+The declared component universe and explicit included/excluded membership must
+resolve fees and payoff treatment; there is no default inclusion/exclusion and
+no inferred zero. A reserve-funded share is funding of an already bound payment,
+not another service event. Reusing one payment via two aliases/roles is a conflict;
+two distinct equal-date/equal-value events are not duplicates. Bind a required
+component once or report its missing membership/stream explicitly.
+
+For that declared component set, sum the bound payment magnitudes left to right
+from +0 and compare the actual summary under new-identity U7 currency m=r2,
+using its original numeric token. There is no loan-times-rate shortcut, generated
+schedule, inferred accrual calendar or assumed maturity/fee policy. Mixed loan,
+period, currency, scope or variant inputs cannot supply one positive; retain
+local ambiguity/missing evidence and independently demonstrated disagreement.
+A missing stream is unverifiable; negative/zero land NOI does not make service
+inapplicable. This asserts only the stated stream/summary identity, no land
+DSCR/cap rate or real-world completeness.
+
+S6 needs an independently authored complete sum/membership spreadsheet and
+composed-procedure evidence, with explicit loan/period/currency/variant and
+interest/principal/fee/payoff/reserve-funded membership, wrong-summary, missing
+stream, alias/duplicate and distinct-equal-event controls. The independent
+1325.00 arithmetic witness is partial reference evidence, not a completed
+spreadsheet, accepted vocabulary or profile execution. It cannot choose fee or
+balloon treatment for another record.
 
 ### 5. Determinism dependency — U8 resolved
 
@@ -602,6 +769,8 @@ separate receipt/subject ownership.
 This is proposed profile-specific text derived from Protocol II.6a/III/XI,
 Format4.24-4.26 and the existing stated-metric/verification CLI boundaries.
 U9's accounting/transport choices do not supply any U3-U7 numerical convention.
+**PENDING owner:** the recommended declared-gap exit rule below is proposed,
+not an owner ruling or current CLI behavior.
 
 **Inventory and identity.** First inventory the document's stated pro forma
 rows, including input-only and unknown/custom identities, independently of which
@@ -617,29 +786,67 @@ unselected peers remain retained source/validation evidence, not additional
 current assertions merely because they are retained. A binding cannot silently
 select a historical or arbitrary peer; preserve the existing selection refusal.
 
-Within that source scope the assertion key is `(block_address, section_id,
-variant_or_null, target_pointer, period_key_or_null, loan_ref_or_null)`. For a
-source operation, block_address is the physical block ordinal in retained source
-order; for a model operation it is the full document-rooted structured address
-of the selected block, including map keys/array indexes. target_pointer is rooted
-at that block payload and includes every target array index. State the source
-or model address kind explicitly. Keys are stable for one admitted source/model
-snapshot, not an object-identity or cross-revision identity guarantee.
-Nullable unlabelled identity is not the literal string `default`; no conversion
-or arbitrary peer selection resolves an ambiguous source. Use the existing
-accepted role/variant/period selectors and preserve their typed refusals.
-This does not activate RFC0089's proposed exchange representation.
+**Canonical target context before keys.** Resolve each declaration against one
+admitted snapshot before duplicate elimination. A source block address is its
+physical ordinal in retained source order; a model block address is its full
+document-rooted typed path. Resolve pointer segments against the actual tree:
+map keys remain exact strings, array positions are canonical integer indexes,
+and pointer escapes have one decoded spelling. Do not treat an array index as
+a free string or collapse null/unlabelled variant to literal `default`. Preserve
+accepted exact variant/period/loan selection refusals and source accounting.
 
-Methods, conventions and ordered input/source bindings belong to separate
-**relationship** records keyed by the assertion key plus identity/method and
-exact bindings. Repeated declarations of the same target do not add assertions;
-repeated identical relationships do not add checks. Contradictory bindings are
-reported as ambiguous, not resolved by first/last-choice heuristics. Distinct
-physical target statements remain distinct assertions even if their values are
-equal; show those addresses rather than pretending they are one checked figure.
-No report key is a new cryptographic digest, receipt subject or authentication
-claim. Existing source digest descriptors, when reported, keep their exact
-regime; unavailable hashing never implies authentication.
+The physical target address, not a declaration's optional labels, first groups
+all declarations of one assertion. Derive `period_key_or_null` and
+`loan_ref_or_null` from that admitted target's structural context and the
+accepted identity's bound selector: a period row's admitted period key, the
+same selected loan's canonical address, or null when the target has no such
+context. Explicit declaration members must agree with that derived context;
+absent members do not erase it and supplied null cannot mask it. If the physical
+target has no period/loan context, adding `Y1`/another loan is a contradiction,
+not a second key. If context cannot be uniquely resolved, retain one target
+assertion with all declarations and local typed/ambiguous-context evidence;
+do not mint one assertion per guessed context. Distinct physical targets remain
+distinct even when values/labels match. An unresolved target declaration remains
+visible/unverifiable at its canonical declaration address; it cannot disappear
+because the referenced target is absent. Ambiguous raw addresses are retained
+as unresolved evidence, not coerced into an invented physical target.
+
+After that resolution the assertion key is `(block_address_kind, block_address,
+section_id, variant_or_null, target_pointer, canonical_period_or_null,
+canonical_loan_or_null)`. It is stable only for one admitted snapshot, not an
+object-identity or cross-revision guarantee. Canonicalization of these report
+keys is structural addressing, not a new cryptographic digest or subject.
+Use accepted RFC0089 Envelope2.0/source accounting and current subject
+descriptors; complete-source commitments remain separate from selected targets,
+portable projections, V9/V11/V12, results and signing inputs. Unavailable hashing
+never implies authentication or a successful arithmetic assertion.
+
+**Validate relationships before deduplication.** One assertion can have several
+relationships. Their complete semantic equality includes the accepted
+identity/method and procedure version; canonical target context; exact ordered
+input bindings with their roles, source/model snapshot and event addresses;
+all effective explicit conventions (including per-record allocations); unit and
+currency; original numeric-token precision evidence and the applicable
+minimum/reporting/quantizer contract; applicability/exclusion declarations; and
+required dependency selections. A display label is not authority. Unknown or
+invalid semantic members are retained with refusal evidence, not stripped to
+make two records identical. Required dependencies come from the accepted identity,
+never a producer's optional flag. No undisclosed default supplies a missing field.
+
+Validate all declarations and relationship variants first. Only semantically
+identical valid relationships may share one check; retain links to every original
+declaration. Equal target/method/ordered bindings alone are insufficient. A
+coarse-key or declared-identifier collision with different semantic content
+retains every variant under the same assertion, records the conflict and cannot
+select first/last content. Thus actual/365f versus actual/360, contradictory
+units/precision or conflicting applicability do not silently deduplicate.
+A repeated identical invalid declaration may share a report finding with all
+origins retained, but cannot become a valid/passed relationship by deduplication.
+Contradictory context/relationship variants block a clean terminal verification;
+independently demonstrated failures still take precedence under the state rule.
+This defines semantic equality/collision handling, not a new report hash, receipt
+subject or authentication claim. Exact duplicate assertions/checks count once;
+report position may use first occurrence without selecting its conflicting value.
 
 **Accounting.** Every inventoried assertion receives exactly one terminal
 `verified`, `failed` or `unverifiable` state and exactly one authored row family.
@@ -659,7 +866,12 @@ Report inapplicable relationships as exclusions with reasons. A component missin
 from an explicitly declared optional ledger universe is a separate gap, not a
 fabricated numeric statement. An absent row outside that declared universe is
 not a missing minimum-profile requirement. Gaps and exclusions do not inflate
-assertion denominators or become passed checks. Zero rows means zero assurance;
+assertion denominators or become passed checks. Under the PENDING recommended
+U9 policy, an unmet required obligation in an explicitly declared ledger universe
+affects the completed-assessment exit even when assertion counts are zero.
+An exclusion is not automatically an unmet obligation; a purported exclusion
+that conflicts with an explicitly required membership must be reported as that
+required gap rather than silently waiving it. Zero rows means zero assurance;
 there is no minimum-row refusal or vacuous aggregate `verified` claim.
 
 **States and precedence.** Preserve each reused identity's existing numeric
@@ -701,7 +913,7 @@ No command writes a document, cached result or receipt.
 
 | Outcome | JSON / exit contract |
 |---|---|
-| Completed assessment | `status: "completed"`, `profile: "pro-forma"`, `level: "L1"`, exact selection evidence, ordered `assertions` and `relationships`, `coverage`, `gaps`, `exclusions`, plus separate `validation`. Exit0 when no validation errors, failed assertions or unverifiable assertions exist, including a valid zero-row claim; zero coverage remains explicit and makes no financial assurance claim. Exit1 otherwise, without describing a thin row count as a refusal. |
+| Completed assessment | `status: "completed"`, `profile: "pro-forma"`, `level: "L1"`, exact selection evidence, ordered `assertions` and `relationships`, `coverage`, `gaps`, `exclusions`, plus separate `validation`. **PENDING recommended U9 rule:** Exit0 iff there are no validation errors, failed assertions, unverifiable assertions or unmet required obligations in an explicitly declared ledger universe. A genuinely gap-free zero-row claim exits0 with explicit zero coverage and no financial assurance claim. Exit1 otherwise; declared gaps remain separate from assertion counts, without fake assertions, minimum rows or operation refusal. |
 | Operation cannot admit/inventory the request | `status: "refused"` and `error` satisfying ProtocolError; exit1. Preserve an existing typed source/selection error. Propose narrowly scoped `CALC-PRO-FORMA` (category `calc`) for malformed CLI/profile-claim syntax, absent explicit profile claim or an unreadable requested file only; do not use it as a fallback for uncoded Format failures, unknown identities or missing arithmetic inputs. No fabricated zero-coverage success. |
 | Unrecoverable internal implementation failure | Exit2 under II.6a.2; stdout need not be a result. A missing/unreadable requested file is the typed request refusal above, not a financial disagreement. |
 
@@ -711,6 +923,29 @@ visible even if arithmetic can run; errors affect the CLI exit without changing
 unrelated per-row financial states. Source selection failures that affect only
 one fully inventoried assertion remain local typed unverifiable evidence; a
 failure preventing inventory of the claim itself is an operation refusal.
+
+**Pending U9 decision vectors (paper contract, not executed CLI evidence).** A
+valid empty/gap-free claim has total0/by-verdict zeros and exit0. The original
+review witness (one explicitly required ledger payment, no bound target cell)
+still has total0/by-verdict zeros and one required gap: the old written proposal
+permitted exit0, while this recommendation proposes completed/exit1. Preserve
+that original expectation as historical paper evidence; do not edit it into a
+purported passing runtime test. A merely excluded inapplicable relationship or
+an absent undeclared row creates no required gap and does not alone cause exit1.
+A failed or unverifiable assertion, or a separate validation error, still causes
+exit1. Missing input for an inventoried row is a completed local unverifiable
+assessment; malformed/absent claim or inability to inventory the request remains
+a typed operation refusal. An FV error-band deal-quality flag is not by itself
+a validation error or profile arithmetic failure.
+
+The alternative is assertion-only exit0 despite declared required gaps. It keeps
+the original predicate but requires callers to inspect `gaps`; it is less useful
+for automation requesting declared-ledger coverage. Recommend the gap-sensitive
+rule, with both choices PENDING owner confirmation. This proposal intentionally
+differs from the default base `verify-*` unverifiable-exit0 rule in Protocol
+II.6a.2; the reserve verifier commands supply existing profile-specific exception
+precedent. It changes no base CLI here and requires explicit synchronized text
+if accepted. A completed exit1 is not the same status as a refused request.
 
 The CLI does not adopt the standalone receipt verifier's exit3 convention:
 Protocol II.6a.2's 0/1/2 contract applies. Future synchronized protocol types,
@@ -835,16 +1070,29 @@ implementer. U2/U8 remain resolved. This RFC stays **draft**.
 
 | Gate | Current proposal / recommendation | Required before acceptance |
 |---|---|---|
-| U1 — initial identity membership | Accept section4a's bounded return/method bindings, native identities, explicit per-loan LTV and optional declared-ledger coverage. Enumerate additions individually; keep land summary-to-stated-stream intake, no generated land debt or land DSCR/cap rate. Do not activate the full section4 inventory. | Owner confirmation of the exact initial vocabulary, including which section3a procedures enter the first implementation. |
-| U9 — coverage/transport | Accept section6a's distinct assertion keys, relationship deduplication, independent inventory, three verdicts, failure precedence, authored family counts, deterministic order and read-only CLI0/1/2 proposal. Zero rows means zero assurance; no minimum-row refusal. No new receipt field. | Review adversarial ambiguity, duplicates, missing prerequisites, unselected/source-model mismatches and misleading coverage claims; confirm this proposed contract. |
-| Independent red-team and procedure evidence | Obtain an independent review before final acceptance. Review exact section3a math/admission, U1 boundary and U9 assurance; do not equate the producer declaration or green repository CI with independent financial evidence. | Clause-level counterexamples and dispositions, independently authored spreadsheet/composed-procedure comparisons, and independently implemented profile/transport evidence before claiming support. No review completion is asserted here. |
+| U1 — initial identity membership | PENDING owner: recommend the exact fifteen tokens in4b (fourteen financial plus membership), retaining4c's named land candidate as a separate explicit sixteenth-member choice. No generated land schedule, DSCR/cap rate or whole-registry activation. | Owner decision on the exact4b list and separate4c land membership, with independent complete-procedure/spreadsheet evidence before final RFC acceptance. Other section3a/4 procedures remain outside the list. |
+| U9 — coverage/transport | PENDING owner: recommend section6a's distinct assertion keys, relationship deduplication, independent inventory, three verdicts, failure precedence, authored family counts, deterministic order and read-only CLI0/1/2 proposal. Zero rows means zero assurance; no minimum-row refusal. No new receipt field. | Review adversarial ambiguity, duplicates, missing prerequisites, unselected/source-model mismatches and misleading coverage claims; confirm the proposed gap-sensitive completed-exit1 policy versus the retained assertion-only alternative. |
+| Independent red-team and procedure evidence | Complete independent closure of this clause-repair pass and independently authored composed-procedure/spreadsheet evidence before final acceptance; the initial clause review is bounded evidence already received. | Preacceptance: unchanged original witnesses, independent finding closure and spreadsheet/composed-procedure comparisons with actual engine/version/recalculation/provenance. After acceptance/before support: independent profile implementation and real read-only CLI transport evidence. Neither gate substitutes for the other. |
 
-The red-team is a recommendation for this RFC's final review; the separate
-owner-required RFC0089 red-team remains its own gate and is not completed or
-waived here. RFC0085 is implemented on current main. RFC0089 remains draft;
-this proposal does not activate its subject representation. The optional
-profile remains part of the approved5.0 launch scope, with no publication
-or release authorized by this draft update.
+The independent clause review is complete on bounded arithmetic/accepted-API
+and paper-contract evidence; its F1–F4 draft findings require independent closure
+against this revised text. Its rational/Decimal witnesses and accepted-native
+probes do not close independently authored spreadsheet or complete composed-
+procedure evidence. Before final RFC acceptance: owner U1/U9 decisions, finding
+closure, and the independent procedure/spreadsheet comparisons specified above.
+After acceptance, implementation and independent profile/CLI transport evidence
+precede any support claim; do not implement this unaccepted RFC to satisfy that
+later gate. Producer expectations, builder checks and green CI cannot substitute
+for independent authorship, actual spreadsheet engine/version/recalculation or
+whole-procedure evidence.
+
+RFC0085 is implemented. RFC0089 is accepted and implemented at production
+`495220e7fa569659aaadcab0f06574d09a570703`; its bounded independent closure and
+production integration are separate from RFC0092 financial evidence. Reuse
+Envelope2.0 and canonicalization2.0/subject descriptors, preserving source/carrier
+admission and separately scoped commitments. No representation compatibility
+path or extra receipt/profile digest is introduced. Optional profile launch,
+publication and release remain separately gated.
 
 ## Prior art
 
