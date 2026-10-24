@@ -30,7 +30,10 @@ export const UW_ENVELOPE_VERSION = '2.0';
 export const toUWEnvelope = parsed => projectSource(parsed).model;
 export const computeEnvelopeDigest = async value => digest(value);
 export const canonicalizeUWEnvelope = preimage;
-export const stampEnvelopeDigest = async value => ({ ...value, semantic_digest: digest(value) });
+export const stampEnvelopeDigest = async value => {
+  const semantic_digest = digest(value);
+  return { ...value, semantic_digest };
+};
 `);
 const evidence = [];
 for (const name of originals) {

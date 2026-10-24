@@ -182,7 +182,11 @@ export function semantic(model) {
 }
 export const preimage = model => jcs(semantic(model));
 export const digest = model => sha(Buffer.from(preimage(model)));
-export function stamp(model) { validateModel(model); return { ...model, semantic_digest: digest(model) }; }
+export function stamp(model) {
+  validateModel(model);
+  const semantic_digest = digest(model);
+  return { ...model, semantic_digest };
+}
 const envelopeBlock = block => ({ annotation: block.annotation, content: block.content, ...(block.prose ? { prose: block.prose } : {}) });
 
 /** Complete source projection, with exact occurrence accounting separate from selection. */
