@@ -420,8 +420,12 @@ that it is paid; an estimate/remaining balance alone is not a payment. For a
 stated full retirement at q_R the separately paid principal payoff must equal
 that row's post-scheduled-payment balance under U7, with disjoint payment-event
 membership. Define the **post-payoff balance** as that balance minus the bound
-paid principal payoff. Full retirement leaves zero, and there are no later
-active scheduled-payment rows for that same loan. If no payoff occurs at a row,
+paid principal payoff, retaining the unrounded subtraction. A declared fully
+paid retirement also states a zero post-payoff balance target; compare that
+target under the same U7 rule, never force the raw intermediate to zero, add
+a residual-settlement tolerance or invent a clearing payment. A failed or
+unavailable retirement reconciliation cannot earn clean verification. There
+are no later active scheduled-payment rows for a loan declared fully retired. If no payoff occurs at a row,
 its post-payoff balance equals its post-scheduled-payment balance. Any next
 admitted opening chains from the preceding post-payoff balance, not the balance
 before a paid retirement. A fully amortized zero balance likewise cannot support
