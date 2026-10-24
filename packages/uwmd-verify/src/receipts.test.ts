@@ -1,4 +1,4 @@
-// Receipts â€” RFC 0016 / `spec/UW_RECEIPT.md`.
+// Receipts — RFC 0016 / `spec/UW_RECEIPT.md`.
 //
 // The behaviours worth pinning: issuance is total (a receipt or a typed error,
 // never something in between), re-issuance over an unmodified record is stable,
@@ -40,7 +40,7 @@ import { InvalidUnicodeError } from './integrity-canonical.js';
 const PARKVIEW = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
 
 /**
- * A deliberately synthetic asset class that is not â€” and must never become â€” a
+ * A deliberately synthetic asset class that is not — and must never become — a
  * member of the `AssetClass` union. Swapping it in is how these tests reach the
  * "no pack is registered for this class" path without depending on some real
  * class staying packless.
@@ -188,7 +188,7 @@ describe('issueReceipt', () => {
     await expect(issueReceipt(raw, { filename: PARKVIEW })).rejects.toThrow(/RCP_PACK_UNRESOLVED/);
   });
 
-  it('is total â€” every input either yields a receipt or a typed ReceiptError', async () => {
+  it('is total — every input either yields a receipt or a typed ReceiptError', async () => {
     const raw = await parkview();
     const mutations = [
       raw,
@@ -265,7 +265,7 @@ describe('verifyReceipt', () => {
   it('is unverifiable when it cannot resolve a referenced input (RCP-11)', async () => {
     // The reference names an observation set this verifier does not hold. It
     // has not checked something the receipt says the computation depended on,
-    // so it may not say `verified` â€” and an absent set is not tampering, so it
+    // so it may not say `verified` — and an absent set is not tampering, so it
     // may not say `failed` either.
     const raw = await liteDeal();
     const receipt = await issueReceipt(raw, {
@@ -380,7 +380,7 @@ describe('verifyReceipt', () => {
     expect('inputs_provenance' in receipt).toBe(false);
   });
 
-  it('refuses any receipt_version but 1.1 (RFC 0081 Â§7)', async () => {
+  it('refuses any receipt_version but 1.1 (RFC 0081 §7)', async () => {
     const raw = await liteDeal();
     const receipt = await issueReceipt(raw, { filename: LITE_DEAL, issued_at: ISSUED_AT });
     for (const version of ['1.0', '1.2', '2.0']) {
@@ -407,7 +407,7 @@ describe('verifyReceipt', () => {
     expect(result.issues.map((i) => i.code)).toContain('RCP-03');
   });
 
-  it('reports unverifiable â€” not failed â€” for an unknown pack', async () => {
+  it('reports unverifiable — not failed — for an unknown pack', async () => {
     const raw = await parkview();
     const receipt = await issueReceipt(raw, { filename: PARKVIEW, issued_at: ISSUED_AT });
     const foreign = clone(receipt);
@@ -470,7 +470,7 @@ describe('verifyReceipt', () => {
 
   it('attributes a disagreement to the engine when only the engine name differs', async () => {
     // The version strings are identical here on purpose. Comparing versions
-    // alone would read that as "same engine, so blame the record" â€” but these
+    // alone would read that as "same engine, so blame the record" — but these
     // are two unrelated implementations that both happen to be at VERIFY_VERSION.
     const raw = await parkview();
     const receipt = await issueReceipt(raw, {
@@ -644,7 +644,7 @@ describe('rule sets (RFC 0111)', () => {
   });
 });
 
-describe('rollup receipts (RFC 0021 Â§6)', () => {
+describe('rollup receipts (RFC 0021 §6)', () => {
   const NOI = 'noi_model.net_operating_income';
   const agg = (over: Partial<UWRollupAggregate> = {}): UWRollupAggregate => ({
     id: 'portfolio_noi',
@@ -828,7 +828,7 @@ describe('assertUWReceipt', () => {
       expect(() => assertUWReceipt(ok)).not.toThrow();
     });
 
-    it('accepts an unregistered source â€” the union is open by design', async () => {
+    it('accepts an unregistered source — the union is open by design', async () => {
       const ok = await withProvenance([
         { source: 'child_record', document_id: 'deal:child-1', digest: `sha256:${'a'.repeat(64)}` },
       ]);
@@ -899,7 +899,7 @@ describe('computeReceiptResults', () => {
   // The defect RFC 0023 closes. A receipt runs two checks over the same
   // numbers: result comparison and digests now use the same quantized values at
   // their effective precision, while `results_digest` hashes them bit-exactly. Before quantization
-  // those could disagree â€” a last-ULP difference passed the tolerant check and
+  // those could disagree — a last-ULP difference passed the tolerant check and
   // failed the exact one, and the verdict said *corruption*. Quantized results
   // carry no tail for the two to disagree about.
   it('states only quantized values, shared by exact comparison and digests', async () => {
@@ -922,7 +922,7 @@ describe('computeReceiptResults', () => {
     }
   });
 
-  // Â§VIII.5 / receipt spec Â§5.2.1. `engine_version` only means something to a
+  // §VIII.5 / receipt spec §5.2.1. `engine_version` only means something to a
   // reader who knows that engine's release history, which a third-party
   // issuer's verifier does not have. `protocol_version` is the identifier every
   // conforming issuer shares.
@@ -936,7 +936,7 @@ describe('computeReceiptResults', () => {
 
   it('treats an absent protocol_version as unstated, not as a failure', async () => {
     // A receipt issued before the field existed cannot retroactively claim a
-    // version. Verification must not punish it for that â€” otherwise adding the
+    // version. Verification must not punish it for that — otherwise adding the
     // field would have retroactively invalidated every receipt in the wild.
     const receipt = await issueReceipt(await parkview(), {
       filename: PARKVIEW,

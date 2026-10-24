@@ -1,8 +1,8 @@
-// cli-packages.ts â€” the RFC 0018 CLI command wrappers (lease abstracts and
+// cli-packages.ts — the RFC 0018 CLI command wrappers (lease abstracts and
 // deal packages). Unlike cli.ts these are plain exported functions, so they
 // are directly importable; they just talk through console.log / console.error
 // / process.exit, which the harness below captures. The heavy lifting they
-// wrap (validation, zip codec, verification, projection) has its own suites â€”
+// wrap (validation, zip codec, verification, projection) has its own suites —
 // these tests pin the command-level contracts: what prints, what exits, and
 // which flag selects which path.
 
@@ -58,7 +58,7 @@ async function buildManifest(): Promise<UWDealPackageManifest> {
     ],
     links: [
       { type: 'contributes_to', from: 'source:lease', to: 'deal:d1' },
-      // Valid on both layers (registry), so it projects to an entity edge â€”
+      // Valid on both layers (registry), so it projects to an entity edge —
       // where contributes_to is member-only and must not.
       { type: 'supports', from: 'source:lease', to: 'deal:d1' },
     ],
@@ -73,14 +73,14 @@ const validAbstract = () => ({
   premises: 'Suite 210',
   governing_documents: ['source:anchor-lease'],
   lease_context: {
-    suite: { value: '210', source_ref: { source: 'source:anchor-lease', locator: 'Â§1.1, p. 2' } },
+    suite: { value: '210', source_ref: { source: 'source:anchor-lease', locator: '§1.1, p. 2' } },
   },
   lease_term: {
-    commencement: { value: '2024-03-01', source_ref: { source: 'source:anchor-lease', locator: 'Â§2.1' } },
-    expiration: { value: '2034-02-28', source_ref: { source: 'source:anchor-lease', locator: 'Â§2.1' } },
+    commencement: { value: '2024-03-01', source_ref: { source: 'source:anchor-lease', locator: '§2.1' } },
+    expiration: { value: '2034-02-28', source_ref: { source: 'source:anchor-lease', locator: '§2.1' } },
   },
   lease_economics: {
-    base_rent_annual: { value: 184800, source_ref: { source: 'source:anchor-lease', locator: 'Â§4.1' } },
+    base_rent_annual: { value: 184800, source_ref: { source: 'source:anchor-lease', locator: '§4.1' } },
   },
 });
 
@@ -202,7 +202,7 @@ describe('package commands', () => {
     expect(['verified', 'unverifiable']).toContain(result.status);
   });
 
-  it('cmdPackageCreate exits 1 when a payload does not match its declared sha â€” the codec refuses at encode time', async () => {
+  it('cmdPackageCreate exits 1 when a payload does not match its declared sha — the codec refuses at encode time', async () => {
     // This is also why cmdPackageVerify's failed branch is unreachable through
     // our own tooling: a mismatched package cannot be produced by the encoder,
     // and safe extraction refuses a corrupted archive at decode. `failed` is
@@ -218,7 +218,7 @@ describe('package commands', () => {
   it('cmdPackageList prints the members and links, and --json is machine-readable', () => {
     cmdPackageList(zipPath, {});
     const text = logs.join('\n');
-    expect(text).toContain('pkg:test:1 â€” 2 member(s)');
+    expect(text).toContain('pkg:test:1 — 2 member(s)');
     expect(text).toContain('source:lease --contributes_to--> deal:d1');
 
     logs = [];
@@ -370,7 +370,7 @@ describe('package semantic digests (RFC 0018; launch audit D-10)', () => {
     await cmdPackageVerify(path, {});
     const text = logs.join('\n');
     expect(text).toContain('UNVERIFIABLE - lite.uwpkg.zip');
-    expect(text).toContain('(unverifiable) lease:lite â€” its text/vnd.uwmd.lite+markdown semantic digest cannot be computed here');
+    expect(text).toContain('(unverifiable) lease:lite — its text/vnd.uwmd.lite+markdown semantic digest cannot be computed here');
     expect(text).not.toContain('PKGVER-003');
     logs = [];
     await cmdPackageVerify(path, { json: true });
