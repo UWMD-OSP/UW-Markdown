@@ -193,7 +193,7 @@ describe('sizeDenominators — RFC 0100', () => {
 
 describe('verifyStatedMetrics — stated precision', () => {
   it('needs caller-supplied precision for an envelope-decoded document', () => {
-    const source = parseUWFile(repo('examples/Parkview-Apts-Glendale-AZ.uwx.md'));
+    const source = parseUWFile(repo('conformance/rfc-0089/fixtures/complete-current.uwx.md'));
     const fromSource = verifyStatedMetrics(source);
     // Five quick_metrics/primary-size statements plus four section homes (RFC 0099).
     expect(fromSource.counts).toEqual({ verified: 9, failed: 0, unverifiable: 0 });

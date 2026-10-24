@@ -3,7 +3,7 @@ import { hasBlockShape } from './block-kind.js';
 // UW Document Envelope — format-neutral semantic model shared by machine codecs.
 
 import { canonicalize } from './integrity-canonical.js';
-import { assertJSONValue, snapshotJSONValue } from './json-admission.js';
+import { assertJSONValue, snapshotJSONValue, assertDataDescriptors } from './json-admission.js';
 import { mapExtensionEntry, extensionBlocks, compareExtensionIdentity } from './extension-entry.js';
 import { parsedPhysicalBlocks, retainParsedPhysicalBlocks } from './parser.js';
 import { sha256TextHex } from './integrity.js';
@@ -21,6 +21,7 @@ import type {
 export const UW_ENVELOPE_VERSION = '2.0' as const;
 
 export interface UWEnvelopeBlock {
+  [key: string]: unknown;
   annotation: UWFenceAnnotation;
   /** Complete fenced JSON object. `_meta` appears here exactly once. */
   content: Record<string, unknown>;
@@ -88,7 +89,7 @@ export function toUWEnvelope(
   for (const key of Reflect.ownKeys(properties)) {
     const descriptor = typeof key === 'string' ? properties[key] : undefined;
     if (typeof key !== 'string' || !parsedKeys.has(key) || !descriptor?.enumerable || !Object.hasOwn(descriptor, 'value')) throw new UWEnvelopeError('ENVELOPE_SOURCE_ACCOUNTING', 'Unsupported parsed model member or descriptor.');
-    if (key !== 'raw') assertJSONValue(descriptor.value);
+    if (key !== 'raw') assertDataDescriptors(descriptor.value);
   }
   const blocks = [
     ...Object.values(parsed.sections).flatMap(entry => hasBlockShape(entry) ? [entry as UWBlock] : Object.values(entry)),
@@ -105,7 +106,7 @@ export function toUWEnvelope(
   if (Object.hasOwn(options, 'includeSuperseded')) {
     throw new UWEnvelopeError('ENVELOPE_UNSUPPORTED_OPTION', 'Record exports always retain supplied history (RFC 0085).');
   }
-  const sections: Record<string, UWEnvelopeSectionEntry> = {};
+  const sections: Record<string, UWEnvelopeSectionEntry> = Object.create(null);
   for (const [sectionId, entry] of Object.entries(parsed.sections)) {
     if (isVariantMap(entry)) {
       sections[sectionId] = Object.fromEntries(
@@ -119,7 +120,7 @@ export function toUWEnvelope(
     }
   }
 
-  const superseded: Record<string, UWEnvelopeBlock[]> = {};
+  const superseded: Record<string, UWEnvelopeBlock[]> = Object.create(null);
   for (const [sectionId, blocks] of Object.entries(parsed.superseded)) {
     superseded[sectionId] = blocks.map(toEnvelopeBlock);
   }
@@ -144,6 +145,14 @@ export function toUWEnvelope(
     ),
     superseded,
   };
+  assertJSONValue(envelope);
+  return envelope;
+}
+
+/** Internal fresh-source boundary; metadata evidence on a mutable/assembled
+ * model is not an immutable source certificate. No full carrier admission.
+ */
+export function assertSourceBlockAccounting(parsed: ParsedUWFile): void {
   const physical = parsedPhysicalBlocks(parsed);
   if (physical.length) {
     const accounted = [
@@ -155,15 +164,13 @@ export function toUWEnvelope(
       throw new UWEnvelopeError('ENVELOPE_SOURCE_ACCOUNTING', 'Every retained physical block must occur exactly once in the complete projection.');
     }
   }
-  assertJSONValue(envelope);
-  return envelope;
 }
 
 export function fromUWEnvelope(envelope: UWDocumentEnvelope): ParsedUWFile {
   assertUWEnvelope(envelope);
 
-  const sections: ParsedSections = {};
-  const prose: Record<string, string> = {};
+  const sections: ParsedSections = Object.create(null);
+  const prose: Record<string, string> = Object.create(null);
   for (const [sectionId, entry] of Object.entries(envelope.sections)) {
     if (isVariantMap(entry)) {
       const variants = Object.fromEntries(

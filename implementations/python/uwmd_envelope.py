@@ -211,7 +211,7 @@ def blocks(model):
         result.append((ref, collection, section, variant, ordinal, state, mode, block))
     for section in sorted(model['sections'], key=lambda x: x.encode('utf-16-be')):
         entry = model['sections'][section]
-        if isinstance(entry.get('annotation'), dict) and isinstance(entry.get('content'), dict):
+        if is_envelope_block(entry):
             add('/sections/' + esc(section), 'sections', section, entry['annotation'].get('variant'), '', 'current', '', entry)
         else:
             need(entry, 'empty builtin variant map')
@@ -706,5 +706,5 @@ def source_digest(document):
 if __name__ == '__main__':
     command, path = sys.argv[1:3]
     data = Path(path).read_bytes()
-    value = project_source(data) if command == 'source' else decode_zip(data) if command == 'zip' else decode_xml(data.decode('utf-8-sig')) if command == 'xml' else validate(load_json(data.decode('utf-8-sig')))
+    value = project_source(data) if command == 'source' else decode_zip(data) if command == 'zip' else decode_xml(data.decode('utf-8')) if command == 'xml' else validate(load_json(data.decode('utf-8-sig')))
     print(json.dumps({'model': value, 'preimage': preimage(value), 'digest': digest(value)}, ensure_ascii=True, allow_nan=False))

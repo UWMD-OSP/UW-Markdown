@@ -12,7 +12,7 @@ let original: string;
 const files: Record<string, string> = {};
 beforeAll(async () => {
   temp = await mkdtemp(join(tmpdir(), 'uwmd-source-file-'));
-  original = await readFile(join(root, 'examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8');
+  original = await readFile(join(root, 'conformance/rfc-0089/fixtures/complete-current.uwx.md'), 'utf8');
   files.uwx = join(temp, 'deal.uwx.md');
   await writeFile(files.uwx, original);
   const envelope = toUWEnvelope(parseUWFile(original));
@@ -33,6 +33,19 @@ afterAll(async () => {
 });
 
 describe('registered source files', () => {
+  it('preserves XML declaration/BOM positions and refuses invalid UTF-8 bytes', async () => {
+    const xml = await readFile(files['uw-xml']!, 'utf8');
+    const path = join(temp,'synthetic-boundary.uw.xml');
+    await writeFile(path, '\ufeff'+xml);
+    await expect(loadUWSourceFile(path)).resolves.toMatchObject({representation:'uw-xml'});
+    for (const source of ['\ufeff\ufeff'+xml, '<?xml version="1.0"?>\ufeff'+xml]) {
+      await writeFile(path,source);
+      await expect(loadUWSourceFile(path)).rejects.toThrow();
+    }
+    await writeFile(path,new Uint8Array([0xc3,0x28]));
+    await expect(loadUWSourceFile(path)).rejects.toMatchObject({code:'SOURCE_UTF8_INVALID'});
+  });
+
   it.each(['uwx', 'uw-json', 'uw-xml', 'uw-csv-bundle'])('reads %s without changing the source or underwriting values', async (id) => {
     const file = files[id]!;
     const before = await readFile(file);

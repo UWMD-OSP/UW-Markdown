@@ -22,7 +22,7 @@ function file(sections: Record<string, UWBlock | Record<string, UWBlock>>): Pars
   return { frontmatter: { uw_version: '3.0', asset_class: 'multifamily' } as ParsedUWFile['frontmatter'], sections,
     prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [], extensions: {}, superseded: {}, raw: '' };
 }
-const frontmatter = "---\nuw_version: \"3.0\"\ndeal_id: roles\nasset_class: multifamily\nlast_modified: \"2026-09-11T00:00:00Z\"\n---\n";
+const frontmatter = "---\nuw_version: \"3.0\"\ndeal_id: roles\ndeal_name: Synthetic roles\nasset_class: multifamily\nlast_modified: \"2026-09-11T00:00:00Z\"\n---\n";
 const document = (role: unknown = 'primary') => `${frontmatter}Untouched prose.
 
 \`\`\`json uw:section=property source=manual v=1

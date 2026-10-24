@@ -6,14 +6,14 @@ contracts without reverse-engineering the reference TypeScript implementation.
 
 The JSON schemas use [JSON Schema 2020-12](https://json-schema.org/draft/2020-12/schema)
 and publish under the `https://uwmd.org/schemas/` `$id` prefix. The XSD targets
-the UW XML 1.0 namespace `https://uwmd.org/ns/document/1`. The current canonical
+the UW XML 2.0 namespace `https://uwmd.org/ns/document/2`. The current canonical
 files live in this directory pending publication on `uwmd.org`.
 
 | Schema | Mirrors | Spec section |
 |---|---|---|
 | [`uwmd-block.schema.json`](uwmd-block.schema.json) | Bare payload + nested `_meta` (Format 3.0) | Format §2.4–§2.6 |
-| [uw-document-envelope.schema.json](uw-document-envelope.schema.json) | UWDocumentEnvelope | RFC 0014 / Envelope 1.0 |
-| [uw-document-envelope.xsd](uw-document-envelope.xsd) | Structural UW XML 1.0 tooling schema | [UW XML Mapping 1.0](../UW_XML_MAPPING.md) |
+| [uw-document-envelope.schema.json](uw-document-envelope.schema.json) | UWDocumentEnvelope | RFC 0014 / Envelope 2.0 |
+| [uw-document-envelope.xsd](uw-document-envelope.xsd) | Structural UW XML 2.0 tooling schema | [UW XML Mapping 2.0](../UW_XML_MAPPING.md) |
 | [`edit-operation.schema.json`](edit-operation.schema.json) | `EditOperation` (discriminated union) | Protocol §V |
 | [`protocol-error.schema.json`](protocol-error.schema.json) | `ProtocolError` | Protocol §XI |
 | [institution-config.schema.json](institution-config.schema.json) | Canonical institution config wire object | Format C.6 / Protocol VI.3 / RFC0097 |

@@ -6,7 +6,7 @@ import {carrierSchemas} from './carrier-schema-data.js';
 import {admitsCarrierSchema} from './carrier-schema.js';
 const read = (path: string) => JSON.parse(readFileSync(new URL('../../../'+path,import.meta.url),'utf8'));
 const block=read('spec/schemas/uwmd-block.schema.json'), envelope=read('spec/schemas/uw-document-envelope.schema.json');
-const ajv=new Ajv({strict:false,allErrors:true});addFormats(ajv);ajv.addSchema(block);const shape=ajv.compile(envelope);
+const ajv=new Ajv.default({strict:false,allErrors:true});addFormats.default(ajv);ajv.addSchema(block);const shape=ajv.compile(envelope);
 const packet=read('conformance/rfc-0089/cases.json');
 describe('full carrier schema admission',()=>{
   it('embeds the current normative schemas exactly',()=>expect(carrierSchemas).toEqual([envelope,block]));

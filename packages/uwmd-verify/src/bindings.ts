@@ -126,7 +126,7 @@ export async function decodeUWHTTPRequest(
     }
   } else if (body instanceof Uint8Array) {
     try {
-      input = new TextDecoder('utf-8', { fatal: true }).decode(body);
+      input = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(body);
     } catch (error) {
       throw new UWBindingError('BINDING_UTF8_INVALID', 400, `Text representation is not valid UTF-8: ${String(error)}`);
     }

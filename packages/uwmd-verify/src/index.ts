@@ -882,3 +882,7 @@ export { parseGapInstant, ValidationClockError } from './gap-instant.js';
 export type { UWExtensionEntry, UWParsedExtensionEntry } from './types.js';
 export type { UWEnvelopeExtensionEntry } from './envelope.js';
 export { extensionBlocks, mapExtensionEntry } from './extension-entry.js';
+
+export { UW_ENVELOPE_CANONICALIZATION_VERSION } from './protocol.js';
+
+export { JSONValueError } from './json-admission.js';

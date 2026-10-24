@@ -1,3 +1,5 @@
+import { assertSourceBlockAccounting } from './envelope.js';
+import { UW_ENVELOPE_CANONICALIZATION_VERSION } from './protocol.js';
 import { ASSET_CLASSES } from './types.js';
 // Verification receipts — RFC 0016 / `spec/UW_RECEIPT.md`.
 //
@@ -78,7 +80,7 @@ export const UW_LITE_CANONICALIZATION = 'uw-lite-financial' as const;
  * `UWX_CANONICALIZATION_VERSION` is separate for the same reason.
  */
 export const UW_LITE_CANONICALIZATION_VERSION = '1.1' as const;
-export const UWX_CANONICALIZATION_VERSION = '2.0' as const;
+export const UWX_CANONICALIZATION_VERSION = UW_ENVELOPE_CANONICALIZATION_VERSION;
 /** Canonicalization used for structured records (Document Envelope 1.0). */
 export const UWX_CANONICALIZATION = 'uw-envelope-semantic' as const;
 
@@ -387,6 +389,7 @@ export async function resolveReceiptSubject(
       }).`,
     );
   }
+  assertSourceBlockAccounting(parsed);
   const envelope = toUWEnvelope(parsed);
   const canonical = canonicalizeUWEnvelope(envelope);
   return {

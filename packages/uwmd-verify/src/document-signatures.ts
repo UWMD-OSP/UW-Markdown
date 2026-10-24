@@ -1,3 +1,4 @@
+import { UW_ENVELOPE_CANONICALIZATION_VERSION } from './protocol.js';
 import { extensionBlocks } from './extension-entry.js';
 import { hasBlockShape } from './block-kind.js';
 // RFC 0084 / Protocol §V.13: crypto-free authentication of a document snapshot.
@@ -10,7 +11,7 @@ export interface DocumentSigningSubject {
   representation: 'uwx-markdown';
   representation_version: '1.0';
   canonicalization: 'uw-envelope-semantic';
-  canonicalization_version: '2.0';
+  canonicalization_version: typeof UW_ENVELOPE_CANONICALIZATION_VERSION;
   digest: string;
 }
 export interface UWDocumentSignature {
@@ -155,7 +156,7 @@ export async function resolveDocumentSigningSubject(source: string): Promise<Doc
     }
     return {
       representation: 'uwx-markdown', representation_version: '1.0',
-      canonicalization: 'uw-envelope-semantic', canonicalization_version: '2.0',
+      canonicalization: 'uw-envelope-semantic', canonicalization_version: UW_ENVELOPE_CANONICALIZATION_VERSION,
       digest: await computeEnvelopeDigest(envelope),
     };
   } catch (error) {
@@ -166,7 +167,7 @@ export async function resolveDocumentSigningSubject(source: string): Promise<Doc
 
 function envelopeBlocks(envelope: UWDocumentEnvelope): Record<string, unknown>[] {
   const blocks = Object.values(envelope.sections).flatMap(entry =>
-    hasBlockShape(entry) ? [entry as import('./envelope.js').UWEnvelopeBlock] : Object.values(entry));
+    hasBlockShape(entry) ? [entry as import('./envelope.js').UWEnvelopeBlock] : Object.values(entry as Record<string, import('./envelope.js').UWEnvelopeBlock>));
   return [...blocks, ...envelope.pipeline_log, ...envelope.custom_calculations, ...envelope.custom_scenarios,
     ...Object.values(envelope.extensions).flatMap(extensionBlocks), ...Object.values(envelope.superseded).flat()].map(block => block.content);
 }
@@ -207,7 +208,7 @@ export async function verifyDocumentSignature(
   }
   const subject = artifact.subject;
   if (artifact.signature_version !== '1' || subject.representation !== 'uwx-markdown' || subject.representation_version !== '1.0'
-    || subject.canonicalization !== 'uw-envelope-semantic' || subject.canonicalization_version !== '2.0') return {
+    || subject.canonicalization !== 'uw-envelope-semantic' || subject.canonicalization_version !== UW_ENVELOPE_CANONICALIZATION_VERSION) return {
     state: 'unverifiable', reason: 'unsupported_version', issues: [{ code: 'INT-14', message: 'Unsupported document-signature version or subject.' }],
   };
   let actual: DocumentSigningSubject;

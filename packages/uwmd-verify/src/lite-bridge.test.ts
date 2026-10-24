@@ -1,3 +1,4 @@
+import { extensionBlocks } from './extension-entry.js';
 import { describe, expect, it } from 'vitest';
 import { parseUWLite } from './lite.js';
 import {
@@ -87,7 +88,7 @@ describe('compileUWLite', () => {
     expect(result.envelope.format_version).toBe('3.0');
     expect(result.envelope.frontmatter.uw_version).toBe('3.0');
     for (const entry of Object.values(result.envelope.sections)) expectBareNested(singleBlock(entry).content);
-    expectBareNested(result.envelope.extensions[UW_LITE_SOURCE_EXTENSION]!.content);
+    expectBareNested(extensionBlocks(result.envelope.extensions[UW_LITE_SOURCE_EXTENSION]!)[0]!.content);
     const codes = validateUWFile(parseUWFile(stringifyUWX(result.envelope))).issues.map(issue => issue.code);
     expect(codes).not.toContain('META-01');
   });
@@ -111,7 +112,7 @@ describe('compileUWLite', () => {
     const result = compileUWLite(parseUWLite(LITE));
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.envelope.extensions[UW_LITE_SOURCE_EXTENSION]?.content).toMatchObject({
+    expect(extensionBlocks(result.envelope.extensions[UW_LITE_SOURCE_EXTENSION]!)[0]?.content).toMatchObject({
       representation: 'uw-lite-markdown',
       markdown: LITE,
     });
@@ -153,7 +154,7 @@ describe('UWX bridge rendering and Lite projection', () => {
       purchase_price: 12_500_000,
       going_in_cap_rate: 0.055,
     });
-    expect(parsed.extensions[UW_LITE_SOURCE_EXTENSION]?.content['markdown']).toBe(LITE);
+    expect(extensionBlocks(parsed.extensions[UW_LITE_SOURCE_EXTENSION]!)[0]?.content['markdown']).toBe(LITE);
   });
 
   it('retains append-only superseded history in UWX output', () => {

@@ -100,7 +100,7 @@ Module | Package | Responsibility | Key exports
 `codec.ts` | verify | Extensible representation registry | `CodecRegistry`, `UWCodec`, representation descriptors
 `bindings.ts` | verify | Optional HTTP/MCP companion adapters | semantic ETags, negotiation, resources, compact tool results; source edits through an injected edit adapter
 `bindings-edit.ts` | core | Source edits wired to the starter editor | `applyUWMDSourceEdit`, `createUWMCPApplyEditResult`
-`uwjson.ts` | verify | UW JSON 1.0 codec + parsed-model bridge | `UW_JSON_CODEC`, `toUWJson`, `parseUWJsonVerified`, `fromUWJson`
+`uwjson.ts` | verify | UW JSON 2.0 codec + parsed-model bridge | `UW_JSON_CODEC`, `toUWJson`, `parseUWJsonVerified`, `fromUWJson`
 `runner.ts` | core | Write blocks back to file (supersede-aware) | `writeAgentBlock`, `writeErrorEntry`, `buildMeta` (defined in `metadata.ts`)
 `compactor.ts` | core | Section diff | `diff`
 `init.ts` | core | Scaffold a blank `.uw.md` | `generateBlankUWFile`
@@ -141,6 +141,23 @@ subset), prose, and fenced ```` ```json uw:… ```` data blocks. Produces
 `ParsedUWFile`: `frontmatter`, `sections` (single- or multi-variant), `prose`
 per section, `pipeline_log[]`, `custom_calculations[]`, `custom_scenarios[]`,
 `extensions{}`, `superseded{}` (history), and the original `raw` text.
+
+RFC0089 gives `extensions[id]` an exact tagged `UWExtensionEntry<UWBlock>`:
+`{mode:'single',block}` or `{mode:'variants',blocks:[{variant,block}]}`.
+Variant identities are nullable, canonical and never aliases for `default`.
+Overwritten priors and explicit history retain physical-event order and original
+metadata. `extensionBlocks` and `mapExtensionEntry` traverse/project either mode.
+Full model/carrier readers preserve unknown members through clone-safe
+`envelopeExtras`; an explicit empty prose value uses `envelopeProsePresent`.
+See [the complete Envelope contract](../../spec/UW_ENVELOPE.md).
+
+Fresh-source receipt/authentication operations account for every source
+occurrence. Mutable and assembled models use their current complete model;
+parser-retained metadata evidence is not an immutable source certificate.
+Full carrier schema admission is separate from source JSON-value admission.
+Native stamping inspects descriptors and snapshots before any copy/hash, so
+accessors execute zero getters and successful returned stamps match their models.
+V9/V11/V12, receipt results and signing inputs retain their distinct scopes.
 
 Frontmatter string keys are decoded with the shared YAML scalar reader at
 both mapping levels. Mapping separators are found outside quoted content;
@@ -266,22 +283,22 @@ byte-preserving `applyEdit` still needs the `.uw.md`; read/validate/calc
 consumers do not.)
 
 - `toUWJson(parsed, opts?) → UWDocumentEnvelope` — converts the parsed model to
-  Envelope 1.0; superseded history is included by default.
-- `stringifyUWJson(parsed, opts?) → string` — pretty-printed UW JSON 1.0.
+  Envelope 2.0; superseded history is included by default.
+- `stringifyUWJson(parsed, opts?) → string` — pretty-printed UW JSON 2.0.
 - `stringifyUWJsonWithDigest(parsed, opts?) → Promise<string>` — adds the
   canonical `semantic_digest` used by CLI exports and cross-format checks.
 - `parseUWJson(text) → UWDocumentEnvelope` and `parseUWJsonVerified(text)` —
   structural parsing, with optional digest enforcement.
 - `fromUWJson(doc) → ParsedUWFile` — rehydrates the in-memory model.
 - `CodecRegistry`, `CORE_CODEC_REGISTRY`, `UW_JSON_CODEC`, and `UW_XML_CODEC` — discover and invoke model codecs by ID, media type, or filename.
-- `stringifyUWXml(envelope)` / `parseUWXml(text)` — deterministic UW XML 1.0 with digest verification and secure parsing limits.
+- `stringifyUWXml(envelope)` / `parseUWXml(text)` — deterministic UW XML 2.0 with digest verification and secure parsing limits.
 - `encodeUWCSVBundle` / `decodeUWCSVBundle` — normalized directory form; `encodeUWCSVZip` / `decodeUWCSVZip` provide deterministic bounded ZIP interchange and all six views.
 - `createUWHTTPResponse` / `decodeUWHTTPRequest` / `assertUWIfMatch` — negotiated model bytes, semantic ETags, and optimistic concurrency.
 - `createUWMCPResource` and `createUWMCP*Result` — text/blob resources, compact structured results, JSON fallback, and resource links.
 
 CLI: `uwmd export <file.uw.md>` writes a digested `.uw.json` (`--stdout` to pipe; all supplied history retained). `uwmd convert <file> --to uw-json|uw-xml|uw-csv-bundle` converts Markdown and all verified model representations through the shared envelope.
 
-> **Status — normative Envelope 1.0 / UW JSON 1.0 implementation.** The schema is
+> **Status — normative Envelope 2.0 / UW JSON 2.0 implementation.** The schema is
 > `spec/schemas/uw-document-envelope.schema.json`. This is model-lossless, not
 > byte-preserving: Markdown source bytes remain exclusive to the `.uw.md` source
 > adapter.

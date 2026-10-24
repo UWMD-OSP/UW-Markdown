@@ -48,3 +48,20 @@ export function snapshotJSONValue<T>(value: T): T {
   };
   return copy(value) as T;
 }
+
+/** Parsed implementation records may contain optional undefined metadata.
+ * Inspect descriptors before projection without treating raw/source bookkeeping
+ * as committed JSON or importing full carrier schema admission.
+ */
+export function assertDataDescriptors(value: unknown, parents = new Set<object>()): void {
+  if (value === null || typeof value !== 'object') return;
+  if (parents.has(value)) throw new JSONValueError('cyclic parsed model');
+  parents.add(value);
+  for (const key of Reflect.ownKeys(value)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key)!;
+    if (Array.isArray(value) && key === 'length') continue;
+    if (typeof key !== 'string' || !descriptor.enumerable || !Object.hasOwn(descriptor, 'value')) throw new JSONValueError('hidden or accessor parsed descriptor');
+    assertDataDescriptors(descriptor.value, parents);
+  }
+  parents.delete(value);
+}

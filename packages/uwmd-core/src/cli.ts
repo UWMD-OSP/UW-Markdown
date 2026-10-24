@@ -1,5 +1,5 @@
-import { mapExtensionEntry } from '@uwmd/verify';
 #!/usr/bin/env node
+import { mapExtensionEntry } from '@uwmd/verify';
 import { hasBlockShape } from './block-kind.js';
 import {
   verifyReserveDrawBindings,

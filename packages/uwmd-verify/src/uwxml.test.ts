@@ -52,7 +52,7 @@ describe('UW XML 2.0', () => {
 
   it('matches UW JSON semantic identity across the bundled golden deal', async () => {
     const source = readFileSync(
-      resolve(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md'),
+      resolve(process.cwd(), '..', '..', 'conformance', 'rfc-0089', 'fixtures', 'complete-current.uwx.md'),
       'utf8',
     );
     const golden = toUWEnvelope(parseUWFile(source));

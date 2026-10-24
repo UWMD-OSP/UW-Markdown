@@ -1,5 +1,12 @@
 # 13 — Build status (living document)
 
+RFC0089 D1–D6 is accepted (2026-10-23). The production contract uses
+Envelope2.0, tagged nullable extension entries, total JSON/XML/CSV2.0.0 carriers
+and whole-model canonicalization2.0. Source accounting and full carrier schema
+admission remain separate; native descriptor-safe stamping precedes copies.
+V9/V11/V12, results and signing-input scopes stay distinct. See
+[Envelope2.0](../../spec/UW_ENVELOPE.md). No release or public launch is implied.
+
 RFC 0085 C+D is implemented under owner acceptance (2026-10-22): full records retain supplied history, record compaction is removed, missing declared predecessors fail INT-01 and permitted manual replacements start null-parent roots.
 
 **Owner rule,2026-10-17.** AGENTS.md and CLAUDE.md carry the rule near the top:

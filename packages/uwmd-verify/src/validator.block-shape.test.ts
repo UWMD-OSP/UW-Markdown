@@ -1,3 +1,4 @@
+import { extensionBlocks } from './extension-entry.js';
 // META-01 — the one block shape (Format §2.4–§2.5, RFC 0081 §3). A block is the
 // bare payload with an inline nested `_meta`; the retired `{section_id, _meta,
 // content}` wrapper and the retired flat `_meta` are both META-01 errors.
@@ -134,7 +135,7 @@ describe('RFC 0090 actor admission', () => {
     expect(actorIssues(parsed).map(i => i.section)).toEqual(['x_peer', 'pipeline_log', 'property', 'custom_calculations', 'custom_scenarios']);
     expect(JSON.stringify(parsed)).toBe(before);
     expect(parsed.raw).toBe(source);
-    expect(parsed.extensions.x_peer.annotation.variant).toBe('second');
+    expect(extensionBlocks(parsed.extensions.x_peer!)[0]!.annotation.variant).toBe('second');
   });
 
   it('keeps old visible shape order, then newly retained shape, then actor before ROLE/SRC', () => {
@@ -172,7 +173,7 @@ describe('RFC 0090 actor admission', () => {
     delete parsed.extensions.x_old;
     const added = doc(body('property', '')).sections.property as UWBlock;
     parsed.sections.property = added;
-    parsed.extensions.x_alias = added;
+    parsed.extensions.x_alias = { mode: 'single', block: added };
     expect(actorIssues(parsed).map(i => i.section)).toEqual(['x_old', 'property']);
   });
 
@@ -180,9 +181,11 @@ describe('RFC 0090 actor admission', () => {
     const parsed = parseUWFile(header + fence('x_peer', body('x_peer', ''), 'v=1') + fence('x_peer', body('x_peer'), 'v=2'));
     expect(actorIssues(parsed)).toHaveLength(1);
     const clone = JSON.parse(JSON.stringify(parsed)) as ParsedUWFile;
-    expect(actorIssues(clone)).toEqual([]); // model-only: the lost peer is absent
+    expect(clone.superseded.x_peer).toHaveLength(1); // RFC0089 retains the overwritten prior.
+    delete clone.superseded.x_peer; // Explicitly exercise a model that omits it.
+    expect(actorIssues(clone)).toEqual([]);
     clone.raw = 'stale non-document raw does not replace the supplied model';
-    const payload = clone.extensions.x_peer.content._meta as typeof meta;
+    const payload = extensionBlocks(clone.extensions.x_peer!)[0]!.content._meta as typeof meta;
     payload.provenance.actor = '';
     expect(actorIssues(clone)).toHaveLength(1);
   });
@@ -347,11 +350,11 @@ describe('RFC0093 bounded metadata admission', () => {
     expect(parsed.raw).toBe(source);
     const added = doc(bad('property')).sections.property as UWBlock;
     parsed.sections.new_block = added;
-    parsed.extensions.alias = added;
-    parsed.extensions.distinct = structuredClone(added);
+    parsed.extensions.alias = { mode: 'single', block: added };
+    parsed.extensions.distinct = { mode: 'single', block: structuredClone(added) };
     expect(admittedIssues(parsed).map(i => i.section)).toEqual([...ids, 'new_block', 'distinct']);
     const copy = JSON.parse(before) as ParsedUWFile;
-    expect(admittedIssues(copy).map(i => i.section)).toEqual(['property', 'pipeline_log', 'custom_calculations', 'custom_scenarios']);
+    expect(admittedIssues(copy).map(i => i.section)).toEqual(['property', 'x_peer', 'pipeline_log', 'custom_calculations', 'custom_scenarios']);
   });
 
   it('keeps source bytes, public model shape, partitions and readiness intact', () => {

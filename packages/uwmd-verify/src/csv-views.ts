@@ -42,9 +42,9 @@ function flattenViewObject(value: unknown, prefix = '', output: Record<string, u
       const path = prefix ? `${prefix}.${key}` : key;
       const child = value[key];
       if (isRecord(child)) flattenViewObject(child, path, output);
-      else output[path] = child;
+      else Object.defineProperty(output,path,{value:child,enumerable:true,writable:true,configurable:true});
     }
-  } else if (prefix) output[prefix] = value;
+  } else if (prefix) Object.defineProperty(output,prefix,{value,enumerable:true,writable:true,configurable:true});
   return output;
 }
 
