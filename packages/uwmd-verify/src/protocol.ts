@@ -37,6 +37,8 @@ import { blockPayload, deepGet, getSection, getSectionVariant } from './parser.j
 
 /** Semver of this protocol. Bumped independently of the @uwmd/verify and @uwmd/core npm versions. */
 export const PROTOCOL_VERSION = '4.1.0' as const;
+/** RFC0089 complete whole-model subject, separate from block/results scopes. */
+export const UW_ENVELOPE_CANONICALIZATION_VERSION = '2.0' as const;
 
 /**
  * The format release label of this implementation: the one member of

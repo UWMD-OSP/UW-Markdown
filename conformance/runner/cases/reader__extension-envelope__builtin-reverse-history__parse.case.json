@@ -1,0 +1,17 @@
+{
+  "id": "reader__extension-envelope__builtin-reverse-history__parse",
+  "target": "reader",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "builtin-reverse-history.uwx.md"
+  ],
+  "fixture_dir": "conformance/rfc-0089/portable/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/rfc-0089/portable/expected/builtin-reverse-history.json"
+  }
+}

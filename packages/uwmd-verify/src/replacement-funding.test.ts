@@ -147,8 +147,12 @@ describe('RFC 0070 separate verification', () => {
   });
   it('MCP refuses unavailable binding verification independently of structural findings', async () => {
     const parsed = parseUWFile(source('outright-payment'));
-    for (const entry of Object.values(parsed.sections))
-      for (const block of sectionBlocks(entry)) stampMetaIntoBlockContent(block.content, block.meta);
+    parsed.frontmatter.deal_name = 'Synthetic replacement funding';
+    for (const [id, entry] of Object.entries(parsed.sections))
+      for (const block of sectionBlocks(entry)) {
+        block.meta = buildMeta(id, 1, { source: 'manual', actor: 'synthetic', confidence: 'high', timestamp: '2026-10-23T00:00:00Z' });
+        stampMetaIntoBlockContent(block.content, block.meta);
+      }
     const original = integrity.sha256TextHex;
     vi.spyOn(integrity, 'sha256TextHex')
       .mockImplementationOnce(original)
@@ -185,7 +189,8 @@ describe('RFC 0070 separate verification', () => {
     'MCP exposes separate state for %s',
     async (name) => {
       const parsed = parseUWFile(source(name));
-      // The envelope carries a `_meta` on every block; these fixtures state none.
+      parsed.frontmatter.deal_name = 'Synthetic replacement funding';
+      // Author a full-carrier positive; sparse source admission is covered separately.
       for (const [id, entry] of Object.entries(parsed.sections))
         for (const block of sectionBlocks(entry)) {
           block.meta = buildMeta(id, 1, { source: 'manual', actor: 'test', confidence: 'high', timestamp: '2026-10-03T00:00:00Z' });

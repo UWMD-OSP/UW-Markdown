@@ -4,8 +4,8 @@
     "representation": "uwx-markdown",
     "representation_version": "1.0",
     "canonicalization": "uw-envelope-semantic",
-    "canonicalization_version": "1.0",
-    "digest": "sha256:10f787f3408e1b4025a570962b9131e263d973712d48b8a71ed19749a66661dd"
+    "canonicalization_version": "2.0",
+    "digest": "sha256:eba9eac8508b332b32d1240283210f5c178683899dac4288c5dba27bde45b30e"
   },
   "computation": {
     "pack": "org.example.invalid-producer",

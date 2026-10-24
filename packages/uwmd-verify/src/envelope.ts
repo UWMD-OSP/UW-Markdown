@@ -1,7 +1,11 @@
+import { admitsCarrierSchema } from './carrier-schema.js';
 import { hasBlockShape } from './block-kind.js';
 // UW Document Envelope — format-neutral semantic model shared by machine codecs.
 
 import { canonicalize } from './integrity-canonical.js';
+import { assertJSONValue, snapshotJSONValue, assertDataDescriptors } from './json-admission.js';
+import { mapExtensionEntry, extensionBlocks, compareExtensionIdentity } from './extension-entry.js';
+import { parsedPhysicalBlocks, retainParsedPhysicalBlocks } from './parser.js';
 import { sha256TextHex } from './integrity.js';
 import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 import type {
@@ -11,11 +15,13 @@ import type {
   UWFenceAnnotation,
   UWFrontmatter,
   UWMeta,
+  UWExtensionEntry,
 } from './types.js';
 
-export const UW_ENVELOPE_VERSION = '1.0' as const;
+export const UW_ENVELOPE_VERSION = '2.0' as const;
 
 export interface UWEnvelopeBlock {
+  [key: string]: unknown;
   annotation: UWFenceAnnotation;
   /** Complete fenced JSON object. `_meta` appears here exactly once. */
   content: Record<string, unknown>;
@@ -26,6 +32,13 @@ export interface UWEnvelopeBlock {
 export type UWEnvelopeSectionEntry =
   | UWEnvelopeBlock
   | Record<string, UWEnvelopeBlock>;
+
+export type UWEnvelopeExtensionEntry = UWExtensionEntry<UWEnvelopeBlock>;
+const ENVELOPE_MEMBERS = new Set(['envelope_version', 'format_version', 'generated_at', 'generator', 'semantic_digest', 'frontmatter', 'sections', 'pipeline_log', 'custom_calculations', 'custom_scenarios', 'extensions', 'superseded']);
+const BLOCK_MEMBERS = new Set(['annotation','content','prose']);
+function assertExtras(extras: Record<string, unknown> | undefined, reserved: Set<string>): void {
+  if (extras !== undefined && (!isRecord(extras) || Object.keys(extras).some(key => reserved.has(key)))) throw new UWEnvelopeError('ENVELOPE_SOURCE_ACCOUNTING', 'Retained carrier extras must be an object disjoint from model members.');
+}
 
 export interface UWDocumentEnvelope {
   envelope_version: typeof UW_ENVELOPE_VERSION;
@@ -38,7 +51,7 @@ export interface UWDocumentEnvelope {
   pipeline_log: UWEnvelopeBlock[];
   custom_calculations: UWEnvelopeBlock[];
   custom_scenarios: UWEnvelopeBlock[];
-  extensions: Record<string, UWEnvelopeBlock>;
+  extensions: Record<string, UWEnvelopeExtensionEntry>;
   superseded: Record<string, UWEnvelopeBlock[]>;
   [key: string]: unknown;
 }
@@ -68,10 +81,32 @@ export function toUWEnvelope(
   parsed: ParsedUWFile,
   options: ToEnvelopeOptions = {},
 ): UWDocumentEnvelope {
+  // Parsed implementation members are not extension points for committed model
+  // values. Reject unrepresented members instead of dropping them or borrowing
+  // attribution from raw source; this remains distinct from carrier schema.
+  const parsedKeys = new Set(['frontmatter', 'sections', 'prose', 'pipeline_log', 'custom_calculations', 'custom_scenarios', 'extensions', 'superseded', 'raw', 'envelopeExtras']);
+  const properties = Object.getOwnPropertyDescriptors(parsed);
+  for (const key of Reflect.ownKeys(properties)) {
+    const descriptor = typeof key === 'string' ? properties[key] : undefined;
+    if (typeof key !== 'string' || !parsedKeys.has(key) || !descriptor?.enumerable || !Object.hasOwn(descriptor, 'value')) throw new UWEnvelopeError('ENVELOPE_SOURCE_ACCOUNTING', 'Unsupported parsed model member or descriptor.');
+    if (key !== 'raw') assertDataDescriptors(descriptor.value);
+  }
+  const blocks = [
+    ...Object.values(parsed.sections).flatMap(entry => hasBlockShape(entry) ? [entry as UWBlock] : Object.values(entry)),
+    ...parsed.pipeline_log, ...parsed.custom_calculations, ...parsed.custom_scenarios,
+    ...Object.values(parsed.extensions).flatMap(extensionBlocks), ...Object.values(parsed.superseded).flat(), ...parsedPhysicalBlocks(parsed),
+  ];
+  const blockKeys = new Set(['annotation','meta','content','prose','rawJson','lineStart','lineEnd','envelopeExtras','envelopeProsePresent']);
+  assertExtras(parsed.envelopeExtras, ENVELOPE_MEMBERS);
+  for (const block of blocks) {
+    assertExtras(block.envelopeExtras, BLOCK_MEMBERS);
+    if (block.envelopeProsePresent !== undefined && typeof block.envelopeProsePresent !== 'boolean') throw new UWEnvelopeError('ENVELOPE_SOURCE_ACCOUNTING', 'Retained prose presence must be boolean.');
+  }
+  if (blocks.some(block => Object.keys(block).some(key => !blockKeys.has(key)))) throw new UWEnvelopeError('ENVELOPE_SOURCE_ACCOUNTING', 'Unsupported parsed block member cannot be silently erased.');
   if (Object.hasOwn(options, 'includeSuperseded')) {
     throw new UWEnvelopeError('ENVELOPE_UNSUPPORTED_OPTION', 'Record exports always retain supplied history (RFC 0085).');
   }
-  const sections: Record<string, UWEnvelopeSectionEntry> = {};
+  const sections: Record<string, UWEnvelopeSectionEntry> = Object.create(null);
   for (const [sectionId, entry] of Object.entries(parsed.sections)) {
     if (isVariantMap(entry)) {
       sections[sectionId] = Object.fromEntries(
@@ -85,12 +120,13 @@ export function toUWEnvelope(
     }
   }
 
-  const superseded: Record<string, UWEnvelopeBlock[]> = {};
+  const superseded: Record<string, UWEnvelopeBlock[]> = Object.create(null);
   for (const [sectionId, blocks] of Object.entries(parsed.superseded)) {
     superseded[sectionId] = blocks.map(toEnvelopeBlock);
   }
 
-  return {
+  const envelope: UWDocumentEnvelope = {
+    ...parsed.envelopeExtras,
     envelope_version: UW_ENVELOPE_VERSION,
     format_version: parsed.frontmatter.uw_version,
     generated_at: options.generatedAt ?? new Date().toISOString(),
@@ -105,17 +141,36 @@ export function toUWEnvelope(
     custom_calculations: parsed.custom_calculations.map(toEnvelopeBlock),
     custom_scenarios: parsed.custom_scenarios.map(toEnvelopeBlock),
     extensions: Object.fromEntries(
-      Object.entries(parsed.extensions).map(([id, block]) => [id, toEnvelopeBlock(block)]),
+      Object.entries(parsed.extensions).map(([id, entry]) => [id, mapExtensionEntry(entry, toEnvelopeBlock)]),
     ),
     superseded,
   };
+  assertJSONValue(envelope);
+  return envelope;
+}
+
+/** Internal fresh-source boundary; metadata evidence on a mutable/assembled
+ * model is not an immutable source certificate. No full carrier admission.
+ */
+export function assertSourceBlockAccounting(parsed: ParsedUWFile): void {
+  const physical = parsedPhysicalBlocks(parsed);
+  if (physical.length) {
+    const accounted = [
+      ...Object.values(parsed.sections).flatMap(entry => hasBlockShape(entry) ? [entry as UWBlock] : Object.values(entry)),
+      ...parsed.pipeline_log, ...parsed.custom_calculations, ...parsed.custom_scenarios,
+      ...Object.values(parsed.extensions).flatMap(extensionBlocks), ...Object.values(parsed.superseded).flat(),
+    ];
+    if (accounted.length !== physical.length || physical.some(block => accounted.filter(current => current === block).length !== 1)) {
+      throw new UWEnvelopeError('ENVELOPE_SOURCE_ACCOUNTING', 'Every retained physical block must occur exactly once in the complete projection.');
+    }
+  }
 }
 
 export function fromUWEnvelope(envelope: UWDocumentEnvelope): ParsedUWFile {
   assertUWEnvelope(envelope);
 
-  const sections: ParsedSections = {};
-  const prose: Record<string, string> = {};
+  const sections: ParsedSections = Object.create(null);
+  const prose: Record<string, string> = Object.create(null);
   for (const [sectionId, entry] of Object.entries(envelope.sections)) {
     if (isVariantMap(entry)) {
       const variants = Object.fromEntries(
@@ -134,7 +189,7 @@ export function fromUWEnvelope(envelope: UWDocumentEnvelope): ParsedUWFile {
     }
   }
 
-  return {
+  const parsed: ParsedUWFile = {
     frontmatter: envelope.frontmatter,
     sections,
     prose,
@@ -148,9 +203,9 @@ export function fromUWEnvelope(envelope: UWDocumentEnvelope): ParsedUWFile {
       fromEnvelopeBlock(block, `custom_scenarios[${index}]`),
     ),
     extensions: Object.fromEntries(
-      Object.entries(envelope.extensions).map(([id, block]) => [
+      Object.entries(envelope.extensions).map(([id, entry]) => [
         id,
-        fromEnvelopeBlock(block, `extensions.${id}`),
+        mapExtensionEntry(entry, block => fromEnvelopeBlock(block, `extensions.${id}`)),
       ]),
     ),
     superseded: Object.fromEntries(
@@ -163,12 +218,22 @@ export function fromUWEnvelope(envelope: UWDocumentEnvelope): ParsedUWFile {
     ),
     raw: '',
   };
+  const extras = Object.fromEntries(Object.entries(envelope).filter(([key]) => !ENVELOPE_MEMBERS.has(key)));
+  if (Object.keys(extras).length) parsed.envelopeExtras = extras;
+  // This inventory represents model occurrences only, never attributable Markdown.
+  retainParsedPhysicalBlocks(parsed, [
+    ...Object.values(parsed.sections).flatMap(entry => hasBlockShape(entry) ? [entry as UWBlock] : Object.values(entry)),
+    ...parsed.pipeline_log, ...parsed.custom_calculations, ...parsed.custom_scenarios,
+    ...Object.values(parsed.extensions).flatMap(extensionBlocks), ...Object.values(parsed.superseded).flat(),
+  ]);
+  return parsed;
 }
 
 /** Canonical semantic input. Volatile serialization fields are excluded. */
 export function envelopeSemanticValue(
   envelope: UWDocumentEnvelope,
 ): Omit<UWDocumentEnvelope, 'generated_at' | 'generator' | 'semantic_digest'> {
+  assertJSONValue(envelope);
   const { generated_at: _generatedAt, generator: _generator, semantic_digest: _digest, ...semantic } =
     envelope;
   return semantic;
@@ -185,7 +250,9 @@ export async function computeEnvelopeDigest(envelope: UWDocumentEnvelope): Promi
 export async function stampEnvelopeDigest(
   envelope: UWDocumentEnvelope,
 ): Promise<UWDocumentEnvelope> {
-  return { ...envelope, semantic_digest: await computeEnvelopeDigest(envelope) };
+  const snapshot = snapshotJSONValue(envelope);
+  const semantic_digest = await computeEnvelopeDigest(snapshot);
+  return { ...snapshot, semantic_digest };
 }
 
 export async function verifyEnvelopeDigest(
@@ -207,6 +274,7 @@ export function areEnvelopesEquivalent(
 }
 
 export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnvelope {
+  assertJSONValue(value);
   if (!isRecord(value)) {
     throw new UWEnvelopeError('ENVELOPE_NOT_OBJECT', 'Document root must be an object.');
   }
@@ -234,12 +302,14 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
       );
     }
   }
+  if (!admitsCarrierSchema(value)) throw new UWEnvelopeError('ENVELOPE_INVALID_SCHEMA', 'Model shape does not satisfy the current full carrier schema.');
   if (!isRecord(value['sections'])) {
     throw new UWEnvelopeError('ENVELOPE_MISSING_SECTIONS', 'sections must be an object.');
   }
   for (const [sectionId, entry] of Object.entries(value['sections'])) {
     if (hasBlockShape(entry)) {
       assertEnvelopeBlock(entry, `sections.${sectionId}`);
+      assertBlockIdentity(entry, sectionId);
       continue;
     }
     if (!isRecord(entry) || Object.keys(entry).length === 0) {
@@ -250,6 +320,7 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
     }
     for (const [variant, block] of Object.entries(entry)) {
       assertEnvelopeBlock(block, `sections.${sectionId}.${variant}`);
+      assertBlockIdentity(block, sectionId);
     }
   }
   for (const key of ['pipeline_log', 'custom_calculations', 'custom_scenarios'] as const) {
@@ -262,8 +333,29 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
   if (!isRecord(value['extensions'])) {
     throw new UWEnvelopeError('ENVELOPE_MISSING_COLLECTION', 'extensions must be an object.');
   }
-  for (const [id, block] of Object.entries(value['extensions'])) {
-    assertEnvelopeBlock(block, `extensions.${id}`);
+  for (const [id, raw] of Object.entries(value['extensions'])) {
+    if (!isRecord(raw) || (raw.mode !== 'single' && raw.mode !== 'variants')) throw new UWEnvelopeError('ENVELOPE_INVALID_EXTENSION', `extensions.${id} requires a declared mode.`);
+    const expected = raw.mode === 'single' ? ['mode', 'block'] : ['mode', 'blocks'];
+    if (Object.keys(raw).sort().join('\0') !== expected.sort().join('\0')) throw new UWEnvelopeError('ENVELOPE_INVALID_EXTENSION', `extensions.${id} wrapper is closed.`);
+    if (!id.startsWith('x_')) throw new UWEnvelopeError('ENVELOPE_INVALID_EXTENSION', 'Extension identifiers require x_.');
+    const entry = raw as unknown as UWEnvelopeExtensionEntry;
+    if (entry.mode === 'variants') {
+      if (!Array.isArray(entry.blocks) || !entry.blocks.length) throw new UWEnvelopeError('ENVELOPE_INVALID_EXTENSION', `extensions.${id} needs nonempty records.`);
+      let previous: string | null = null;
+      for (const [index, record] of entry.blocks.entries()) {
+        if (!isRecord(record) || Object.keys(record).sort().join('\0') !== 'block\0variant' ||
+          (record.variant !== null && typeof record.variant !== 'string') ||
+          (index > 0 && compareExtensionIdentity(previous, record.variant) >= 0)) throw new UWEnvelopeError('ENVELOPE_INVALID_EXTENSION', `extensions.${id} has invalid/duplicate/noncanonical identity records.`);
+        assertEnvelopeBlock(record.block, `extensions.${id}`);
+        if (record.variant !== (record.block.annotation.variant ?? null)) throw new UWEnvelopeError('ENVELOPE_INVALID_EXTENSION', `extensions.${id} identity disagrees with annotation.`);
+        previous = record.variant;
+      }
+    }
+    for (const block of extensionBlocks(entry)) {
+      assertEnvelopeBlock(block, `extensions.${id}`);
+      if (block.annotation.section !== id || block.content._meta && (block.content._meta as UWMeta).section !== id ||
+        block.annotation.superseded === true || (block.content._meta as UWMeta).lifecycle?.superseded === true) throw new UWEnvelopeError('ENVELOPE_INVALID_EXTENSION', `extensions.${id} active identity/history mismatch.`);
+    }
   }
   if (!isRecord(value['superseded'])) {
     throw new UWEnvelopeError('ENVELOPE_MISSING_COLLECTION', 'superseded must be an object.');
@@ -275,9 +367,10 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
         `superseded.${sectionId} must be an array.`,
       );
     }
-    blocks.forEach((block, index) =>
-      assertEnvelopeBlock(block, `superseded.${sectionId}[${index}]`),
-    );
+    blocks.forEach((block, index) => {
+      assertEnvelopeBlock(block, `superseded.${sectionId}[${index}]`);
+      assertBlockIdentity(block, sectionId);
+    });
   }
   const digest = value['semantic_digest'];
   if (digest !== undefined && (typeof digest !== 'string' || !/^sha256:[0-9a-f]{64}$/.test(digest))) {
@@ -288,11 +381,14 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
   }
 }
 
+function assertBlockIdentity(block: UWEnvelopeBlock, section: string): void {
+  if (block.annotation.section !== section || (block.content['_meta'] as UWMeta).section !== section) throw new UWEnvelopeError('ENVELOPE_INVALID_IDENTITY', 'Collection, annotation and metadata section identities must agree.');
+}
 function assertEnvelopeBlock(value: unknown, pointer: string): asserts value is UWEnvelopeBlock {
   if (!isRecord(value) || !isRecord(value['annotation']) || !isRecord(value['content'])) {
     throw new UWEnvelopeError('ENVELOPE_INVALID_BLOCK', `${pointer} is not a valid block.`);
   }
-  if (typeof value['annotation']['section'] !== 'string') {
+  if (typeof value['annotation']['section'] !== 'string' || (Object.hasOwn(value['annotation'], 'variant') && typeof value['annotation']['variant'] !== 'string')) {
     throw new UWEnvelopeError(
       'ENVELOPE_INVALID_ANNOTATION',
       `${pointer}.annotation.section must be a string.`,
@@ -304,16 +400,18 @@ function assertEnvelopeBlock(value: unknown, pointer: string): asserts value is 
       `${pointer}.content._meta must be an object.`,
     );
   }
+  if (value['annotation']['section'] !== value['content']['_meta']['section']) throw new UWEnvelopeError('ENVELOPE_INVALID_IDENTITY', `${pointer} annotation and metadata section identities must agree.`);
   if (value['prose'] !== undefined && typeof value['prose'] !== 'string') {
     throw new UWEnvelopeError('ENVELOPE_INVALID_PROSE', `${pointer}.prose must be a string.`);
   }
 }
 function toEnvelopeBlock(block: UWBlock): UWEnvelopeBlock {
   const output: UWEnvelopeBlock = {
+    ...block.envelopeExtras,
     annotation: block.annotation,
     content: block.content,
   };
-  if (block.prose.length > 0) output.prose = block.prose;
+  if (block.prose.length > 0 || block.envelopeProsePresent === true) output.prose = block.prose;
   return output;
 }
 
@@ -328,7 +426,7 @@ function fromEnvelopeBlock(block: UWEnvelopeBlock, pointer: string): UWBlock {
       `${pointer}.content._meta must be an object.`,
     );
   }
-  return {
+  const parsed: UWBlock = {
     annotation: block.annotation as UWFenceAnnotation,
     meta: meta as unknown as UWMeta,
     content: block.content,
@@ -337,6 +435,10 @@ function fromEnvelopeBlock(block: UWEnvelopeBlock, pointer: string): UWBlock {
     lineStart: 0,
     lineEnd: 0,
   };
+  if (Object.hasOwn(block, 'prose') && block.prose === '') parsed.envelopeProsePresent = true;
+  const extras = Object.fromEntries(Object.entries(block).filter(([key]) => !BLOCK_MEMBERS.has(key)));
+  if (Object.keys(extras).length) parsed.envelopeExtras = extras;
+  return parsed;
 }
 
 function isVariantMap(entry: UWEnvelopeSectionEntry | ParsedSections[string]): boolean {

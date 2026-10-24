@@ -1,0 +1,60 @@
+{
+  "frontmatter": {
+    "uw_version": "3.0",
+    "deal_id": "synthetic-complete-record",
+    "deal_name": "Synthetic complete record"
+  },
+  "sections": {
+    "property": {
+      "meta": {
+        "section": "property",
+        "provenance": {
+          "source": "manual",
+          "actor": "synthetic",
+          "timestamp": "2026-10-23T00:00:00Z"
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "marker": 2
+      }
+    }
+  },
+  "prose": {},
+  "pipeline_log": [],
+  "custom_calculations": [],
+  "custom_scenarios": [],
+  "extensions": {},
+  "superseded": {
+    "property": [
+      {
+        "meta": {
+          "section": "property",
+          "provenance": {
+            "source": "manual",
+            "actor": "synthetic",
+            "timestamp": "2026-10-23T00:00:00Z"
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false
+          },
+          "lifecycle": {
+            "revision": 9,
+            "superseded": false
+          }
+        },
+        "content": {
+          "marker": 1
+        }
+      }
+    ]
+  }
+}

@@ -28,8 +28,8 @@ const SRC = dirname(fileURLToPath(import.meta.url));
 /** RFC 0083 §1, as source paths relative to `src/`. The two entries are listed separately. */
 const STANDARD_MODULES: readonly string[] = Object.freeze([
   // Reader
-  'parser.ts', 'yaml-scalar.ts', 'types.ts', 'scenario.ts', 'metadata.ts', 'version.ts',
-  'block-roles.ts', 'block-kind.ts', 'section-resolution.ts',
+  'parser.ts', 'yaml-scalar.ts', 'types.ts', 'scenario.ts', 'metadata.ts', 'version.ts', 'json-admission.ts',
+  'block-roles.ts', 'block-kind.ts', 'section-resolution.ts', 'extension-entry.ts', 'portable-projection.ts',
   // Validation
   'validator.ts', 'gap-instant.ts', 'payload-admission.ts', 'builtin-class-content.ts', 'builtin-class-validation.ts', 'asset-class.ts',
   'period-path.ts', 'periods.ts', 'period-validation.ts', 'lease-up-structure.ts',
@@ -59,7 +59,7 @@ const STANDARD_MODULES: readonly string[] = Object.freeze([
   'builtin-packs/retail.ts', 'builtin-packs/self-storage.ts', 'builtin-packs/senior-housing.ts',
   'builtin-packs/student-housing.ts',
   // Profiles: representations, portfolio, sensitivity, stochastic, market data, read bindings
-  'envelope.ts', 'codec.ts', 'codecs.ts', 'uwjson.ts', 'uwxml.ts', 'uwcsv.ts', 'zip-safety.ts',
+  'carrier-schema.ts', 'carrier-schema-data.ts', 'carrier-values.ts', 'xml-tree.ts', 'xml-mapping.ts', 'csv-mapping.ts', 'csv-views.ts', 'envelope.ts', 'codec.ts', 'codecs.ts', 'uwjson.ts', 'uwxml.ts', 'uwcsv.ts', 'zip-safety.ts',
   'lite.ts', 'lite-bridge.ts', 'source-representation.ts', 'composition.ts', 'negotiation.ts',
   'deal-package.ts', 'deal-package-context.ts', 'deal-package-zip.ts', 'lease-abstract.ts',
   'portfolio.ts', 'calc/sensitivity.ts', 'calc/stochastic.ts', 'calc/prng.ts', 'market-data.ts',

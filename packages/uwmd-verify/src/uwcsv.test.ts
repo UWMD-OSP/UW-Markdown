@@ -5,17 +5,19 @@ import { describe, expect, it } from 'vitest';
 import { areEnvelopesEquivalent, fromUWEnvelope, toUWEnvelope } from './envelope.js';
 import { validateUWFile } from './validator.js';
 import { parseUWFile } from './parser.js';
+import { sha256BytesHex } from './integrity.js';
 import {
   decodeUWCSVBundle,
   decodeUWCSVZip,
   encodeUWCSVBundle,
   encodeUWCSVZip,
   flattenEnvelopeBlockValues,
+  flattenUWSourceBlockValues,
   UWCSVError,
 } from './uwcsv.js';
 
 const source = readFileSync(
-  resolve(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md'),
+  resolve(process.cwd(), '..', '..', 'conformance', 'rfc-0089', 'fixtures', 'complete-current.uwx.md'),
   'utf8',
 );
 const envelope = toUWEnvelope(parseUWFile(source), {
@@ -23,7 +25,7 @@ const envelope = toUWEnvelope(parseUWFile(source), {
   generator: '@uwmd/core-test',
 });
 
-describe('UW CSV Bundle 1.0', () => {
+describe('UW CSV Bundle 2.0', () => {
   it('round-trips the complete envelope through normalized CSV tables', async () => {
     const bundle = await encodeUWCSVBundle(envelope);
     expect(Object.keys(bundle.files).sort()).toEqual([
@@ -71,6 +73,22 @@ describe('UW CSV Bundle 1.0', () => {
     expect(first).toEqual(second);
     const decoded = await decodeUWCSVZip(first);
     expect(areEnvelopesEquivalent(decoded, envelope)).toBe(true);
+  });
+
+  it.each([0, 6] as const)('checks BOM bytes in the original ZIP inventory before text decoding (%s)', async (level) => {
+    const bundle = await encodeUWCSVBundle(envelope);
+    const files = Object.fromEntries(Object.entries(bundle.files).map(([path, text]) => [path, strToU8(text)]));
+    files['frontmatter.csv'] = new Uint8Array([239, 187, 191, ...files['frontmatter.csv']!]);
+    await expect(decodeUWCSVZip(zipSync(files, { level }))).rejects.toThrow(/CSV_SIZE_MISMATCH/);
+    const manifest = JSON.parse(bundle.files['manifest.json']!);
+    const entry = manifest.files.find((file: { path: string }) => file.path === 'frontmatter.csv');
+    entry.bytes = files['frontmatter.csv'].length;
+    entry.sha256 = `sha256:${await sha256BytesHex(files['frontmatter.csv'])}`;
+    files['manifest.json'] = strToU8(JSON.stringify(manifest));
+    expect(areEnvelopesEquivalent(await decodeUWCSVZip(zipSync(files, { level })), envelope)).toBe(true);
+    entry.sha256 = `sha256:${'0'.repeat(64)}`;
+    files['manifest.json'] = strToU8(JSON.stringify(manifest));
+    await expect(decodeUWCSVZip(zipSync(files, { level }))).rejects.toThrow(/CSV_HASH_MISMATCH/);
   });
 
   it('preserves arrays with more than ten entries and formula-looking prose', async () => {
@@ -129,7 +147,7 @@ describe('flattenEnvelopeBlockValues', () => {
     const second = flattenEnvelopeBlockValues(envelope);
     expect(second).toEqual(first);
     // Within one block_ref, annotation rows precede meta rows precede content rows.
-    const order = { annotation: 0, meta: 1, content: 2 } as const;
+    const order = { annotation: 0, meta: 1, content: 2, 'block-extra': 3 } as const;
     let prevRef = '';
     let prevScope = -1;
     for (const row of first) {
@@ -146,5 +164,26 @@ describe('flattenEnvelopeBlockValues', () => {
     const rows = flattenEnvelopeBlockValues(envelope);
     expect(rows.some((row) => row.scope === 'meta')).toBe(true);
     expect(rows.some((row) => row.scope === 'content' && row.pointer.startsWith('/_meta'))).toBe(false);
+  });
+});
+
+// Explicit received inputs preserve the normal review counterexamples.
+describe('source admission and received descriptor precedence', () => {
+  it('projects absent/null/mismatched metadata without carrier admission', () => {
+    const packet = JSON.parse(readFileSync(resolve(process.cwd(), '../../conformance/rfc-0089/integration-controls/source-fact-cases.json'), 'utf8'));
+    for (const item of packet.cases) {
+      const parsed = parseUWFile(item.source);
+      const model = toUWEnvelope(parsed);
+      expect(() => flattenEnvelopeBlockValues(model)).toThrow();
+      const rows = flattenUWSourceBlockValues(parsed);
+      expect(rows).toContainEqual({block_ref: '/sections/property', scope: 'content', pointer: '/total_units', json_type: 'number', value_json: '1'});
+      expect(rows.some(row => row.scope === 'meta')).toBe(item.meta_present);
+      if (item.name === 'null') expect(rows.find(row => row.scope === 'meta')).toMatchObject({pointer: '', json_type: 'null', value_json: 'null'});
+      if (item.name === 'mismatch') expect(rows.find(row => row.scope === 'meta' && row.pointer === '/section')?.value_json).toBe('"debt_structure"');
+    }
+  });
+  it('refuses a forged singleton variant descriptor before current/stale semantic stamps', async () => {
+    const packet = JSON.parse(readFileSync(resolve(process.cwd(), '../../conformance/rfc-0089/integration-controls/csv-descriptor-cases.json'), 'utf8'));
+    for (const item of packet.cases) await expect(decodeUWCSVBundle({files: item.files})).rejects.toThrow(/CSV descriptor agreement/);
   });
 });

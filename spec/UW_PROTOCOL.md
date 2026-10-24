@@ -641,7 +641,14 @@ minimum a conforming reader surfaces, not the shape of its model.
 }
 ```
 
-A multi-variant section (§2.8) nests one such object per variant key.
+A builtin multi-variant section (§2.8) nests one such object per variant key.
+RFC 0089 extensions instead use closed tagged entries: `{mode:"single",block}`
+or `{mode:"variants",blocks:[{variant,block},...]}`. Variant identities are
+exact null or strings, null-first then UTF-16 ordered, without aliases for
+null, empty string or `default`. Each portable block has `meta` iff `_meta`
+was authored (including null), and `content` excluding only `_meta` and
+`_notes`, retaining `_role`, `_overrides` and ordinary `content`. Annotation
+and prose echoes are not required. See [Envelope2.0](UW_ENVELOPE.md).
 
 `_meta` carries **only the keys the document carried**. A parser that
 fills every optional field with a default MUST NOT project the filled
@@ -1821,7 +1828,7 @@ spellings and dates normalized by a permissive date parser MUST refuse.
 
 The subject has exactly these members: `representation: "uwx-markdown"`,
 `representation_version: "1.0"`, `canonicalization: "uw-envelope-semantic"`,
-`canonicalization_version: "1.0"`, and `digest: "sha256:<64 lowercase hex>"`.
+`canonicalization_version: "2.0"`, and `digest: "sha256:<64 lowercase hex>"`.
 Only structured Format 3.0 Markdown is supported by this first capability.
 
 The exact signing input is RFC 8785 canonical JSON of the artifact with only
@@ -1857,10 +1864,10 @@ append-only
 in source order and do not use singleton selection. Role-based sections are
 parallel when active blocks state a `_role` and active blocks in that section
 also declare explicit variants (Format §2.8). Repeated `x_*` ids and superseded
-extension blocks MUST refuse: the current extension map cannot represent their
-history faithfully. Unknown ordinary sections are retained, not filtered.
+extension blocks MUST refuse under V.13's retained authentication admission
+guard, although the ordinary complete model can represent them (RFC0089). Unknown ordinary sections are retained, not filtered.
 
-The envelope semantic object has `envelope_version: "1.0"`,
+The envelope semantic object has `envelope_version: "2.0"`,
 `format_version: "3.0"`, the parsed `frontmatter`, `sections`, `pipeline_log`,
 `custom_calculations`, `custom_scenarios`, `extensions` and `superseded`.
 Each projected block contains its parsed `annotation`, complete JSON `content`
@@ -1872,7 +1879,11 @@ trailing Markdown after the final section is outside the projection.
 Current singleton sections map ids to blocks; parallel sections map ids to
 variant-keyed block maps. Explicitly superseded ordinary blocks go into arrays
 under `superseded[section]` in source order. Append-only collections and the
-extension map retain their exact block objects. All collections are present,
+extension entries retain their exact tagged wrappers and block objects.
+Ordinary complete source projection retains overwritten priors at their replacement
+event, as well as explicit history, without mutating their annotations/metadata.
+V.13 still refuses ambiguous or repeated selections before that projection.
+All collections are present,
 including empty maps and arrays. Every scanned source section block MUST appear
 exactly once in the projection; a lost, overwritten or duplicated block MUST
 refuse. A parsed object used for broader integrity checks MUST have the same
@@ -1880,10 +1891,10 @@ envelope semantic digest as its authenticated source.
 
 Remove only top-level `generated_at`, `generator` and `semantic_digest` from
 the envelope. Canonicalize the remainder by RFC 8785, encode as UTF-8 and compute
-SHA-256, rendered as `sha256:` plus lowercase hex. These are the existing
-`uw-envelope-semantic` 1.0 bytes (UW Receipt §3.1), with guards that refuse
-inputs whose projection is ambiguous or lossy; the canonicalization is not
-silently revised. No calculation pack, default filling or financial validation
+SHA-256, rendered as `sha256:` plus lowercase hex. These are the coordinated
+`uw-envelope-semantic`2.0 bytes (RFC0089; UW Receipt §3.1), with the retained
+V.13 guards refusing inputs outside source authentication admission. Full
+carrier schema admission is separate from this JSON-value/source projection. No calculation pack, default filling or financial validation
 is part of this projection. A structurally authenticatable record with wrong
 financial figures can still be authenticated.
 

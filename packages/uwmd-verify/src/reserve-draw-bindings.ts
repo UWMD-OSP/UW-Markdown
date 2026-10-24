@@ -189,6 +189,7 @@ export async function verifyReserveDrawBindings(
   );
   if (issues.length) return result('unverifiable', 'invalid_structure');
   try {
+    // Complete occurrence accounting is enforced by toUWEnvelope (RFC 0089).
     source_digest = await computeEnvelopeDigest(toUWEnvelope(snapshot));
   } catch {
     return result('unverifiable', 'digest_unavailable');

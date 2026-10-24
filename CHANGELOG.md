@@ -8,6 +8,17 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Fix #544: verify ZIP local/central metadata, actual payload sizes and CRCs;
+  check CSV inventory hashes on original bytes before UTF-8 BOM handling,
+  preserving STORE and DEFLATE support in CSV and deal-package readers.
+
+- RFC 0089: retain tagged extension peers and physical-event history in Envelope
+  2.0; coordinate complete JSON/XML/CSV mappings and whole-model subjects at2.0.
+  Native stamps admit descriptors before copying and match their returned models.
+  Preserve source/carrier admission boundaries and separately scoped commitments.
+  Reserve plans bind the complete source; changed peers fail stale binding until
+  an explicit reviewed rebind. No plan is automatically refreshed.
+
 - RFC 0125: verify data-center price per explicit rentable SF at every bound
   home; register rentable area as secondary while keeping kW primary. Mirror
   the dictionary in the pack and live workbook; infer no area from power.

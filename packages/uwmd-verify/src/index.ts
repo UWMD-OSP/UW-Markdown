@@ -111,6 +111,7 @@ export {
   encodeUWCSVZip,
   decodeUWCSVZip,
   flattenEnvelopeBlockValues,
+  flattenUWSourceBlockValues,
   UW_CSV_BUNDLE_CODEC,
 } from './uwcsv.js';
 export type { UWCSVBundle, UWCSVDecodeOptions, UWBlockValueRow, UWJSONValueType } from './uwcsv.js';
@@ -878,3 +879,14 @@ export type {
 } from './document-signatures.js';
 
 export { parseGapInstant, ValidationClockError } from './gap-instant.js';
+
+export type { UWExtensionEntry, UWParsedExtensionEntry } from './types.js';
+export type { UWEnvelopeExtensionEntry } from './envelope.js';
+export { extensionBlocks, mapExtensionEntry } from './extension-entry.js';
+
+export { UW_ENVELOPE_CANONICALIZATION_VERSION } from './protocol.js';
+
+export { JSONValueError } from './json-admission.js';
+
+export { projectUWParse } from './portable-projection.js';
+export type { UWPortableBlock } from './portable-projection.js';

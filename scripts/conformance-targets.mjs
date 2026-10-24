@@ -90,7 +90,7 @@ export function assertCoverage(expected, observed) {
 }
 /** Resolve a content-based portable identity to its reference check owner. */
 export function portableOwner(suite, scenario, operation) {
-  const referenceScenario = suite === 'documents'
+  const referenceScenario = suite === 'documents' || suite === 'extension-envelope'
     ? scenario.startsWith('malformed-') ? `malformed/${scenario.slice('malformed-'.length)}` : `${scenario} [${operation}]`
     // RFC 0115 D4: a portable receipt case is the pack-less Verifier check.
     : suite === 'receipts' && scenario.startsWith('verify-') ? `verify/${scenario.slice('verify-'.length)} [pack-less]`

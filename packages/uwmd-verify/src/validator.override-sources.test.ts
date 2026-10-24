@@ -1,3 +1,4 @@
+import { extensionBlocks } from './extension-entry.js';
 import { describe, expect, it } from 'vitest';
 import { buildMeta } from './metadata.js';
 import { parseUWFile } from './parser.js';
@@ -51,8 +52,8 @@ describe('accepted override vocabulary ownership independent of META05/06', () =
     block.content._overrides = [Object.assign(Object.create({ source: 'bad', resolution: 'bad' }), { path: 'x' })];
     expect(vocabulary(parsed)).toEqual([]);
     (block.content._overrides as Record<string, unknown>[])[0]!.source = 'bad';
-    parsed.extensions.x_alias = block;
-    parsed.extensions.x_copy = { ...block };
+    parsed.extensions.x_alias = { mode: 'single', block: block };
+    parsed.extensions.x_copy = { mode: 'single', block: { ...block } };
     expect(vocabulary(parsed).map(i => i.field)).toEqual(['_overrides[0].source']);
     expect(vocabulary(source([]))).toEqual([]);
   });

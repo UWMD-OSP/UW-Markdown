@@ -776,7 +776,7 @@ export function externalizeSection(
   const sections: Record<string, unknown> = { ...parsed.sections };
   sections[opts.section] = {
     ...block,
-    annotation: { ...block.annotation, [EXTERNAL_ANNOTATION_KEY]: true } as UWFenceAnnotation,
+    annotation: { ...block.annotation, [EXTERNAL_ANNOTATION_KEY]: 'true' } as UWFenceAnnotation,
     content: { ...restContent, external: directive },
   } satisfies UWBlock;
 

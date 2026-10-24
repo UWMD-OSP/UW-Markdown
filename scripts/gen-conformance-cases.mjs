@@ -109,6 +109,11 @@ const dirs = (base) =>
 
 const DOCUMENT_FIXTURES = join(CONFORMANCE, 'documents', 'fixtures');
 const DOCUMENT_EXPECTED = join(CONFORMANCE, 'documents', 'expected');
+const EXTENSION_FIXTURES=join(CONFORMANCE,'rfc-0089/portable/fixtures');
+for(const file of readdirSync(EXTENSION_FIXTURES).filter(file=>file.endsWith('.uwx.md')).sort()) {
+  const stem=basename(file,'.uwx.md');
+  add(`extension-envelope/${stem}/parse`,'parse',[file],EXTENSION_FIXTURES,{kind:'json-subset',file:`conformance/rfc-0089/portable/expected/${stem}.json`});
+}
 for (const file of readdirSync(DOCUMENT_FIXTURES).filter((f) => f.endsWith('.uwx.md')).sort()) {
   const stem = basename(file, '.uwx.md');
   const baseline = (suffix) => rel(join(DOCUMENT_EXPECTED, `${stem}.${suffix}`));

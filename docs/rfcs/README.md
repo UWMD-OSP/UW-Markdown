@@ -116,6 +116,7 @@ and how it gets accepted.
 | [0086](./0086-data-center-purchase-price-authority.md) | One purchase-price authority for data-center metrics, with the summary cross-checked | accepted | format, protocol, core, conformance, tooling |
 | [0087](./0087-hospitality-revenue-reconciliation.md) | Define the basis for hospitality revenue reconciliation | draft | format, protocol, core, conformance, tooling |
 | [0088](./0088-pin-financial-numerical-procedures.md) | Resolve financial power and transcendental reproducibility | accepted | protocol, core, conformance |
+| [0089](./0089-lossless-extension-envelope.md) | Preserve extension variants in a complete versioned Envelope | accepted | format, protocol, core, conformance, tooling |
 | [0090](./0090-provenance-actor-admission.md) | Admit required provenance actors with an explicit diagnostic | accepted | format, protocol, core, conformance, tooling |
 | [0091](./0091-required-metadata-booleans.md) | Allocate the two required metadata boolean diagnostics | accepted | format, protocol, core, conformance, tooling |
 | [0092](./0092-pro-forma-verification-profile.md) | Verify stated pro forma identities under declared conventions | draft | format, protocol, core, conformance |

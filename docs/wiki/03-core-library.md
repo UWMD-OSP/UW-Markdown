@@ -100,7 +100,7 @@ Module | Package | Responsibility | Key exports
 `codec.ts` | verify | Extensible representation registry | `CodecRegistry`, `UWCodec`, representation descriptors
 `bindings.ts` | verify | Optional HTTP/MCP companion adapters | semantic ETags, negotiation, resources, compact tool results; source edits through an injected edit adapter
 `bindings-edit.ts` | core | Source edits wired to the starter editor | `applyUWMDSourceEdit`, `createUWMCPApplyEditResult`
-`uwjson.ts` | verify | UW JSON 1.0 codec + parsed-model bridge | `UW_JSON_CODEC`, `toUWJson`, `parseUWJsonVerified`, `fromUWJson`
+`uwjson.ts` | verify | UW JSON 2.0 codec + parsed-model bridge | `UW_JSON_CODEC`, `toUWJson`, `parseUWJsonVerified`, `fromUWJson`
 `runner.ts` | core | Write blocks back to file (supersede-aware) | `writeAgentBlock`, `writeErrorEntry`, `buildMeta` (defined in `metadata.ts`)
 `compactor.ts` | core | Section diff | `diff`
 `init.ts` | core | Scaffold a blank `.uw.md` | `generateBlankUWFile`
@@ -141,6 +141,23 @@ subset), prose, and fenced ```` ```json uw:… ```` data blocks. Produces
 `ParsedUWFile`: `frontmatter`, `sections` (single- or multi-variant), `prose`
 per section, `pipeline_log[]`, `custom_calculations[]`, `custom_scenarios[]`,
 `extensions{}`, `superseded{}` (history), and the original `raw` text.
+
+RFC0089 gives `extensions[id]` an exact tagged `UWExtensionEntry<UWBlock>`:
+`{mode:'single',block}` or `{mode:'variants',blocks:[{variant,block}]}`.
+Variant identities are nullable, canonical and never aliases for `default`.
+Overwritten priors and explicit history retain physical-event order and original
+metadata. `extensionBlocks` and `mapExtensionEntry` traverse/project either mode.
+Full model/carrier readers preserve unknown members through clone-safe
+`envelopeExtras`; an explicit empty prose value uses `envelopeProsePresent`.
+See [the complete Envelope contract](../../spec/UW_ENVELOPE.md).
+
+Fresh-source receipt/authentication operations account for every source
+occurrence. Mutable and assembled models use their current complete model;
+parser-retained metadata evidence is not an immutable source certificate.
+Full carrier schema admission is separate from source JSON-value admission.
+Native stamping inspects descriptors and snapshots before any copy/hash, so
+accessors execute zero getters and successful returned stamps match their models.
+V9/V11/V12, receipt results and signing inputs retain their distinct scopes.
 
 Frontmatter string keys are decoded with the shared YAML scalar reader at
 both mapping levels. Mapping separators are found outside quoted content;
@@ -266,22 +283,22 @@ byte-preserving `applyEdit` still needs the `.uw.md`; read/validate/calc
 consumers do not.)
 
 - `toUWJson(parsed, opts?) → UWDocumentEnvelope` — converts the parsed model to
-  Envelope 1.0; superseded history is included by default.
-- `stringifyUWJson(parsed, opts?) → string` — pretty-printed UW JSON 1.0.
+  Envelope 2.0; superseded history is included by default.
+- `stringifyUWJson(parsed, opts?) → string` — pretty-printed UW JSON 2.0.
 - `stringifyUWJsonWithDigest(parsed, opts?) → Promise<string>` — adds the
   canonical `semantic_digest` used by CLI exports and cross-format checks.
 - `parseUWJson(text) → UWDocumentEnvelope` and `parseUWJsonVerified(text)` —
   structural parsing, with optional digest enforcement.
 - `fromUWJson(doc) → ParsedUWFile` — rehydrates the in-memory model.
 - `CodecRegistry`, `CORE_CODEC_REGISTRY`, `UW_JSON_CODEC`, and `UW_XML_CODEC` — discover and invoke model codecs by ID, media type, or filename.
-- `stringifyUWXml(envelope)` / `parseUWXml(text)` — deterministic UW XML 1.0 with digest verification and secure parsing limits.
+- `stringifyUWXml(envelope)` / `parseUWXml(text)` — deterministic UW XML 2.0 with digest verification and secure parsing limits.
 - `encodeUWCSVBundle` / `decodeUWCSVBundle` — normalized directory form; `encodeUWCSVZip` / `decodeUWCSVZip` provide deterministic bounded ZIP interchange and all six views.
 - `createUWHTTPResponse` / `decodeUWHTTPRequest` / `assertUWIfMatch` — negotiated model bytes, semantic ETags, and optimistic concurrency.
 - `createUWMCPResource` and `createUWMCP*Result` — text/blob resources, compact structured results, JSON fallback, and resource links.
 
 CLI: `uwmd export <file.uw.md>` writes a digested `.uw.json` (`--stdout` to pipe; all supplied history retained). `uwmd convert <file> --to uw-json|uw-xml|uw-csv-bundle` converts Markdown and all verified model representations through the shared envelope.
 
-> **Status — normative Envelope 1.0 / UW JSON 1.0 implementation.** The schema is
+> **Status — normative Envelope 2.0 / UW JSON 2.0 implementation.** The schema is
 > `spec/schemas/uw-document-envelope.schema.json`. This is model-lossless, not
 > byte-preserving: Markdown source bytes remain exclusive to the `.uw.md` source
 > adapter.
@@ -339,11 +356,10 @@ RCP_COMPUTATION_FAILED refusal. Document artifact input uses malformed/INT-09
 before version/source/backend checks; malformed block signing input uses INT-07.
 Direct helpers retain typed refusal. Unsigned/excluded metadata is not globally
 reclassified. Encoding-valid unsupported signature subjects retain INT-14, and
-XML1 keeps its existing XML_CHARACTER_INVALID boundary. Backend exceptions are
-not relabeled by the narrow Unicode catches. Historical source/artifact bytes and existing
-valid conformance subjects are not rewritten. The bounded correction's activation
-and historical invalid-subject consequences require explicit integration review;
-it neither implements RFC0089 nor changes Envelope1, schemas or public versions.
+the XML 2.0 carrier enforces its frozen XML 1.0 character and lexical rules.
+Backend exceptions are not relabeled by narrow Unicode catches. The accepted
+complete Envelope identity is coordinated separately from V.9/V.11/V.12 and
+receipt results; no historical source or artifact is repaired.
 
 
 `verifyChain(parsed, options?)` (async) checks the `content_hash`/`parent_hash`
@@ -721,3 +737,16 @@ RFC 0117 extends the closed SIZE-01 table to declared mixed-use component
 sizes and applies positive_size_denominator to the eight component per-size
 metrics. Validation checks all current blocks; metric verification resolves
 the selected component block without defaults or aggregation.
+
+Whole-source reserve-draw binding uses the complete Envelope 2.0 identity,
+including extension peers and history. A changed peer fails a stale plan with
+RDB-02; a newly reviewed plan must explicitly name the changed source digest.
+No plan is automatically refreshed. The selected V.12 payment-vector digest
+remains a separate commitment.
+
+`flattenEnvelopeBlockValues` projects admitted full carrier models.
+`flattenUWSourceBlockValues(parsed)` instead projects the source model into
+facts without requiring full carrier-schema admission; batch indexing retains
+parseable records with validation findings. Neither fact projection authenticates
+a source. `lakeInputFromEnvelope` recomputes its model key, while supplied lake
+source-evidence/fact keys are propagation and storage inputs, not verification.

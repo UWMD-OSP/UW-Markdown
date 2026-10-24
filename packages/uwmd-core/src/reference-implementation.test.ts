@@ -6,6 +6,7 @@ import { Ajv2020 } from 'ajv/dist/2020.js';
 import { describe, expect, it } from 'vitest';
 import {
   CONFORMANCE_PROFILES,
+  CORE_CODEC_REGISTRY,
   FORMAT_VERSION,
   PROTOCOL_VERSION,
   VALIDATOR_CODE_FAMILIES,
@@ -17,6 +18,12 @@ import { CORE_VERSION } from './version.js';
 const repoFile = (path: string) => readFileSync(fileURLToPath(new URL(`../../../${path}`, import.meta.url)), 'utf8');
 
 describe('REFERENCE_IMPLEMENTATION_MANIFEST', () => {
+  it('declares the actual current model codecs and their admitted regime',()=>{
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.representations).toEqual(CORE_CODEC_REGISTRY.list());
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.representations!.map(item=>[item.id,item.representation_version])).toEqual([
+      ['uw-csv-bundle','2.0.0'],['uw-json','2.0.0'],['uw-xml','2.0.0'],
+    ]);
+  });
   it('reports the versions this build actually is', () => {
     expect(REFERENCE_IMPLEMENTATION_MANIFEST.protocol_version).toBe(PROTOCOL_VERSION);
     expect(REFERENCE_IMPLEMENTATION_MANIFEST.format_version).toBe(FORMAT_VERSION);

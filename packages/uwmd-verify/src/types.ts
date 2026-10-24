@@ -411,6 +411,10 @@ export interface UWBlock<T extends Record<string, unknown> = Record<string, unkn
   content: T;
   prose: string;       // markdown text immediately preceding this block
   rawJson: string;
+  /** Full carrier members outside annotation/content/prose; retained across snapshots. */
+  envelopeExtras?: Record<string, unknown>;
+  /** Distinguishes an explicitly empty carrier prose value from absence. */
+  envelopeProsePresent?: boolean;
   lineStart: number;   // 1-indexed line of the opening fence
   lineEnd: number;     // 1-indexed line of the closing ```
 }
@@ -482,14 +486,23 @@ export interface ParsedSections {
   [sectionId: string]: UWBlock | { [variant: string]: UWBlock };
 }
 
+/** Exact nullable extension identity; never coerce absence to literal default. */
+export type UWExtensionEntry<T> =
+  | { mode: 'single'; block: T }
+  | { mode: 'variants'; blocks: Array<{ variant: string | null; block: T }> };
+
+export type UWParsedExtensionEntry = UWExtensionEntry<UWBlock>;
+
 export interface ParsedUWFile {
+  /** Unknown full Envelope members retained by carrier readers, including snapshots. */
+  envelopeExtras?: Record<string, unknown>;
   frontmatter: UWFrontmatter;
   sections: ParsedSections;
   prose: { [sectionId: string]: string };
   pipeline_log: UWBlock[];
   custom_calculations: UWBlock[];
   custom_scenarios: UWBlock[];
-  extensions: { [extensionId: string]: UWBlock };
+  extensions: Record<string, UWParsedExtensionEntry>;
   superseded: { [sectionId: string]: UWBlock[] };
   raw: string;
 }

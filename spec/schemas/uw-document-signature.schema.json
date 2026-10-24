@@ -16,7 +16,7 @@
         "representation": { "const": "uwx-markdown" },
         "representation_version": { "const": "1.0" },
         "canonicalization": { "const": "uw-envelope-semantic" },
-        "canonicalization_version": { "const": "1.0" },
+        "canonicalization_version": { "const": "2.0" },
         "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
       }
     },

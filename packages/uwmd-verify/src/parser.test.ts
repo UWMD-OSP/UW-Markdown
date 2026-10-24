@@ -1,3 +1,4 @@
+import { extensionBlocks } from './extension-entry.js';
 // Parser tests — verified against examples/Parkview-Apts-Glendale-AZ.uwx.md
 // Run: npm test
 
@@ -826,7 +827,7 @@ describe('structured block JSON admission (RFC 0106)', () => {
   it('admits the same names in sibling objects, paired surrogates and large finite numbers', () => {
     const body = String.raw`{${META},"a":{"id":1},"b":{"id":2},"rows":[{"id":1},{"id":2}],"emoji":"😀","raw":"😀","big":1.7976931348623157e308,"long":12345678901234567890,"text":"a \"quoted\" : name"}`;
     const parsed = parseUWFile(doc(body));
-    const block = parsed.extensions['x_probe'] as { content: Record<string, unknown> };
+    const block = extensionBlocks(parsed.extensions['x_probe']!)[0]! as { content: Record<string, unknown> };
     expect(block.content['emoji']).toBe('😀');
     expect(block.content['big']).toBe(1.7976931348623157e308);
   });
