@@ -2,6 +2,7 @@ import { hasBlockShape } from './block-kind.js';
 // UW Document Envelope — format-neutral semantic model shared by machine codecs.
 
 import { canonicalize } from './integrity-canonical.js';
+import { assertJSONValue, snapshotJSONValue } from './json-admission.js';
 import { sha256TextHex } from './integrity.js';
 import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 import type {
@@ -169,6 +170,7 @@ export function fromUWEnvelope(envelope: UWDocumentEnvelope): ParsedUWFile {
 export function envelopeSemanticValue(
   envelope: UWDocumentEnvelope,
 ): Omit<UWDocumentEnvelope, 'generated_at' | 'generator' | 'semantic_digest'> {
+  assertJSONValue(envelope);
   const { generated_at: _generatedAt, generator: _generator, semantic_digest: _digest, ...semantic } =
     envelope;
   return semantic;
@@ -185,7 +187,9 @@ export async function computeEnvelopeDigest(envelope: UWDocumentEnvelope): Promi
 export async function stampEnvelopeDigest(
   envelope: UWDocumentEnvelope,
 ): Promise<UWDocumentEnvelope> {
-  return { ...envelope, semantic_digest: await computeEnvelopeDigest(envelope) };
+  const snapshot = snapshotJSONValue(envelope);
+  const semantic_digest = await computeEnvelopeDigest(snapshot);
+  return { ...snapshot, semantic_digest };
 }
 
 export async function verifyEnvelopeDigest(
@@ -207,6 +211,7 @@ export function areEnvelopesEquivalent(
 }
 
 export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnvelope {
+  assertJSONValue(value);
   if (!isRecord(value)) {
     throw new UWEnvelopeError('ENVELOPE_NOT_OBJECT', 'Document root must be an object.');
   }
