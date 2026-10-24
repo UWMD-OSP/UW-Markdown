@@ -7,11 +7,13 @@ signature capability. The candidate branch and its PR must remain unmerged.
 After the normal workspace install and build, run:
 
 ```sh
-node --test --test-concurrency=1 conformance/candidate-0089/carriers.test.mjs conformance/candidate-0089/authentication.test.mjs conformance/candidate-0089/refusals.test.mjs conformance/candidate-0089/consumers.test.mjs conformance/candidate-0089/repairs.test.mjs conformance/candidate-0089/reviewer.test.mjs
+node --test --test-concurrency=1 conformance/candidate-0089/carriers.test.mjs conformance/candidate-0089/authentication.test.mjs conformance/candidate-0089/refusals.test.mjs conformance/candidate-0089/consumers.test.mjs conformance/candidate-0089/repairs.test.mjs conformance/candidate-0089/reviewer.test.mjs conformance/candidate-0089/remaining.test.mjs
 ```
 
 The dedicated workflow runs these controls on Windows and Linux with Node 22
-and Python 3.12. Reports and actual carriers go to
+and both Python 3.12.3 and the current 3.12 patch. Reports identify exact Node,
+Python and Expat versions; these runs do not execute every Python patch.
+Reports and actual carriers go to
 `node_modules/.cache/rfc0089-evidence` and CI artifacts, outside public sources.
 Reports include complete-model/preimage commitments, physical source counts,
 both carrier directions, boundary-specific refusals and code identities.
@@ -38,7 +40,9 @@ ordinary receipts retain their validation-reporting issuance policy. Full
 model/carrier validation remains enforced. Direct models reject all unsupported
 own descriptors without evaluating accessors.
 
-The consumer inventory follows TypeScript-resolved calls and aliases, with
+The consumer inventory follows TypeScript-resolved calls and aliases among
+explicitly classified nodes in both directions, plus an independent per-function
+identity-field/read/write/SQL discovery pass. It also includes
 explicit reviewed callback, storage, dynamic-import and JSX data edges. It
 classifies computation, propagation/storage, delegation, exports/display and
 separate commitments. Spelling search is a discovery aid only. Opaque external
@@ -55,4 +59,20 @@ original and adapted hashes. Adaptations relocate imports/outputs and satisfy
 repository style; expectations are unchanged. The original byte snapshots and
 captured failures are kept in private maintainer records. Rerunning those
 controls is builder execution of independent expectations, not an independent
-closure review. F1–F5 repairs still require independent re-review.
+closure review.
+
+`rereviewer/` retains the next independent review's 169 boundary probes,
+22 source/admission/CSV controls and separate Python replay of 50 XML and 12 CSV
+expectations. Fixed explicit XML/CSV inputs are compared unchanged; received
+semantic stamps are never refreshed to match a result. `remaining.test.mjs`
+adds descriptor-first stamping, Fifth Edition namespace boundaries and synthetic
+lake query-capture controls. Every successful stamp matches its returned model;
+accessors refuse before getter calls, including volatile fields. These tests
+do not claim universal hostile-Proxy safety or independent finding closure.
+
+Python independently admits Fifth Edition QNames and injectively renames only
+prefix tokens before ElementTree namespace/tree processing. Values/references
+are untouched; no Node parser or external dependency is used. The lake sink
+inventory distinguishes supplied identity storage/conflict keys from fresh
+verification, with public-export and plan-to-query data-flow edges. In-memory
+captures contact no database; adopter providers/clients remain opaque.

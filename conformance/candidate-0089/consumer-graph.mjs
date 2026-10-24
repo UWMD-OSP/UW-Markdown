@@ -24,6 +24,8 @@ export function discoverCalls(seeds) {
   const edges = [];
   const declarations = new Map();
   const resolutionMisses = [];
+  const identityReferences = new Map();
+  const identityNames = new Set(['semantic_digest', 'source_envelope_digest', 'binding_digest', 'semanticDigestOf', 'semanticDigest']);
   for (const path of files) {
     const source = program.getSourceFile(path);
     function visit(node, owner = `${name(path)}#<module>`) {
@@ -44,6 +46,17 @@ export function discoverCalls(seeds) {
             kind: ts.isPropertySignature(declaration) || ts.isMethodSignature(declaration) ? 'typed-callback-or-method' : 'call' });
         }
       }
+      // Discover downstream reads/writes/SQL independently of reverse-call seeds.
+      // This finds storage and propagation even when it never calls a hash API.
+      const field = ts.isPropertyAccessExpression(node) ? node.name.text
+        : ts.isElementAccessExpression(node) && ts.isStringLiteral(node.argumentExpression) ? node.argumentExpression.text
+        : ts.isPropertyAssignment(node) || ts.isShorthandPropertyAssignment(node) || ts.isBindingElement(node) ? node.name?.text : null;
+      const sqlOrField = ts.isStringLiteralLike(node) && !ts.isLiteralTypeNode(node.parent)
+        && /\b(?:semantic_digest|source_envelope_digest|binding_digest)\b/.test(node.text);
+      if (identityNames.has(field) || sqlOrField) {
+        const references = identityReferences.get(owner) ?? [];
+        references.push(node.getText(source)); identityReferences.set(owner, references);
+      }
       ts.forEachChild(node, child => visit(child, owner));
     }
     if (source) visit(source);
@@ -55,5 +68,5 @@ export function discoverCalls(seeds) {
     for (const edge of edges) if (reached.has(edge.to) && !reached.has(edge.from)) { reached.add(edge.from); changed = true; }
   }
   return { reached: [...reached].sort(), edges: edges.filter(edge => reached.has(edge.to) && reached.has(edge.from)),
-    declarations, resolutionMisses, limits: 'Resolved static calls only. Opaque callbacks, field propagation/storage, exports, JSX and dynamic imports need explicit reviewed edges; this is not a whole-program proof.' };
+    allEdges: edges, identityReferences, declarations, resolutionMisses, limits: 'Resolved static calls plus an independent field/read/write/SQL discovery pass. Opaque callbacks, generic field aliases, storage clients, exports, JSX and dynamic imports still need explicit reviewed edges; this is not a whole-program proof.' };
 }

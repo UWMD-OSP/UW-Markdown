@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { candidate } from './build-runtime.mjs';
 import { digest, stamp, preimage } from './model.mjs';
 import { encodeXML, decodeXML } from './xml.mjs';
+import { planSourceEvidence, planLakeLoad, executeLakeLoad } from '../../packages/uwmd-lake/dist/index.js';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const folder = resolve(root, 'node_modules/.cache/rfc0089-evidence');
@@ -80,4 +81,37 @@ test('preserved independent re-review expectations retain F1/F3 and challenge F2
     assert.equal(report.probes.length, count);
     assert.deepEqual(report.probes.filter(item => !(item.pass ?? item.passed)), [], name);
   }
+});
+
+test('F4 public lake source-evidence route preserves supplied identity and conflict keys through query capture', async () => {
+  const identity = `sha256:${'1'.repeat(64)}`; const second = `sha256:${'2'.repeat(64)}`;
+  const raw = `sha256:${'3'.repeat(64)}`;
+  const fact = { semantic_digest: identity, block_ref: 'synthetic', scope: 'content', pointer: '/synthetic', json_type: 'number', value_json: '1' };
+  const evidence = { semantic_digest: identity, evidence_id: 'synthetic-evidence', status: 'synthetic-stated' };
+  const composite = { schema: 'synthetic', documents: [{ semantic_digest: identity, envelope: { synthetic: 'not a verified carrier' } }], facts: [fact],
+    receipts: [{ subject: { digest: identity }, synthetic: true }],
+    packages: [{ package_id: 'synthetic-package', members: [{ id: 'synthetic-member', path: 'synthetic.uwx.md', sha256: raw, semantic_digest: identity }] }], source_evidence: [evidence] };
+  const captures = [];
+  const capture = async input => {
+    const plan = await planLakeLoad(input); const queries = [];
+    const count = await executeLakeLoad(plan, { query: async (sql, params) => { queries.push({ sql, params: structuredClone(params) }); } });
+    assert.equal(count, plan.statements.length); assert.deepEqual(queries, plan.statements);
+    captures.push({ counts: plan.counts, queries }); return queries;
+  };
+  const queries = await capture(composite); assert.equal(queries.length, 6);
+  const source = queries.find(row => row.sql.includes('.uw_source_evidence ('));
+  assert.deepEqual(source, planSourceEvidence('synthetic', evidence));
+  assert.deepEqual(source.params.slice(0, 2), [identity, evidence.evidence_id]);
+  assert.ok(source.sql.includes('ON CONFLICT (semantic_digest, evidence_id)'));
+  assert.equal(queries[0].params[0], identity); assert.equal(queries[1].params[0], identity);
+  assert.notEqual(queries[2].params[0], identity); assert.equal(queries[2].params[1], identity);
+  assert.deepEqual(queries[4].params.slice(5, 7), [raw, identity]);
+  assert.ok(queries[4].sql.includes('ON CONFLICT (package_id, member_id)'));
+  for (const supplied of [identity, second, 'synthetic-opaque-unverified']) {
+    const [row] = await capture({ schema: 'synthetic', source_evidence: [{ ...evidence, semantic_digest: supplied }] });
+    assert.deepEqual(row.params.slice(0, 2), [supplied, evidence.evidence_id]);
+    assert.ok(row.sql.includes('ON CONFLICT (semantic_digest, evidence_id)'));
+  }
+  writeFileSync(resolve(folder, 'remaining-lake-capture.json'), `${JSON.stringify({ platform: process.platform, captures,
+    scope: 'Supplied identity propagation/storage, not fresh verification. Receipt row hash, package/member byte identity and source identity remain distinct. In-memory query capture only; no live database or universal downstream closure.' }, null, 2)}\n`);
 });

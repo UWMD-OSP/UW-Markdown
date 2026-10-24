@@ -21,6 +21,7 @@ test('F4 reviewed call/data-flow inventory covers resolved producers, delegation
   const nodes = new Map(specification.nodes.map(node => [node.id, node]));
   assert.equal(nodes.size, specification.nodes.length);
   for (const id of graph.reached) assert.ok(nodes.has(id), `unclassified resolved caller: ${id}`);
+  for (const [id] of graph.identityReferences) assert.ok(nodes.has(id), `unclassified downstream identity owner: ${id}`);
   const source = file => readFileSync(resolve(root, file), 'utf8');
   for (const node of nodes.values()) {
     assert.ok(node.reviewed_flow && node.scope && node.production_action);
@@ -33,7 +34,8 @@ test('F4 reviewed call/data-flow inventory covers resolved producers, delegation
     for (const anchor of edge.evidence) assert.ok(normalize(body).includes(normalize(anchor)), `${edge.kind}: missing source edge ${anchor}`);
     for (const anchor of edge.target_evidence ?? []) assert.ok(normalize(graph.declarations.get(to.id)).includes(normalize(anchor)), `missing target flow ${anchor}`);
   }
-  const edges = [...graph.edges, ...specification.manual_edges];
+  const resolvedEdges = graph.allEdges.filter(edge => nodes.has(edge.from) && nodes.has(edge.to));
+  const edges = [...resolvedEdges, ...specification.manual_edges];
   for (const route of specification.required_routes) for (let index = 1; index < route.length; index++) {
     assert.ok(edges.some(edge => edge.from === route[index - 1] && edge.to === route[index]), `unconnected required route ${route[index - 1]} -> ${route[index]}`);
   }
@@ -59,7 +61,8 @@ test('F4 reviewed call/data-flow inventory covers resolved producers, delegation
   });
   const folder = resolve(root, 'node_modules/.cache/rfc0089-evidence'); mkdirSync(folder, { recursive: true });
   writeFileSync(resolve(folder, 'consumer-inventory.json'), `${JSON.stringify({ platform: process.platform,
-    method: specification.method, scope: specification.scope, results, nodes: specification.nodes, resolved_edges: graph.edges,
+    method: specification.method, scope: specification.scope, results, nodes: specification.nodes, resolved_edges: resolvedEdges,
+    downstream_audit: specification.downstream_audit, identity_references: [...graph.identityReferences].map(([id, evidence]) => ({ id, evidence })),
     manual_edges: specification.manual_edges, required_routes: specification.required_routes, discovery,
     unresolved_calls: graph.resolutionMisses, limits: [graph.limits, ...specification.limits],
     production_adoption: 'not activated; requires explicit acceptance and later integration evidence' }, null, 2)}\n`);

@@ -1,5 +1,5 @@
 {
-  "method": "Manually scoped function/data-flow inventory backed by TypeScript-resolved reverse calls and explicit callback/storage/JSX edges. Broad spelling discovery is an audit aid only, not proof of closure.",
+  "method": "Function-scoped inventory checked by resolved calls in both directions among classified nodes, explicit data/export/opaque-callback edges, and an independent AST identity-field/read/write/SQL discovery pass. Reverse seed reachability and file spelling alone are not closure.",
   "scope": "Current repository complete-source producers, consumers and delegations; separate named commitments are classified but their entire financial call graphs are outside this inventory.",
   "seeds": [
     "packages/uwmd-verify/src/envelope.ts#toUWEnvelope",
@@ -479,7 +479,7 @@
         "propagation/storage"
       ],
       "scope": "complete-source or explicit delegation to its provider",
-      "reviewed_flow": "Storage/planning uses opaque supplied document/fact semantic_digest as SQL parameters and conflict keys; receipt.subject.digest is stored as a join key while the receipt JSON has a separate row hash. No stored value is fresh verification.",
+      "reviewed_flow": "Routes documents, facts, receipts, packages/member rows and source_evidence to per-table planners. Source evidence uses planSourceEvidence(schema,evidence); returned statements feed executeLakeLoad. This is propagation/storage of supplied identities, never fresh source verification.",
       "production_action": "Coordinate selected complete-regime provider after acceptance; no candidate production activation. Delegation/storage may need no algorithm change."
     },
     {
@@ -1200,6 +1200,129 @@
       "scope": "opaque SQL plan",
       "reviewed_flow": "Sends planned SQL/params to adopter client.query; runtime database adoption is not demonstrated here.",
       "production_action": "Preserve this scope; no automatic whole-source expansion or expectation refresh."
+    },
+    {
+      "id": "packages/uwmd-batch/src/index.ts#writeUWMDCollectionIndex",
+      "file": "packages/uwmd-batch/src/index.ts",
+      "symbol": "writeUWMDCollectionIndex",
+      "kinds": [
+        "propagation/storage"
+      ],
+      "scope": "Supplied collection identities",
+      "reviewed_flow": "Serializes index JSON and each deal semantic_digest column to CSV; no recomputation or verification. Generic column indexing is a data edge, not a call to a digest provider.",
+      "production_action": "Preserve supplied/separately scoped identity; no implicit refresh, freshness claim or production activation. Coordinate only deliberately selected complete-regime providers after acceptance."
+    },
+    {
+      "id": "packages/uwmd-lake/src/plan.ts#planSourceEvidence",
+      "file": "packages/uwmd-lake/src/plan.ts",
+      "symbol": "planSourceEvidence",
+      "kinds": [
+        "propagation/storage"
+      ],
+      "scope": "Opaque supplied source-evidence identity",
+      "reviewed_flow": "Requires nonempty supplied semantic_digest/evidence_id, stores digest as parameter 1 and evidence_id as parameter 2, conflicts on (semantic_digest,evidence_id), and preserves evidence JSON. Neither the source nor supplied identity is freshly verified.",
+      "production_action": "Preserve supplied/separately scoped identity; no implicit refresh, freshness claim or production activation. Coordinate only deliberately selected complete-regime providers after acceptance."
+    },
+    {
+      "id": "packages/uwmd-lake/src/schema.ts#postgresLakeSchemaStatements",
+      "file": "packages/uwmd-lake/src/schema.ts",
+      "symbol": "postgresLakeSchemaStatements",
+      "kinds": [
+        "storage-schema"
+      ],
+      "scope": "DDL identity keys, distinct source/receipt/package scopes",
+      "reviewed_flow": "Declares document semantic primary key, fact composite primary key, source-evidence (semantic_digest,evidence_id), separate receipt-row/subject identity and package/member byte/semantic columns. DDL does not verify stored inputs.",
+      "production_action": "Preserve supplied/separately scoped identity; no implicit refresh, freshness claim or production activation. Coordinate only deliberately selected complete-regime providers after acceptance."
+    },
+    {
+      "id": "packages/uwmd-lake/src/schema.ts#postgresLakeSchema",
+      "file": "packages/uwmd-lake/src/schema.ts",
+      "symbol": "postgresLakeSchema",
+      "kinds": [
+        "delegation"
+      ],
+      "scope": "DDL serialization",
+      "reviewed_flow": "Joins postgresLakeSchemaStatements; identity keys are schema declarations, not fresh digest computation.",
+      "production_action": "Preserve supplied/separately scoped identity; no implicit refresh, freshness claim or production activation. Coordinate only deliberately selected complete-regime providers after acceptance."
+    },
+    {
+      "id": "packages/uwmd-lake/src/index.ts#<module>",
+      "file": "packages/uwmd-lake/src/index.ts",
+      "symbol": "<module>",
+      "kinds": [
+        "public-reexport"
+      ],
+      "scope": "Public load/planning/execution exports",
+      "reviewed_flow": "Publicly exports planSourceEvidence, planLakeLoad, planPackage and executeLakeLoad from plan.js. An export supplies API reachability, not source authentication.",
+      "production_action": "Preserve supplied/separately scoped identity; no implicit refresh, freshness claim or production activation. Coordinate only deliberately selected complete-regime providers after acceptance."
+    },
+    {
+      "id": "packages/uwmd-verify/src/deal-package.ts#validateUWDealPackageManifest",
+      "file": "packages/uwmd-verify/src/deal-package.ts",
+      "symbol": "validateUWDealPackageManifest",
+      "kinds": [
+        "admission"
+      ],
+      "scope": "Supplied package-member semantic identity versus raw sha256",
+      "reviewed_flow": "Checks optional member.semantic_digest syntax alongside member byte digest/path/id admission. Does not compute or compare complete-source identity; callback verification is separately inventoried.",
+      "production_action": "Preserve supplied/separately scoped identity; no implicit refresh, freshness claim or production activation. Coordinate only deliberately selected complete-regime providers after acceptance."
+    },
+    {
+      "id": "packages/uwmd-verify/src/envelope.ts#assertUWEnvelope",
+      "file": "packages/uwmd-verify/src/envelope.ts",
+      "symbol": "assertUWEnvelope",
+      "kinds": [
+        "admission"
+      ],
+      "scope": "Carrier shape and supplied digest syntax",
+      "reviewed_flow": "Checks Envelope shape/regime and optional stamp spelling. Does not authenticate the stamp; verifyEnvelopeDigest is separately inventoried. Candidate descriptor admission and full carrier schema remain distinct.",
+      "production_action": "Preserve supplied/separately scoped identity; no implicit refresh, freshness claim or production activation. Coordinate only deliberately selected complete-regime providers after acceptance."
+    },
+    {
+      "id": "packages/uwmd-verify/src/replacement-funding-structure.ts#checkReplacementFundingStructure",
+      "file": "packages/uwmd-verify/src/replacement-funding-structure.ts",
+      "symbol": "checkReplacementFundingStructure",
+      "kinds": [
+        "admission",
+        "separate-commitment"
+      ],
+      "scope": "V12 selected replacement cash-flow reference",
+      "reviewed_flow": "Reads and admits cash_flow_ref.binding_digest, variant/row and selected series structure. This selected reference is not whole-source identity and retains its existing scope.",
+      "production_action": "Preserve supplied/separately scoped identity; no implicit refresh, freshness claim or production activation. Coordinate only deliberately selected complete-regime providers after acceptance."
+    },
+    {
+      "id": "packages/uwmd-verify/src/replacement-funding.ts#verifyReplacementFundingBindings",
+      "file": "packages/uwmd-verify/src/replacement-funding.ts",
+      "symbol": "verifyReplacementFundingBindings",
+      "kinds": [
+        "verification",
+        "separate-commitment"
+      ],
+      "scope": "V12 selected replacement cash-flow commitment",
+      "reviewed_flow": "Recomputes the selected cash-flow binding and compares ref.binding_digest, preserving structural and source precedence. V9/V11/V12/results/signing inputs are not expanded to whole source.",
+      "production_action": "Preserve supplied/separately scoped identity; no implicit refresh, freshness claim or production activation. Coordinate only deliberately selected complete-regime providers after acceptance."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwcsv.ts#parseManifest",
+      "file": "packages/uwmd-verify/src/uwcsv.ts",
+      "symbol": "parseManifest",
+      "kinds": [
+        "admission"
+      ],
+      "scope": "Declared CSV bundle identity",
+      "reviewed_flow": "Checks supplied manifest.semantic_digest string/manifest encoding and byte inventory fields. This local admission step is not semantic comparison or fresh source authentication.",
+      "production_action": "Preserve supplied/separately scoped identity; no implicit refresh, freshness claim or production activation. Coordinate only deliberately selected complete-regime providers after acceptance."
+    },
+    {
+      "id": "packages/uwmd-verify/src/uwxml.ts#<module>",
+      "file": "packages/uwmd-verify/src/uwxml.ts",
+      "symbol": "<module>",
+      "kinds": [
+        "descriptor"
+      ],
+      "scope": "Mapping field declaration",
+      "reviewed_flow": "Lists semantic_digest as a mapping field. Mapping metadata is not independent recomputation; encode/decode routes are separately inventoried.",
+      "production_action": "Preserve supplied/separately scoped identity; no implicit refresh, freshness claim or production activation. Coordinate only deliberately selected complete-regime providers after acceptance."
     }
   ],
   "manual_edges": [
@@ -1278,6 +1401,71 @@
       "evidence": [
         "source_envelope_digest: projection.source_envelope_digest"
       ]
+    },
+    {
+      "from": "packages/uwmd-lake/src/index.ts#<module>",
+      "to": "packages/uwmd-lake/src/plan.ts#planLakeLoad",
+      "kind": "public-export",
+      "evidence": [
+        "planLakeLoad",
+        "from './plan.js';"
+      ]
+    },
+    {
+      "from": "packages/uwmd-lake/src/index.ts#<module>",
+      "to": "packages/uwmd-lake/src/plan.ts#planSourceEvidence",
+      "kind": "public-export",
+      "evidence": [
+        "planSourceEvidence",
+        "from './plan.js';"
+      ]
+    },
+    {
+      "from": "packages/uwmd-lake/src/index.ts#<module>",
+      "to": "packages/uwmd-lake/src/plan.ts#planPackage",
+      "kind": "public-export",
+      "evidence": [
+        "planPackage",
+        "from './plan.js';"
+      ]
+    },
+    {
+      "from": "packages/uwmd-lake/src/index.ts#<module>",
+      "to": "packages/uwmd-lake/src/plan.ts#executeLakeLoad",
+      "kind": "public-export",
+      "evidence": [
+        "executeLakeLoad",
+        "from './plan.js';"
+      ]
+    },
+    {
+      "from": "packages/uwmd-lake/src/plan.ts#planSourceEvidence",
+      "to": "packages/uwmd-lake/src/plan.ts#executeLakeLoad",
+      "kind": "returned-statement-via-load-plan-data-contract",
+      "evidence": [
+        "evidence.semantic_digest",
+        "ON CONFLICT (semantic_digest, evidence_id)",
+        "JSON.stringify(evidence)"
+      ],
+      "target_evidence": [
+        "for (const statement of plan.statements)",
+        "client.query(statement.sql, statement.params)"
+      ],
+      "limit": "Plan statements preserve SQL/params; adopter query/transaction/database internals are opaque and no live database is exercised."
+    },
+    {
+      "from": "packages/uwmd-lake/src/plan.ts#planPackage",
+      "to": "packages/uwmd-lake/src/plan.ts#executeLakeLoad",
+      "kind": "returned-statement-via-load-plan-data-contract",
+      "evidence": [
+        "text(member?.semantic_digest)",
+        "ON CONFLICT (package_id, member_id)"
+      ],
+      "target_evidence": [
+        "for (const statement of plan.statements)",
+        "client.query(statement.sql, statement.params)"
+      ],
+      "limit": "Plan statements preserve SQL/params; adopter query/transaction/database internals are opaque and no live database is exercised."
     }
   ],
   "passive": [
@@ -1478,6 +1666,18 @@
       "packages/uwmd-verify/src/property-cash-flows.ts#assemblePropertyCashFlows",
       "packages/uwmd-verify/src/lease-up-cash-flows.ts#projectLeaseUpCashFlows",
       "packages/uwmd-verify/src/envelope.ts#computeEnvelopeDigest"
+    ],
+    [
+      "packages/uwmd-lake/src/index.ts#<module>",
+      "packages/uwmd-lake/src/plan.ts#planLakeLoad",
+      "packages/uwmd-lake/src/plan.ts#planSourceEvidence",
+      "packages/uwmd-lake/src/plan.ts#executeLakeLoad"
+    ],
+    [
+      "packages/uwmd-lake/src/index.ts#<module>",
+      "packages/uwmd-lake/src/plan.ts#planLakeLoad",
+      "packages/uwmd-lake/src/plan.ts#planPackage",
+      "packages/uwmd-lake/src/plan.ts#executeLakeLoad"
     ]
   ],
   "limits": [
@@ -1485,5 +1685,24 @@
     "Manual data edges document API contracts, not live HTTP/MCP/workbook/database end-to-end adoption.",
     "Opaque external callbacks and clients require adopter evidence; no unseen implementation is inferred.",
     "Candidate execution does not activate or independently close production integration."
-  ]
+  ],
+  "downstream_audit": {
+    "discovery": "Independent per-function AST property/element/shorthand/binding reads and writes plus SQL/string identity fields, regardless of reverse-call seed reachability.",
+    "fields": [
+      "semantic_digest",
+      "source_envelope_digest",
+      "binding_digest",
+      "semanticDigestOf",
+      "semanticDigest"
+    ],
+    "classification": "Every discovered owner has an explicit function/module scope/disposition, not merely a containing-file entry.",
+    "additional_inspection": [
+      "Collection index JSON/CSV writer",
+      "lake document/fact/receipt/package/member/source-evidence planners, DDL, ingest readers, public export and opaque execution route",
+      "manifest/carrier stamp-syntax admission",
+      "V12 reference admission/verification",
+      "mapping field descriptors"
+    ],
+    "limits": "Generic aliases, arbitrary field names, external providers/clients and runtime flows are not universally resolved. Manual edges and synthetic capture establish only the specified routes."
+  }
 }

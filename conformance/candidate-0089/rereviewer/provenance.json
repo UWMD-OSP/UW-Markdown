@@ -1,0 +1,54 @@
+{
+  "reviewed_head": "7300e89175d8998b4dc20126e82d99059522783a",
+  "origin": "Independent candidate re-review; originals and raw-byte provenance retained privately",
+  "files": [
+    {
+      "path": "rereview-boundaries.mjs",
+      "original_sha256": "66b807bf6c8d806c89dc744d95d588b1750997222e69db4bd1f135e93de92294",
+      "adaptations": [
+        "Relative imports resolved from persistent candidate test directory",
+        "Cache-only output paths",
+        "UTF-8 LF normalization; expectations and probe algorithms unchanged",
+        "Targeted variable-declaration/template style fixes and unused binding renames; arity/default behavior and expectations unchanged"
+      ],
+      "adapted_git_lf_sha256": "b0a113926006841f7dade0deecf4a950b7f3b8116b89764ef1319c4eef122c7a"
+    },
+    {
+      "path": "rereview-admission-csv.mjs",
+      "original_sha256": "baa656a7dfd0e39a4c6866889ad58067fd7c388146efbc66157e5f0278d96a23",
+      "adaptations": [
+        "Relative imports resolved from persistent candidate test directory",
+        "Cache-only output paths",
+        "UTF-8 LF normalization; expectations and probe algorithms unchanged",
+        "Targeted variable-declaration/template style fixes and unused binding renames; arity/default behavior and expectations unchanged"
+      ],
+      "adapted_git_lf_sha256": "a3d04a04b699732598a969954df9817af3a9e63876dc8611feb7716fee38a09c"
+    },
+    {
+      "path": "rereview-python.py",
+      "original_sha256": "c993d463bcd7d549683336b6563817a2da16f9cf7f9582de79d4585cfcb25dba",
+      "adaptations": [
+        "Relative imports resolved from persistent candidate test directory",
+        "Cache-only output paths",
+        "UTF-8 LF normalization; expectations and probe algorithms unchanged"
+      ],
+      "adapted_git_lf_sha256": "27150af322a7e904cfc2367ef9f14a194c7497d2db545d65ae3399b35dc2061a"
+    },
+    {
+      "path": "rereview-xml-cases.json",
+      "original_sha256": "8de800c36915127f07ef17bfe657453972b15ce51c10e0a6f641e8f66e392db2",
+      "adaptations": [
+        "Byte-for-byte fixed independent inputs and expectations, no digest refresh"
+      ],
+      "adapted_git_lf_sha256": "8de800c36915127f07ef17bfe657453972b15ce51c10e0a6f641e8f66e392db2"
+    },
+    {
+      "path": "rereview-csv-cases.json",
+      "original_sha256": "aa0a3d66ad0d4b030cc11967618740b8b65ccb002bcb9c87d88c58edca735e27",
+      "adaptations": [
+        "Byte-for-byte fixed independent inputs and expectations, no digest refresh"
+      ],
+      "adapted_git_lf_sha256": "aa0a3d66ad0d4b030cc11967618740b8b65ccb002bcb9c87d88c58edca735e27"
+    }
+  ]
+}
