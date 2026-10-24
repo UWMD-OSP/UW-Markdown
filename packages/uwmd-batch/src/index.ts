@@ -2,7 +2,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { relative, resolve, sep } from 'node:path';
 import {
   computeEnvelopeDigest,
-  flattenEnvelopeBlockValues,
+  flattenUWSourceBlockValues,
   parseUWFile,
   toUWEnvelope,
   type UWBlockValueRow,
@@ -207,7 +207,7 @@ export async function buildUWMDFactTable(inputDirectory: string): Promise<UWMDFa
       const frontmatter = parsed.frontmatter as Record<string, unknown>;
       const deal_id = stringOrNull(frontmatter.deal_id);
       const asset_class = stringOrNull(frontmatter.asset_class);
-      for (const fact of flattenEnvelopeBlockValues(envelope)) {
+      for (const fact of flattenUWSourceBlockValues(parsed)) {
         rows.push({ path, deal_id, asset_class, semantic_digest: digest, valid, ...fact });
       }
       included += 1;

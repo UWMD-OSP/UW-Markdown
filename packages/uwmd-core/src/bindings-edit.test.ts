@@ -13,7 +13,7 @@ import * as browserSurface from './browser.js';
 import * as indexSurface from './index.js';
 
 const source = readFileSync(
-  resolve(process.cwd(), '..', '..', 'conformance', 'rfc-0089', 'fixtures', 'complete-current.uwx.md'),
+  resolve(__dirname, '../../../conformance/rfc-0089/fixtures/complete-current.uwx.md'),
   'utf8',
 );
 const dealId = String(parseUWFile(source).frontmatter.deal_id);

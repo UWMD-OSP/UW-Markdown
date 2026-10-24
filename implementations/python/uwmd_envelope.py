@@ -18,6 +18,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 import zlib
 from uwmd_xml_names import ascii_prefixes
+from uwmd_spec_data import schema as spec_schema
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'implementations/python'))
@@ -145,11 +146,10 @@ def date_time(value):
     return utc_h in (23, -1) and utc_m in (59, -1) and sec < 61
 
 
-BLOCK_SCHEMA = json.loads((ROOT / 'spec/schemas/uwmd-block.schema.json').read_text(encoding='utf-8'))
-
-
-def schema_ok(value, schema, root=BLOCK_SCHEMA):
+def schema_ok(value, schema, root=None):
     """Independent evaluator for the operators used by the block schema."""
+    if root is None:
+        root = spec_schema('uwmd-block.schema.json')
     if isinstance(schema, bool):
         return schema
     if '$ref' in schema:
@@ -206,7 +206,7 @@ def blocks(model):
         need(isinstance(section, str) and bool(section) and a.get('section') == section and isinstance(body.get('_meta'), dict) and body['_meta'].get('section') == section, 'section identity')
         need('variant' not in a or isinstance(a['variant'], str), 'variant annotation')
         need(all(kind(v) in ('string', 'number', 'boolean') for v in a.values()), 'annotation scalar')
-        need(schema_ok(body, BLOCK_SCHEMA), 'block schema')
+        need(schema_ok(body, spec_schema('uwmd-block.schema.json')), 'block schema')
         need('prose' not in block or isinstance(block['prose'], str), 'prose type')
         result.append((ref, collection, section, variant, ordinal, state, mode, block))
     for section in sorted(model['sections'], key=lambda x: x.encode('utf-16-be')):

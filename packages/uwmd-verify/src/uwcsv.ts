@@ -3,7 +3,8 @@ import type { UWCodec } from './codec.js';
 import { extractZipSafely } from './zip-safety.js';
 import { encodeCSV, decodeCSV, flatten } from './csv-mapping.js';
 import { descriptors } from './carrier-values.js';
-import { assertUWEnvelope, type UWDocumentEnvelope } from './envelope.js';
+import { assertUWEnvelope, toUWEnvelope, type UWDocumentEnvelope } from './envelope.js';
+import type { ParsedUWFile } from './types.js';
 export const UW_CSV_BUNDLE_VERSION = '2.0.0' as const;
 export const UW_CSV_BUNDLE_MEDIA_TYPE = 'application/vnd.uwmd.csv-bundle+zip' as const;
 export interface UWCSVBundle { files: Record<string, string>; }
@@ -42,6 +43,13 @@ export const UW_CSV_BUNDLE_CODEC: UWCodec<Uint8Array> = {
 /** Complete fact rows. Stored identity remains the caller's explicitly supplied subject. */
 export function flattenEnvelopeBlockValues(envelope: UWDocumentEnvelope): UWBlockValueRow[] {
   assertUWEnvelope(envelope);
+  return projectBlockValues(envelope);
+}
+/** Source fact projection records findings without claiming full carrier admission. */
+export function flattenUWSourceBlockValues(parsed: ParsedUWFile): UWBlockValueRow[] {
+  return projectBlockValues(toUWEnvelope(parsed));
+}
+function projectBlockValues(envelope: UWDocumentEnvelope): UWBlockValueRow[] {
   const rows: UWBlockValueRow[] = [];
   for (const row of descriptors(envelope)) {
     const { _meta, ...content } = row.block.content;

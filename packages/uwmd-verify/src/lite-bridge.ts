@@ -395,6 +395,7 @@ export function projectUWEnvelopeToLite(
       !ignored.has(path) &&
       !path.includes('._meta.') &&
       !path.startsWith(`extensions.${UW_LITE_SOURCE_EXTENSION}.`) &&
+      !path.startsWith(`extensions.${UW_LITE_SOURCE_EXTENSION}[`) &&
       // The directive's own keys — `parts`, `part_count`, `collection_key` —
       // are packaging, not underwriting data. Listing them here would report
       // the wrapper in place of the contents it stands for, which is worse

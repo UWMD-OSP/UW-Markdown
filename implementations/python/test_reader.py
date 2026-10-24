@@ -72,7 +72,7 @@ class ReaderTests(unittest.TestCase):
         raw += block("property", {"n": 3}) + block("property", {"n": 4}, superseded=True)
         result = parse(raw).projection()
         self.assertEqual(result["sections"]["property"]["content"]["n"], 3)
-        self.assertEqual([item["content"]["n"] for item in result["superseded"]["property"]], [1, 4])
+        self.assertEqual([item["content"]["n"] for item in result["superseded"]["property"]], [1, 2, 4])
 
     def test_role_opt_in_collects_unannotated_peer_in_any_source_order(self):
         role = block("debt_structure", {"n": 1}, variant="loan", role="senior")
@@ -96,7 +96,7 @@ class ReaderTests(unittest.TestCase):
 
     def test_unknown_extensions_payload_content_and_null_stay_distinct(self):
         result = parse(HEADER + block("x_future", {"content": {"inside": None}, "unknown": True})).projection()
-        payload = result["extensions"]["x_future"]["content"]
+        payload = result["extensions"]["x_future"]["block"]["content"]
         self.assertEqual(payload["content"], {"inside": None})
         self.assertNotIn("absent", payload)
         self.assertTrue(payload["unknown"])
@@ -108,9 +108,10 @@ class ReaderTests(unittest.TestCase):
             raw = HEADER + body
             document = parse(raw)
             projected = document.projection()["extensions"]["x_future"]
-            self.assertEqual(set(projected), {"a", "b"})
-            self.assertEqual(projected["a"]["role"], "primary")
-            self.assertEqual(projected["b"]["content"]["n"], 2)
+            self.assertEqual(projected["mode"], "variants")
+            self.assertEqual([item["variant"] for item in projected["blocks"]],["a","b"])
+            self.assertEqual(projected["blocks"][0]["block"]["role"], "primary")
+            self.assertEqual(projected["blocks"][1]["block"]["content"]["n"], 2)
             self.assertEqual(document.source.raw, raw)
 
     def test_superseded_extension_role_does_not_activate_variant_opt_in(self):
@@ -118,7 +119,7 @@ class ReaderTests(unittest.TestCase):
         raw = HEADER + old + block("x_future", {"n": 1}, variant="a") + block("x_future", {"n": 2}, variant="b")
         document = parse(raw)
         projected = document.projection()
-        self.assertEqual(projected["extensions"]["x_future"]["content"]["n"], 2)
+        self.assertEqual(projected["extensions"]["x_future"]["block"]["content"]["n"], 2)
         self.assertEqual(projected["superseded"]["x_future"][0]["content"]["n"], 0)
         self.assertEqual(document.source.raw, raw)
 
@@ -211,7 +212,7 @@ class ReaderTests(unittest.TestCase):
                 if section == "operating_statement":
                     self.assertEqual(set(result["sections"][section]), {"current"})
                 elif section == "x_future":
-                    self.assertEqual(result["extensions"][section]["content"]["n"], 2)
+                    self.assertEqual(result["extensions"][section]["block"]["content"]["n"], 2)
                 elif section in ("pipeline_log", "custom_calculations", "custom_scenarios"):
                     self.assertEqual(len(result[section]), 1)
                 else:
@@ -230,7 +231,7 @@ class ReaderTests(unittest.TestCase):
             raw += body.replace(b'uw:section=property', ('uw:section=property superseded=' + value).encode())
         result = parse(raw).projection()
         self.assertEqual(result["sections"]["property"]["content"]["n"], 3)
-        self.assertEqual([v["content"]["n"] for v in result["superseded"]["property"]], [1, 4])
+        self.assertEqual([v["content"]["n"] for v in result["superseded"]["property"]], [1, 2, 4])
 
     def test_existing_superseded_source_parse_command_retains_history(self):
         root = Path(__file__).resolve().parents[2]

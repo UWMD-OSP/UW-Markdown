@@ -166,7 +166,9 @@ function canonicalParsed(parsed) {
     custom_calculations: parsed.custom_calculations.map(projectBlock),
     custom_scenarios: parsed.custom_scenarios.map(projectBlock),
     extensions: Object.fromEntries(
-      Object.entries(parsed.extensions).map(([id, b]) => [id, projectBlock(b)])
+      Object.entries(parsed.extensions).map(([id, entry]) => [id, entry.mode === 'single'
+        ? {mode:'single',block:projectBlock(entry.block)}
+        : {mode:'variants',blocks:entry.blocks.map(({variant,block})=>({variant,block:projectBlock(block)}))}])
     ),
     superseded: Object.fromEntries(
       Object.entries(parsed.superseded).map(([id, blocks]) => [id, blocks.map(projectBlock)])
