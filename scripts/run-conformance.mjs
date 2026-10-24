@@ -4291,7 +4291,7 @@ const dispatch = {
     }
     for(const [name,files] of [
       ['native-complete-carriers',['production.test.mjs']],
-      ['authentication-and-admission',['source-boundaries.test.mjs','authentication.test.mjs','closure-production.test.mjs']],
+      ['authentication-and-admission',['source-boundaries.test.mjs','authentication.test.mjs','closure-production.test.mjs','integration-review.test.mjs']],
       ['retained-review-controls',['retained-probes.test.mjs']],
       ['production-consumer-routes',['routes.test.mjs']],
     ]) {

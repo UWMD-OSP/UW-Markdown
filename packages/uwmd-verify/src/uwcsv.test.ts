@@ -12,6 +12,7 @@ import {
   encodeUWCSVBundle,
   encodeUWCSVZip,
   flattenEnvelopeBlockValues,
+  flattenUWSourceBlockValues,
   UWCSVError,
 } from './uwcsv.js';
 
@@ -163,5 +164,26 @@ describe('flattenEnvelopeBlockValues', () => {
     const rows = flattenEnvelopeBlockValues(envelope);
     expect(rows.some((row) => row.scope === 'meta')).toBe(true);
     expect(rows.some((row) => row.scope === 'content' && row.pointer.startsWith('/_meta'))).toBe(false);
+  });
+});
+
+// Explicit received inputs preserve the normal review counterexamples.
+describe('source admission and received descriptor precedence', () => {
+  it('projects absent/null/mismatched metadata without carrier admission', () => {
+    const packet = JSON.parse(readFileSync(resolve(process.cwd(), '../../conformance/rfc-0089/integration-controls/source-fact-cases.json'), 'utf8'));
+    for (const item of packet.cases) {
+      const parsed = parseUWFile(item.source);
+      const model = toUWEnvelope(parsed);
+      expect(() => flattenEnvelopeBlockValues(model)).toThrow();
+      const rows = flattenUWSourceBlockValues(parsed);
+      expect(rows).toContainEqual({block_ref: '/sections/property', scope: 'content', pointer: '/total_units', json_type: 'number', value_json: '1'});
+      expect(rows.some(row => row.scope === 'meta')).toBe(item.meta_present);
+      if (item.name === 'null') expect(rows.find(row => row.scope === 'meta')).toMatchObject({pointer: '', json_type: 'null', value_json: 'null'});
+      if (item.name === 'mismatch') expect(rows.find(row => row.scope === 'meta' && row.pointer === '/section')?.value_json).toBe('"debt_structure"');
+    }
+  });
+  it('refuses a forged singleton variant descriptor before current/stale semantic stamps', async () => {
+    const packet = JSON.parse(readFileSync(resolve(process.cwd(), '../../conformance/rfc-0089/integration-controls/csv-descriptor-cases.json'), 'utf8'));
+    for (const item of packet.cases) await expect(decodeUWCSVBundle({files: item.files})).rejects.toThrow(/CSV descriptor agreement/);
   });
 });

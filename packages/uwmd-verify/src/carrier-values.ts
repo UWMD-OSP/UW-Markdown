@@ -74,11 +74,15 @@ export function readJSON(text: string): any {
   const result = value(); space(); check(at === text.length, 'JSON trailing input'); return result;
 }
 
-export function descriptors(model: any) {
+export function descriptors(model: any) { return blockDescriptors(model, true); }
+/** Source facts account for authored values, including invalid/missing metadata. */
+export function sourceDescriptors(model: any) { return blockDescriptors(model, false); }
+function blockDescriptors(model: any, carrier: boolean) {
   const rows: CarrierBlock[] = [];
   const add = (ref: string, collection: string, section: string, variant: string | null, ordinal: number | null, state: string, mode: string, block: any) => {
     check(object(block) && object(block.annotation) && object(block.content), 'block shape');
-    check(block.annotation.section === section && block.content._meta?.section === section, 'section identity');
+    check(block.annotation.section === section, 'annotation section identity');
+    if (carrier) check(block.content._meta?.section === section, 'section identity');
     check(!has(block.annotation, 'variant') || typeof block.annotation.variant === 'string', 'annotation variant');
     rows.push({ ref, collection, section, variant, ordinal, state, mode, block });
   };

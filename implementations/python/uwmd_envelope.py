@@ -534,10 +534,12 @@ def decode_csv(files):
                 parent['blocks'].append(dict(variant=variant, block=block))
         received.append([ref, collection, dump(section), dump(variant), ordinal, state, mode])
     need(not values and not prose, 'CSV unused rows')
-    validate(model)
+    # Descriptor grammar must refuse before semantic digest comparison.
+    validate(model, False)
     expected = [[ref, collection, dump(section), dump(variant), ordinal, state, mode] for ref, collection, section, variant, ordinal, state, mode, _ in blocks(model)]
     need(sorted(received, key=lambda row: row[0]) == sorted(expected, key=lambda row: row[0]), 'CSV descriptor canonical agreement')
     need(manifest['semantic_digest'] == model['semantic_digest'] and manifest['format_version'] == model['format_version'], 'CSV manifest/model agreement')
+    validate(model)
     return model
 
 

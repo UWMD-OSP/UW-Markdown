@@ -2,7 +2,7 @@
 import {spawnSync} from 'node:child_process';import {mkdirSync,writeFileSync,readFileSync} from 'node:fs';import {fileURLToPath} from 'node:url';import {resolve} from 'node:path';import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../../',import.meta.url));const folder=resolve(root,'node_modules/.cache/rfc0089-production-evidence');mkdirSync(folder,{recursive:true});
 const groups=[
- ['native',['production.test.mjs','source-boundaries.test.mjs','authentication.test.mjs','closure-production.test.mjs']],
+ ['native',['production.test.mjs','source-boundaries.test.mjs','authentication.test.mjs','closure-production.test.mjs','integration-review.test.mjs']],
  ['retained',['retained-probes.test.mjs']],
  ['builder',['probes/carriers.test.mjs','probes/refusals.test.mjs','probes/repairs.test.mjs','probes/remaining.test.mjs']],
  ['interop',['interop.test.mjs']],

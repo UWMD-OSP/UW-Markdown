@@ -23,6 +23,16 @@ for item in json.loads((HERE/'independent/rereview-csv-cases.json').read_text(en
         assert 'semantic digest' not in reason
     assert actual==item['expected'],(item['name'],item['expected'],actual)
     results.append(dict(case=item['name'],group='csv',expected=item['expected'],actual=actual))
+# Fixed normal-review counterexample pair: identical malformed descriptor,
+# current/stale semantic stamps; only the raw byte inventory was refreshed.
+for item in json.loads((HERE/'integration-controls/csv-descriptor-cases.json').read_text(encoding='utf-8'))['cases']:
+    try:
+        decode_csv(item['files'])
+        raise AssertionError(('must refuse descriptor grammar', item['name']))
+    except (ValueError, TypeError, KeyError) as error:
+        reason = str(error)
+        assert 'descriptor canonical agreement' in reason and 'semantic digest' not in reason, (item['name'], reason)
+        results.append(dict(case=item['name'],group='normal-review-csv',expected='descriptor grammar',actual=reason))
 # Actual Python CLI sees the original BOM position as well as the function API.
 for item in json.loads((HERE/'independent/closure-xml-cases.json').read_text(encoding='utf-8')):
     if item['name'] not in ['start-37f','start-10000','start-effff','two-start-bom','bom-after-space','second-declaration']:

@@ -2,7 +2,7 @@ import { zipSync } from 'fflate';
 import type { UWCodec } from './codec.js';
 import { extractZipSafely } from './zip-safety.js';
 import { encodeCSV, decodeCSV, flatten } from './csv-mapping.js';
-import { descriptors } from './carrier-values.js';
+import { descriptors, sourceDescriptors } from './carrier-values.js';
 import { assertUWEnvelope, toUWEnvelope, type UWDocumentEnvelope } from './envelope.js';
 import type { ParsedUWFile } from './types.js';
 export const UW_CSV_BUNDLE_VERSION = '2.0.0' as const;
@@ -47,15 +47,18 @@ export function flattenEnvelopeBlockValues(envelope: UWDocumentEnvelope): UWBloc
 }
 /** Source fact projection records findings without claiming full carrier admission. */
 export function flattenUWSourceBlockValues(parsed: ParsedUWFile): UWBlockValueRow[] {
-  return projectBlockValues(toUWEnvelope(parsed));
+  return projectBlockValues(toUWEnvelope(parsed), true);
 }
-function projectBlockValues(envelope: UWDocumentEnvelope): UWBlockValueRow[] {
+function projectBlockValues(envelope: UWDocumentEnvelope, source = false): UWBlockValueRow[] {
   const rows: UWBlockValueRow[] = [];
-  for (const row of descriptors(envelope)) {
+  for (const row of (source ? sourceDescriptors : descriptors)(envelope)) {
     const { _meta, ...content } = row.block.content;
     const extra = Object.fromEntries(Object.entries(row.block).filter(([key]) => !['annotation', 'content', 'prose'].includes(key)));
     const scopes = {annotation: row.block.annotation, meta: _meta, content, 'block-extra': extra};
-    for (const scope of ['annotation', 'meta', 'content', 'block-extra'] as const) for (const [pointer, json_type, value_json] of flatten(scopes[scope])) rows.push({block_ref: row.ref, scope, pointer, json_type: json_type as UWJSONValueType, value_json});
+    for (const scope of ['annotation', 'meta', 'content', 'block-extra'] as const) {
+      if (scope === 'meta' && !Object.hasOwn(row.block.content, '_meta')) continue;
+      for (const [pointer, json_type, value_json] of flatten(scopes[scope])) rows.push({block_ref: row.ref, scope, pointer, json_type: json_type as UWJSONValueType, value_json});
+    }
   }
   return rows;
 }

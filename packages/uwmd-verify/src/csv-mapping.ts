@@ -223,11 +223,13 @@ export async function decodeCSV(input: Record<string, string | Uint8Array>, opti
     received.push([ref, collection, jcs(section), jcs(variant), ordinal, state, mode]);
   }
   check(valueRows.size === 0 && prose.size === 0, 'CSV unused rows');
-  await validateModel(model, true);
+  // Complete carrier/descriptor grammar precedes received semantic commitments.
+  await validateModel(model, false);
   const expected = descriptors(model).map(row => [row.ref, row.collection, jcs(row.section), jcs(row.variant), String(row.ordinal ?? ''), row.state, row.mode]);
   const byRef = (a: string[], b: string[]) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0;
   check(jcs(received.sort(byRef)) === jcs(expected.sort(byRef)), 'CSV descriptor agreement');
   check(manifest.semantic_digest === model.semantic_digest && manifest.format_version === model.format_version, 'CSV manifest/model identity');
+  await validateModel(model, true);
   return model;
 }
 
