@@ -302,7 +302,7 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
       );
     }
   }
-  if (!admitsCarrierSchema(value)) throw new UWEnvelopeError('ENVELOPE_INVALID_SCHEMA', 'Model does not satisfy the current full carrier schema.');
+  if (!admitsCarrierSchema(value)) throw new UWEnvelopeError('ENVELOPE_INVALID_SCHEMA', 'Model shape does not satisfy the current full carrier schema.');
   if (!isRecord(value['sections'])) {
     throw new UWEnvelopeError('ENVELOPE_MISSING_SECTIONS', 'sections must be an object.');
   }

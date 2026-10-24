@@ -21,4 +21,8 @@ test('Windows/Linux native Node ↔ independent Python full carrier matrix',asyn
     observations.push({case:item.name,carriers:6,status:'pass'});
   }
   writeFileSync(resolve(folder,'node-interop-results.json'),JSON.stringify({node:process.version,platform:process.platform,observations},null,2)+'\n');
+  for(const name of ['python-probes.py','prefix-helper.py']) {
+    const child=spawnSync(process.env.UWMD_PYTHON??'python',['-B',fileURLToPath(new URL('./'+name,import.meta.url)),folder],{cwd:root,encoding:'utf8',env:{...process.env,PYTHONIOENCODING:'utf-8'}});
+    writeFileSync(resolve(folder,name+'.log'),child.stdout+child.stderr);assert.equal(child.status,0,child.stdout+child.stderr);
+  }
 });

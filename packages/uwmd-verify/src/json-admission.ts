@@ -3,7 +3,7 @@ import { canonicalize } from './integrity-canonical.js';
 /** Direct model admission; this is deliberately not a carrier/block schema. */
 export class JSONValueError extends TypeError {
   readonly code = 'JSON_VALUE_INVALID';
-  constructor(reason: string) { super(`Non-JSON model value: ${reason}`); this.name = 'JSONValueError'; }
+  constructor(reason: string) { super(`non-JSON model value: ${reason}`); this.name = 'JSONValueError'; }
 }
 
 export function assertJSONValue(value: unknown, depth = 0, parents = new Set<object>()): void {
@@ -12,7 +12,7 @@ export function assertJSONValue(value: unknown, depth = 0, parents = new Set<obj
   if (value === null || typeof value === 'boolean') return;
   if (typeof value === 'string') { canonicalize(value); return; }
   if (typeof value === 'number') { if (!Number.isFinite(value)) refuse('nonfinite number'); return; }
-  if (typeof value !== 'object' || parents.has(value)) refuse('unsupported type or cycle');
+  if (typeof value !== 'object' || parents.has(value)) refuse('unsupported type or cyclic model');
   const object = value as object;
   const array = Array.isArray(object);
   if (!array && ![null, Object.prototype].includes(Object.getPrototypeOf(object))) refuse('object prototype');

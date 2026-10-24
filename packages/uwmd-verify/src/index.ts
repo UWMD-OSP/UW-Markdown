@@ -886,3 +886,6 @@ export { extensionBlocks, mapExtensionEntry } from './extension-entry.js';
 export { UW_ENVELOPE_CANONICALIZATION_VERSION } from './protocol.js';
 
 export { JSONValueError } from './json-admission.js';
+
+export { projectUWParse } from './portable-projection.js';
+export type { UWPortableBlock } from './portable-projection.js';
