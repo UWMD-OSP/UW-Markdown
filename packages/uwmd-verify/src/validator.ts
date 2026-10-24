@@ -1,3 +1,4 @@
+import { extensionBlocks } from './extension-entry.js';
 import { parseGapInstant, ValidationClockError } from './gap-instant.js';
 import { hasBlockShape } from './block-kind.js';
 import { checkPayloadAdmission, currentPayloadBlocks } from './payload-admission.js';
@@ -410,7 +411,7 @@ function checkBlockRoles(parsed: ParsedUWFile, issues: ValidationMessage[]): voi
   for (const [section, entry] of Object.entries(parsed.sections)) {
     for (const block of isVariantMap(entry) ? Object.values(entry) : [entry]) check(section, block);
   }
-  for (const [section, block] of Object.entries(parsed.extensions)) check(section, block);
+  for (const [section, entry] of Object.entries(parsed.extensions)) for (const block of extensionBlocks(entry)) check(section, block);
   for (const section of ['pipeline_log', 'custom_calculations', 'custom_scenarios'] as const) {
     for (const block of parsed[section]) check(section, block);
   }
@@ -3360,7 +3361,7 @@ function metaModelBlocks(parsed: ParsedUWFile): [string, UWBlock][] {
   for (const [id, entry] of Object.entries(parsed.sections)) for (const block of isVariantMap(entry) ? Object.values(entry as Record<string, UWBlock>) : [entry as UWBlock]) entries.push([id, block]);
   for (const [id, blocks] of Object.entries(parsed.superseded)) for (const block of blocks) entries.push([id, block]);
   for (const block of [...parsed.pipeline_log, ...parsed.custom_calculations, ...parsed.custom_scenarios]) entries.push([block.annotation.section, block]);
-  for (const [id, block] of Object.entries(parsed.extensions)) entries.push([id, block]);
+  for (const [id, entry] of Object.entries(parsed.extensions)) for (const block of extensionBlocks(entry)) entries.push([id, block]);
   return entries;
 }
 

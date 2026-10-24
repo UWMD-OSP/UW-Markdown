@@ -482,6 +482,13 @@ export interface ParsedSections {
   [sectionId: string]: UWBlock | { [variant: string]: UWBlock };
 }
 
+/** Exact nullable extension identity; never coerce absence to literal default. */
+export type UWExtensionEntry<T> =
+  | { mode: 'single'; block: T }
+  | { mode: 'variants'; blocks: Array<{ variant: string | null; block: T }> };
+
+export type UWParsedExtensionEntry = UWExtensionEntry<UWBlock>;
+
 export interface ParsedUWFile {
   frontmatter: UWFrontmatter;
   sections: ParsedSections;
@@ -489,7 +496,7 @@ export interface ParsedUWFile {
   pipeline_log: UWBlock[];
   custom_calculations: UWBlock[];
   custom_scenarios: UWBlock[];
-  extensions: { [extensionId: string]: UWBlock };
+  extensions: Record<string, UWParsedExtensionEntry>;
   superseded: { [sectionId: string]: UWBlock[] };
   raw: string;
 }

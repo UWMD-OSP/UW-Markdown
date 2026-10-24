@@ -1,3 +1,4 @@
+import { extensionBlocks } from './extension-entry.js';
 import { strToU8, zipSync } from 'fflate';
 import { extractZipSafely } from './zip-safety.js';
 import type { UWCodec } from './codec.js';
@@ -462,7 +463,7 @@ function enumerateBlocks(envelope: UWDocumentEnvelope): EncodedBlock[] {
     envelope[collection].forEach((block, ordinal) => output.push({ block_ref: `/${collection}/${ordinal}`, collection, section: null, variant: null, ordinal, state: 'current', block }));
   }
   for (const id of Object.keys(envelope.extensions).sort()) {
-    output.push({ block_ref: `/extensions/${pointerEscape(id)}`, collection: 'extensions', section: id, variant: null, ordinal: null, state: 'current', block: envelope.extensions[id] });
+    for (const [ordinal, block] of extensionBlocks(envelope.extensions[id]!).entries()) output.push({ block_ref: `/extensions/${pointerEscape(id)}/${ordinal}`, collection: 'extensions', section: id, variant: block.annotation.variant ?? null, ordinal, state: 'current', block });
   }
   for (const section of Object.keys(envelope.superseded).sort()) {
     envelope.superseded[section]?.forEach((block, ordinal) => output.push({ block_ref: `/superseded/${pointerEscape(section)}/${ordinal}`, collection: 'superseded', section, variant: null, ordinal, state: 'superseded', block }));

@@ -29,7 +29,7 @@ const SRC = dirname(fileURLToPath(import.meta.url));
 const STANDARD_MODULES: readonly string[] = Object.freeze([
   // Reader
   'parser.ts', 'yaml-scalar.ts', 'types.ts', 'scenario.ts', 'metadata.ts', 'version.ts', 'json-admission.ts',
-  'block-roles.ts', 'block-kind.ts', 'section-resolution.ts',
+  'block-roles.ts', 'block-kind.ts', 'section-resolution.ts', 'extension-entry.ts',
   // Validation
   'validator.ts', 'gap-instant.ts', 'payload-admission.ts', 'builtin-class-content.ts', 'builtin-class-validation.ts', 'asset-class.ts',
   'period-path.ts', 'periods.ts', 'period-validation.ts', 'lease-up-structure.ts',

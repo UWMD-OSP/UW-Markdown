@@ -1,3 +1,6 @@
+import { extensionBlocks } from './extension-entry.js';
+import { assertUWEnvelope, canonicalizeUWEnvelope, toUWEnvelope } from './envelope.js';
+import { parseUWFile } from './parser.js';
 import { hasBlockShape } from './block-kind.js';
 import type {
   UWDocumentEnvelope,
@@ -333,14 +336,14 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
   return {
     ok: true,
     envelope: {
-      envelope_version: '1.0',
+      envelope_version: '2.0',
       format_version: frontmatter.uw_version,
       frontmatter,
       sections,
       pipeline_log: [],
       custom_calculations: [],
       custom_scenarios: [],
-      extensions: { [UW_LITE_SOURCE_EXTENSION]: sourceExtension },
+      extensions: { [UW_LITE_SOURCE_EXTENSION]: { mode: 'single', block: sourceExtension } },
       superseded: {},
     },
     report,
@@ -452,6 +455,7 @@ function collectExternalizedSections(envelope: UWDocumentEnvelope): string[] {
 }
 
 export function stringifyUWX(envelope: UWDocumentEnvelope): string {
+  assertUWEnvelope(envelope);
   const output = [serializeFrontmatter(envelope.frontmatter), ''];
   for (const [, blocks] of Object.entries(envelope.superseded).sort(([left], [right]) =>
     left.localeCompare(right),
@@ -474,9 +478,10 @@ export function stringifyUWX(envelope: UWDocumentEnvelope): string {
       output.push(serializeEnvelopeBlock(block), '');
     }
   }
-  for (const [id, block] of Object.entries(envelope.extensions).sort(([left], [right]) =>
+  for (const [id, entry] of Object.entries(envelope.extensions).sort(([left], [right]) =>
     left.localeCompare(right),
   )) {
+    for (const block of extensionBlocks(entry)) {
     if (block.annotation.section !== id) {
       throw new UWLiteBridgeError(
         'UWX_EXTENSION_ID_MISMATCH',
@@ -484,6 +489,7 @@ export function stringifyUWX(envelope: UWDocumentEnvelope): string {
       );
     }
     output.push(serializeEnvelopeBlock(block), '');
+    }
   }
   for (const block of envelope.custom_calculations) {
     output.push(serializeEnvelopeBlock(block), '');
@@ -494,7 +500,11 @@ export function stringifyUWX(envelope: UWDocumentEnvelope): string {
   for (const block of envelope.pipeline_log) {
     output.push(serializeEnvelopeBlock(block), '');
   }
-  return output.join('\n').replace(/\n+$/g, '\n');
+  const source = output.join('\n').replace(/\n+$/g, '\n');
+  if (canonicalizeUWEnvelope(toUWEnvelope(parseUWFile(source))) !== canonicalizeUWEnvelope(envelope)) {
+    throw new UWLiteBridgeError('UWX_MODEL_NOT_REPRESENTABLE', 'Markdown reprojection would change the complete model.');
+  }
+  return source;
 }
 
 function compileFrontmatter(
@@ -628,8 +638,8 @@ function collectEnvelopeLeafPaths(envelope: UWDocumentEnvelope): string[] {
       }
     }
   }
-  for (const [id, block] of Object.entries(envelope.extensions)) {
-    flattenLeaves(block.content, `extensions.${id}`, output);
+  for (const [id, entry] of Object.entries(envelope.extensions)) {
+    extensionBlocks(entry).forEach((block, index) => flattenLeaves(block.content, `extensions.${id}[${index}]`, output));
   }
   return output;
 }

@@ -878,3 +878,7 @@ export type {
 } from './document-signatures.js';
 
 export { parseGapInstant, ValidationClockError } from './gap-instant.js';
+
+export type { UWExtensionEntry, UWParsedExtensionEntry } from './types.js';
+export type { UWEnvelopeExtensionEntry } from './envelope.js';
+export { extensionBlocks, mapExtensionEntry } from './extension-entry.js';
