@@ -304,6 +304,7 @@ def encode_xml(model):
 def decode_xml(text):
     need(len(text.encode('utf-8')) <= 50 * 1024 * 1024, 'XML size limit')
     need('<!' not in text, 'XML declaration/entity/comment')
+    bom = '\ufeff' if text.startswith('\ufeff') else ''
     text = text.removeprefix('\ufeff')
     declaration = r'''^<\?xml[ \t\r\n]+version[ \t\r\n]*=[ \t\r\n]*(?:"1\.0"|'1\.0')(?:[ \t\r\n]+encoding[ \t\r\n]*=[ \t\r\n]*(?:"[uU][tT][fF]-8"|'[uU][tT][fF]-8'))?(?:[ \t\r\n]+standalone[ \t\r\n]*=[ \t\r\n]*(?:"(?:yes|no)"|'(?:yes|no)'))?[ \t\r\n]*\?>'''
     rest = text
@@ -315,7 +316,7 @@ def decode_xml(text):
     # Preserve declaration position as well as its validated spelling. Removing
     # it would make a following BOM appear to ET as a fresh document-start BOM.
     prefix = text[:len(text) - len(rest)]
-    root = ET.fromstring(prefix + ascii_prefixes(rest))
+    root = ET.fromstring(bom + prefix + ascii_prefixes(rest))
     need(root.tag == '{' + NS + '}document' and set(root.attrib) == {'envelope-version', 'format-version'}, 'XML root/attributes')
     def space(value):
         return value is None or re.fullmatch(r'[ \t\r\n]*', value) is not None

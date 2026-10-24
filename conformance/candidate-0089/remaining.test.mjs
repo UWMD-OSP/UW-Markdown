@@ -55,6 +55,10 @@ test('F2 Fifth Edition prefix boundary and lexical values agree with the separat
   }
   cases.push({ name: 'different-raw-end-prefix-same-uri', text: xml.replace('<uw:document ', '<uw:document xmlns:p="https://uwmd.org/ns/document/2" ').replace('</uw:document>', '</p:document>'), expected: 'refused' });
   cases.push({ name: 'declaration-followed-by-second-BOM', text: `<?xml version="1.0"?>\ufeff${xml}`, expected: 'refused' });
+  cases.push({ name: 'single-start-BOM', text: `\ufeff${xml}`, expected: 'equal', preimage: expected });
+  cases.push({ name: 'single-start-BOM-with-declaration', text: `\ufeff<?xml version="1.0"?>${xml}`, expected: 'equal', preimage: expected });
+  cases.push({ name: 'duplicate-start-BOM', text: `\ufeff\ufeff${xml}`, expected: 'refused' });
+  cases.push({ name: 'duplicate-start-BOM-before-declaration', text: `\ufeff\ufeff<?xml version="1.0"?>${xml}`, expected: 'refused' });
   cases.push({ name: 'injective-prefix-renaming', text: xml.replace('<uw:document ', '<uw:document xmlns:n75_77="https://uwmd.org/ns/document/2" ').replace('<uw:value type="object">', '<n75_77:value type="object">').replace('</uw:value></uw:document>', '</n75_77:value></uw:document>'), expected: 'equal', preimage: expected });
   for (const item of cases) {
     if (item.expected === 'equal') assert.equal(preimage(decodeXML(item.text)), item.preimage, item.name);
