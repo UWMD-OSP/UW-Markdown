@@ -5,7 +5,6 @@ on:
     paths:
       - 'experiments/numerical-0088/**'
       - 'docs/rfcs/0088-*'
-      - 'docs/reviews/2026-10-15-numerical*'
       - 'scripts/run-numerical-research.py'
       - '.github/workflows/numerical-research.yml'
   workflow_dispatch:

@@ -369,7 +369,7 @@ reconciliation. Both packages left `release.yml` and the workspace in RFC
 **Done 2026-10-11.** 3.0.0 published 0.2.0 of both packages (release run
 38163964522), and the owner then ran both commands. The registry shows the
 message on every version of each name, `0.0.0-stage` through `0.2.0`; see the
-[3.0.0 publication record](../releases/3.0.0-publication.md#module-package-retirement).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v3.0.0).
 RFC 0081 Phase 4 then removed both from `release.yml`, the workspace and
 the guards; `release-packages.mjs` keeps their names only for the
 generations that shipped them. 4.0.0 is the first release without them.
@@ -422,7 +422,7 @@ tag or manually publish to bypass a failed gate.
 **Account prerequisite / bootstrap.** This applies to every new first-party
 package name. The last one was `@uwmd/verify`, first published with core/CLI
 4.1.0; its bootstrap evidence is in the
-[4.1.0 publication record](../releases/4.1.0-publication.md#name-bootstrap).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.1.0).
 npm configures a trusted publisher only for a package that already
 exists, and `release.yml` publishes only through one, so a new name has to be
 created by hand before the first tag that publishes it. Confirm publish rights
@@ -468,7 +468,7 @@ and a web login, `npm login --auth-type=web`):
 4. **Record the evidence before authorizing the tag:** the placeholder's
    version and dist-tags (`npm view @uwmd/verify --json`), its deprecation
    message, and the `npm trust list` output, on the release PR. The
-   post-publication record carries it into `docs/releases/`. The first ordinary release then
+   post-publication record carries it into private maintainer records. The first ordinary release then
    publishes the real version as `latest`, with provenance.
 
 If the placeholder or the trust binding does not behave as described, stop for
@@ -483,13 +483,13 @@ CLI trust page still contains older single-configuration language. Confirm the
 account state rather than relying on the old restriction.
 
 **Independent post-publication verification.** Extend the existing
-[2.17.0 procedure](../releases/2.17.0-publication.md) to both module packages:
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.17.0) to both module packages:
 registry versions, `latest`, `gitHead`, tarball hashes/integrity, npm signatures,
 DSSE/SLSA attestations, authenticated Sigstore trust, Rekor timestamps/inclusion
 proofs/checkpoints, and file-by-file comparison against the tagged build. Run an
 isolated consumer with exact registry-installed core/modules through Node,
 browser-safe exports, TypeScript declarations, JSON parity, compatibility checks
-and existing module fixtures. Retain durable evidence under `docs/releases/`.
+and existing module fixtures. Retain durable evidence in private maintainer records.
 For a skipped unchanged artifact, verify its original publication commit and
 provenance rather than claiming it was republished by the new run. Confirm no
 package outside the generation's scope was unintentionally published.
@@ -567,7 +567,7 @@ What a maintainer must remember:
   deal exposed the problem.
 
 The machine-readable report question was evaluated and declined for now; see
-the [adopter feedback review](../reviews/2026-10-04-adopter-feedback-loop.md).
+the adopter feedback review.
 
 ## When does my change need an RFC?
 

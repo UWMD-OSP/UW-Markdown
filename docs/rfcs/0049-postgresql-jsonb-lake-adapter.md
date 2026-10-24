@@ -128,7 +128,7 @@ that honours only primary keys and `ON CONFLICT`.
 Since **2026-09-16**, also a live load: the whole conformance corpus — 382
 documents, 24,380 facts, 10 receipts, 9 manifests, 24,809 statements — into
 PostgreSQL 18, twice, for identical row counts. See the
-[load record](../reviews/2026-09-16-lake-live-postgres.md).
+load record.
 
 ### Erratum, 2026-09-16 (lake schema 0.2)
 

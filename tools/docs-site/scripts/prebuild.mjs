@@ -28,6 +28,16 @@ if (process.argv.includes('--clean')) {
   process.exit(0);
 }
 
+// Remove generated launch-cleanup pages from reused build workspaces too.
+// Authored guide pages and public assets remain outside this bounded list.
+for (const retired of ['about/reviews', 'about/releases', 'about/roadmap-history.md',
+  'about/period-consumers.md', 'about/element-package-validation.md',
+  'about/standalone-documents-and-lake.md']) {
+  const target = resolve(SITE_ROOT, retired);
+  if (relative(SITE_ROOT, target).startsWith('..')) throw new TypeError('Retired page escaped the site root');
+  await rm(target, { recursive: true, force: true });
+}
+
 // ─── Copy plan ────────────────────────────────────────────────────────────────
 // Each entry: { from: repo-relative path, to: site-relative path, transform?: fn }
 
@@ -48,6 +58,7 @@ const STARTER_PAGES = [
 ];
 
 const COPIES = [
+  { from: 'conformance/stochastic/pcg64-reference.md', to: 'conformance/pcg64-reference.md', title: 'Independent PCG64 reference' },
   // Spec
   { from: 'spec/UW_FORMAT_SPEC.md',   to: 'spec/format.md',   title: `UW Format Specification (${SITE_VERSIONS.specFormat})` },
   { from: 'spec/UW_PROTOCOL.md',      to: 'spec/protocol.md', title: `UW Protocol — verification (${SITE_VERSIONS.specProtocol})` },
@@ -87,21 +98,6 @@ const COPIES = [
   // Project documents
   { from: 'docs/ABOUT.md',       to: 'about/index.md', title: 'About UW Markdown' },
   { from: 'ROADMAP.md',          to: 'about/roadmap.md' },
-  { from: 'docs/roadmap/history-through-2.7.0.md', to: 'about/roadmap-history.md' },
-  { from: 'docs/roadmap/period-consumers.md', to: 'about/period-consumers.md' },
-  { from: 'docs/roadmap/element-package-validation.md', to: 'about/element-package-validation.md' },
-  { from: 'docs/roadmap/2026-09-13-standalone-documents-and-lake.md', to: 'about/standalone-documents-and-lake.md' },
-  { from: 'docs/reviews/2026-09-12-pcg64-reference.md', to: 'about/reviews/pcg64-reference.md' },
-  { from: 'docs/reviews/2026-09-12-release-2.8.0.md', to: 'about/reviews/release-2.8.0.md' },
-  { from: 'docs/reviews/2026-09-12-release-2.9.0.md', to: 'about/reviews/release-2.9.0.md' },
-  { from: 'docs/reviews/2026-09-12-excel-period-bindings.md', to: 'about/reviews/excel-period-bindings.md' },
-  { from: 'docs/reviews/2026-09-16-lake-live-postgres.md', to: 'about/reviews/lake-live-postgres.md', title: '@uwmd/lake against a live PostgreSQL server' },
-  { from: 'docs/reviews/2026-09-21-golden-deal-release-comparison.md', to: 'about/reviews/golden-deal-release-comparison.md', title: 'Golden-deal release comparison' },
-  { from: 'docs/reviews/2026-09-24-completed-golden-corpus-validation.md', to: 'about/reviews/completed-golden-corpus-validation.md', title: 'Completed review corpus validation' },
-  { from: 'docs/reviews/2026-09-24-terminal-boundary-design.md', to: 'about/reviews/terminal-boundary-design.md', title: 'Terminal-boundary design review' },
-  { from: 'docs/reviews/2026-09-24-rfc-0063-implementation.md', to: 'about/reviews/rfc-0063-implementation.md', title: 'RFC 0063 implementation verification' },
-  { from: 'docs/reviews/2026-09-29-rfc-0064-owner-review.md', to: 'about/reviews/rfc-0064-owner-review.md', title: 'RFC 0064 owner review: statement carrier' },
-  { from: 'docs/reviews/2026-10-04-renamed-identifiers.md', to: 'about/reviews/renamed-identifiers.md', title: 'Renamed identifiers review' },
   { from: 'GOVERNANCE.md',       to: 'about/governance.md' },
   { from: 'MAINTAINERS.md',      to: 'about/maintainers.md' },
   { from: 'SECURITY.md',         to: 'about/security.md' },
@@ -122,11 +118,9 @@ const COPIES = [
   { from: 'docs/UW_RECEIPTS.md',     to: 'guide/receipts.md',     title: 'Verification receipts' },
   { from: 'docs/DATA_LAKE.md',       to: 'guide/data-lake.md',    title: 'UW Markdown → data lake' },
 
-  { from: 'docs/reviews/2026-09-11-rfc-0040-0041-readiness.md', to: 'about/reviews/rfc-0040-0041-readiness.md', title: 'RFC 0040 / 0041 readiness review' },
 
   // Discover every docs/rfcs/*.md file, including new drafts.
   ...rfcCopies(REPO_ROOT),
-  { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 
 // ─── Link rewriter ────────────────────────────────────────────────────────────
@@ -136,6 +130,11 @@ const COPIES = [
 // Source-relative path → site URL. Keys are normalized: leading "./" and "../"
 // segments are stripped before lookup, so we only list the canonical form once.
 const NORMALIZED_LINK_MAP = new Map([
+  ...['.py', '.ts', '.vectors.json', '.cycle.json', '.cycle.py', '.schema.proposed.json', '.check.mjs'].map(suffix => {
+    const path = `conformance/metadata-dates/2026-10-17-validation-diagnostic-gap-354.0095-date-only${suffix}`;
+    return [path, `https://github.com/UWMD-OSP/UW-Markdown/blob/main/${path}`];
+  }),
+  ['conformance/stochastic/pcg64-reference.md', '/conformance/pcg64-reference'],
   ['docs/PROPERTY_CASH_FLOW_WORKFLOW.md', '/guide/property-cash-flow'],
   ['PROPERTY_CASH_FLOW_WORKFLOW.md', '/guide/property-cash-flow'],
   ['docs/LEASE_UP_CASH_FLOW_WORKFLOW.md', '/guide/lease-up-cash-flow'],
@@ -144,38 +143,9 @@ const NORMALIZED_LINK_MAP = new Map([
   ['CALCULATION_CONTEXT.md', '/guide/calculation-context'],
   // Project documents
   ['ROADMAP.md', '/about/roadmap'],
-  ['docs/roadmap/history-through-2.7.0.md', '/about/roadmap-history'],
-  ['docs/roadmap/period-consumers.md', '/about/period-consumers'],
-  ['docs/roadmap/element-package-validation.md', '/about/element-package-validation'],
-  ['docs/roadmap/2026-09-13-standalone-documents-and-lake.md', '/about/standalone-documents-and-lake'],
-  ['docs/reviews/2026-09-12-pcg64-reference.md', '/about/reviews/pcg64-reference'],
-  ['docs/reviews/2026-09-12-excel-period-bindings.md', '/about/reviews/excel-period-bindings'],
-  ['reviews/2026-09-12-pcg64-reference.md', '/about/reviews/pcg64-reference'],
-  ['docs/reviews/2026-09-16-lake-live-postgres.md', '/about/reviews/lake-live-postgres'],
-  ['reviews/2026-09-16-lake-live-postgres.md', '/about/reviews/lake-live-postgres'],
-  ['docs/reviews/2026-09-21-golden-deal-release-comparison.md', '/about/reviews/golden-deal-release-comparison'],
-  ['reviews/2026-09-21-golden-deal-release-comparison.md', '/about/reviews/golden-deal-release-comparison'],
-  ['docs/reviews/2026-09-24-completed-golden-corpus-validation.md', '/about/reviews/completed-golden-corpus-validation'],
-  ['reviews/2026-09-24-completed-golden-corpus-validation.md', '/about/reviews/completed-golden-corpus-validation'],
-  ['docs/reviews/2026-09-24-terminal-boundary-design.md', '/about/reviews/terminal-boundary-design'],
-  ['reviews/2026-09-24-terminal-boundary-design.md', '/about/reviews/terminal-boundary-design'],
-  ['docs/reviews/2026-09-24-rfc-0063-implementation.md', '/about/reviews/rfc-0063-implementation'],
-  ['reviews/2026-09-24-rfc-0063-implementation.md', '/about/reviews/rfc-0063-implementation'],
-  ['2026-09-24-rfc-0063-implementation.md', '/about/reviews/rfc-0063-implementation'],
-  ['docs/reviews/2026-09-29-rfc-0064-owner-review.md', '/about/reviews/rfc-0064-owner-review'],
-  ['reviews/2026-09-29-rfc-0064-owner-review.md', '/about/reviews/rfc-0064-owner-review'],
-  ['docs/reviews/2026-10-04-renamed-identifiers.md', '/about/reviews/renamed-identifiers'],
-  ['reviews/2026-10-04-renamed-identifiers.md', '/about/reviews/renamed-identifiers'],
   // The review links its sibling reproduction script, which is code, not a page.
-  ['2026-10-04-renamed-identifiers.repro.mjs', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-04-renamed-identifiers.repro.mjs'],
   // Repository documents the site does not render link their GitHub source.
-  ['reviews/2026-10-15-financial-audit-343.md', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-financial-audit-343.md'],
-  ['docs/reviews/2026-10-15-financial-audit-343.md', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-financial-audit-343.md'],
   ['docs/playbooks/README.md', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/playbooks/README.md'],
-  ['docs/reviews/2026-09-12-release-2.8.0.md', '/about/reviews/release-2.8.0'],
-  ['docs/reviews/2026-09-12-release-2.9.0.md', '/about/reviews/release-2.9.0'],
-  ['reviews/2026-09-12-release-2.8.0.md', '/about/reviews/release-2.8.0'],
-  ['reviews/2026-09-12-release-2.9.0.md', '/about/reviews/release-2.9.0'],
   ['GOVERNANCE.md', '/about/governance'],
   ['MAINTAINERS.md', '/about/maintainers'],
   ['SECURITY.md', '/about/security'],
@@ -186,7 +156,6 @@ const NORMALIZED_LINK_MAP = new Map([
   ['CHANGELOG.md', '/about/changelog'],
   ['ARCHITECTURE.md', '/about/architecture'],
   ['docs/ABOUT.md', '/about/'],
-  ['reviews/2026-09-11-rfc-0040-0041-readiness.md', '/about/reviews/rfc-0040-0041-readiness'],
   ['ABOUT.md', '/about/'],
   ['VERSIONS.md', '/about/versions'],
   ['docs/GLOSSARY.md', '/guide/glossary'],
@@ -199,8 +168,6 @@ const NORMALIZED_LINK_MAP = new Map([
   ['UW_LITE_AND_UWX.md', '/guide/lite-and-uwx'],
   ['UW_RECEIPTS.md', '/guide/receipts'],
   ['DATA_LAKE.md', '/guide/data-lake'],
-  ['docs/releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
-  ['releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
   ['LICENSE', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/LICENSE'],
 
   // Starter products guide (RFC 0078)

@@ -198,7 +198,7 @@ describe('assetClassDeclarationConflicts', () => {
 
 // Issue #263 asks for renamed ids. These pin what the current contract already
 // does, so a later RFC changes them deliberately rather than by accident.
-// See docs/reviews/2026-10-04-renamed-identifiers.md.
+// See docs/rfcs/0073-previous-asset-class-identifiers.md.
 describe('renamed identifiers under the current contract', () => {
   const OLD_CLASS = 'com.example_old.specialty_facility';
   const NEW_CLASS = 'com.example_new.specialty_facility';

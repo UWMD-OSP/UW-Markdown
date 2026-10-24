@@ -35,7 +35,7 @@ independently exercising UWMD's top-53-bit conversion.
 The upstream fixed-stream API is `pcg64s_srandom_r` / `pcg64s_random_r`
 (`pcg_oneseq_128_*`). Generic `pcg64_srandom_r` instead accepts an initseq and
 forms its increment as `(initseq << 1) | 1`; passing the increment as initseq
-would compare a different stream. This corrects the old handoff's ambiguity.
+would compare a different stream.
 
 ## Reproduce
 
@@ -43,7 +43,7 @@ Use an isolated Python environment with NumPy 1.26.4 available, then run:
 
 ```bash
 python scripts/verify-pcg64-reference.py
-npm exec --workspace @uwmd/core -- vitest run src/calc/prng.test.ts src/calc/stochastic.test.ts
+npm exec --workspace @uwmd/verify -- vitest run src/calc/prng.test.ts src/calc/stochastic.test.ts
 ```
 
 The Python command compares fresh oracle output with the committed JSON and
@@ -56,5 +56,5 @@ The verifier does not import or execute the TypeScript PRNG to create expectatio
 This closes the independent-implementation comparison gap. The upstream C header
 was inspected, not compiled locally; NumPy's compiled implementation supplied the
 independent executable. This is not a statistical proof of randomness or a proof
-for every seed. It does not change the separate, documented cross-platform libm
-limits of the normal inverse-CDF sampler.
+for every seed. The normal inverse-CDF sampler and other financial numerical procedures are
+governed separately by Protocol VIII.5 and RFC 0088.

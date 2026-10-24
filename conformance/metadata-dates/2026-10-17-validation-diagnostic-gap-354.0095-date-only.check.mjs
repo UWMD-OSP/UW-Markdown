@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Draft-only independent TS/Python/schema comparison; no production imports.
+// Independent accepted RFC 0095 TS/Python/schema comparison; no production imports.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -18,7 +18,7 @@ const vectorBytes = readFileSync(source('.vectors.json'));
 assert.equal(sha(vectorBytes), 'f8d3ebc4aef8b0992edf2a333cc53fa2325b869c680ba990158225f18c6e7400');
 const vectors = JSON.parse(vectorBytes);
 const proposed = JSON.parse(readFileSync(source('.schema.proposed.json'), 'utf8'));
-const rfc = readFileSync(new URL('../rfcs/0095-optional-metadata-and-provenance-references.md', import.meta.url), 'utf8');
+const rfc = readFileSync(new URL('../../docs/rfcs/0095-optional-metadata-and-provenance-references.md', import.meta.url), 'utf8');
 const embedded = rfc.match(/(?:Proposed|Accepted) `\$defs\/MarketReferenceDate`[^\n]*\n\n```json\n([\s\S]*?)\n```/)[1];
 assert.deepEqual(JSON.parse(embedded), proposed, 'RFC and proposed schema must match');
 const schema = new Ajv2020({ strict: true, validateFormats: false }).compile(proposed);
@@ -75,7 +75,7 @@ try {
   assert.equal(cycleRun.status, 0, cycleRun.stderr);
   assert.deepEqual(readFileSync(source('.cycle.json')), beforeCycle);
   assert.deepEqual(readFileSync(source('.vectors.json')), vectorBytes);
-  const report = { kind: 'Draft RFC0095 research only; no production activation',
+  const report = { kind: 'Independent RFC0095 calendar-domain conformance',
     authority_main: 'fa9a9ea37d31b918f5993eae4276b159f31719f3', node: process.version, platform: process.platform,
     python_runtime: runtime.stdout.trim(),
     typescript: ts.version, vectors_sha256: sha(vectorBytes),

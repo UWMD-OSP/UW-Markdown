@@ -52,7 +52,7 @@ Found by doing, twice:
    has no tenants. `Roosevelt-Row-MixedUse-Phoenix-AZ` restaged for the same
    reason while its `components` section holds exactly the income detail the
    requirement wants, per use, as RFC 0019 designed. The workaround is
-   recorded in `docs/wiki/13-status.md` with this RFC named as the fix.
+   recorded in `ROADMAP.md` with this RFC named as the fix.
 
 2. **The requirement contradicts decisions the project already made.**
    RFC 0019 ruled that mixed-use income lives per-component in `components`

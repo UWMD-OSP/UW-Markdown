@@ -22,7 +22,7 @@ explicitly deferred below.
 The owner approved block-level `_role` on 2026-09-11. Protocol 2.7.0 adds
 role-aware cross-check selection; Format stays 2.0. The initial protocol change
 was followed by package publication in 2.7.0.
-The [readiness review](../reviews/2026-09-11-rfc-0040-0041-readiness.md)
+The readiness review
 records why the earlier `_meta.role` proposal was replaced: v2 metadata
 normalization discards that field before hashing.
 

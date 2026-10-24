@@ -17,7 +17,7 @@ const canonical = (block: UWBlock) => block.content._meta as Record<string, Reco
 const inherited = () => ({ document_id: '', digest: `sha256:${'a'.repeat(64)}`, distance: 1 });
 const market = () => ({ document_id: '', as_of: '2026-10-18', digest: `sha256:${'b'.repeat(64)}`, rationale: '' });
 const reference = (provenance: Record<string, unknown>, rest: Record<string, unknown> = {}) => source({ _meta: { ...meta(), provenance: { ...meta().provenance, ...provenance } }, ...rest });
-const datesPath = new URL('../../../docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.vectors.json', import.meta.url);
+const datesPath = new URL('../../../conformance/metadata-dates/2026-10-17-validation-diagnostic-gap-354.0095-date-only.vectors.json', import.meta.url);
 const dateBytes = readFileSync(datesPath);
 const dates = JSON.parse(dateBytes.toString('utf8')) as {
   date_cases: { id: string; input: unknown; admitted: boolean }[];

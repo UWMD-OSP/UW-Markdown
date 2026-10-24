@@ -82,7 +82,7 @@ selection, not every internal algorithmic temporary.
 
 ## A: exact fdlibm procedure, no integer substitution
 
-Identity is the unchanged [eight-file source manifest](../../../docs/reviews/2026-10-15-fdlibm-closure-356.sources.json),
+Identity is the unchanged eight-file source manifest,
 not the label “fdlibm”, “StrictMath” or whichever libm ships with a host.
 In particular [Netlib e_pow.c](https://netlib.org/fdlibm/e_pow.c),
 `763b86baa63eb3518b43f7f3e44e5ed10992b62650f4a45c3a2ea6015e6d5122`,
@@ -106,7 +106,7 @@ exponential are **not** calls to the standalone log/exp functions.
 
 `log` and `exp` are separately the exact pinned e_log.c/e_exp.c range reduction,
 polynomial and scaling graphs. The sqrt, scalbn, fabs and copysign closure is
-mandatory. The [source/adapter study](../../../docs/reviews/2026-10-15-fdlibm-closure-356.md)
+mandatory. The source/adapter study
 records its conditional bound (at most 76 sqrt loop-body executions under the
 specified word mapping); this is not a complete evaluator cost bound. No exponent-
 sized multiplication loop is used. Implement every C signed/unsigned32 operation,

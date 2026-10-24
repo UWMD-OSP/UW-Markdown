@@ -47,7 +47,7 @@ implementation.
 
 ### How this was found
 
-The [renamed-identifier review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-04-renamed-identifiers.md)
+The [renamed-identifier review](0073-previous-asset-class-identifiers.md)
 for #263 found that the reference registry did not enforce §VII.3 at all.
 PR [#267](https://github.com/UWMD-OSP/UW-Markdown/pull/267) repairs the part
 that is unambiguous: two **unrelated** modules declaring one id are refused

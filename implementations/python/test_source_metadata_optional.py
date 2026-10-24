@@ -11,7 +11,7 @@ from uwmd_reader import parse
 from uwmd_source_validation import inspect_source_roles, _inspect_source_roles_source
 
 ROOT = Path(__file__).resolve().parents[2]
-VECTORS = ROOT / "docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.vectors.json"
+VECTORS = ROOT / "conformance/metadata-dates/2026-10-17-validation-diagnostic-gap-354.0095-date-only.vectors.json"
 DIGEST = "sha256:" + "a" * 64
 
 
