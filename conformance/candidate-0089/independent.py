@@ -17,6 +17,7 @@ import sys
 import xml.etree.ElementTree as ET
 import zipfile
 import zlib
+from xml_names import ascii_prefixes
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'implementations/python'))
@@ -311,7 +312,7 @@ def decode_xml(text):
         need(match is not None, 'XML malformed declaration')
         rest = text[match.end():]
     need('<?' not in rest, 'XML processing instruction')
-    root = ET.fromstring(text)
+    root = ET.fromstring(ascii_prefixes(rest))
     need(root.tag == '{' + NS + '}document' and set(root.attrib) == {'envelope-version', 'format-version'}, 'XML root/attributes')
     def space(value):
         return value is None or re.fullmatch(r'[ \t\r\n]*', value) is not None
