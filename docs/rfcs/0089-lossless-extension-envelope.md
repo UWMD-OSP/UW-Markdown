@@ -1,7 +1,7 @@
 ---
 rfc: 0089
 title: Preserve extension variants in a complete versioned Envelope
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-16
 affects:
@@ -18,15 +18,18 @@ affects:
 
 Use a tagged `single`/`variants` extension entry, exact nullable identities,
 complete XML/CSV carriers and a separately identified whole-Envelope commitment.
-The owner selected that design direction on 2026-10-17, **not final acceptance**.
-The 2026-10-23 owner direction retains that design after independent red-team
-review, without acceptance. This revision freezes the carrier grammar and the
-executable evidence sequence against main `2168b504`.
-**Draft; isolated candidate work is authorized, production integration is not.**
+The owner accepted D1–D6 on 2026-10-23 at RFC revision
+`a8a33a96eb352cf316c8d22e23c0c5315362babb`, supported by independently reviewed
+candidate `2f23cd2705c06a8763d9f27af192da17c2aa3b0a` against main
+`6682bfd29967d8b16287333e31912b9a0e4b59d9`. All five candidate findings closed
+on bounded independent evidence. Production integration is authorized through
+normal implementation review and CI. Candidate closure does not establish
+production support; the postacceptance gates below still apply. No release,
+publication, deployment or public launch is authorized by this acceptance.
 
-Recommendation: retain the selected design below. Obtain the required **Chief
-of Staff red-team before owner acceptance**, with particular scrutiny of D2's
-source accounting, D4's full lawful domain and D5's authentication boundary.
+Retain the accepted design below. The required independent red-team and closure
+review covered D2's source accounting, D4's bounded lawful domain and D5's
+authentication boundary before owner acceptance.
 Do not treat hash agreement or the old bounded labs as complete interoperability
 proof. Close the evidence gates below before final acceptance/activation; no
 unresolved product choice is delegated to a codec author.
@@ -59,7 +62,7 @@ and actual-ZIP CRC/header/BOM defects; current-main repairs are tracked in
 [#544](https://github.com/UWMD-OSP/UW-Markdown/issues/544), separately from this
 RFC's new semantics. Those repairs do not close the complete-candidate gates.
 
-## Proposed contract (conditional on acceptance)
+## Accepted contract
 
 ### D1 — Tagged entries, unchanged other collection shapes
 
@@ -467,10 +470,11 @@ source/model admission. Historical dual-regime support is not required.
 
 ## Unresolved questions
 
-No remaining product-choice menu: D1–D6 records the selected design and exact
-current-main coordination. Final acceptance remains owner-gated after CoS
-red-team and the explicit engineering evidence gates. Findings that expose a
-new contract choice return to the owner; they are not silent codec discretion.
+No remaining product-choice menu: D1–D6 records the accepted design and exact
+coordination. Owner acceptance followed independent candidate finding closure.
+Production review, synchronized integration and the postacceptance engineering
+gates remain required before declaring support. Findings that expose a new
+contract choice return to the owner; they are not silent codec discretion.
 
 ## Prior art
 
