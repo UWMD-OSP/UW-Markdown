@@ -10,6 +10,20 @@ const ajv=new Ajv.default({strict:false,allErrors:true});addFormats.default(ajv)
 const packet=read('conformance/rfc-0089/cases.json');
 describe('full carrier schema admission',()=>{
   it('embeds the current normative schemas exactly',()=>expect(carrierSchemas).toEqual([envelope,block]));
+  it('refuses silent growth beyond the executable schema vocabulary',()=>{
+    const known=new Set(['$schema','$id','$ref','$defs','title','description','default','examples','type','const','enum','required','properties','additionalProperties','minProperties','minLength','minimum','pattern','format','allOf','anyOf','oneOf','not','if','then','else','contains','items','minItems']);
+    function inspect(schema: any): void {
+      if(typeof schema==='boolean')return;
+      for(const [key,value] of Object.entries(schema)) {
+        expect(known.has(key),key).toBe(true);
+        if(['properties','$defs'].includes(key))Object.values(value as object).forEach(inspect);
+        else if(['allOf','anyOf','oneOf'].includes(key))(value as any[]).forEach(inspect);
+        else if(['additionalProperties','not','if','then','else','contains','items'].includes(key))inspect(value);
+        else if(key==='format')expect(value).toBe('date-time');
+      }
+    }
+    carrierSchemas.forEach(inspect);
+  });
   it('agrees with AJV on frozen models and malformed schema boundaries',()=>{
     const normal=packet.source_cases.find((x: any)=>x.name==='named-default-single').expected_model;
     const cases=packet.source_cases.concat(packet.direct_models).map((x: any)=>x.expected_model);

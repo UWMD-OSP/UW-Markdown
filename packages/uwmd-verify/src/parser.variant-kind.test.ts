@@ -106,7 +106,7 @@ describe('lawful variant labels and complete subject accounting', () => {
     expect(after.parsed.raw).toBe(changed);
   });
   it('classifies annotation/content peers with lawful block extras', async () => {
-    const parsed = parseUWFile(FRONT + section('annotation', 1) + section('content', 2));
+    const parsed = parseUWFile(FRONT.replace('asset_class: multifamily', 'asset_class: multifamily\ndeal_id: synthetic-variant-key') + section('annotation', 1) + section('content', 2));
     const envelope = toUWEnvelope(parsed);
     const peers = envelope.sections.operating_statement as unknown as Record<string, { [key: string]: unknown }>;
     peers.annotation!.section = 'spoof';

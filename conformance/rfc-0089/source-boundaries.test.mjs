@@ -29,5 +29,5 @@ test('F1 native source/carrier separation with actual signatures/receipts and ex
     assert.equal(document.state,'verified');assert.equal(result.verdict,'verified');assert.equal(docCalls,1);assert.equal(receiptCalls,1);
     records.push({name:c.name,carrier:c.carrier,source:c.source,expected_preimage:preimage(expected),source_admission:'admitted',counts:c.counts,document:document.state,docCalls,receipt:result.verdict,receiptCalls});
   }
-  const folder=new URL('../../node_modules/.cache/rfc0089-production-evidence/',import.meta.url);mkdirSync(folder,{recursive:true});writeFileSync(new URL('source-boundaries.json',folder),JSON.stringify({node:process.version,records},null,2)+'\n');
+  const folder=new URL('../../node_modules/.cache/rfc0089-production-evidence/',import.meta.url);mkdirSync(folder,{recursive:true});writeFileSync(new URL('native-source-boundaries.json',folder),JSON.stringify({node:process.version,records},null,2)+'\n');
 });

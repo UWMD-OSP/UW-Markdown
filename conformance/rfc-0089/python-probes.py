@@ -31,7 +31,7 @@ for item in json.loads((HERE/'independent/closure-xml-cases.json').read_text(enc
     child=subprocess.run([sys.executable,'-B',str(HERE.parents[1]/'implementations/python/uwmd_envelope.py'),'xml',str(path)],capture_output=True)
     assert (child.returncode==0)==(item['expected']=='equal'),('actual Python CLI',item['name'],child.stderr)
     results.append(dict(case=item['name'],group='python-cli',expected=item['expected'],exit=child.returncode))
-for item in json.loads((folder/'source-boundaries.json').read_text(encoding='utf-8'))['records']:
+for item in json.loads((folder/'native-source-boundaries.json').read_text(encoding='utf-8'))['records']:
     model=project_source(item['source'].encode('utf-8'))
     assert preimage(model)==item['expected_preimage'],item['name']
     try:

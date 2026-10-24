@@ -1,4 +1,5 @@
 import { buildViews } from './csv-views.js';
+import { hasBlockShape } from './block-kind.js';
 // RFC 0089 normalized mapping promoted from reviewed candidate.
 import * as zipReader from './zip-safety.js';
 import { check, object, put, readJSON, jcs, sha, esc, arrays, descriptors, validateModel, stamp, VERSION, REPRESENTATION } from './carrier-values.js';
@@ -199,7 +200,7 @@ export async function decodeCSV(input: Record<string, string | Uint8Array>, opti
       else {
         check(path[2] === variant, 'CSV section variant');
         if (!Object.hasOwn(model.sections, section)) put(model.sections, section, {});
-        check(object(model.sections[section]) && !Object.hasOwn(model.sections[section], 'annotation') && !Object.hasOwn(model.sections[section], variant), 'CSV section collision');
+        check(object(model.sections[section]) && !hasBlockShape(model.sections[section]) && !Object.hasOwn(model.sections[section], variant), 'CSV section collision');
         put(model.sections[section], variant, block);
       }
     } else if (arrays.includes(collection)) {

@@ -302,7 +302,7 @@ asset_class: multifamily
   });
 });
 
-// ─── RFC 0027 — the class's own size in every read model ─────────────────────
+// â”€â”€â”€ RFC 0027 â€” the class's own size in every read model â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const officeDoc = `---
 uw_version: "3.0"
@@ -347,7 +347,7 @@ asset_class: office
 \`\`\`
 `;
 
-describe('render — size intensives (RFC 0027)', () => {
+describe('render â€” size intensives (RFC 0027)', () => {
   it('csv appends size_basis/size_quantity and keeps total_units in place', () => {
     const parsed = parseUWFile(officeDoc);
     const [headerLine, rowLine] = render(parsed, { format: 'csv' }).content.split('\n');
@@ -387,7 +387,7 @@ describe('render — size intensives (RFC 0027)', () => {
 
   it('summary header states a non-multifamily class\'s size', () => {
     const content = render(parseUWFile(officeDoc), { format: 'summary' }).content;
-    expect(content).toContain('· 42,500 RSF');
+    expect(content).toContain('Â· 42,500 RSF');
   });
 
   it('chat property block states a non-multifamily class\'s size', () => {
@@ -397,20 +397,20 @@ describe('render — size intensives (RFC 0027)', () => {
 
   it('no drift: multifamily summary and chat carry no separate size term', () => {
     // Multifamily's primary is total_units, which these renderings already
-    // state — RFC 0027 must not change a single multifamily byte.
+    // state â€” RFC 0027 must not change a single multifamily byte.
     const parsed = loadFixture();
     const summary = render(parsed, { format: 'summary' }).content;
     const chat = render(parsed, { format: 'chat' }).content;
     expect(summary).not.toContain('RSF');
-    expect(summary).not.toMatch(/·\s+\d[\d,]*\s+Units/);
+    expect(summary).not.toMatch(/Â·\s+\d[\d,]*\s+Units/);
     expect(chat).not.toContain('Size:');
   });
 });
 
-// ─── Format §4.5 — the chat NOI block reads the stated paths ─────────────────
+// â”€â”€â”€ Format Â§4.5 â€” the chat NOI block reads the stated paths â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //
-// §4.5 places the NOI lines under `income` / `expenses` and states each money
-// line as `{ value, ... }`. The chat block read top-level keys that no §4.5
+// Â§4.5 places the NOI lines under `income` / `expenses` and states each money
+// line as `{ value, ... }`. The chat block read top-level keys that no Â§4.5
 // document carries, so a fully stated model rendered GPR, EGI and OpEx as n/a.
 
 function noiDoc(content: Record<string, unknown>): string {
@@ -442,7 +442,7 @@ function chatNoiLines(parsed: ReturnType<typeof parseUWFile>): string[] {
   return content.slice(start).split('\n\n')[0]!.split('\n').slice(1);
 }
 
-/** A §4.5-shaped model. Every figure is stated; the renderer derives none. */
+/** A Â§4.5-shaped model. Every figure is stated; the renderer derives none. */
 const SPEC_NOI = {
   underwriting_basis: 'stabilized',
   income: {
@@ -461,8 +461,8 @@ const SPEC_NOI = {
   net_operating_income: 570000,
 };
 
-describe('render — chat NOI block reads Format §4.5 paths', () => {
-  it('renders GPR, vacancy, other income, EGI, OpEx, NOI and the ratio from their §4.5 paths', () => {
+describe('render â€” chat NOI block reads Format Â§4.5 paths', () => {
+  it('renders GPR, vacancy, other income, EGI, OpEx, NOI and the ratio from their Â§4.5 paths', () => {
     expect(chatNoiLines(parseUWFile(noiDoc(SPEC_NOI)))).toEqual([
       'GPR: $1,000,000',
       'Vacancy Loss: $50,000 (5.00%)',
@@ -483,7 +483,7 @@ describe('render — chat NOI block reads Format §4.5 paths', () => {
     }
   });
 
-  it('renders the document §4.5 conformance fixture with its stated figures', () => {
+  it('renders the document Â§4.5 conformance fixture with its stated figures', () => {
     const parsed = parseUWFile(readFileSync(
       resolve(__dirname, '../../../conformance/documents/fixtures/02-full-multifamily.uwx.md'),
       'utf-8',
@@ -499,7 +499,7 @@ describe('render — chat NOI block reads Format §4.5 paths', () => {
     ]);
   });
 
-  it('derives no ratio from §4.5 totals: an unstated expense_ratio renders n/a', () => {
+  it('derives no ratio from Â§4.5 totals: an unstated expense_ratio renders n/a', () => {
     const { expense_ratio: _omitted, ...expenses } = SPEC_NOI.expenses;
     const lines = chatNoiLines(parseUWFile(noiDoc({ ...SPEC_NOI, expenses })));
     expect(lines).toContain('EGI: $970,000');
@@ -507,14 +507,14 @@ describe('render — chat NOI block reads Format §4.5 paths', () => {
     expect(lines).toContain('OpEx Ratio: n/a');
   });
 
-  it('reads a bare number stated at a §4.5 object path as stated', () => {
+  it('reads a bare number stated at a Â§4.5 object path as stated', () => {
     const income = { ...SPEC_NOI.income, other_income: 20000 };
     expect(chatNoiLines(parseUWFile(noiDoc({ ...SPEC_NOI, income })))).toContain('Other Income: $20,000');
   });
 });
 
 // Compatibility only: the top-level keys the chat block read before it
-// followed §4.5. They are consulted only when the §4.5 path is absent.
+// followed Â§4.5. They are consulted only when the Â§4.5 path is absent.
 
 const LEGACY_NOI = {
   gross_potential_rent: 800000,
@@ -526,15 +526,15 @@ const LEGACY_NOI = {
   net_operating_income: 470000,
 };
 
-describe('render — chat NOI reads only the §4.5 paths (RFC 0081 §7)', () => {
-  it('never reads the pre-§4.5 top-level keys or derives a ratio from them', () => {
+describe('render â€” chat NOI reads only the Â§4.5 paths (RFC 0081 Â§7)', () => {
+  it('never reads the pre-Â§4.5 top-level keys or derives a ratio from them', () => {
     const lines = chatNoiLines(parseUWFile(noiDoc(LEGACY_NOI)));
     expect(lines.filter((line) => !line.startsWith('NOI:')).every((line) => line.includes('n/a'))).toBe(true);
     expect(lines).toContain('NOI: $470,000');
   });
 
-  it('renders the stated §4.5 values when both shapes are present', () => {
-    // Both shapes present with different figures: §4.5 wins on every line.
+  it('renders the stated Â§4.5 values when both shapes are present', () => {
+    // Both shapes present with different figures: Â§4.5 wins on every line.
     const lines = chatNoiLines(parseUWFile(noiDoc({ ...LEGACY_NOI, ...SPEC_NOI, opex_ratio: 0.9 })));
     expect(lines).toEqual([
       'GPR: $1,000,000',
@@ -550,8 +550,8 @@ describe('render — chat NOI reads only the §4.5 paths (RFC 0081 §7)', () => 
 
 
 describe('CSV chat source/uses regression #538', () => {
-  it.each(['Parkview-Apts-Glendale-AZ', 'parkview-reviewed'])('renders %s through the CSV ZIP reader without coercing nested objects', async name => {
-    const source = readFileSync(resolve(__dirname, '../../../examples', `${name}.uwx.md`), 'utf8');
+  it('renders a fresh synthetic source/uses model through the CSV ZIP reader without coercing nested objects', async () => {
+    const source = readFileSync(resolve(__dirname, '../../../conformance/rfc-0089/fixtures/complete-current.uwx.md'), 'utf8');
     const original = parseUWFile(source);
     const envelope = toUWEnvelope(original);
     const decoded = fromUWEnvelope(await decodeUWCSVZip(await encodeUWCSVZip(envelope)));
@@ -560,7 +560,7 @@ describe('CSV chat source/uses regression #538', () => {
     expect(result.content).toBe(render(original, { format: 'chat' }).content);
     expect(JSON.stringify(decoded)).toBe(before);
     expect(result.content).not.toContain('[object Object]');
-    if (name === 'Parkview-Apts-Glendale-AZ') {
+    {
       expect(result.content).toMatch(/Closing Costs: (?:USD |\$)139,000/);
       expect(result.content).toMatch(/Loan: (?:USD |\$)5,040,000/);
       expect(result.content).toMatch(/Other Reserves: (?:USD |\$)5,000/);
