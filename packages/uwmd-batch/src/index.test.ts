@@ -157,7 +157,7 @@ describe('buildUWMDFactTable', () => {
         expect(row.path).toBe('parkview.uw.md');
         expect(row.semantic_digest).toBe(parkview?.semantic_digest);
         expect(row.valid).toBe(true);
-        expect(['annotation', 'meta', 'content']).toContain(row.scope);
+        expect(['annotation', 'meta', 'content', 'block-extra']).toContain(row.scope);
       }
       // A scalar business fact is addressable by (block_ref, scope, pointer).
       expect(
