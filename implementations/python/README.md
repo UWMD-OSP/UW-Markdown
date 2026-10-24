@@ -1,5 +1,24 @@
 # Independent Python structured Reader foundation
 
+RFC 0089 adds the independent complete Envelope 2.0 library in
+`uwmd_envelope.py`: `semantic_envelope`/`source_digest` account for structured
+sources; `validate` admits full carrier models; `stamp`, `encode_xml`/`decode_xml`,
+`encode_csv`/`decode_csv` and `encode_zip`/`decode_zip` implement representation
+2.0.0. JSON text uses `dump(stamp(model))` and `validate(load_json(text))`.
+Source accounting deliberately admits records with validation findings that
+the complete carrier schema refuses. The library never calls Node.
+
+`python -B implementations/python/uwmd_envelope.py representations` lists its
+three read/write model codecs. `source`, `json`, `xml` and `zip`, followed by a
+file, return the decoded model, canonical preimage and digest. This companion
+probe interface is separate from the portable CLI in `uwmd.py`; its descriptors
+do not add a Verifier, receipt, integrity or optional-profile claim to that
+Reader manifest. Normative block schema lookup uses `UWMD_SPEC_DIR`, as below.
+The XML reader admits the XML 1.0 Fifth Edition QName domain independently of
+the Expat build's native name table, preserving expanded names and attribute
+values. Windows/Linux controls run Python 3.12.3 and the selected current 3.12;
+record the exact Python and Expat versions for each run.
+
 Issue [#354](https://github.com/UWMD-OSP/UW-Markdown/issues/354).
 This unpublished, incomplete implementation is written independently from the
 Format and Protocol. It uses Python's standard library and has no Node runtime,

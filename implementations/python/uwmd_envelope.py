@@ -703,8 +703,39 @@ def source_digest(document):
         raise EnvelopeError(str(error)) from error
 
 
+def representation_capabilities():
+    """Library codec descriptors, not a portable CLI tier/profile claim."""
+    return [dict(id=identifier,media_types=[media],file_extensions=[extension],
+                 directions=['read','write'],fidelity='model',representation_version=REPRESENTATION)
+            for identifier,media,extension in [
+                ('uw-json','application/vnd.uwmd.document+json','.uw.json'),
+                ('uw-xml','application/vnd.uwmd.document+xml','.uw.xml'),
+                ('uw-csv-bundle','application/vnd.uwmd.csv-bundle+zip','.uw.csv.zip')]]
+
+
 if __name__ == '__main__':
-    command, path = sys.argv[1:3]
-    data = Path(path).read_bytes()
-    value = project_source(data) if command == 'source' else decode_zip(data) if command == 'zip' else decode_xml(data.decode('utf-8')) if command == 'xml' else validate(load_json(data.decode('utf-8-sig')))
-    print(json.dumps({'model': value, 'preimage': preimage(value), 'digest': digest(value)}, ensure_ascii=True, allow_nan=False))
+    import argparse
+    from uwmd_spec_data import SpecDataError
+    parser = argparse.ArgumentParser(description='Independent complete Envelope library probe CLI')
+    parser.add_argument('command',choices=['source','json','xml','zip','representations'])
+    parser.add_argument('path',nargs='?')
+    arguments=parser.parse_args()
+    if arguments.command=='representations':
+        if arguments.path is not None:
+            parser.error('representations takes no file')
+        value=representation_capabilities()
+    else:
+        if arguments.path is None:
+            parser.error('the selected reader requires a file')
+        try:
+            data=Path(arguments.path).read_bytes()
+            value=(project_source(data) if arguments.command=='source' else
+                   decode_zip(data) if arguments.command=='zip' else
+                   decode_xml(data.decode('utf-8')) if arguments.command=='xml' else
+                   validate(load_json(data.decode('utf-8-sig'))))
+            value={'model':value,'preimage':preimage(value),'digest':digest(value)}
+        except (OSError,SpecDataError) as error:
+            print(json.dumps({'error':str(error)},ensure_ascii=True));sys.exit(2)
+        except (ValueError,TypeError,KeyError) as error:
+            print(json.dumps({'error':str(error)},ensure_ascii=True));sys.exit(1)
+    print(json.dumps(value,ensure_ascii=True,allow_nan=False))

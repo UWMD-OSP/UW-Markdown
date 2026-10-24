@@ -1,0 +1,49 @@
+name: RFC 0089 production evidence
+
+on:
+  pull_request:
+    paths:
+      - 'packages/**'
+      - 'implementations/python/**'
+      - 'conformance/rfc-0089/**'
+      - '.github/workflows/production-0089.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production:
+    name: Production regime (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.12.3', '3.12']
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: npm ci
+      - run: npm run build
+      - name: Actual production source, carrier, authentication, consumer and independent Python controls
+        run: node conformance/rfc-0089/run-production.mjs
+      - name: Actual browser entry and editor receipt state machine
+        run: node conformance/rfc-0089/run-browser.mjs
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: production-0089-${{ matrix.os }}-python-${{ matrix.python }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: node_modules/.cache/rfc0089-production-evidence
+          if-no-files-found: error

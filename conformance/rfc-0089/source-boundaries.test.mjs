@@ -18,6 +18,11 @@ test('F1 native source/carrier separation with actual signatures/receipts and ex
     const expected=structuredClone(normal.expected_model);c.mutate(expected);
     const model=p.envelope.toUWEnvelope(p.parser.parseUWFile(c.source));assert.equal(preimage(model),preimage(expected));
     const admission=()=>p.envelope.assertUWEnvelope(model);if(c.carrier)admission();else assert.throws(admission);
+    // Projection is a source operation; it must not silently discard a record
+    // merely because its metadata/role is outside the full carrier schema.
+    const {flattenUWSourceBlockValues,flattenEnvelopeBlockValues}=await import('../../packages/uwmd-verify/dist/index.js');
+    assert.ok(flattenUWSourceBlockValues(p.parser.parseUWFile(c.source)).some(row=>row.pointer==='/marker'));
+    if(!c.carrier)assert.throws(()=>flattenEnvelopeBlockValues(model));
     const subject=await p.signing.resolveDocumentSigningSubject(c.source);assert.equal(subject.digest,digest(expected));assert.equal(subject.canonicalization_version,'2.0');
     const receipt=await p.receipts.issueReceipt(c.source,options);assert.deepEqual([receipt.policy.validation.errors,receipt.policy.validation.warnings],c.counts);
     receipt.signature={algorithm:'ed25519',key_id:'synthetic-key',value:sign(null,Buffer.from(p.receipts.receiptSigningPayload(receipt)),privateKey).toString('base64')};
