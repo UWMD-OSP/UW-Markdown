@@ -192,7 +192,7 @@ describe('JCS Unicode admission at document authentication boundaries', () => {
     expect(JSON.stringify(signed)).toBe(before);
   });
 
-  it('preserves the frozen valid document-signature subject', async () => {
+  it('matches the freshly authored current-contract document-signature vector', async () => {
     const fixture = resolve(__dirname, '../../../conformance/document-signatures/01-valid');
     const raw = await readFile(resolve(fixture, 'deal.uwx.md'), 'utf8');
     const expected = JSON.parse(await readFile(resolve(fixture, 'signature.json'), 'utf8')) as UWDocumentSignature;

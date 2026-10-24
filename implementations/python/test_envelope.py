@@ -72,12 +72,13 @@ class EnvelopeTests(unittest.TestCase):
                           + block("x_opaque", {"n": 1}) + block("x_opaque", {"n": 2}))
         envelope = semantic_envelope(extension)
         self.assertEqual(envelope["superseded"]["x_opaque"][0]["content"]["n"], 0)
-        self.assertEqual(envelope["extensions"]["x_opaque"]["content"]["n"], 2)
+        self.assertEqual(envelope["extensions"]["x_opaque"]["block"]["content"]["n"], 2)
         with self.assertRaises(EnvelopeError):
             semantic_envelope(parse(HEADER + block("property").replace(b"uw:section=property", b"uw:section=property section=erased")))
-        with self.assertRaises(EnvelopeError):
-            semantic_envelope(parse(HEADER + block("x_opaque", variant="a", role="primary")
+        peers=semantic_envelope(parse(HEADER + block("x_opaque", variant="a", role="primary")
                                     + block("x_opaque", variant="b")))
+        self.assertEqual(peers["extensions"]["x_opaque"]["mode"],"variants")
+        self.assertEqual([row["variant"] for row in peers["extensions"]["x_opaque"]["blocks"]],["a","b"])
 
 
 if __name__ == "__main__":

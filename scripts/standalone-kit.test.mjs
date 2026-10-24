@@ -106,7 +106,7 @@ test('new part identities and metadata are complete; full resolved inline/extern
   assert.deepEqual(validateUWFile(resolved.document).errors, []);
 });
 
-test('new ZIP covers each new artifact identity and exact copy, verifies all semantic digests and preserves source boundary', async () => {
+test('retained ZIP preserves bytes and refuses its superseded whole-document identities without repairing artifacts', async () => {
   const raw = readFileSync(join(current, 'package/standalone-authored.uwpkg.zip'));
   const decoded = decodeUWDealPackageZip(raw);
   const manifest = json(join(current, 'package/manifest.json'));
@@ -124,7 +124,10 @@ test('new ZIP covers each new artifact identity and exact copy, verifies all sem
     }
   }
   const verified = await verifyUWDealPackage(decoded, { semanticDigestOf: async (_id, bytes) => computeEnvelopeDigest(toUWEnvelope(parseUWFile(new TextDecoder().decode(bytes)))) });
-  assert.deepEqual(verified, { status: 'verified', errors: [], unverifiable_members: [] });
+  assert.equal(verified.status, 'failed');
+  assert.deepEqual(verified.unverifiable_members, []);
+  assert.deepEqual(verified.errors.map(({code,pointer})=>({code,pointer})), files.map(file=>({code:'PKGVER-003',pointer:declarations.top_level_blocks.find(x=>x.file===file+'.uwx.md').member_id})));
+  assert.deepEqual(readFileSync(join(current, 'package/standalone-authored.uwpkg.zip')),raw);
   const native = await encodeUWDealPackageZip(decoded);
   assert.deepEqual(await encodeUWDealPackageZip(decoded), native);
   const roundtrip = decodeUWDealPackageZip(native);

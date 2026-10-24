@@ -5,11 +5,11 @@
     "representation": "uwx-markdown",
     "representation_version": "1.0",
     "canonicalization": "uw-envelope-semantic",
-    "canonicalization_version": "1.0",
-    "digest": "sha256:8580582b594d5d472de8339e36eab8222c8614ba911defbdd6309eb38e4402f1"
+    "canonicalization_version": "2.0",
+    "digest": "sha256:ca8b30accdf68b3009aff1432901a0d5fb63b732b729835f3dabd1d6cb1a9bcf"
   },
   "alg": "ed25519",
   "kid": "uwmd-conformance-ed25519",
   "signed_at": "2026-10-14T00:00:00Z",
-  "sig": "HB2EoI3wETa7_az7Mu6YKzNwRXzr3D92RylVEjZUxSgXRWikKycQ4HVH57JTO0zSLCWZ3c4P9axPWBzGDxcwBw="
+  "sig": "DOvo72QC4Rncl4hnQ8M0Gq_nkZlDRqNsTw_wcEW0wMN6yzhIVKL_gDg7oC9JcOHBOIKh0LLwxeO1Dfk0SzFPBQ="
 }

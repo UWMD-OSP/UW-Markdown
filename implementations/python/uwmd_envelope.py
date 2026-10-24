@@ -514,7 +514,7 @@ def decode_csv(files):
             else:
                 need(path[2] == variant, 'CSV section variant')
                 parent = model['sections'].setdefault(section, {})
-                need('annotation' not in parent and variant not in parent, 'CSV section collision')
+                need(not is_envelope_block(parent) and variant not in parent, 'CSV section collision')
                 parent[variant] = block
         elif collection in ARRAYS or collection == 'superseded':
             need(variant is None, 'CSV append/history variant')

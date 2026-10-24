@@ -34,7 +34,7 @@ const resultSchema = ajv.compile(
 describe('RFC 0065 source-addressed reserve draw binding', () => {
   it.each([
     ['base', 'detail'], ['detail', 'base'], [undefined, 'default'], ['default', undefined], ['base', 'base'],
-  ])('refuses a whole-source plan over repeated physical extensions (%s/%s, #545)', async (firstVariant, secondVariant) => {
+  ])('binds every retained extension peer/history and requires explicit new-plan review (%s/%s, #545)', async (firstVariant, secondVariant) => {
     const { parsed, plan } = fixture('many-to-many-partial');
     const extension = (variant: string | undefined, marker: number, role = false) =>
       `\n\n\`\`\`json uw:section=x_probe${variant === undefined ? '' : ` variant=${variant}`}\n${JSON.stringify({
@@ -46,17 +46,23 @@ describe('RFC 0065 source-addressed reserve draw binding', () => {
     plan!.source_digest = await envelope.computeEnvelopeDigest(envelope.toUWEnvelope(first));
     const frozenPlan = structuredClone(plan);
     expect(first.raw).not.toBe(changed.raw);
-    expect(await envelope.computeEnvelopeDigest(envelope.toUWEnvelope(changed))).toBe(plan!.source_digest);
-    for (const input of [first, changed, structuredClone(changed)]) {
+    const changedDigest = await envelope.computeEnvelopeDigest(envelope.toUWEnvelope(changed));
+    expect(changedDigest).not.toBe(plan!.source_digest);
+    expect((await verifyReserveDrawBindings(first, plan)).state).toBe('verified');
+    for (const input of [changed, structuredClone(changed)]) {
       const result = await verifyReserveDrawBindings(input, plan);
-      expect(result).toMatchObject({ state: 'unverifiable', reason: 'digest_unavailable', source_digest: null });
+      expect(result).toMatchObject({ state: 'failed', source_digest: changedDigest });
+      expect(result.issues.map(issue=>issue.code)).toEqual(['RDB-02']);
       expect(result.evidence).toEqual([]);
       expect(resultSchema(result)).toBe(true);
     }
     expect(plan).toEqual(frozenPlan);
+    const reviewedNewPlan={...plan!,source_digest:changedDigest};
+    expect((await verifyReserveDrawBindings(changed, reviewedNewPlan)).state).toBe('verified');
+    expect(plan).toEqual(frozenPlan);
   });
 
-  it('retains representable singleton extensions and refuses historical ones', async () => {
+  it('binds singleton extensions and their historical transitions', async () => {
     const { parsed, plan } = fixture('many-to-many-partial');
     const source = `${parsed.raw}\n\n\`\`\`json uw:section=x_probe variant=detail\n${JSON.stringify({
       _meta: { section: 'x_probe', lifecycle: { revision: 1, superseded: false } },
@@ -66,9 +72,9 @@ describe('RFC 0065 source-addressed reserve draw binding', () => {
     plan!.source_digest = await envelope.computeEnvelopeDigest(envelope.toUWEnvelope(singleton));
     expect((await verifyReserveDrawBindings(singleton, plan)).state).toBe('verified');
     const historical = parseUWFile(source.replace('"superseded":false', '"superseded":true'));
-    expect(await verifyReserveDrawBindings(historical, plan)).toMatchObject({
-      state: 'unverifiable', reason: 'digest_unavailable', source_digest: null,
-    });
+    expect((await verifyReserveDrawBindings(historical, plan)).issues.map(issue=>issue.code)).toEqual(['RDB-02']);
+    const reviewedNewPlan={...plan!,source_digest:await envelope.computeEnvelopeDigest(envelope.toUWEnvelope(historical))};
+    expect((await verifyReserveDrawBindings(historical, reviewedNewPlan)).state).toBe('verified');
   });
 
   it('leaves a legacy document without accounts or a plan exactly unchanged', async () => {
