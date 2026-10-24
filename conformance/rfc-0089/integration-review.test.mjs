@@ -31,7 +31,7 @@ test('normal review: source facts preserve invalid/missing metadata; carriers re
    assert.ok(rows.every(row=>row.valid===(item.name==='absent')));
    assert.equal(rows.some(row=>row.scope==='meta'),item.meta_present);
   }
-  writeFileSync(resolve(folder,'normal-review-source-facts.json'),JSON.stringify({records,table},null,2)+'\n');
+  writeFileSync(resolve(folder,'normal-review-source-facts.json'),`${JSON.stringify({records,table},null,2)}\n`);
  }finally{rmSync(directory,{recursive:true,force:true});}
 });
 test('normal review: singleton descriptor agreement precedes current/stale semantic stamps',async()=>{
@@ -39,7 +39,7 @@ test('normal review: singleton descriptor agreement precedes current/stale seman
  for(const item of load('csv-descriptor-cases')){
   await assert.rejects(api.decodeUWCSVBundle({files:item.files}),error=>{assert.match(error.message,/CSV descriptor agreement/);assert.doesNotMatch(error.message,/semantic digest/);records.push({case:item.name,actual:error.message});return true;});
  }
- writeFileSync(resolve(folder,'normal-review-csv-precedence.json'),JSON.stringify(records,null,2)+'\n');
+ writeFileSync(resolve(folder,'normal-review-csv-precedence.json'),`${JSON.stringify(records,null,2)}\n`);
 });
 test('composition producer writes a fence value preserved by UWX reprojection',()=>{
  const inline=api.parseUWFile(readFileSync(new URL('../../examples/standalone/authored-2026-10-17/inline-deal.uwx.md',import.meta.url),'utf8'));
