@@ -194,3 +194,21 @@ describe('buildUWMDFactTable', () => {
     }
   });
 });
+
+it('includes parseable source facts with absent/null/mismatched metadata and findings', async () => {
+  const packet = JSON.parse(await readFile(join(process.cwd(), '../../conformance/rfc-0089/integration-controls/source-fact-cases.json'), 'utf8'));
+  const root = await mkdtemp(join(tmpdir(), 'uwmd-source-facts-'));
+  try {
+    for (const item of packet.cases) await writeFile(join(root, `${item.name}.uwx.md`), item.source, 'utf8');
+    const table = await buildUWMDFactTable(root);
+    expect(table.deals_included).toBe(3);
+    expect(table.deals_skipped).toEqual([]);
+    for (const item of packet.cases) {
+      const rows = table.rows.filter(row => row.path === `${item.name}.uwx.md`);
+      expect(rows.length).toBeGreaterThan(0);
+      expect(rows.every(row => row.valid === (item.name === 'absent'))).toBe(true);
+      expect(rows.some(row => row.pointer === '/total_units' && row.value_json === '1')).toBe(true);
+      expect(rows.some(row => row.scope === 'meta')).toBe(item.meta_present);
+    }
+  } finally { await rm(root, {recursive: true, force: true}); }
+});
