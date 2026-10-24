@@ -1,3 +1,4 @@
+import { admitsCarrierSchema } from './carrier-schema.js';
 import { hasBlockShape } from './block-kind.js';
 // UW Document Envelope — format-neutral semantic model shared by machine codecs.
 
@@ -34,6 +35,7 @@ export type UWEnvelopeSectionEntry =
 export type UWEnvelopeExtensionEntry = UWExtensionEntry<UWEnvelopeBlock>;
 const retainedBlockExtras = new WeakMap<UWBlock, Record<string, unknown>>();
 const retainedOuterExtras = new WeakMap<ParsedUWFile, Record<string, unknown>>();
+const retainedEmptyProse = new WeakSet<UWBlock>();
 
 export interface UWDocumentEnvelope {
   envelope_version: typeof UW_ENVELOPE_VERSION;
@@ -269,12 +271,14 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
       );
     }
   }
+  if (!admitsCarrierSchema(value)) throw new UWEnvelopeError('ENVELOPE_INVALID_SCHEMA', 'Model does not satisfy the current full carrier schema.');
   if (!isRecord(value['sections'])) {
     throw new UWEnvelopeError('ENVELOPE_MISSING_SECTIONS', 'sections must be an object.');
   }
   for (const [sectionId, entry] of Object.entries(value['sections'])) {
     if (hasBlockShape(entry)) {
       assertEnvelopeBlock(entry, `sections.${sectionId}`);
+      assertBlockIdentity(entry, sectionId);
       continue;
     }
     if (!isRecord(entry) || Object.keys(entry).length === 0) {
@@ -285,6 +289,7 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
     }
     for (const [variant, block] of Object.entries(entry)) {
       assertEnvelopeBlock(block, `sections.${sectionId}.${variant}`);
+      assertBlockIdentity(block, sectionId);
     }
   }
   for (const key of ['pipeline_log', 'custom_calculations', 'custom_scenarios'] as const) {
@@ -301,6 +306,7 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
     if (!isRecord(raw) || (raw.mode !== 'single' && raw.mode !== 'variants')) throw new UWEnvelopeError('ENVELOPE_INVALID_EXTENSION', `extensions.${id} requires a declared mode.`);
     const expected = raw.mode === 'single' ? ['mode', 'block'] : ['mode', 'blocks'];
     if (Object.keys(raw).sort().join('\0') !== expected.sort().join('\0')) throw new UWEnvelopeError('ENVELOPE_INVALID_EXTENSION', `extensions.${id} wrapper is closed.`);
+    if (!id.startsWith('x_')) throw new UWEnvelopeError('ENVELOPE_INVALID_EXTENSION', 'Extension identifiers require x_.');
     const entry = raw as unknown as UWEnvelopeExtensionEntry;
     if (entry.mode === 'variants') {
       if (!Array.isArray(entry.blocks) || !entry.blocks.length) throw new UWEnvelopeError('ENVELOPE_INVALID_EXTENSION', `extensions.${id} needs nonempty records.`);
@@ -330,9 +336,10 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
         `superseded.${sectionId} must be an array.`,
       );
     }
-    blocks.forEach((block, index) =>
-      assertEnvelopeBlock(block, `superseded.${sectionId}[${index}]`),
-    );
+    blocks.forEach((block, index) => {
+      assertEnvelopeBlock(block, `superseded.${sectionId}[${index}]`);
+      assertBlockIdentity(block, sectionId);
+    });
   }
   const digest = value['semantic_digest'];
   if (digest !== undefined && (typeof digest !== 'string' || !/^sha256:[0-9a-f]{64}$/.test(digest))) {
@@ -343,11 +350,14 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
   }
 }
 
+function assertBlockIdentity(block: UWEnvelopeBlock, section: string): void {
+  if (block.annotation.section !== section || (block.content['_meta'] as UWMeta).section !== section) throw new UWEnvelopeError('ENVELOPE_INVALID_IDENTITY', 'Collection, annotation and metadata section identities must agree.');
+}
 function assertEnvelopeBlock(value: unknown, pointer: string): asserts value is UWEnvelopeBlock {
   if (!isRecord(value) || !isRecord(value['annotation']) || !isRecord(value['content'])) {
     throw new UWEnvelopeError('ENVELOPE_INVALID_BLOCK', `${pointer} is not a valid block.`);
   }
-  if (typeof value['annotation']['section'] !== 'string') {
+  if (typeof value['annotation']['section'] !== 'string' || (Object.hasOwn(value['annotation'], 'variant') && typeof value['annotation']['variant'] !== 'string')) {
     throw new UWEnvelopeError(
       'ENVELOPE_INVALID_ANNOTATION',
       `${pointer}.annotation.section must be a string.`,
@@ -359,6 +369,7 @@ function assertEnvelopeBlock(value: unknown, pointer: string): asserts value is 
       `${pointer}.content._meta must be an object.`,
     );
   }
+  if (value['annotation']['section'] !== value['content']['_meta']['section']) throw new UWEnvelopeError('ENVELOPE_INVALID_IDENTITY', `${pointer} annotation and metadata section identities must agree.`);
   if (value['prose'] !== undefined && typeof value['prose'] !== 'string') {
     throw new UWEnvelopeError('ENVELOPE_INVALID_PROSE', `${pointer}.prose must be a string.`);
   }
@@ -369,7 +380,7 @@ function toEnvelopeBlock(block: UWBlock): UWEnvelopeBlock {
     annotation: block.annotation,
     content: block.content,
   };
-  if (block.prose.length > 0) output.prose = block.prose;
+  if (block.prose.length > 0 || retainedEmptyProse.has(block)) output.prose = block.prose;
   return output;
 }
 
@@ -393,6 +404,7 @@ function fromEnvelopeBlock(block: UWEnvelopeBlock, pointer: string): UWBlock {
     lineStart: 0,
     lineEnd: 0,
   };
+  if (Object.hasOwn(block, 'prose') && block.prose === '') retainedEmptyProse.add(parsed);
   retainedBlockExtras.set(parsed, Object.fromEntries(Object.entries(block).filter(([key]) => !['annotation', 'content', 'prose'].includes(key))));
   return parsed;
 }

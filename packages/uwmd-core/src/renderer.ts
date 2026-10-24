@@ -1,3 +1,4 @@
+import { mapExtensionEntry } from '@uwmd/verify';
 import { hasBlockShape } from './block-kind.js';
 // .uw.md renderer — converts a ParsedUWFile to output formats
 // Formats: json | csv | chat | summary
@@ -137,7 +138,7 @@ function renderJson(parsed: ParsedUWFile, opts: RenderOptions): RenderResult {
     custom_calculations: parsed.custom_calculations.map(b => b.content),
     custom_scenarios: parsed.custom_scenarios.map(b => b.content),
     extensions: Object.fromEntries(
-      Object.entries(parsed.extensions).map(([k, v]) => [k, v.content])
+      Object.entries(parsed.extensions).map(([k, entry]) => [k, mapExtensionEntry(entry, block => block.content)])
     ),
   };
 

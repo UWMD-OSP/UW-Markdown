@@ -1,0 +1,17 @@
+{
+  "closure-xml-cases.json": {
+    "sha256": "5510f33728266631fe981838707cb14404e4c5d7af22fd260003765bf48a143d",
+    "transformation": "none; byte-for-byte retained",
+    "origin": "independent review/re-review/closure inputs frozen at accepted candidate 2f23cd2705c06a8763d9f27af192da17c2aa3b0a"
+  },
+  "rereview-csv-cases.json": {
+    "sha256": "aa0a3d66ad0d4b030cc11967618740b8b65ccb002bcb9c87d88c58edca735e27",
+    "transformation": "none; byte-for-byte retained",
+    "origin": "independent review/re-review/closure inputs frozen at accepted candidate 2f23cd2705c06a8763d9f27af192da17c2aa3b0a"
+  },
+  "rereview-xml-cases.json": {
+    "sha256": "8de800c36915127f07ef17bfe657453972b15ce51c10e0a6f641e8f66e392db2",
+    "transformation": "none; byte-for-byte retained",
+    "origin": "independent review/re-review/closure inputs frozen at accepted candidate 2f23cd2705c06a8763d9f27af192da17c2aa3b0a"
+  }
+}

@@ -59,7 +59,7 @@ const STANDARD_MODULES: readonly string[] = Object.freeze([
   'builtin-packs/retail.ts', 'builtin-packs/self-storage.ts', 'builtin-packs/senior-housing.ts',
   'builtin-packs/student-housing.ts',
   // Profiles: representations, portfolio, sensitivity, stochastic, market data, read bindings
-  'envelope.ts', 'codec.ts', 'codecs.ts', 'uwjson.ts', 'uwxml.ts', 'uwcsv.ts', 'zip-safety.ts',
+  'carrier-schema.ts', 'carrier-schema-data.ts', 'carrier-values.ts', 'xml-tree.ts', 'xml-mapping.ts', 'csv-mapping.ts', 'csv-views.ts', 'envelope.ts', 'codec.ts', 'codecs.ts', 'uwjson.ts', 'uwxml.ts', 'uwcsv.ts', 'zip-safety.ts',
   'lite.ts', 'lite-bridge.ts', 'source-representation.ts', 'composition.ts', 'negotiation.ts',
   'deal-package.ts', 'deal-package-context.ts', 'deal-package-zip.ts', 'lease-abstract.ts',
   'portfolio.ts', 'calc/sensitivity.ts', 'calc/stochastic.ts', 'calc/prng.ts', 'market-data.ts',

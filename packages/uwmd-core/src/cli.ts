@@ -1,3 +1,4 @@
+import { mapExtensionEntry } from '@uwmd/verify';
 #!/usr/bin/env node
 import { hasBlockShape } from './block-kind.js';
 import {
@@ -195,16 +196,16 @@ async function cmdParse(file: string, flags: Record<string, string | boolean>): 
   // projection — `{ meta, content }` per block, one such object per variant
   // for a multi-variant section — NOT as in-memory UWBlocks:
   //
-  //   * `meta` is the document's `_meta` verbatim (only the keys it carried).
-  //   * `content` is the block minus `_meta` and `_overrides`: the bare
-  //     payload (Format §2.4), with `_role` and `_notes` when stated.
+  //   * `meta` is present iff the document states `_meta`, retaining its value.
+  //   * `content` is the block minus `_meta` and `_notes`: the bare
+  //     payload (Format §2.4), with `_role` and `_overrides` when stated.
   //
   // Reader artifacts (fence annotation, prose, line numbers, rawJson) are
   // deliberately not emitted per section: §II.6a.6 lists them as MUST NOT be
   // required, and emitting them here is how they end up required.
-  const projectBlock = (block: UWBlock): { meta: Record<string, unknown>; content: unknown } => {
-    const { _meta, _overrides: _ov, ...rest } = block.content;
-    return { meta: (_meta as Record<string, unknown> | undefined) ?? {}, content: rest };
+  const projectBlock = (block: UWBlock) => {
+    const { _meta, _notes: _notes, ...content } = block.content;
+    return { ...(Object.hasOwn(block.content, '_meta') ? { meta: _meta } : {}), content };
   };
   const isBlock = (v: unknown): v is UWBlock =>
     hasBlockShape(v);
@@ -223,7 +224,7 @@ async function cmdParse(file: string, flags: Record<string, string | boolean>): 
     pipeline_log: parsed.pipeline_log.map(b => b.content),
     custom_calculations: parsed.custom_calculations,
     custom_scenarios: parsed.custom_scenarios,
-    extensions: Object.fromEntries(Object.entries(parsed.extensions).map(([id, block]) => [id, projectBlock(block)])),
+    extensions: Object.fromEntries(Object.entries(parsed.extensions).map(([id, entry]) => [id, mapExtensionEntry(entry, projectBlock)])),
     superseded: Object.fromEntries(
       Object.entries(parsed.superseded).map(([id, blocks]) => [id, blocks.map(projectBlock)])
     ),
