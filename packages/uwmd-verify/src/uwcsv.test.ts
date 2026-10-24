@@ -24,7 +24,7 @@ const envelope = toUWEnvelope(parseUWFile(source), {
   generator: '@uwmd/core-test',
 });
 
-describe('UW CSV Bundle 1.0', () => {
+describe('UW CSV Bundle 2.0', () => {
   it('round-trips the complete envelope through normalized CSV tables', async () => {
     const bundle = await encodeUWCSVBundle(envelope);
     expect(Object.keys(bundle.files).sort()).toEqual([
@@ -146,7 +146,7 @@ describe('flattenEnvelopeBlockValues', () => {
     const second = flattenEnvelopeBlockValues(envelope);
     expect(second).toEqual(first);
     // Within one block_ref, annotation rows precede meta rows precede content rows.
-    const order = { annotation: 0, meta: 1, content: 2 } as const;
+    const order = { annotation: 0, meta: 1, content: 2, 'block-extra': 3 } as const;
     let prevRef = '';
     let prevScope = -1;
     for (const row of first) {

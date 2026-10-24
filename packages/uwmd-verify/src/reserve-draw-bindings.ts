@@ -9,7 +9,7 @@ import type {
   ReserveAccounts,
 } from './protocol.js';
 import { isCurrencyCode } from './protocol.js';
-import { blockPayload, parseUWFile, parsedPhysicalBlocks } from './parser.js';
+import { blockPayload } from './parser.js';
 import {
   sectionBlocks,
   isBindingDigest,

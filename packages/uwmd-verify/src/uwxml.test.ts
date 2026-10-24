@@ -24,10 +24,10 @@ const envelope = toUWEnvelope({
 });
 envelope['x unsafe/key'] = { nullValue: null, values: [true, 2.5, 'a < b'] };
 
-describe('UW XML 1.0', () => {
+describe('UW XML 2.0', () => {
   it('round-trips the envelope and restores unsafe JSON keys', async () => {
     const xml = await stringifyUWXml(envelope);
-    expect(xml).toContain('<uw:member uw:type="object" name="x unsafe/key">');
+    expect(xml).toContain('<uw:member name-json="&quot;x unsafe/key&quot;"><uw:value type="object">');
     const decoded = await parseUWXml(xml);
     expect(areEnvelopesEquivalent(decoded, envelope)).toBe(true);
     expect(decoded.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
@@ -67,35 +67,20 @@ describe('UW XML 1.0', () => {
     expect(await stringifyUWXml(envelope)).toBe(await stringifyUWXml(envelope));
   });
 
-  it('rejects DTDs, duplicate object members, and digest tampering', async () => {
-    await expect(parseUWXml('<!DOCTYPE x><uw:document/>')).rejects.toThrow(/XML_DTD_FORBIDDEN/);
-
+  it('rejects declarations, decoded duplicates, structural text and tampering', async () => {
+    await expect(parseUWXml('<!DOCTYPE x><uw:document/>')).rejects.toThrow(UWXmlError);
     const xml = await stringifyUWXml(envelope);
-    const duplicate = xml.replace('</uw:frontmatter>', '  <uw:deal_id uw:type="string">again</uw:deal_id>\n  </uw:frontmatter>');
-    await expect(parseUWXml(duplicate)).rejects.toThrow(/XML_DUPLICATE_MEMBER/);
-
-    const tampered = xml.replace('XML &amp; Unicode', 'Tampered');
-    await expect(parseUWXml(tampered)).rejects.toThrow(/XML_DIGEST_MISMATCH/);
-
-    const extraAttribute = xml.replace('format-version="3.0"', 'format-version="3.0" surprise="true"');
-    await expect(parseUWXml(extraAttribute)).rejects.toThrow(/XML_UNEXPECTED_MEMBER/);
-
-    const structuralText = xml.replace('<uw:frontmatter uw:type="object">', '<uw:frontmatter uw:type="object">not-whitespace');
-    await expect(parseUWXml(structuralText)).rejects.toThrow(/XML_STRUCTURAL_TEXT/);
-
-    const reservedItemKey = xml.replace('</uw:frontmatter>', '<uw:item uw:type="string">bad</uw:item></uw:frontmatter>');
-    await expect(parseUWXml(reservedItemKey)).rejects.toThrow(/XML_MEMBER_NAME_INVALID/);
-
-    await expect(stringifyUWXml({ ...envelope, invalid: '\ud800' })).rejects.toThrow(/XML_CHARACTER_INVALID/);
+    const member = /<uw:member name-json="&quot;format_version&quot;">[\s\S]*?<\/uw:member>/.exec(xml)![0];
+    await expect(parseUWXml(xml.replace(member, member + member))).rejects.toThrow(/duplicate XML name/);
+    await expect(parseUWXml(xml.replace('XML &amp; Unicode', 'Tampered'))).rejects.toThrow(/semantic digest/);
+    await expect(parseUWXml(xml.replace('format-version="3.0"', 'format-version="3.0" surprise="true"'))).rejects.toThrow(/mapping attributes/);
+    await expect(parseUWXml(xml.replace('<uw:value type="object">', '<uw:value type="object">not-whitespace'))).rejects.toThrow(/mixed content/);
+    await expect(parseUWXml(xml.replace('<uw:value type="object">', '<uw:unknown type="object">'))).rejects.toThrow(UWXmlError);
   });
-
-  it('requires a digest on verified interchange input', async () => {
-    const xml = (await stringifyUWXml(envelope)).replace(
-      /^ {2}<uw:semantic_digest[^\n]*\n/m,
-      '',
-    );
-    await expect(parseUWXml(xml)).resolves.toMatchObject({ envelope_version: '1.0' });
-    await expect(parseUWXmlVerified(xml)).rejects.toThrow(/XML_DIGEST_MISSING/);
+  it('requires the current complete subject on both XML decoding entry points', async () => {
+    const xml = (await stringifyUWXml(envelope)).replace(/<uw:member name-json="&quot;semantic_digest&quot;">[\s\S]*?<\/uw:member>/, '');
+    await expect(parseUWXml(xml)).rejects.toThrow(/semantic digest/);
+    await expect(parseUWXmlVerified(xml)).rejects.toThrow(/semantic digest/);
   });
   it('enforces input and nesting limits', async () => {
     const xml = await stringifyUWXml(envelope);
@@ -105,21 +90,11 @@ describe('UW XML 1.0', () => {
 });
 
 
-describe('shared JCS admission preserves XML1 refusal boundaries', () => {
-  it.each(['\ud800', '\ud801', '\udc00'])(
-    'keeps XML_CHARACTER_INVALID for unpaired values and member names %j', async (value) => {
-      for (const invalid of [{ value }, { [value]: 'kept' }]) {
-        const result = stringifyUWXml({ ...envelope, invalid });
-        await expect(result).rejects.toBeInstanceOf(UWXmlError);
-        await expect(result).rejects.toMatchObject({ code: 'XML_CHARACTER_INVALID' });
-      }
-    },
-  );
-
-  it('does not relabel an unrelated canonicalization error as an XML character error', async () => {
-    await expect(stringifyUWXml({ ...envelope, invalid: Number.NaN }))
-      .rejects.toThrow(/non-finite/);
-    await expect(stringifyUWXml({ ...envelope, invalid: Number.NaN }))
-      .rejects.not.toBeInstanceOf(UWXmlError);
+describe('XML2 direct JSON-value admission', () => {
+  it.each(['\ud800', '\ud801', '\udc00'])('refuses unpaired values and member names %j', async value => {
+    for (const invalid of [{ value }, { [value]: 'kept' }]) await expect(stringifyUWXml({ ...envelope, invalid })).rejects.toBeInstanceOf(UWXmlError);
+  });
+  it('refuses nonfinite values before writing a carrier', async () => {
+    await expect(stringifyUWXml({ ...envelope, invalid: Number.NaN })).rejects.toThrow(/nonfinite/);
   });
 });

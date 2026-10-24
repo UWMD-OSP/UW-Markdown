@@ -83,7 +83,7 @@ export function postgresLakeSchemaStatements(schema = 'public'): string[] {
     `CREATE TABLE IF NOT EXISTS ${q('uw_facts')} (`,
     '  semantic_digest  text NOT NULL,',
     '  block_ref        text NOT NULL,',
-    "  scope            text NOT NULL CHECK (scope IN ('annotation', 'meta', 'content')),",
+    "  scope            text NOT NULL CHECK (scope IN ('annotation', 'meta', 'content', 'block-extra')),",
     '  pointer          text NOT NULL,',
     '  json_type        text NOT NULL',
     "                   CHECK (json_type IN ('object', 'array', 'string', 'number', 'boolean', 'null')),",

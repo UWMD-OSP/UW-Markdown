@@ -33,9 +33,11 @@ export type UWEnvelopeSectionEntry =
   | Record<string, UWEnvelopeBlock>;
 
 export type UWEnvelopeExtensionEntry = UWExtensionEntry<UWEnvelopeBlock>;
-const retainedBlockExtras = new WeakMap<UWBlock, Record<string, unknown>>();
-const retainedOuterExtras = new WeakMap<ParsedUWFile, Record<string, unknown>>();
-const retainedEmptyProse = new WeakSet<UWBlock>();
+const ENVELOPE_MEMBERS = new Set(['envelope_version', 'format_version', 'generated_at', 'generator', 'semantic_digest', 'frontmatter', 'sections', 'pipeline_log', 'custom_calculations', 'custom_scenarios', 'extensions', 'superseded']);
+const BLOCK_MEMBERS = new Set(['annotation','content','prose']);
+function assertExtras(extras: Record<string, unknown> | undefined, reserved: Set<string>): void {
+  if (extras !== undefined && (!isRecord(extras) || Object.keys(extras).some(key => reserved.has(key)))) throw new UWEnvelopeError('ENVELOPE_SOURCE_ACCOUNTING', 'Retained carrier extras must be an object disjoint from model members.');
+}
 
 export interface UWDocumentEnvelope {
   envelope_version: typeof UW_ENVELOPE_VERSION;
@@ -78,6 +80,28 @@ export function toUWEnvelope(
   parsed: ParsedUWFile,
   options: ToEnvelopeOptions = {},
 ): UWDocumentEnvelope {
+  // Parsed implementation members are not extension points for committed model
+  // values. Reject unrepresented members instead of dropping them or borrowing
+  // attribution from raw source; this remains distinct from carrier schema.
+  const parsedKeys = new Set(['frontmatter', 'sections', 'prose', 'pipeline_log', 'custom_calculations', 'custom_scenarios', 'extensions', 'superseded', 'raw', 'envelopeExtras']);
+  const properties = Object.getOwnPropertyDescriptors(parsed);
+  for (const key of Reflect.ownKeys(properties)) {
+    const descriptor = typeof key === 'string' ? properties[key] : undefined;
+    if (typeof key !== 'string' || !parsedKeys.has(key) || !descriptor?.enumerable || !Object.hasOwn(descriptor, 'value')) throw new UWEnvelopeError('ENVELOPE_SOURCE_ACCOUNTING', 'Unsupported parsed model member or descriptor.');
+    if (key !== 'raw') assertJSONValue(descriptor.value);
+  }
+  const blocks = [
+    ...Object.values(parsed.sections).flatMap(entry => hasBlockShape(entry) ? [entry as UWBlock] : Object.values(entry)),
+    ...parsed.pipeline_log, ...parsed.custom_calculations, ...parsed.custom_scenarios,
+    ...Object.values(parsed.extensions).flatMap(extensionBlocks), ...Object.values(parsed.superseded).flat(), ...parsedPhysicalBlocks(parsed),
+  ];
+  const blockKeys = new Set(['annotation','meta','content','prose','rawJson','lineStart','lineEnd','envelopeExtras','envelopeProsePresent']);
+  assertExtras(parsed.envelopeExtras, ENVELOPE_MEMBERS);
+  for (const block of blocks) {
+    assertExtras(block.envelopeExtras, BLOCK_MEMBERS);
+    if (block.envelopeProsePresent !== undefined && typeof block.envelopeProsePresent !== 'boolean') throw new UWEnvelopeError('ENVELOPE_SOURCE_ACCOUNTING', 'Retained prose presence must be boolean.');
+  }
+  if (blocks.some(block => Object.keys(block).some(key => !blockKeys.has(key)))) throw new UWEnvelopeError('ENVELOPE_SOURCE_ACCOUNTING', 'Unsupported parsed block member cannot be silently erased.');
   if (Object.hasOwn(options, 'includeSuperseded')) {
     throw new UWEnvelopeError('ENVELOPE_UNSUPPORTED_OPTION', 'Record exports always retain supplied history (RFC 0085).');
   }
@@ -101,7 +125,7 @@ export function toUWEnvelope(
   }
 
   const envelope: UWDocumentEnvelope = {
-    ...retainedOuterExtras.get(parsed),
+    ...parsed.envelopeExtras,
     envelope_version: UW_ENVELOPE_VERSION,
     format_version: parsed.frontmatter.uw_version,
     generated_at: options.generatedAt ?? new Date().toISOString(),
@@ -187,8 +211,8 @@ export function fromUWEnvelope(envelope: UWDocumentEnvelope): ParsedUWFile {
     ),
     raw: '',
   };
-  const standard = new Set(['envelope_version', 'format_version', 'generated_at', 'generator', 'semantic_digest', 'frontmatter', 'sections', 'pipeline_log', 'custom_calculations', 'custom_scenarios', 'extensions', 'superseded']);
-  retainedOuterExtras.set(parsed, Object.fromEntries(Object.entries(envelope).filter(([key]) => !standard.has(key))));
+  const extras = Object.fromEntries(Object.entries(envelope).filter(([key]) => !ENVELOPE_MEMBERS.has(key)));
+  if (Object.keys(extras).length) parsed.envelopeExtras = extras;
   // This inventory represents model occurrences only, never attributable Markdown.
   retainParsedPhysicalBlocks(parsed, [
     ...Object.values(parsed.sections).flatMap(entry => hasBlockShape(entry) ? [entry as UWBlock] : Object.values(entry)),
@@ -376,11 +400,11 @@ function assertEnvelopeBlock(value: unknown, pointer: string): asserts value is 
 }
 function toEnvelopeBlock(block: UWBlock): UWEnvelopeBlock {
   const output: UWEnvelopeBlock = {
-    ...retainedBlockExtras.get(block),
+    ...block.envelopeExtras,
     annotation: block.annotation,
     content: block.content,
   };
-  if (block.prose.length > 0 || retainedEmptyProse.has(block)) output.prose = block.prose;
+  if (block.prose.length > 0 || block.envelopeProsePresent === true) output.prose = block.prose;
   return output;
 }
 
@@ -404,8 +428,9 @@ function fromEnvelopeBlock(block: UWEnvelopeBlock, pointer: string): UWBlock {
     lineStart: 0,
     lineEnd: 0,
   };
-  if (Object.hasOwn(block, 'prose') && block.prose === '') retainedEmptyProse.add(parsed);
-  retainedBlockExtras.set(parsed, Object.fromEntries(Object.entries(block).filter(([key]) => !['annotation', 'content', 'prose'].includes(key))));
+  if (Object.hasOwn(block, 'prose') && block.prose === '') parsed.envelopeProsePresent = true;
+  const extras = Object.fromEntries(Object.entries(block).filter(([key]) => !BLOCK_MEMBERS.has(key)));
+  if (Object.keys(extras).length) parsed.envelopeExtras = extras;
   return parsed;
 }
 

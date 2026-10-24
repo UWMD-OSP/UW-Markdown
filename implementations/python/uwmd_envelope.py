@@ -247,6 +247,13 @@ def blocks(model):
     return result
 
 
+def is_envelope_block(value):
+    annotation = value.get('annotation') if isinstance(value, dict) else None
+    return (isinstance(annotation, dict) and isinstance(annotation.get('section'), str)
+            and all(isinstance(item, (str, int, float, bool)) for item in annotation.values())
+            and isinstance(value.get('content'), dict))
+
+
 def validate(model, stamped=True):
     admit_json(model)
     need(isinstance(model, dict) and set(RESERVED) - {'generated_at', 'generator', 'semantic_digest'} <= model.keys(), 'model fields')
@@ -673,7 +680,7 @@ def semantic_envelope(document):
     # Enumerate accounted source occurrences without entering carrier/schema admission.
     accounted = []
     for entry in model['sections'].values():
-        accounted.extend([entry] if 'annotation' in entry and 'content' in entry else entry.values())
+        accounted.extend([entry] if is_envelope_block(entry) else entry.values())
     for entry in model['extensions'].values():
         accounted.extend([entry['block']] if entry['mode'] == 'single' else [item['block'] for item in entry['blocks']])
     for collection in ARRAYS:

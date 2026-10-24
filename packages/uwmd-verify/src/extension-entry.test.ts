@@ -12,8 +12,12 @@ describe('RFC 0089 frozen complete source expectations', () => {
     expect(await computeEnvelopeDigest(model)).toBe(item.expected_digest);
   });
   it('preserves unknown outer/block values and exact variant identity through the model API', () => {
-    const model = packet.direct_models[1].expected_model;
-    const actual = toUWEnvelope(fromUWEnvelope(model), { generatedAt: model.generated_at, generator: model.generator });
+    const model = structuredClone(packet.direct_models[1].expected_model);
+    model.outer = { retained: true };
+    model.extensions.x_probe.blocks[0].block.extra = { retained: true };
+    model.extensions.x_probe.blocks[0].block.prose = '';
+    model.extensions.x_probe.blocks[0].block.rawJson = 'ordinary model extra';
+    const actual = toUWEnvelope(structuredClone(fromUWEnvelope(model)), { generatedAt: model.generated_at, generator: model.generator });
     // Existing volatile export labels may be generated; every committed member is exact.
     expect(canonicalizeUWEnvelope(actual)).toBe(canonicalizeUWEnvelope(model));
     const entry = model.extensions.x_probe;

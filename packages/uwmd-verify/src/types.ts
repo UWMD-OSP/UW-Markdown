@@ -411,6 +411,10 @@ export interface UWBlock<T extends Record<string, unknown> = Record<string, unkn
   content: T;
   prose: string;       // markdown text immediately preceding this block
   rawJson: string;
+  /** Full carrier members outside annotation/content/prose; retained across snapshots. */
+  envelopeExtras?: Record<string, unknown>;
+  /** Distinguishes an explicitly empty carrier prose value from absence. */
+  envelopeProsePresent?: boolean;
   lineStart: number;   // 1-indexed line of the opening fence
   lineEnd: number;     // 1-indexed line of the closing ```
 }
@@ -490,6 +494,8 @@ export type UWExtensionEntry<T> =
 export type UWParsedExtensionEntry = UWExtensionEntry<UWBlock>;
 
 export interface ParsedUWFile {
+  /** Unknown full Envelope members retained by carrier readers, including snapshots. */
+  envelopeExtras?: Record<string, unknown>;
   frontmatter: UWFrontmatter;
   sections: ParsedSections;
   prose: { [sectionId: string]: string };

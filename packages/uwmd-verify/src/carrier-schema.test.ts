@@ -7,10 +7,9 @@ import {admitsCarrierSchema} from './carrier-schema.js';
 const read = (path: string) => JSON.parse(readFileSync(new URL('../../../'+path,import.meta.url),'utf8'));
 const block=read('spec/schemas/uwmd-block.schema.json'), envelope=read('spec/schemas/uw-document-envelope.schema.json');
 const ajv=new Ajv({strict:false,allErrors:true});addFormats(ajv);ajv.addSchema(block);const shape=ajv.compile(envelope);
-const strip = (value: any): any => Array.isArray(value) ? value.map(strip) : value !== null && typeof value === 'object' ? Object.fromEntries(Object.entries(value).filter(([key])=>!['$schema','title','description','examples','$comment'].includes(key)).map(([key,item])=>[key,strip(item)])) : value;
 const packet=read('conformance/rfc-0089/cases.json');
 describe('full carrier schema admission',()=>{
-  it('embeds the current normative schemas exactly',()=>expect(carrierSchemas).toEqual([strip(envelope),strip(block)]));
+  it('embeds the current normative schemas exactly',()=>expect(carrierSchemas).toEqual([envelope,block]));
   it('agrees with AJV on frozen models and malformed schema boundaries',()=>{
     const normal=packet.source_cases.find((x: any)=>x.name==='named-default-single').expected_model;
     const cases=packet.source_cases.concat(packet.direct_models).map((x: any)=>x.expected_model);

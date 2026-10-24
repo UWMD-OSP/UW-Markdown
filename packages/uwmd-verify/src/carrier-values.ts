@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // RFC 0089 carrier primitives, promoted from the independently reviewed candidate.
 // Dynamic trees remain internal: every carrier passes JSON admission and the
 // Envelope schema before becoming a public UWDocumentEnvelope.
@@ -83,7 +84,7 @@ export function descriptors(model: any) {
   };
   for (const id of Object.keys(model.sections).sort()) {
     const entry = model.sections[id];
-    if (object(entry.annotation) && object(entry.content)) add(`/sections/${esc(id)}`, 'sections', id, entry.annotation.variant ?? null, null, 'current', '', entry);
+    if (hasBlockShape(entry)) add(`/sections/${esc(id)}`, 'sections', id, entry.annotation.variant ?? null, null, 'current', '', entry);
     else for (const key of Object.keys(entry).sort()) add(`/sections/${esc(id)}/${esc(key)}`, 'sections', id, key, null, 'current', '', entry[key]);
   }
   for (const key of arrays) model[key].forEach((block: any, index: number) => add(`/${key}/${index}`, key, block.annotation.section, null, index, 'current', '', block));

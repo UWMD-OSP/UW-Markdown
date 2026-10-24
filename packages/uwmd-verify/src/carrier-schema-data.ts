@@ -1,7 +1,10 @@
 // Generated from the current Envelope/block schemas; carrier-schema.test.ts checks equality.
 export const carrierSchemas = [
   {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://uwmd.org/schemas/uw-document-envelope.schema.json",
+    "title": "UW Document Envelope 2.0",
+    "description": "Format-neutral, lossless-at-the-model-layer envelope for UW Markdown representations.",
     "type": "object",
     "additionalProperties": true,
     "required": [
@@ -20,7 +23,8 @@ export const carrierSchemas = [
         "const": "2.0"
       },
       "format_version": {
-        "const": "3.0"
+        "const": "3.0",
+        "description": "Only admitted document format (RFC 0081); envelope_version remains independently versioned."
       },
       "generated_at": {
         "type": "string",
@@ -43,7 +47,8 @@ export const carrierSchemas = [
         ],
         "properties": {
           "uw_version": {
-            "const": "3.0"
+            "const": "3.0",
+            "description": "Format 3.0 is the kept rule set; the explicit uw_version agrees with format_version. RFC 0124 requires this declaration in Lite sources too; no representation-version fallback."
           },
           "deal_id": {
             "type": "string"
@@ -55,7 +60,8 @@ export const carrierSchemas = [
             "type": "string"
           }
         },
-        "additionalProperties": true
+        "additionalProperties": true,
+        "description": "Carries declared frontmatter, including well-formed source values that validation may reject. Format §2.2 closed vocabularies (RFC 0118) are Verifier checks, not additional Reader transport-admission requirements."
       },
       "sections": {
         "type": "object",
@@ -209,7 +215,10 @@ export const carrierSchemas = [
     }
   },
   {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://uwmd.org/schemas/uwmd-block.schema.json",
+    "title": "UW Markdown Section Block (Format 3.0)",
+    "description": "Bare section payload with inline nested _meta first, and optional _role, _overrides and _notes. Format §2.4–§2.6, RFC 0081 G2. RFC0093 allocates META-01 for misplaced _meta, present invalid/mismatched section and required absent/nonobject quality; existing predicates below are unchanged. Lexical source order and equality to an external annotation are document requirements, not expressible in JSON Schema. RFC0095 allocates closed META-05/06; root conditions account for every stated override assertion without selecting paths. Reference dates use an exact Gregorian domain independent of format plugins.",
     "type": "object",
     "required": [
       "_meta"
@@ -224,13 +233,15 @@ export const carrierSchemas = [
           "summary",
           "detail",
           "component"
-        ]
+        ],
+        "description": "Optional signed scalar block role (RFC 0040); not an _meta member."
       },
       "_meta": {
         "$ref": "#/$defs/UWMeta"
       },
       "_overrides": {
         "type": "array",
+        "description": "Leaf metadata exceptions (Format §2.5f). Included in the block digest; a matching path wins over block-level metadata. RFC0095 META-05 validates only its closed container/entry/member predicates; SRC owns source/resolution. Stated reference-resolution assertions require canonical carriers even when their paths are shadowed or duplicate.",
         "items": {
           "type": "object",
           "required": [
@@ -238,7 +249,8 @@ export const carrierSchemas = [
           ],
           "properties": {
             "path": {
-              "type": "string"
+              "type": "string",
+              "description": "Dot-notated path relative to the block content root (e.g. 'units[7].current_rent')."
             },
             "confidence": {
               "enum": [
@@ -249,7 +261,8 @@ export const carrierSchemas = [
             },
             "source": {
               "type": "string",
-              "pattern": "^(manual|(agent|document|system|institution)/[A-Za-z0-9][A-Za-z0-9._-]*)$"
+              "pattern": "^(manual|(agent|document|system|institution)/[A-Za-z0-9][A-Za-z0-9._-]*)$",
+              "description": "Actor override for this field (RFC 0031 actor grammar)."
             },
             "resolution": {
               "$ref": "#/$defs/ResolutionTag"
@@ -273,7 +286,8 @@ export const carrierSchemas = [
         "type": [
           "string",
           "null"
-        ]
+        ],
+        "description": "Free-text annotation. Never validated, never consumed by agents."
       }
     },
     "$defs": {
@@ -288,7 +302,8 @@ export const carrierSchemas = [
         "additionalProperties": true,
         "properties": {
           "section": {
-            "type": "string"
+            "type": "string",
+            "description": "REQUIRED; MUST equal the fence annotation section."
           },
           "provenance": {
             "type": "object",
@@ -302,20 +317,23 @@ export const carrierSchemas = [
               "source": {
                 "type": "string",
                 "pattern": "^(manual|(agent|document|system|institution)/[A-Za-z0-9][A-Za-z0-9._-]*)$",
-                "minLength": 1
+                "minLength": 1,
+                "description": "Actor grammar (Format §2.6). Resolution tags here are SRC-02; other out-of-grammar values are SRC-01, always errors."
               },
               "resolution": {
                 "$ref": "#/$defs/ResolutionTag"
               },
               "actor": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "description": "The principal that initiated the write. Distinct from source: source is the policy-vocabulary identity of the writer, actor is who asked for the write."
               },
               "agent_id": {
                 "type": [
                   "string",
                   "null"
-                ]
+                ],
+                "description": "REQUIRED when source matches 'agent/*'."
               },
               "agent_version": {
                 "type": [
@@ -326,7 +344,8 @@ export const carrierSchemas = [
               "timestamp": {
                 "type": "string",
                 "format": "date-time",
-                "pattern": "^(?:(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:[02468][048]|[13579][26])00)-02-29|[0-9]{4}-(?:(?:01|03|05|07|08|10|12)-(?:0[1-9]|[12][0-9]|3[01])|(?:04|06|09|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8])))T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]+)?Z(?![\\s\\S])"
+                "pattern": "^(?:(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:[02468][048]|[13579][26])00)-02-29|[0-9]{4}-(?:(?:01|03|05|07|08|10|12)-(?:0[1-9]|[12][0-9]|3[01])|(?:04|06|09|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8])))T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]+)?Z(?![\\s\\S])",
+                "description": "Exact T1B UTC-Z (RFC0094): ASCII YYYY-MM-DDTHH:mm:ss[.digits]Z, Gregorian year0000–9999, seconds00–59, uppercase T/Z and optional nonempty fraction. Full-string match; no offsets, normalization or host date parser authority. Present invalid values are META-04/error; existing absence diagnostics are unchanged."
               },
               "notes": {
                 "type": [
@@ -341,6 +360,7 @@ export const carrierSchemas = [
                   "as_of",
                   "digest"
                 ],
+                "description": "RFC0095: required when canonical provenance.resolution or any stated object override resolution is market_data_accepted; both references use symmetric assertion accounting. Unknown children remain admitted.",
                 "properties": {
                   "document_id": {
                     "type": "string"
@@ -364,6 +384,7 @@ export const carrierSchemas = [
                   "digest",
                   "distance"
                 ],
+                "description": "RFC0095: required when canonical provenance.resolution or any stated object override resolution is inherited_assumption; both references use symmetric assertion accounting. Unknown children remain admitted.",
                 "properties": {
                   "document_id": {
                     "type": "string"
@@ -405,16 +426,19 @@ export const carrierSchemas = [
                 }
               },
               "partial": {
-                "type": "boolean"
+                "type": "boolean",
+                "description": "True when at least one field inside the block is missing or unknown. When true, the block-level _overrides SHOULD enumerate which paths and why."
               },
               "provisional": {
-                "type": "boolean"
+                "type": "boolean",
+                "description": "True when the entire block is a placeholder derived from defaults rather than observed data. Stronger than confidence: 'low'."
               }
             },
             "not": {
               "required": [
                 "field_overrides"
-              ]
+              ],
+              "description": "Per-field exceptions are stated only in block-level _overrides."
             }
           },
           "lifecycle": {
@@ -427,21 +451,25 @@ export const carrierSchemas = [
             "properties": {
               "revision": {
                 "type": "integer",
-                "minimum": 1
+                "minimum": 1,
+                "description": "1-based supersede-chain position. Present invalid revision is META-04/error (RFC0094); no new maximum or chain diagnostic is allocated."
               },
               "superseded": {
-                "type": "boolean"
+                "type": "boolean",
+                "description": "True on every block that is not the chain head."
               }
             }
           },
           "integrity": {
             "type": "object",
             "additionalProperties": true,
+            "description": "Cryptographic / structural verification. The whole sub-object is optional: integrity remains opt-in.",
             "properties": {
               "algorithm": {
                 "enum": [
                   "sha256"
-                ]
+                ],
+                "description": "Absent means sha256, the only admitted block hash algorithm. The whole _meta object is outside the digest."
               },
               "input_hash": {
                 "type": [
@@ -452,14 +480,16 @@ export const carrierSchemas = [
               },
               "content_hash": {
                 "type": "string",
-                "pattern": "^[0-9a-f]{64}$"
+                "pattern": "^[0-9a-f]{64}$",
+                "description": "Lowercase hex SHA-256 of UTF-8 JCS of the block with its _meta member removed (Protocol §V.9)."
               },
               "parent_hash": {
                 "type": [
                   "string",
                   "null"
                 ],
-                "pattern": "^([0-9a-f]{64})?$"
+                "pattern": "^([0-9a-f]{64})?$",
+                "description": "RFC 0085: null or absent on the first retained hashed-chain block; otherwise the immediately prior retained content_hash."
               },
               "signature": {
                 "type": "object",
@@ -470,6 +500,7 @@ export const carrierSchemas = [
                   "signed_at"
                 ],
                 "additionalProperties": false,
+                "description": "Detached signature over content_hash, section, actor, timestamp, kid and signed_at (Protocol §V.11); requires content_hash (INT-05).",
                 "properties": {
                   "alg": {
                     "enum": [
@@ -518,13 +549,45 @@ export const carrierSchemas = [
           "scenario_default",
           "global_default",
           "system_default"
-        ]
+        ],
+        "description": "Closed resolution vocabulary (Format §2.6). Unknown values are SRC-03. manual is actor-only."
       },
       "MarketReferenceDate": {
         "type": "string",
-        "pattern": "^(?!0000)(?:[0-9]{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8]))|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)(?![\\s\\S])"
+        "pattern": "^(?!0000)(?:[0-9]{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8]))|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)(?![\\s\\S])",
+        "description": "Whole ASCII YYYY-MM-DD, valid Gregorian date, years 0001–9999; no trimming or normalization. RFC 0095 U3."
       }
     },
+    "examples": [
+      {
+        "_meta": {
+          "section": "property",
+          "provenance": {
+            "source": "manual",
+            "actor": "analyst@example.com",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-01T10:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
+        },
+        "_notes": null,
+        "total_units": 100,
+        "year_built": 2005,
+        "building_class": "B+"
+      }
+    ],
     "not": {
       "required": [
         "section_id"
