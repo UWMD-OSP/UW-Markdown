@@ -156,7 +156,7 @@ export function projectUnderwritingQueue(
 
 /**
  * One row of the corpus-level fact table: a normative `block_values` row
- * (UW CSV Bundle spec §3, via `flattenEnvelopeBlockValues`) prefixed with the
+ * (UW CSV Bundle spec §3 scopes, via `flattenUWSourceBlockValues`) prefixed with the
  * deal's identity — path, `deal_id`, `asset_class`, semantic digest, and
  * validation verdict. The durable key for a fact is
  * `(semantic_digest, block_ref, scope, pointer)`; `path` and `deal_id` are

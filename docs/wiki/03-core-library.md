@@ -744,3 +744,10 @@ Envelope would omit repeated or historical extension blocks (#545). It returns
 unverifiable/digest_unavailable without refreshing a plan or introducing the
 draft RFC 0089 representation. Representable singleton extensions retain their
 existing behavior.
+
+`flattenEnvelopeBlockValues` projects admitted full carrier models.
+`flattenUWSourceBlockValues(parsed)` instead projects the source model into
+facts without requiring full carrier-schema admission; batch indexing retains
+parseable records with validation findings. Neither fact projection authenticates
+a source. `lakeInputFromEnvelope` recomputes its model key, while supplied lake
+source-evidence/fact keys are propagation and storage inputs, not verification.
