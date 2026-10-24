@@ -312,7 +312,10 @@ def decode_xml(text):
         need(match is not None, 'XML malformed declaration')
         rest = text[match.end():]
     need('<?' not in rest, 'XML processing instruction')
-    root = ET.fromstring(ascii_prefixes(rest))
+    # Preserve declaration position as well as its validated spelling. Removing
+    # it would make a following BOM appear to ET as a fresh document-start BOM.
+    prefix = text[:len(text) - len(rest)]
+    root = ET.fromstring(prefix + ascii_prefixes(rest))
     need(root.tag == '{' + NS + '}document' and set(root.attrib) == {'envelope-version', 'format-version'}, 'XML root/attributes')
     def space(value):
         return value is None or re.fullmatch(r'[ \t\r\n]*', value) is not None
