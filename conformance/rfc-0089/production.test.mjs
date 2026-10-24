@@ -19,8 +19,8 @@ test('native complete JSON/XML/CSV/actual STORE and DEFLATE preserve fixed model
     assert.equal(jcs(model),jcs(expected),item.name);assert.equal(api.canonicalizeUWEnvelope(model),item.expected_preimage,item.name); }
   }
 });
-for(const name of ['closure-xml-cases.json','rereview-xml-cases.json']) test('native XML fixed independent '+name,async()=>{
-  for(const item of json('./independent/'+name)){
+for(const name of ['closure-xml-cases.json','rereview-xml-cases.json']) test(`native XML fixed independent ${name}`,async()=>{
+  for(const item of json(`./independent/${name}`)){
     if(item.expected==='refused') await assert.rejects(()=>api.parseUWXml(item.text),item.name);
     else assert.equal(api.canonicalizeUWEnvelope(await api.parseUWXml(item.text)),item.preimage,item.name);
   }
@@ -48,5 +48,5 @@ test('full models preserve prototype-named section keys and annotation/content v
   assert.equal(api.canonicalizeUWEnvelope(api.toUWEnvelope(structuredClone(api.fromUWEnvelope(expected)))),api.canonicalizeUWEnvelope(expected));
   for(const actual of [await api.parseUWXml(await api.stringifyUWXml(expected)),await api.decodeUWCSVZip(await api.encodeUWCSVZip(expected))]) assert.equal(jcs(actual),jcs(expected));
   assert.equal(Object.getPrototypeOf({}),Object.prototype);assert.equal(Object.hasOwn(model.sections,'__proto__'),true);
-  const folder=new URL('../../node_modules/.cache/rfc0089-production-evidence/',import.meta.url);mkdirSync(folder,{recursive:true});writeFileSync(new URL('additional-models.json',folder),JSON.stringify([{name:'own-map-names',model:expected,preimage:api.canonicalizeUWEnvelope(expected)}])+'\n');
+  const folder=new URL('../../node_modules/.cache/rfc0089-production-evidence/',import.meta.url);mkdirSync(folder,{recursive:true});writeFileSync(new URL('additional-models.json',folder),`${JSON.stringify([{name:'own-map-names',model:expected,preimage:api.canonicalizeUWEnvelope(expected)}])}\n`);
 });

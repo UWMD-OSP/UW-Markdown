@@ -23,11 +23,12 @@ test('F1 native source/carrier separation with actual signatures/receipts and ex
     receipt.signature={algorithm:'ed25519',key_id:'synthetic-key',value:sign(null,Buffer.from(p.receipts.receiptSigningPayload(receipt)),privateKey).toString('base64')};
     const artifact={kind:'uwmd-document-signature',signature_version:'1',subject,alg:'ed25519',kid:'synthetic-key',signed_at:options.issued_at,sig:''};
     artifact.sig=sign(null,Buffer.from(p.signing.documentSigningPayload(artifact)),privateKey).toString('base64url');
-    let docCalls=0,receiptCalls=0;
+    let docCalls=0;
+    let receiptCalls=0;
     const document=await p.signing.verifyDocumentSignature(c.source,artifact,{signatureVerifier:{verify:async(payload,value)=>{docCalls++;return verify(null,Buffer.from(payload),publicKey,Buffer.from(value.sig,'base64url'))?{ok:true}:{ok:false,reason:'bad_signature'};}}});
     const result=await p.receipts.verifyReceipt(receipt,c.source,{packs:[pack],signatureVerifier:{verify:async(value,payload)=>{receiptCalls++;return verify(null,Buffer.from(payload),publicKey,Buffer.from(value.signature.value,'base64'));}}});
     assert.equal(document.state,'verified');assert.equal(result.verdict,'verified');assert.equal(docCalls,1);assert.equal(receiptCalls,1);
     records.push({name:c.name,carrier:c.carrier,source:c.source,expected_preimage:preimage(expected),source_admission:'admitted',counts:c.counts,document:document.state,docCalls,receipt:result.verdict,receiptCalls});
   }
-  const folder=new URL('../../node_modules/.cache/rfc0089-production-evidence/',import.meta.url);mkdirSync(folder,{recursive:true});writeFileSync(new URL('native-source-boundaries.json',folder),JSON.stringify({node:process.version,records},null,2)+'\n');
+  const folder=new URL('../../node_modules/.cache/rfc0089-production-evidence/',import.meta.url);mkdirSync(folder,{recursive:true});writeFileSync(new URL('native-source-boundaries.json',folder),`${JSON.stringify({node:process.version,records},null,2)}\n`);
 });

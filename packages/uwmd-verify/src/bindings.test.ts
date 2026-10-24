@@ -49,8 +49,8 @@ describe('HTTP binding profile', () => {
   it('retains XML BOM/declaration positions on the binary HTTP route', async () => {
     const xml = (await createUWHTTPResponse(envelope, {accept:UW_XML_MEDIA_TYPE})).body as string;
     const bytes = (text: string) => new TextEncoder().encode(text);
-    await expect(decodeUWHTTPRequest(UW_XML_MEDIA_TYPE,bytes('\ufeff'+xml))).resolves.toMatchObject({envelope_version:'2.0'});
-    for (const text of ['\ufeff\ufeff'+xml, '<?xml version="1.0"?>\ufeff'+xml]) await expect(decodeUWHTTPRequest(UW_XML_MEDIA_TYPE,bytes(text))).rejects.toThrow();
+    await expect(decodeUWHTTPRequest(UW_XML_MEDIA_TYPE,bytes(`\ufeff${xml}`))).resolves.toMatchObject({envelope_version:'2.0'});
+    for (const text of [`\ufeff\ufeff${xml}`, `<?xml version="1.0"?>\ufeff${xml}`]) await expect(decodeUWHTTPRequest(UW_XML_MEDIA_TYPE,bytes(text))).rejects.toThrow();
   });
 
   it('negotiates XML and binary CSV, then decodes both through the registry', async () => {

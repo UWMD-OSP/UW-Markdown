@@ -8,7 +8,7 @@ import * as lake from '../../packages/uwmd-lake/dist/index.js';
 const m={stamp,preimage};
 fs.mkdirSync(new URL('../../node_modules/.cache/rfc0089-production-evidence/',import.meta.url),{recursive:true});
 test('independent closure stamping and lake captures on production',async()=>{
-const independentCanon=v=>v===null||typeof v!=='object'?JSON.stringify(v):Array.isArray(v)?'['+v.map(independentCanon).join(',')+']':'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+independentCanon(v[k])).join(',')+'}';
+const independentCanon=v=>v===null||typeof v!=='object'?JSON.stringify(v):Array.isArray(v)?`[${v.map(independentCanon).join(',')}]`:`{${Object.keys(v).sort().map(k=>`${JSON.stringify(k)}:${independentCanon(v[k])}`).join(',')}}`;
 const independentSubject=v=>Object.fromEntries(Object.entries(v).filter(([k])=>!['generated_at','generator','semantic_digest'].includes(k)));
 const base=JSON.parse(fs.readFileSync(new URL('./cases.json',import.meta.url))).source_cases[0].expected_model;
 const stampResults=[];
@@ -28,12 +28,12 @@ for(const [api,fn] of [['generated',candidate.envelope.stampEnvelopeDigest],['ca
     let refused=false;try{await fn(value);}catch{refused=true;}
     stampResults.push({api,bad,refused,calls,pass:refused&&calls===0});
   }
-  for(const frozen of [false,true]){const value=structuredClone(base);value.outer=[null,{json:true}];if(frozen){Object.freeze(value.outer[1]);Object.freeze(value.outer);Object.freeze(value);}const result=await fn(value);const d='sha256:'+createHash('sha256').update(independentCanon(independentSubject(result))).digest('hex');stampResults.push({api,frozen,pass:result.semantic_digest===d&&m.preimage(result)===m.preimage(value)});}
+  for(const frozen of [false,true]){const value=structuredClone(base);value.outer=[null,{json:true}];if(frozen){Object.freeze(value.outer[1]);Object.freeze(value.outer);Object.freeze(value);}const result=await fn(value);const d=`sha256:${createHash('sha256').update(independentCanon(independentSubject(result))).digest('hex')}`;stampResults.push({api,frozen,pass:result.semantic_digest===d&&m.preimage(result)===m.preimage(value)});}
 }
 fs.writeFileSync(new URL('../../node_modules/.cache/rfc0089-production-evidence/closure-stamping.json',import.meta.url),JSON.stringify(stampResults,null,2));
 
 const capture=[];
-for(const digest of ['sha256:'+'4'.repeat(64),'sha256:'+'5'.repeat(64),'synthetic-opaque-unverified']) for(const id of ['synthetic-a','synthetic-b']) {
+for(const digest of [`sha256:${'4'.repeat(64)}`,`sha256:${'5'.repeat(64)}`,'synthetic-opaque-unverified']) for(const id of ['synthetic-a','synthetic-b']) {
   const evidence={semantic_digest:digest,evidence_id:id,reference:{value:'synthetic'}};
   const planned=await lake.planLakeLoad({schema:'synthetic',source_evidence:[evidence]});const queries=[];
   const count=await lake.executeLakeLoad(planned,{query:async(sql,params)=>queries.push({sql,params})});

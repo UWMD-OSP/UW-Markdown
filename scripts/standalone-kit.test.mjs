@@ -126,7 +126,7 @@ test('retained ZIP preserves bytes and refuses its superseded whole-document ide
   const verified = await verifyUWDealPackage(decoded, { semanticDigestOf: async (_id, bytes) => computeEnvelopeDigest(toUWEnvelope(parseUWFile(new TextDecoder().decode(bytes)))) });
   assert.equal(verified.status, 'failed');
   assert.deepEqual(verified.unverifiable_members, []);
-  assert.deepEqual(verified.errors.map(({code,pointer})=>({code,pointer})), files.map(file=>({code:'PKGVER-003',pointer:declarations.top_level_blocks.find(x=>x.file===file+'.uwx.md').member_id})));
+  assert.deepEqual(verified.errors.map(({code,pointer})=>({code,pointer})), files.map(file=>({code:'PKGVER-003',pointer:declarations.top_level_blocks.find(x=>x.file===`${file}.uwx.md`).member_id})));
   assert.deepEqual(readFileSync(join(current, 'package/standalone-authored.uwpkg.zip')),raw);
   const native = await encodeUWDealPackageZip(decoded);
   assert.deepEqual(await encodeUWDealPackageZip(decoded), native);

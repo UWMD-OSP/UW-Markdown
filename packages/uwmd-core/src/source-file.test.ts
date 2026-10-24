@@ -36,9 +36,9 @@ describe('registered source files', () => {
   it('preserves XML declaration/BOM positions and refuses invalid UTF-8 bytes', async () => {
     const xml = await readFile(files['uw-xml']!, 'utf8');
     const path = join(temp,'synthetic-boundary.uw.xml');
-    await writeFile(path, '\ufeff'+xml);
+    await writeFile(path, `\ufeff${xml}`);
     await expect(loadUWSourceFile(path)).resolves.toMatchObject({representation:'uw-xml'});
-    for (const source of ['\ufeff\ufeff'+xml, '<?xml version="1.0"?>\ufeff'+xml]) {
+    for (const source of [`\ufeff\ufeff${xml}`, `<?xml version="1.0"?>\ufeff${xml}`]) {
       await writeFile(path,source);
       await expect(loadUWSourceFile(path)).rejects.toThrow();
     }

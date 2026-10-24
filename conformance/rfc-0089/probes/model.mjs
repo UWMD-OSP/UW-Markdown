@@ -14,7 +14,7 @@ import {stringifyUWX} from '../../../packages/uwmd-verify/dist/lite-bridge.js';
 export const {VERSION,REPRESENTATION,NAMESPACE,check,object,put,readJSON,esc,arrays,descriptors}=values;
 export const has=Object.hasOwn;export const jcs=canonicalize;
 export const admitJSONValue=assertJSONValue;export const unicode=text=>{canonicalize(text);return text;};
-export const sha=bytes=>'sha256:'+createHash('sha256').update(bytes).digest('hex');
+export const sha=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 export const semantic=envelope.envelopeSemanticValue;export const preimage=envelope.canonicalizeUWEnvelope;
 export const digest=model=>sha(Buffer.from(preimage(model)));
 export function validateModel(model,stamped=false){envelope.assertUWEnvelope(model);if(stamped)check(model.semantic_digest===digest(model),'semantic digest mismatch');return model;}

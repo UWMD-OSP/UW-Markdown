@@ -1,7 +1,8 @@
 // Both directions use real production APIs; no reader is substituted for the other.
 import assert from 'node:assert/strict';import {test} from 'node:test';import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';import {spawnSync} from 'node:child_process';import {fileURLToPath} from 'node:url';import {resolve} from 'node:path';import {zipSync} from 'fflate';
 import * as api from '../../packages/uwmd-verify/dist/index.js';import {canonicalize as jcs} from '../../packages/uwmd-verify/dist/integrity-canonical.js';
-const root=fileURLToPath(new URL('../../',import.meta.url)),folder=resolve(root,'node_modules/.cache/rfc0089-production-evidence');mkdirSync(folder,{recursive:true});
+const root=fileURLToPath(new URL('../../',import.meta.url));
+const folder=resolve(root,'node_modules/.cache/rfc0089-production-evidence');mkdirSync(folder,{recursive:true});
 const packet=JSON.parse(readFileSync(new URL('./cases.json',import.meta.url),'utf8'));const cases=[...packet.source_cases,...packet.direct_models];
 test('Windows/Linux native Node ↔ independent Python full carrier matrix',async()=>{
   for(const item of cases){
@@ -20,9 +21,9 @@ test('Windows/Linux native Node ↔ independent Python full carrier matrix',asyn
     for(const model of models)assert.equal(jcs(model),jcs(expected),item.name);
     observations.push({case:item.name,carriers:6,status:'pass'});
   }
-  writeFileSync(resolve(folder,'node-interop-results.json'),JSON.stringify({node:process.version,platform:process.platform,observations},null,2)+'\n');
+  writeFileSync(resolve(folder,'node-interop-results.json'),`${JSON.stringify({node:process.version,platform:process.platform,observations},null,2)}\n`);
   for(const name of ['python-probes.py','prefix-helper.py']) {
-    const child=spawnSync(process.env.UWMD_PYTHON??'python',['-B',fileURLToPath(new URL('./'+name,import.meta.url)),folder],{cwd:root,encoding:'utf8',env:{...process.env,PYTHONIOENCODING:'utf-8'}});
-    writeFileSync(resolve(folder,name+'.log'),child.stdout+child.stderr);assert.equal(child.status,0,child.stdout+child.stderr);
+    const child=spawnSync(process.env.UWMD_PYTHON??'python',['-B',fileURLToPath(new URL(`./${name}`,import.meta.url)),folder],{cwd:root,encoding:'utf8',env:{...process.env,PYTHONIOENCODING:'utf-8'}});
+    writeFileSync(resolve(folder,`${name}.log`),child.stdout+child.stderr);assert.equal(child.status,0,child.stdout+child.stderr);
   }
 });

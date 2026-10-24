@@ -11,14 +11,21 @@ function dateTime(v: string): boolean {
   const date = /^(\d{4})-(\d{2})-(\d{2})$/.exec(parts[0]);
   const time = /^(\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)(z|([+-])(\d{2})(?::?(\d{2}))?)$/i.exec(parts[1]);
   if (!date || !time) return false;
-  const y = +date[1], m = +date[2], d = +date[3];
+  const y = +date[1];
+  const m = +date[2];
+  const d = +date[3];
   const days = [0,31,y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0) ? 29 : 28,31,30,31,30,31,31,30,31,30,31];
   if (m < 1 || m > 12 || d < 1 || d > days[m]) return false;
-  const h = +time[1], min = +time[2], sec = +time[3], zoneH = +(time[6] ?? 0), zoneM = +(time[7] ?? 0);
+  const h = +time[1];
+  const min = +time[2];
+  const sec = +time[3];
+  const zoneH = +(time[6] ?? 0);
+  const zoneM = +(time[7] ?? 0);
   if (zoneH > 23 || zoneM > 59) return false;
   if (h <= 23 && min <= 59 && sec < 60) return true;
   const sign = time[5] === '-' ? -1 : 1;
-  const utcMin = min - zoneM * sign, utcH = h - zoneH * sign - (utcMin < 0 ? 1 : 0);
+  const utcMin = min - zoneM * sign;
+  const utcH = h - zoneH * sign - (utcMin < 0 ? 1 : 0);
   return (utcH === 23 || utcH === -1) && (utcMin === 59 || utcMin === -1) && sec < 61;
 }
 function accepts(value: any, schema: Schema | boolean, root: Schema): boolean {
@@ -33,7 +40,7 @@ function accepts(value: any, schema: Schema | boolean, root: Schema): boolean {
   if (schema.enum && !schema.enum.some((item: any) => equal(value, item))) return false;
   if (schema.type) {
     const types = Array.isArray(schema.type) ? schema.type : [schema.type];
-    if (!types.some((type: string) => type === 'object' ? record(value) : type === 'array' ? Array.isArray(value) : type === 'null' ? value === null : type === 'integer' ? Number.isInteger(value) : typeof value === type)) return false;
+    if (!types.some((type: string) => type === 'object' ? record(value) : type === 'array' ? Array.isArray(value) : type === 'null' ? value === null : type === 'integer' ? Number.isInteger(value) : (type === 'string' && typeof value === 'string' || type === 'number' && typeof value === 'number' || type === 'boolean' && typeof value === 'boolean'))) return false;
   }
   if (schema.allOf && !schema.allOf.every((s: Schema) => accepts(value,s,root))) return false;
   if (schema.anyOf && !schema.anyOf.some((s: Schema) => accepts(value,s,root))) return false;

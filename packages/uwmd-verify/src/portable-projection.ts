@@ -5,7 +5,7 @@ import { mapExtensionEntry } from './extension-entry.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
 export interface UWPortableBlock { meta?: unknown; content: Record<string, unknown>; }
 export function projectPortableBlock(block: Pick<UWBlock, 'content'>): UWPortableBlock {
-  const { _meta, _notes: _notes, ...content } = block.content;
+  const { _meta, _notes, ...content } = block.content;
   return { ...(Object.hasOwn(block.content, '_meta') ? { meta: _meta } : {}), content };
 }
 export function projectUWParse(parsed: ParsedUWFile) {

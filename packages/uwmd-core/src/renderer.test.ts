@@ -560,10 +560,8 @@ describe('CSV chat source/uses regression #538', () => {
     expect(result.content).toBe(render(original, { format: 'chat' }).content);
     expect(JSON.stringify(decoded)).toBe(before);
     expect(result.content).not.toContain('[object Object]');
-    {
       expect(result.content).toMatch(/Closing Costs: (?:USD |\$)139,000/);
       expect(result.content).toMatch(/Loan: (?:USD |\$)5,040,000/);
       expect(result.content).toMatch(/Other Reserves: (?:USD |\$)5,000/);
-    }
   });
 });
