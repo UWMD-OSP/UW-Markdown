@@ -356,11 +356,10 @@ RCP_COMPUTATION_FAILED refusal. Document artifact input uses malformed/INT-09
 before version/source/backend checks; malformed block signing input uses INT-07.
 Direct helpers retain typed refusal. Unsigned/excluded metadata is not globally
 reclassified. Encoding-valid unsupported signature subjects retain INT-14, and
-XML1 keeps its existing XML_CHARACTER_INVALID boundary. Backend exceptions are
-not relabeled by the narrow Unicode catches. Historical source/artifact bytes and existing
-valid conformance subjects are not rewritten. The bounded correction's activation
-and historical invalid-subject consequences require explicit integration review;
-it neither implements RFC0089 nor changes Envelope1, schemas or public versions.
+the XML 2.0 carrier enforces its frozen XML 1.0 character and lexical rules.
+Backend exceptions are not relabeled by narrow Unicode catches. The accepted
+complete Envelope identity is coordinated separately from V.9/V.11/V.12 and
+receipt results; no historical source or artifact is repaired.
 
 
 `verifyChain(parsed, options?)` (async) checks the `content_hash`/`parent_hash`
@@ -739,11 +738,11 @@ sizes and applies positive_size_denominator to the eight component per-size
 metrics. Validation checks all current blocks; metric verification resolves
 the selected component block without defaults or aggregation.
 
-Whole-source reserve-draw binding refuses digest admission when the current
-Envelope would omit repeated or historical extension blocks (#545). It returns
-unverifiable/digest_unavailable without refreshing a plan or introducing the
-draft RFC 0089 representation. Representable singleton extensions retain their
-existing behavior.
+Whole-source reserve-draw binding uses the complete Envelope 2.0 identity,
+including extension peers and history. A changed peer fails a stale plan with
+RDB-02; a newly reviewed plan must explicitly name the changed source digest.
+No plan is automatically refreshed. The selected V.12 payment-vector digest
+remains a separate commitment.
 
 `flattenEnvelopeBlockValues` projects admitted full carrier models.
 `flattenUWSourceBlockValues(parsed)` instead projects the source model into

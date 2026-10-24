@@ -77,6 +77,7 @@ export default defineConfig({
             text: 'Representations and bindings',
             items: [
               { text: 'UW Lite specification', link: '/spec/lite' },
+              { text: 'Document Envelope (2.0)', link: '/spec/envelope' },
               { text: 'XML mapping', link: '/spec/xml' },
               { text: 'CSV bundle', link: '/spec/csv' },
               { text: 'HTTP and MCP bindings', link: '/spec/bindings/' },
@@ -242,8 +243,9 @@ export default defineConfig({
           text: 'Representations and bindings',
           items: [
             { text: 'UW Lite spec (v1.0)', link: '/spec/lite' },
-            { text: 'XML mapping (v1.0)', link: '/spec/xml' },
-            { text: 'CSV bundle (v1.0)', link: '/spec/csv' },
+            { text: 'Document Envelope (2.0)', link: '/spec/envelope' },
+            { text: 'XML mapping (2.0)', link: '/spec/xml' },
+            { text: 'CSV bundle (2.0)', link: '/spec/csv' },
             { text: 'Composition spec (v1.0)', link: '/spec/composition' },
             { text: 'Transport bindings', link: '/spec/bindings/' },
             { text: 'HTTP binding (v1.0)', link: '/spec/http' },

@@ -9,7 +9,7 @@ const groups=[
  ['routes',['routes.test.mjs']],
 ];
 const git=(...args)=>{const child=spawnSync('git',['-c','core.fsmonitor=false',...args],{cwd:root,encoding:'utf8'});if(child.status!==0)throw new Error(child.stderr);return child.stdout.trim();};
-const runtime=spawnSync(process.env.UWMD_PYTHON??'python',['-c',"import json,sys,platform,pyexpat;print(json.dumps(dict(python=sys.version,executable=sys.executable,platform=platform.platform(),expat=pyexpat.EXPAT_VERSION)))"],{encoding:'utf8'});if(runtime.status!==0)throw new Error(runtime.stderr);
+const runtime=spawnSync(process.env.UWMD_PYTHON??'python',['-c',"import json,sys,platform,pyexpat;print(json.dumps(dict(python=sys.version,platform=platform.platform(),expat=pyexpat.EXPAT_VERSION)))"],{encoding:'utf8'});if(runtime.status!==0)throw new Error(runtime.stderr);
 const identity={head:git('rev-parse','HEAD'),tree:git('rev-parse','HEAD^{tree}'),node:process.version,platform:process.platform,python:JSON.parse(runtime.stdout),scope:'Native production controls, retained reviewer expectations with documented API adapters, not an independent closure review',groups:[]};
 writeFileSync(resolve(folder,'production-run.json'),`${JSON.stringify(identity,null,2)}\n`);
 for(const [name,files] of groups){
