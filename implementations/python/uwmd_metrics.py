@@ -29,24 +29,24 @@ def _pointer(path):
 
 def dictionary_entries(asset_class):
     dictionary=metric_dictionary()
-    return [entry for collection in ('calculations','primary_sizes')
+    return [entry for collection in ('calculations','size_intensives')
             for entry in dictionary.get(collection,()) if asset_class in entry['asset_classes']]
 
 
 def metric_value(document,entry,context=None):
-    if entry['null_semantics']=='positive_size_denominator':
-        # Only declared registered property/component sizes are governed by this
-        # guard; ordinary signed operands retain their expression semantics.
-        from uwmd_size_contract import SIZE_CONTRACT
-        from uwmd_calc import _Inputs
-        inputs=_Inputs(document,context or {},entry.get('section_roles',{}),{})
-        for path in entry['input_paths']:
-            section,_,tail=path.partition('.')
-            if tail in SIZE_CONTRACT.get(section,{}):
-                value=field(inputs.section(section),tail)
-                if finite(value) and value<0:
-                    return None,'negative_size_denominator'
     try:
+        if entry['null_semantics']=='positive_size_denominator':
+            # Only declared registered property/component sizes are governed by this
+            # guard; ordinary signed operands retain their expression semantics.
+            from uwmd_size_contract import SIZE_CONTRACT
+            from uwmd_calc import _Inputs
+            inputs=_Inputs(document,context or {},entry.get('section_roles',{}),{})
+            for path in entry['input_paths']:
+                section,_,tail=path.partition('.')
+                if tail in SIZE_CONTRACT.get(section,{}):
+                    value=field(inputs.section(section),tail)
+                    if finite(value) and value<0:
+                        return None,'negative_size_denominator'
         value=evaluate_expression(entry['formula'],document,context=context,roles=entry.get('section_roles',{}))
         return (value,None) if finite(value) else (None,'missing_usable_inputs')
     except (CalcError,ExpressionError,PeriodError) as error:
