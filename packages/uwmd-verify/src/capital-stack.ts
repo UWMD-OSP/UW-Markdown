@@ -250,6 +250,7 @@ export function recomputeSizing(
       return bal / denom;
     }
     case 'weighted_cost': {
+      if (fig.over !== '*' || fig.through !== undefined) return null;
       let weighted = 0;
       let base = 0;
       for (const t of tranches) {
@@ -333,6 +334,6 @@ export function capitalStackContext(parsed: ParsedUWFile): CapitalStackContext {
   return {
     noi: num('noi_model', 'net_operating_income'),
     total_cost: num('sources_uses', 'uses.total') ?? num('sources_uses', 'total_uses'),
-    total_value: num('valuation', 'underwritten_value') ?? num('valuation', 'purchase_price'),
+    total_value: num('valuation', 'underwritten_value'),
   };
 }

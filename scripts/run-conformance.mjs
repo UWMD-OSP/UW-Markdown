@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { verifyProForma } from '../packages/uwmd-verify/dist/index.js';
+import assert from 'node:assert/strict';
 import { verifyDocumentSignature } from '../packages/uwmd-verify/dist/index.js';
 import { verifyReserveDrawBindings } from '../packages/uwmd-verify/dist/reserve-draw-bindings.js';
 import { verifyReserveAccounts } from '../packages/uwmd-core/dist/index.js';
@@ -4357,6 +4359,20 @@ const dispatch = {
   'capability': async () => { await runCapability(); },
   'locale': async () => { await runLocale(); },
   'currency': async () => { await runCurrency(); },
+  'pro-forma': async () => {
+    const subset = (actual, expected) => {
+      if (Array.isArray(expected)) { assert.equal(actual.length, expected.length); expected.forEach((v,i) => subset(actual[i],v)); }
+      else if (expected && typeof expected === 'object') for (const [k,v] of Object.entries(expected)) subset(actual[k],v);
+      else assert.deepEqual(actual,expected);
+    };
+    for (const entry of readdirSync(join(CONFORMANCE_DIR,'pro-forma'), { withFileTypes: true }).filter(d => d.isDirectory())) {
+      try {
+        const dir = join(CONFORMANCE_DIR,'pro-forma',entry.name);
+        subset(verifyProForma(readFileSync(join(dir,'deal.uwx.md'),'utf8')), JSON.parse(readFileSync(join(dir,'expected.json'),'utf8')));
+        record('pro-forma',entry.name,'pass');
+      } catch (error) { record('pro-forma',entry.name,'fail',error.message); }
+    }
+  },
   'metrics': async () => {
     const expected = readCase(join(CONFORMANCE_DIR, 'metrics'), 'expected.json');
     const actual = verifyExamples(ROOT);

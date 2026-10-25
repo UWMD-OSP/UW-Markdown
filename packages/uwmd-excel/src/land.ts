@@ -26,6 +26,8 @@ const expenseLines: readonly ExpenseLine[] = [
 const namedInputs: readonly NamedInput[] = [
   { name: 'purchase_price',          label: 'Purchase Price',          source: { section: 'valuation',      path: 'purchase_price' },          format: 'currency' },
   { name: 'underwritten_value', label: 'Underwritten Value', source: { section: 'valuation', path: 'underwritten_value' }, format: 'currency' },
+  { name: 'ltv_basis', label: 'Declared LTV Basis', source: { section: 'debt_structure', path: 'ltv_basis' }, format: 'text' },
+  { name: 'ltv_total_project_cost', label: 'LTV Total Project Cost', source: { section: 'sources_uses', path: 'total_project_cost' }, format: 'currency' },
   { name: 'projected_gross_sellout', label: 'Projected Gross Sellout', source: { section: 'valuation',      path: 'projected_gross_sellout' }, format: 'currency' },
   { name: 'loan_amount',             label: 'Loan Amount',             source: { section: 'debt_structure', path: 'loan_amount' },             format: 'currency' },
   ...sizeNamedInputs('land', { gross_acres: 'Gross Acres', usable_acres: 'Usable Acres', entitled_units: 'Entitled Units (Lots)' }),

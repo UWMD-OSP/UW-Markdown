@@ -262,6 +262,7 @@ export function verifyStatedMetrics(
     stated: number;
     statedDecimals: number | undefined;
     sectionVariants?: Record<string, string>;
+    selectedLoan?: UWBlock;
   }> = [];
 
   for (const metric of dictionary.calculations.filter((m) => (m.asset_classes as readonly string[]).includes(asset_class))) {
@@ -278,6 +279,7 @@ export function verifyStatedMetrics(
         if (typeof stated !== 'number') continue;
         statements.push({
           metric,
+          ...(metric.id === 'ltv' && section === 'debt_structure' ? { selectedLoan: block } : {}),
           path: `${section}${variant ? `[${variant}]` : ''}.${tail.join('.')}`,
           stated,
           statedDecimals: precision?.get(path) ?? blockDecimals(block, tail.join('.'), stated),
@@ -300,12 +302,12 @@ export function verifyStatedMetrics(
     }
   }
 
-  const evidence: StatedMetricEvidence[] = statements.map(({ metric, path, stated, sectionVariants, statedDecimals }) => ({
+  const evidence: StatedMetricEvidence[] = statements.map(({ metric, path, stated, sectionVariants, statedDecimals, selectedLoan }) => ({
     id: metric.id,
     path,
     stated,
     ...(statedDecimals !== undefined ? { stated_decimals: statedDecimals } : {}),
-    ...checkStatement(metric, parsed, stated, sectionVariants, statedDecimals, 'unverifiable'),
+    ...checkStatement(metric, selectedLoan ? { ...parsed, sections: { ...parsed.sections, debt_structure: selectedLoan } } : parsed, stated, sectionVariants, statedDecimals, 'unverifiable'),
   }));
   const counts = { verified: 0, failed: 0, unverifiable: 0 };
   for (const item of evidence) counts[item.state]++;
@@ -321,12 +323,13 @@ export function verifyStatedMetrics(
  * is validated by `JSON.parse` first, so invalid JSON throws its `SyntaxError`;
  * this walk records token spelling only. `jsonStatedDecimals` never throws.
  */
-export function jsonNumericTokens(source: string): Map<string, string> {
+export function jsonNumericTokens(source: string, valuePositions?: Map<string, number>): Map<string, string> {
   JSON.parse(source);
   const tokens = source.match(/"(?:[^"\\]|\\.)*"|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null|[{}\[\]:,]/g) ?? [];
   const numbers = new Map<string, string>();
   let i = 0;
   function value(path: string[]): void {
+    valuePositions?.set(JSON.stringify(path), i);
     const token = tokens[i++];
     if (token === '{') {
       if (tokens[i] === '}') { i++; return; }

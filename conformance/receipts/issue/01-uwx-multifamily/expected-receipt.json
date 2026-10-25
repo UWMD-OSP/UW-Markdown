@@ -53,9 +53,9 @@
       },
       {
         "calc_id": "ltv",
-        "value": 0.65,
+        "value": null,
         "unit": "%",
-        "computed": true
+        "computed": false
       },
       {
         "calc_id": "price_per_unit",
@@ -64,7 +64,7 @@
         "computed": true
       }
     ],
-    "results_digest": "sha256:acd7d621846a448196409c6a5e241ccfed91162943c170e1ec7e0623b3ff26e6"
+    "results_digest": "sha256:51f16aa49fe722c4b0f092836b6fb11c1b85315a384933bd36f90042d7206bb2"
   },
   "policy": {
     "policy_set": "builtin",

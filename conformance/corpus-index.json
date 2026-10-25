@@ -5548,7 +5548,7 @@
     },
     {
       "suite": "metrics",
-      "scenario": "all-class-LTV-uses-underwritten-value-with-lazy-price-fallback",
+      "scenario": "all-class-LTV-requires-the-declared-basis-without-fallback",
       "target": "verifier"
     },
     {
@@ -6880,6 +6880,131 @@
       "suite": "extension-envelope",
       "scenario": "production-consumer-routes",
       "target": "representations"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "empty",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "verified-moic",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "failed-moic",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "unbound-row",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "unknown-registry",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "unknown-family",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "unknown-member",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "identical-relationships",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "semantic-collision",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "invalid-duplicate",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "bound-input-protected",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "separate-input",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "return-home-protected",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "dictionary-home-protected",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "dictionary-class-applicability",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "family-conflict",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "failed-with-missing-peer",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "unregistered-land-token",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "missing-target",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "required-ledger-gap",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "ledger-member",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "ledger-identical-bindings",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "ledger-role-conflict-M07",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "outside-universe-M15",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "required-exclusion",
+      "target": "pro-forma"
     }
   ]
 }

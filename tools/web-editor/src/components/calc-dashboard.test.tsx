@@ -20,7 +20,7 @@ import { render, cleanup, within } from '@testing-library/react';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseUWFile, getPackForAssetClass } from '@uwmd/core/browser';
-import type { ParsedUWFile } from '@uwmd/core/browser';
+import type { ParsedUWFile, UWBlock } from '@uwmd/core/browser';
 import { CalcDashboard } from './CalcDashboard.js';
 
 afterEach(cleanup);
@@ -67,7 +67,9 @@ describe('CalcDashboard — the strip follows the asset class', () => {
     // The other half: omitting the strip entirely would also pass the test
     // above. Land-specific cards must be present *and* resolve to a value,
     // not the '—' placeholder the component shows on an evaluation failure.
-    const { container } = render(<CalcDashboard parsed={example(LAND)} />);
+    const parsed = example(LAND);
+    (parsed.sections.debt_structure as UWBlock).content.ltv_basis = 'purchase-price';
+    const { container } = render(<CalcDashboard parsed={parsed} />);
     const labels = cardLabels(container);
 
     expect(labels.length).toBeGreaterThan(0);
@@ -80,6 +82,11 @@ describe('CalcDashboard — the strip follows the asset class', () => {
       const value = cardValue(container, new RegExp(`^${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i'));
       expect(value, `land card "${label}" rendered the failure placeholder`).not.toBe('—');
     }
+  });
+
+  it('keeps LTV unavailable when the loan declares no basis', () => {
+    const { container } = render(<CalcDashboard parsed={example(LAND)} />);
+    expect(cardValue(container, /^LTV$/i)).toBe('—');
   });
 
   it('renders exactly the pack\'s calculations, in the pack\'s order', () => {

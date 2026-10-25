@@ -1,0 +1,20 @@
+{
+  "status": "completed",
+  "input_count": 0,
+  "coverage": {
+    "total": 1,
+    "by_verdict": {
+      "verified": 1,
+      "failed": 0,
+      "unverifiable": 0
+    }
+  },
+  "relationships": [
+    {
+      "origins": [
+        "/pro_forma/relationships/0",
+        "/pro_forma/relationships/1"
+      ]
+    }
+  ]
+}

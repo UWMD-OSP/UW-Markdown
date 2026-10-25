@@ -1305,3 +1305,7 @@ broader waterfalls, tax and depreciation. These are verification contracts, not
 a projection engine. A generated per-metric/per-identity formula library is a
 separate follow-up; no generator, unrelated formula page or docs-site correction
 lands here.
+
+## Accepted wire synchronization — 2026-10-25
+
+The owner accepted the exact wire proposal (proposal blob0eb526fdb100197ada256c5a7f47b9961ba00ef3), including the registry identifier, closed descriptive families and address/row/relationship/ledger/report shapes. U1 A, U9 A and U3–U7 are unchanged. The synchronized current Format/Protocol RFC0092 wire sections and pro-forma-claim/pro-forma-report schemas define the public contract. Earlier proposal/gate wording above is the design history, not a competing active wire version. The reference implements the accepted scope without advertising full-profile support until the separate independent and CLI gates pass.

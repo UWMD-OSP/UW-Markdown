@@ -23,7 +23,7 @@ const parkview = () => readFile(PARKVIEW, 'utf8');
 /** The same receipt with one stated result moved, so recomputation disagrees. */
 function tampered(receipt: UWReceipt): UWReceipt {
   const copy = JSON.parse(JSON.stringify(receipt)) as UWReceipt;
-  const ltv = copy.computation.results.find((r) => r.calc_id === 'ltv');
+  const ltv = copy.computation.results.find((r) => r.calc_id === 'dscr');
   if (!ltv) throw new Error('fixture drift: no ltv result');
   ltv.value = 0.42;
   return copy;

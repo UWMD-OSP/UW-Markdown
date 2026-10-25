@@ -30,7 +30,7 @@ expressions over the named ranges are:
 | Metric         | Expression                                                       |
 | -------------- | ---------------------------------------------------------------- |
 | Cap Rate       | `noi/purchase_price`                                             |
-| LTV            | `loan_amount/(underwritten_value, else purchase_price)`          |
+| LTV            | `loan_amount / explicitly declared per-loan LTV basis`          |
 | DSCR           | `noi/annual_debt_service`                                        |
 | Debt Yield     | `noi/loan_amount`                                                |
 | Price / Unit   | `purchase_price/total_units`                                     |

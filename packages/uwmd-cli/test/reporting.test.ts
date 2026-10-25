@@ -10,7 +10,8 @@ vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const bin = resolve(root, 'packages/uwmd-cli/bin/uwmd.mjs');
-const fixture = readFileSync(resolve(root, 'conformance/receipts/issue/01-uwx-multifamily/deal.uwx.md'), 'utf8');
+// This newly issued receipt scenario explicitly states the selected price basis.
+const fixture = readFileSync(resolve(root, 'conformance/receipts/issue/01-uwx-multifamily/deal.uwx.md'), 'utf8').replace('"loan_amount":', '"ltv_basis":"purchase-price","loan_amount":');
 const partial = fixture.replace(/```json uw:section=sources_uses[^\n]*\r?\n[\s\S]*?```/, '');
 const issuedAt = '2026-08-09T00:00:00Z';
 

@@ -1,6 +1,7 @@
 {
   "verdict": "unverifiable",
   "expected_codes": [
-    "RCP-06"
+    "RCP-03",
+    "RCP-07"
   ]
 }

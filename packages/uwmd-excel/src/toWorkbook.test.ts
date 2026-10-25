@@ -55,8 +55,8 @@ const UNREGISTERED_CLASS = '__unregistered_test_class__';
 // Evaluate only the emitted arithmetic/IF subset used by these pack tests.
 // A blank named cell is represented by null; Excel distinguishes blank from 0.
 function excelValue(formula: string): number | null {
-  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
-  expect(/^[\d. +\-*/(),!=>nullIFORROUND]+$/.test(expression), expression).toBe(true);
+  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null').replace(/(?<![<>=!])=(?!=)/g, '===');
+  expect(/^[\d. +\-*/(),!=>nullIFORROUND]+$/.test(expression.replaceAll('"purchase-price"', '0').replaceAll('"underwritten-value"', '0').replaceAll('"total-project-cost"', '0')), expression).toBe(true);
   // eslint-disable-next-line no-new-func
   return new Function('IF', 'OR', 'ROUND', `return (${expression});`)(
     (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
@@ -238,7 +238,7 @@ for (const { file, layout } of CASES) {
       for (const input of layout.namedInputs) {
         const n = namedNumber(wb, input.name);
         if (input.name === 'hotel_metrics_market_revpar' || input.name.startsWith('hotel_brand_') || input.name.startsWith('hotel_food_beverage_')) expect(n, `${input.name} absent in this example`).toBeNull();
-        else if (!['levered_cash_flow_y1', 'equity_total', 'underwritten_value'].includes(input.name)) expect(n, `${input.name} resolved`).not.toBeNull();
+        else if (!['levered_cash_flow_y1', 'equity_total', 'underwritten_value', 'ltv_basis', 'ltv_total_project_cost'].includes(input.name)) expect(n, `${input.name} resolved`).not.toBeNull();
         values[input.name] = n;
       }
       for (const line of layout.incomeLines) {
@@ -258,6 +258,10 @@ for (const { file, layout } of CASES) {
       for (const decl of layout.pack.calculations ?? []) {
         const direct = evaluateCalc(decl, ctx);
         expect(direct.ok, `${decl.id} evaluateCalc`).toBe(true);
+        if (decl.id === 'ltv' && direct.value === null) {
+          expect(namedNumber(wb, 'ltv_basis')).toBeNull();
+          continue;
+        }
 
         let formula = emitExcelFormula(decl.formula, { namedRanges: map });
         for (const name of Object.keys(values)) {
@@ -628,9 +632,9 @@ describe('toWorkbook — Excel ↔ evaluateCalc parity on a stated document', ()
     const values: Record<string, number | null> = {};
     for (const input of MULTIFAMILY_LAYOUT.namedInputs) {
       const n = namedNumber(wb, input.name);
-      if (input.name === 'underwritten_value') {
+      if (['underwritten_value','ltv_basis'].includes(input.name)) {
         // Parkview states no underwritten value; preserve the blank so the
-        // shared LTV formula exercises its purchase-price fallback.
+        // explicit-basis contract remains unavailable.
         expect(n, input.name).toBeNull();
       } else {
         expect(n, input.name).not.toBeNull();
@@ -646,6 +650,7 @@ describe('toWorkbook — Excel ↔ evaluateCalc parity on a stated document', ()
     for (const decl of MULTIFAMILY_LAYOUT.pack.calculations ?? []) {
       const direct = evaluateCalc(decl, ctx);
       expect(direct.ok, decl.id).toBe(true);
+      if (decl.id === 'ltv') { expect(direct.value).toBeNull(); continue; }
       let formula = emitExcelFormula(decl.formula, { namedRanges: map });
       for (const name of Object.keys(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
       // eslint-disable-next-line no-new-func
@@ -711,6 +716,11 @@ async function metricParity(parsed: ReturnType<typeof parseUWFile>) {
     const cell = ws.getCell(`B${rows.get(decl.label)}`);
     if (!direct.ok) {
       out[decl.id] = { calc: direct.error?.code, cell: cell.value, note: cell.note };
+      continue;
+    }
+    if (direct.value === null) {
+      expect(cell.value).toMatchObject({ formula: expect.stringContaining('NA()') });
+      out[decl.id] = { calc: null, cell: 'formula' };
       continue;
     }
     let formula = emitExcelFormula(decl.formula, { namedRanges: map });
@@ -837,35 +847,49 @@ describe.each([...new Map([...CASES.map(c => c.layout), MIXED_USE_LAYOUT, DATA_C
   },
 );
 
-// Every class uses the same value denominator, independently of its sizing basis.
+// Every class reads the explicitly authored same-loan basis, with no fallback.
 describe.each([...new Map([...CASES.map(c => c.layout), MIXED_USE_LAYOUT, DATA_CENTER_LAYOUT, MANUFACTURED_HOUSING_LAYOUT].map(l => [l.assetClass, l])).values()])(
-  'RFC 0079 LTV Excel binding: $assetClass', layout => {
-    it.each([120_000, null, undefined])('selects underwritten value %s, with a lazy purchase-price fallback', async underwritten => {
+  'RFC 0092 LTV Excel binding: $assetClass', layout => {
+    it.each([
+      { basis: 'purchase-price', value: 120000, expected: 0.75 },
+      { basis: 'underwritten-value', value: 120000, expected: 0.625 },
+      { basis: 'total-project-cost', value: 120000, expected: 0.5 },
+      { basis: 'underwritten-value', value: null, expected: null },
+      { basis: null, value: 120000, expected: null },
+    ])('uses declared basis $basis with selected value $value', async scenario => {
       const raw = await readFile(resolve(__dirname, '../../../conformance/capital-stack/gd05-total-equity/deal.uwx.md'), 'utf8');
       const parsed = parseUWFile(raw);
       parsed.frontmatter.asset_class = layout.assetClass as typeof parsed.frontmatter.asset_class;
       const valuation = (parsed.sections['valuation'] as UWBlock).content;
       const debt = (parsed.sections['debt_structure'] as UWBlock).content;
-      valuation['purchase_price'] = 100_000;
-      if(underwritten===undefined)delete valuation['underwritten_value'];
-      else valuation['underwritten_value'] = underwritten;
-      debt['loan_amount'] = 75_000;
+      valuation.purchase_price = 100000;
+      valuation.underwritten_value = scenario.value;
+      debt.loan_amount = 75000;
+      debt.ltv_basis = scenario.basis;
+      (parsed.sections['sources_uses'] as UWBlock).content.total_project_cost = 150000;
       const wb = await toWorkbook(parsed);
       const mixed = layout.assetClass === 'mixed_use';
-      const valueName = mixed ? mixedUseName('valuation.underwritten_value') : 'underwritten_value';
-      const priceName = mixed ? mixedUseName('valuation.purchase_price') : 'purchase_price';
-      const loanName = mixed ? mixedUseName('debt_structure.loan_amount') : 'loan_amount';
-      expect(namedNumber(wb, valueName)).toBe(underwritten ?? null);
+      const name = (path: string, simple: string) => mixed ? mixedUseName(path) : simple;
+      const valueName = name('valuation.underwritten_value','underwritten_value');
+      const priceName = name('valuation.purchase_price','purchase_price');
+      const loanName = name('debt_structure.loan_amount','loan_amount');
+      const basisName = name('debt_structure.ltv_basis','ltv_basis');
+      const costName = name('sources_uses.total_project_cost','ltv_total_project_cost');
+      expect(namedNumber(wb,valueName)).toBe(scenario.value);
+      expect(cellAt(wb,wb.definedNames.getRanges(basisName).ranges[0])?.value).toBe(scenario.basis);
       const decl = layout.pack.calculations!.find(c => c.id === 'ltv')!;
       const ws = wb.getWorksheet('Underwriting')!;
-      expect(ws.getCell(`B${rowByLabel(ws).get(decl.label)}`).value).toMatchObject({ formula: expect.stringContaining(valueName) });
+      const direct = evaluateCalc(decl,{parsed,prior_results:{},locale:'en-US'});
+      expect(direct).toMatchObject({ok:true,value:scenario.expected});
+      const metricRow = rowByLabel(ws).get(decl.label);
+      if (scenario.expected === null && mixed) { expect(metricRow).toBeUndefined(); return; }
+      expect(ws.getCell(`B${metricRow}`).value).toMatchObject({ formula: expect.stringContaining(basisName) });
+      if (scenario.expected === null) return;
       const map = mixed ? buildMixedUseNamedRangeMap() : buildNamedRangeMap(layout);
-      let formula = emitExcelFormula(decl.formula, { namedRanges: map });
-      const values = { [valueName]: underwritten ?? null, [priceName]: 100_000, [loanName]: 75_000 };
-      for (const [name, value] of Object.entries(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(value));
-      const direct = evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' });
-      expect(direct).toMatchObject({ ok: true, value: underwritten === 120_000 ? 0.625 : 0.75 });
-      expect(quantizeDecimal(excelValue(formula)!, resolveRoundTo(decl))).toBe(direct.value);
+      let formula = emitExcelFormula(decl.formula,{namedRanges:map});
+      const values = { [valueName]:scenario.value,[priceName]:100000,[loanName]:75000,[basisName]:scenario.basis,[costName]:150000 };
+      for(const [key,value] of Object.entries(values)) formula=formula.replace(new RegExp(`\\b${key}\\b`,'g'),JSON.stringify(value));
+      expect(quantizeDecimal(excelValue(formula)!,resolveRoundTo(decl))).toBe(direct.value);
     });
   },
 );

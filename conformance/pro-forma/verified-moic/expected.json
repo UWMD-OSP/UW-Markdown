@@ -1,0 +1,12 @@
+{
+  "status": "completed",
+  "input_count": 0,
+  "coverage": {
+    "total": 1,
+    "by_verdict": {
+      "verified": 1,
+      "failed": 0,
+      "unverifiable": 0
+    }
+  }
+}

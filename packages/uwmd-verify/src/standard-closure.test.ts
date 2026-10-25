@@ -37,7 +37,7 @@ const STANDARD_MODULES: readonly string[] = Object.freeze([
   // Stated-figure verifiers
   'cash-flow-series.ts', 'lease-up.ts', 'lease-up-cash-flows.ts', 'property-cash-flows.ts',
   'waterfall.ts', 'reserve-accounts.ts', 'reserve-draw-bindings.ts', 'replacement-funding.ts',
-  'capital-stack.ts', 'property-cash-flow-inputs.ts',
+  'capital-stack.ts', 'property-cash-flow-inputs.ts', 'pro-forma.ts', 'pro-forma-types.ts', 'pro-forma-address.ts', 'calc/pro-forma-identities.ts',
   // Document-level section verifiers behind the portable subcommands (RFC 0115)
   'section-verification.ts',
   // Calculation

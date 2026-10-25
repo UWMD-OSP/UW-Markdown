@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/module-manifest.schema.json",
   "title": "UW Markdown Module Manifest",
-  "description": "Declarative third-party module manifest. Normative Protocol §X; no executable code. A manifest states the host it needs with requires_conformance and optional requires_profiles; any other key is refused. Profile declarations are arrays of unique closed-vocabulary values; malformed or duplicate profiles are PROTO-MOD-006.",
+  "description": "Declarative third-party module manifest. Normative Protocol \u00a7X; no executable code. A manifest states the host it needs with requires_conformance and optional requires_profiles; any other key is refused. Profile declarations are arrays of unique closed-vocabulary values; malformed or duplicate profiles are PROTO-MOD-006.",
   "type": "object",
   "required": [
     "manifest_version",
@@ -107,7 +107,7 @@
     },
     "sections": {
       "type": "array",
-      "description": "Custom or extended section declarations: extend a standard section with additional optional fields, or add module-namespaced sections. New asset_class VALUES are declared separately, in `declares_asset_classes` (RFC 0003) — this field is about sections.",
+      "description": "Custom or extended section declarations: extend a standard section with additional optional fields, or add module-namespaced sections. New asset_class VALUES are declared separately, in `declares_asset_classes` (RFC 0003) \u2014 this field is about sections.",
       "items": {
         "type": "object",
         "required": [
@@ -161,17 +161,17 @@
           "formula": {
             "type": "string",
             "minLength": 1,
-            "description": "Safe-expression string. Grammar: arithmetic, comparison, conditional, function call only. See UW_PROTOCOL.md §VIII.1."
+            "description": "Safe-expression string. Grammar: arithmetic, comparison, conditional, function call only. See UW_PROTOCOL.md \u00a7VIII.1."
           },
           "unit": {
             "type": "string",
-            "description": "Display unit (e.g. '%', '$', 'x'). Also selects the default round_to when round_to is omitted — see UW_PROTOCOL.md §VIII.5."
+            "description": "Display unit (e.g. '%', '$', 'x'). Also selects the default round_to when round_to is omitted \u2014 see UW_PROTOCOL.md \u00a7VIII.5."
           },
           "round_to": {
             "type": "integer",
             "minimum": 0,
             "maximum": 12,
-            "description": "Decimal places the reported value is quantized to, half away from zero (UW_PROTOCOL.md §VIII.5). Omit to take the normative default for `unit` ($ = 2, % = 6, x = 4, otherwise 6). This is a precision contract that receipt digests depend on, not a display hint."
+            "description": "Decimal places the reported value is quantized to, half away from zero (UW_PROTOCOL.md \u00a7VIII.5). Omit to take the normative default for `unit` ($ = 2, % = 6, x = 4, otherwise 6). This is a precision contract that receipt digests depend on, not a display hint."
           },
           "deterministic": {
             "type": "boolean",
@@ -179,7 +179,7 @@
           },
           "section_roles": {
             "type": "object",
-            "description": "Role preference per section id for this calculation's reads of a role-bearing variant map (UW_PROTOCOL.md §VIII.2, RFC 0066). The unique eligible block with this _role is read; with none, RFC 0040's generic order applies; with two, the read refuses CALC-RESOLVE-002. An explicit sectionVariants entry still wins. A component is never selected this way.",
+            "description": "Role preference per section id for this calculation's reads of a role-bearing variant map (UW_PROTOCOL.md \u00a7VIII.2, RFC 0066). The unique eligible block with this _role is read; with none, RFC 0040's generic order applies; with two, the read refuses CALC-RESOLVE-002. An explicit sectionVariants entry still wins. A component is never selected this way.",
             "propertyNames": {
               "pattern": "^[a-z][a-z0-9_]*$"
             },
@@ -312,7 +312,7 @@
     },
     "declares_asset_classes": {
       "type": "array",
-      "description": "Optional. Custom asset classes this module introduces (§X.2, RFC 0003). Distinct from `asset_classes`, which names builtin classes the module ENHANCES; a module may do both.",
+      "description": "Optional. Custom asset classes this module introduces (\u00a7X.2, RFC 0003). Distinct from `asset_classes`, which names builtin classes the module ENHANCES; a module may do both.",
       "items": {
         "type": "object",
         "required": [
@@ -366,14 +366,14 @@
     },
     "signature": {
       "$ref": "https://uwmd.org/schemas/module-signature.schema.json",
-      "description": "Optional. Detached signature over the canonical manifest (§X.1, RFC 0002). Advisory: what to do with an unsigned module, or one whose signature fails, is a host-policy decision."
+      "description": "Optional. Detached signature over the canonical manifest (\u00a7X.1, RFC 0002). Advisory: what to do with an unsigned module, or one whose signature fails, is a host-policy decision."
     },
     "requires_conformance": {
       "enum": [
         "reader",
         "verifier"
       ],
-      "description": "Minimum claimed conformance tier (Protocol §VII.4). Below it is PROTO-MOD-029; unknown value is PROTO-MOD-006."
+      "description": "Minimum claimed conformance tier (Protocol \u00a7VII.4). Below it is PROTO-MOD-029; unknown value is PROTO-MOD-006."
     },
     "requires_profiles": {
       "type": "array",
@@ -384,7 +384,8 @@
           "representations",
           "portfolio",
           "sensitivity",
-          "stochastic"
+          "stochastic",
+          "pro-forma"
         ]
       },
       "uniqueItems": true,

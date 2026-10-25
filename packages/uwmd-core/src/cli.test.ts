@@ -274,7 +274,7 @@ describe('RFC 0115 portable Verifier subcommands', () => {
     const dir = (id: string) => root(`conformance/receipts/verify/${id}`);
     const clean = await run('verify-receipt', `${dir('01-clean')}/receipt.json`, `${dir('01-clean')}/deal.uwx.md`, '--json');
     expect(clean.status).toBe(0);
-    expect(JSON.parse(clean.stdout)).toMatchObject({ verdict: 'unverifiable', issues: [{ code: 'RCP-05' }] });
+    expect(JSON.parse(clean.stdout)).toMatchObject({ verdict: 'unverifiable', issues: [expect.objectContaining({ code: 'RCP-07' }), expect.objectContaining({ code: 'RCP-03' })] });
     const mutated = await run('verify-receipt', `${dir('08-market-data-mutated')}/receipt.json`, `${dir('08-market-data-mutated')}/deal.uw.md`,
       '--inputs', `${dir('08-market-data-mutated')}/inputs.json`, '--json');
     expect(mutated.status).toBe(1);

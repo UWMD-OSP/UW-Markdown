@@ -136,6 +136,7 @@ export const COMMAND_FLAGS: Readonly<Record<string, readonly string[]>> = {
   'verify-cash-flows': ['variant', 'json'],
   // RFC 0115: the portable Verifier subcommands (§II.6a.1).
   'verify-metrics': ['json'],
+  'verify-pro-forma': ['json'],
   'verify-property-cash-flows': ['json'],
   'verify-waterfall': ['variant', 'json'],
   'verify-capital-stack': ['variant', 'json'],

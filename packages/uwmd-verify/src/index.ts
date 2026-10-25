@@ -890,3 +890,7 @@ export { JSONValueError } from './json-admission.js';
 
 export { projectUWParse } from './portable-projection.js';
 export type { UWPortableBlock } from './portable-projection.js';
+
+export { verifyProForma, PRO_FORMA_REGISTRY, PRO_FORMA_IDENTITIES, PRO_FORMA_FAMILIES } from './pro-forma.js';
+export type { VerifyProFormaOptions } from './pro-forma.js';
+export type * from './pro-forma-types.js';

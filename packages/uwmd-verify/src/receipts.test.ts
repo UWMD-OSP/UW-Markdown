@@ -461,7 +461,7 @@ describe('verifyReceipt', () => {
       engine_version: '0.0.1-ancient',
     });
     const tampered = clone(receipt);
-    tampered.computation.results.find((r) => r.calc_id === 'ltv')!.value = 0.42;
+    tampered.computation.results.find((r) => r.calc_id === 'dscr')!.value = 0.42;
 
     const result = await verifyReceipt(tampered, raw, { filename: PARKVIEW });
     expect(result.verdict).toBe('unverifiable');
@@ -480,7 +480,7 @@ describe('verifyReceipt', () => {
     });
     expect(receipt.computation.engine_version).toBe(VERIFY_VERSION);
     const tampered = clone(receipt);
-    tampered.computation.results.find((r) => r.calc_id === 'ltv')!.value = 0.42;
+    tampered.computation.results.find((r) => r.calc_id === 'dscr')!.value = 0.42;
 
     const result = await verifyReceipt(tampered, raw, { filename: PARKVIEW });
     expect(result.verdict).toBe('unverifiable');
@@ -495,7 +495,7 @@ describe('verifyReceipt', () => {
       engine: 'other-vendor-engine',
     });
     const tampered = clone(receipt);
-    tampered.computation.results.find((r) => r.calc_id === 'ltv')!.value = 0.42;
+    tampered.computation.results.find((r) => r.calc_id === 'dscr')!.value = 0.42;
 
     // Same verifier identity as the issuer: nothing else can explain the gap.
     const result = await verifyReceipt(tampered, raw, {
@@ -1012,6 +1012,7 @@ describe('JCS Unicode admission at receipt boundaries', () => {
     const raw = await readFile(resolve(fixture, 'deal.uwx.md'), 'utf8');
     const expected = JSON.parse(await readFile(resolve(fixture, 'expected-receipt.json'), 'utf8')) as UWReceipt;
     expect((await resolveReceiptSubject(raw, { filename: 'control.uwx.md' })).subject).toEqual(expected.subject);
+    // The current explicit-basis contract leaves LTV unavailable in this source.
     expect((await verifyReceipt(expected, raw, { filename: 'control.uwx.md' })).verdict).toBe('verified');
   });
 });

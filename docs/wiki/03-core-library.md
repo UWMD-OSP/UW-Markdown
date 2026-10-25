@@ -750,3 +750,10 @@ facts without requiring full carrier-schema admission; batch indexing retains
 parseable records with validation findings. Neither fact projection authenticates
 a source. `lakeInputFromEnvelope` recomputes its model key, while supplied lake
 source-evidence/fact keys are propagation and storage inputs, not verification.
+
+RFC0092 exports verifyProForma(sourceOrCurrentModel, options) and the closed
+registry/wire types. Source operations retain physical order and source tokens;
+model operations use current values and require caller tokens for LTV precision.
+Inputs, relationships, assertions, base validation and ledger gaps stay separate.
+The CLI verify-pro-forma is read-only. Reference support stays unclaimed pending
+#551/#552; registry/schema availability is not certification.

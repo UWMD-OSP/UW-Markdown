@@ -11,12 +11,13 @@ describe('rendered metric summaries', () => {
     delete parsed.frontmatter.quick_metrics;
     const before = structuredClone(parsed);
     const metrics = resolveRenderMetrics(parsed);
-    for (const key of ['dscr', 'ltv', 'cap_rate']) expect(typeof metrics[key], key).toBe('number');
+    for (const key of ['dscr', 'cap_rate']) expect(typeof metrics[key], key).toBe('number');
+    expect(metrics.ltv).toBeNull();
     for (const format of ['summary', 'chat', 'csv'] as const) {
       const content = render(parsed, { format }).content;
       expect(content).not.toMatch(/\$n\/a|n\/ax|n\/a yrs/);
       if (format === 'csv') {
-        expect(content.split('\n')[1]).toMatch(/,\d+\.\d{3},-?\d+\.\d{2},-?\d+\.\d{2},/);
+        expect(content.split('\n')[1]).toMatch(/,\d+\.\d{3},,-?\d+\.\d{2},/);
       }
     }
     expect(parsed).toEqual(before);

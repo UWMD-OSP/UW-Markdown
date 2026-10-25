@@ -36,12 +36,13 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
   version: CORE_VERSION,
   protocol_version: PROTOCOL_VERSION,
   format_version: FORMAT_VERSION,
-  // RFC 0078: a Verifier with every optional profile. Editing and rendering
+  // RFC 0092: pro-forma support awaits independent profile and CLI proof.
+  // RFC 0078: a Verifier with the established profiles. Editing and rendering
   // stay claimed as capabilities: they are starter-product claims now (§II.4),
   // still exercised by their fixtures. The toolkit hosts no agents, and RFC
   // 0112 removed the `agent-host` capability from the vocabulary.
   tier: 'verifier',
-  profiles: Object.freeze([...CONFORMANCE_PROFILES]) as ConformanceProfile[],
+  profiles: Object.freeze(CONFORMANCE_PROFILES.filter(p => p !== 'pro-forma')) as ConformanceProfile[],
   representations: Object.freeze(CORE_CODEC_REGISTRY.list()) as RepresentationDescriptor[],
   capabilities: Object.freeze([
     'parse',

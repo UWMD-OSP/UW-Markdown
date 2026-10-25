@@ -72,6 +72,12 @@ files live in this directory pending publication on `uwmd.org`.
 | [`section-hotel-food-beverage.schema.json`](section-hotel-food-beverage.schema.json) | RFC 0080 standard `hotel_food_beverage` payload | RFC 0080 |
 | [`section-mhc-sites.schema.json`](section-mhc-sites.schema.json) | RFC 0080 standard `mhc_sites` payload | RFC 0080 |
 
+| [pro-forma-claim.schema.json](pro-forma-claim.schema.json) | Explicit bounded L1 claim | RFC0092 |
+| [pro-forma-report.schema.json](pro-forma-report.schema.json) | Completed assessment or typed refusal | RFC0092 |
+| [section-dcf.schema.json](section-dcf.schema.json) | DCF profile extension | RFC0092 |
+| [debt-structure-ltv.schema.json](debt-structure-ltv.schema.json) | Same-loan LTV basis | RFC0092 |
+| [section-sources-uses.schema.json](section-sources-uses.schema.json) | Explicit total project cost | RFC0092 |
+
 ## Validating a schema
 
 ```bash

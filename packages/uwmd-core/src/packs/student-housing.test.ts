@@ -15,8 +15,8 @@ import {
 import { emitExcelFormula } from './excel-emit.js';
 
 function excelValue(formula: string): number | null {
-  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
-  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression), expression).toBe(true);
+  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null').replace(/(?<![<>=!])=(?!=)/g, '===');
+  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression.replaceAll('"purchase-price"', '0').replaceAll('"underwritten-value"', '0').replaceAll('"total-project-cost"', '0')), expression).toBe(true);
   // eslint-disable-next-line no-new-func
   return new Function('IF', `return (${expression});`)(
     (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
@@ -32,6 +32,8 @@ const NAMED_RANGES = new Map<string, string>([
   ['noi_model.expenses.total_operating_expenses', 'total_operating_expenses'],
   ['valuation.purchase_price', 'purchase_price'],
       ['valuation.underwritten_value', 'underwritten_value'],
+  ['debt_structure.ltv_basis', 'ltv_basis'],
+  ['sources_uses.total_project_cost', 'total_project_cost'],
   ['debt_structure.loan_amount', 'loan_amount'],
   ['debt_structure.annual_debt_service', 'annual_debt_service'],
   ['property.total_beds', 'total_beds'],
@@ -105,7 +107,10 @@ describe('STUDENT_HOUSING_PACK', () => {
     const expenses = noi.content['expenses'] as Record<string, number>;
     const uses = sus.content['uses'] as Record<string, number>;
 
-    const values: Record<string, number | null> = {
+    // This parity scenario explicitly authors purchase-price in its current model.
+    (parsed.sections['debt_structure'] as { content: Record<string, unknown> }).content.ltv_basis = 'purchase-price';
+    const values: Record<string, number | string | null> = {
+      ltv_basis: '"purchase-price"', total_project_cost: null,
       noi: noi.content['net_operating_income'] as number,
       effective_gross_income: lineValue(income['effective_gross_income']),
       gross_potential_rent: lineValue(income['gross_potential_rent']),
@@ -128,7 +133,7 @@ describe('STUDENT_HOUSING_PACK', () => {
 
       let formula = emitExcelFormula(c.formula, { namedRanges: NAMED_RANGES });
       for (const [, name] of NAMED_RANGES) {
-        formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
+        formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name] ?? 'null'));
       }
       if (!['cash_on_cash', 'ltv'].includes(c.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func

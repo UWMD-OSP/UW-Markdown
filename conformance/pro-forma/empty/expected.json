@@ -1,0 +1,13 @@
+{
+  "status": "completed",
+  "input_count": 0,
+  "coverage": {
+    "total": 0,
+    "by_verdict": {
+      "verified": 0,
+      "failed": 0,
+      "unverifiable": 0
+    }
+  },
+  "exit_code": 0
+}

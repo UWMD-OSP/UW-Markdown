@@ -4,9 +4,9 @@
     "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
-      "verified": 9,
+      "verified": 7,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -34,20 +34,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.4938,
         "stated_decimals": 4,
-        "state": "verified",
-        "computed": 0.4938,
-        "comparison": 0.4938,
-        "comparison_decimals": 4
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.4938,
         "stated_decimals": 4,
-        "state": "verified",
-        "computed": 0.4938,
-        "comparison": 0.4938,
-        "comparison_decimals": 4
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "dscr",
@@ -105,9 +103,9 @@
     "rule_set": "3.0",
     "asset_class": "retail",
     "counts": {
-      "verified": 14,
+      "verified": 12,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -135,20 +133,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.62,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.62,
-        "comparison": 0.62,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.62,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.62,
-        "comparison": 0.62,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltc",
@@ -256,9 +252,9 @@
     "rule_set": "3.0",
     "asset_class": "manufactured_housing",
     "counts": {
-      "verified": 14,
+      "verified": 13,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 1
     },
     "evidence": [
       {
@@ -276,10 +272,9 @@
         "path": "valuation.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.6,
-        "comparison": 0.6,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltc",
@@ -407,9 +402,9 @@
     "rule_set": "3.0",
     "asset_class": "industrial",
     "counts": {
-      "verified": 14,
+      "verified": 12,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -437,20 +432,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.58,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.58,
-        "comparison": 0.58,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.58,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.58,
-        "comparison": 0.58,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltc",
@@ -558,9 +551,9 @@
     "rule_set": "3.0",
     "asset_class": "data_center",
     "counts": {
-      "verified": 31,
+      "verified": 28,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 3
     },
     "evidence": [
       {
@@ -608,30 +601,27 @@
         "path": "quick_metrics.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.6,
-        "comparison": 0.6,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "valuation.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.6,
-        "comparison": 0.6,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.6,
-        "comparison": 0.6,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltc",
@@ -879,9 +869,9 @@
     "rule_set": "3.0",
     "asset_class": "student_housing",
     "counts": {
-      "verified": 14,
+      "verified": 12,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -909,20 +899,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.6,
-        "comparison": 0.6,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.6,
-        "comparison": 0.6,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "dscr",
@@ -1030,9 +1018,9 @@
     "rule_set": "3.0",
     "asset_class": "senior_housing",
     "counts": {
-      "verified": 15,
+      "verified": 13,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -1060,20 +1048,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.62,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.62,
-        "comparison": 0.62,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.62,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.62,
-        "comparison": 0.62,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "dscr",
@@ -1222,9 +1208,9 @@
     "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
-      "verified": 9,
+      "verified": 7,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -1242,20 +1228,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.7,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.7,
-        "comparison": 0.7,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.sizing_metrics.ltv",
         "stated": 0.7,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.7,
-        "comparison": 0.7,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "dscr",
@@ -1323,9 +1307,9 @@
     "rule_set": "3.0",
     "asset_class": "office",
     "counts": {
-      "verified": 14,
+      "verified": 12,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -1353,20 +1337,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.65,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.65,
-        "comparison": 0.65,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.65,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.65,
-        "comparison": 0.65,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltc",
@@ -1474,9 +1456,9 @@
     "rule_set": "3.0",
     "asset_class": "mixed_use",
     "counts": {
-      "verified": 5,
+      "verified": 4,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 1
     },
     "evidence": [
       {
@@ -1494,10 +1476,9 @@
         "path": "debt_structure.ltv",
         "stated": 0.65,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.65,
-        "comparison": 0.65,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "dscr",
@@ -1536,9 +1517,9 @@
     "rule_set": "3.0",
     "asset_class": "hospitality",
     "counts": {
-      "verified": 15,
+      "verified": 13,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -1566,20 +1547,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.6,
-        "comparison": 0.6,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.6,
-        "comparison": 0.6,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "dscr",
@@ -1697,9 +1676,9 @@
     "rule_set": "3.0",
     "asset_class": "self_storage",
     "counts": {
-      "verified": 13,
+      "verified": 11,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -1727,20 +1706,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.65,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.65,
-        "comparison": 0.65,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.65,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.65,
-        "comparison": 0.65,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "dscr",
@@ -1838,9 +1815,9 @@
     "rule_set": "3.0",
     "asset_class": "land",
     "counts": {
-      "verified": 8,
+      "verified": 6,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -1888,20 +1865,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.5,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.5,
-        "comparison": 0.5,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.5,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.5,
-        "comparison": 0.5,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "carry_cost_per_acre",
@@ -1940,9 +1915,9 @@
     "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
-      "verified": 9,
+      "verified": 7,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -1960,20 +1935,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.7,
         "stated_decimals": 2,
-        "state": "verified",
-        "computed": 0.7,
-        "comparison": 0.7,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.sizing_metrics.ltv",
         "stated": 0.7,
         "stated_decimals": 1,
-        "state": "verified",
-        "computed": 0.7,
-        "comparison": 0.7,
-        "comparison_decimals": 2
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "dscr",
@@ -2188,9 +2161,9 @@
     "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
-      "verified": 9,
+      "verified": 7,
       "failed": 0,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -2218,20 +2191,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.4938,
         "stated_decimals": 4,
-        "state": "verified",
-        "computed": 0.4938,
-        "comparison": 0.4938,
-        "comparison_decimals": 4
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.4938,
         "stated_decimals": 4,
-        "state": "verified",
-        "computed": 0.4938,
-        "comparison": 0.4938,
-        "comparison_decimals": 4
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "dscr",
@@ -2289,9 +2260,9 @@
     "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
-      "verified": 8,
+      "verified": 6,
       "failed": 1,
-      "unverifiable": 0
+      "unverifiable": 2
     },
     "evidence": [
       {
@@ -2319,20 +2290,18 @@
         "path": "quick_metrics.ltv",
         "stated": 0.4938,
         "stated_decimals": 4,
-        "state": "verified",
-        "computed": 0.4938,
-        "comparison": 0.4938,
-        "comparison_decimals": 4
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.4938,
         "stated_decimals": 4,
-        "state": "verified",
-        "computed": 0.4938,
-        "comparison": 0.4938,
-        "comparison_decimals": 4
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "dscr",
