@@ -1,4 +1,4 @@
-"""Node-free structured CLI; the manifest claims the Reader tier with parse, calc-evaluate and validate."""
+"""Node-free structured CLI; the manifest claims the base Verifier tier and no optional profiles."""
 import asyncio
 import json
 from pathlib import Path
@@ -61,17 +61,13 @@ def _validation_response(result):
 
 def main(arguments):
     if arguments == ["manifest"]:
-        return {"id": "org.uwmd.python", "name": "Independent Python structured reader foundation",
+        return {"id": "org.uwmd.python", "name": "Independent Python base Verifier",
                 "version": "0.0.0-dev", "format_version": "3.0", "protocol_version": "4.1.0",
-                # Certified by the RFC 0004 runner (Issue #354): the Reader tier
-                # plus calc-evaluate, validate and the two reserve verifiers it
-                # implements (RFC 0115 flags), each proven case by case. Not the
-                # Verifier tier: metric reproduction, the other stated-figure
-                # verifiers, POL-01/02 and receipts are absent, so their
-                # verify-* flags are unclaimed and those cases skip
-                # (Protocol II.2/II.5: publish capabilities, do not round up).
-                "tier": "reader", "capabilities": ["parse", "calc-evaluate", "validate",
-                                                   "verify-reserve-accounts", "verify-reserve-draws"],
+                # Base Verifier obligations are implemented independently from
+                # the accepted standard. CI requires the complete selected
+                # Reader/Verifier corpus with zero skips on all three OSes;
+                # separate nonportable controls cover policy and API boundaries.
+                "tier": "verifier", "capabilities": ['parse', 'calc-evaluate', 'validate', 'verify-reserve-accounts', 'verify-reserve-draws', 'verify-metrics', 'verify-cash-flows', 'verify-property-cash-flows', 'verify-waterfall', 'verify-capital-stack', 'verify-lease-up', 'verify-receipts'],
                 "profiles": []}, 0
     if arguments and arguments[0] == "resolve":
         # Existing accepted spelling only; no invented validate resolution flag.

@@ -1,3 +1,15 @@
+---
+rfc: 0127
+title: Make portable receipt conformance engine-relative
+status: accepted
+author: UWMD maintainers
+created: 2026-10-25
+affects:
+  - protocol-spec
+  - conformance-corpus
+  - tooling
+---
+
 # RFC 0127 — Portable receipt conformance uses the verifier's engine identity
 
 **Status:** accepted

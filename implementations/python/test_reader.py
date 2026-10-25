@@ -253,13 +253,13 @@ class ReaderTests(unittest.TestCase):
             self.assertTrue(any(value.get("meta") == item.parsed.value.get("_meta") for value in projected))
         self.assertEqual(path.read_bytes(), raw)
 
-    def test_manifest_claims_reader_tier_not_verifier_and_missing_commands_do_not_pass(self):
+    def test_manifest_claims_base_verifier_and_missing_commands_do_not_pass(self):
         manifest, status = main(["manifest"])
         self.assertEqual(status, 0)
-        self.assertEqual(manifest["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
+        self.assertEqual(manifest["capabilities"], ['parse', 'calc-evaluate', 'validate', 'verify-reserve-accounts', 'verify-reserve-draws', 'verify-metrics', 'verify-cash-flows', 'verify-property-cash-flows', 'verify-waterfall', 'verify-capital-stack', 'verify-lease-up', 'verify-receipts'])
         self.assertEqual(manifest["profiles"], [])
-        # Certified Reader tier (#354); never the Verifier tier (Protocol II.2/II.5).
-        self.assertEqual(manifest["tier"], "reader")
+        # Base Verifier tier (#354); optional profiles remain unclaimed.
+        self.assertEqual(manifest["tier"], "verifier")
         for arguments in [["validate", "x"], ["calc", "x"], ["render", "x"]]:
             self.assertNotEqual(main(arguments)[1], 0)
 

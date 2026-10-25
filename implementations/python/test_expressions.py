@@ -195,13 +195,13 @@ class ExpressionTests(unittest.TestCase):
         # PROTO-MOD-018 belongs to module loading; this tests its parse premise
         # without pretending a module loader or profile has been implemented.
 
-    def test_discovery_claims_reader_tier_and_certified_capabilities(self):
+    def test_discovery_claims_base_verifier_and_certified_capabilities(self):
         manifest, status = main(["manifest"])
         self.assertEqual(status, 0)
-        self.assertEqual(manifest["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
+        self.assertEqual(manifest["capabilities"], ['parse', 'calc-evaluate', 'validate', 'verify-reserve-accounts', 'verify-reserve-draws', 'verify-metrics', 'verify-cash-flows', 'verify-property-cash-flows', 'verify-waterfall', 'verify-capital-stack', 'verify-lease-up', 'verify-receipts'])
         self.assertEqual(manifest["profiles"], [])
-        # Certified Reader tier (#354); never the Verifier tier (Protocol II.2/II.5).
-        self.assertEqual(manifest["tier"], "reader")
+        # Base Verifier tier (#354); optional profiles remain unclaimed.
+        self.assertEqual(manifest["tier"], "verifier")
         self.assertNotEqual(main(["calc", "unused"])[1], 0)
 
 

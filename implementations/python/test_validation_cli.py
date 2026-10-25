@@ -56,7 +56,7 @@ class ValidationCLITests(unittest.TestCase):
         self.assertNotIn("metadata_assessment",result)
         self.assertNotIn("error",result)
         manifest,status=main(["manifest"])
-        self.assertEqual((status,manifest["capabilities"],manifest["profiles"]),(0,["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"],[]))
+        self.assertEqual((status,manifest["capabilities"],manifest["profiles"]),(0,['parse', 'calc-evaluate', 'validate', 'verify-reserve-accounts', 'verify-reserve-draws', 'verify-metrics', 'verify-cash-flows', 'verify-property-cash-flows', 'verify-waterfall', 'verify-capital-stack', 'verify-lease-up', 'verify-receipts'],[]))
 
     def test_registered_whole_missing_metadata_warning_is_consumed_not_suppressed(self):
         body=dict(address="A",asset_class="multifamily",units=12,total_units=12)

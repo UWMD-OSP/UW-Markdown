@@ -80,7 +80,7 @@ class CalcCLITests(unittest.TestCase):
         self.assertEqual(status, 2)
         self.assertIn("Internal calculation failure", result["error"]["message"])
         manifest, status = main(["manifest"])
-        self.assertEqual((status, manifest["capabilities"]), (0, ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"]))
+        self.assertEqual((status, manifest["capabilities"]), (0, ['parse', 'calc-evaluate', 'validate', 'verify-reserve-accounts', 'verify-reserve-draws', 'verify-metrics', 'verify-cash-flows', 'verify-property-cash-flows', 'verify-waterfall', 'verify-capital-stack', 'verify-lease-up', 'verify-receipts']))
 
     def test_unavailable_external_input_is_not_a_fabricated_calc_code(self):
         self.source.write_bytes(HEADER + b'```json uw:section=property external=true\n{"external":{"parts":["p"],"part_count":1}}\n```\n')

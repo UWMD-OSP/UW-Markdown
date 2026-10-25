@@ -153,7 +153,7 @@ class LeaseUpOwnershipTests(unittest.TestCase):
                     self.assertEqual(result[key], [i for i in result["issues"] if i["severity"] == severity])
                 if partial: self.assertNotIn("code", report["error"])
                 else: self.assertNotIn("error", report)
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ['parse', 'calc-evaluate', 'validate', 'verify-reserve-accounts', 'verify-reserve-draws', 'verify-metrics', 'verify-cash-flows', 'verify-property-cash-flows', 'verify-waterfall', 'verify-capital-stack', 'verify-lease-up', 'verify-receipts'])
 
 
 if __name__ == "__main__":
