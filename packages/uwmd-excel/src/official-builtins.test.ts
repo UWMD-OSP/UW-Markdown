@@ -24,7 +24,7 @@ for (const [cls,file] of [['data_center','Mesa-Gateway-Data-Center-Mesa-AZ.uwx.m
     it('persists every formula input and matches every metric exactly',async()=> {
       const parsed = parseUWFile(readFileSync(resolve(root,'examples',file),'utf8'));
       // This complete-workbook scenario explicitly authors its price basis.
-      blockPayload(parsed.sections.debt_structure as import('@uwmd/core').UWBlock).ltv_basis = 'purchase-price';
+      (parsed.sections.debt_structure as import('@uwmd/core').UWBlock).content.ltv_basis = 'purchase-price';
       const layout = getLayoutForAssetClass(cls)!;
       const workbook = await toWorkbook(parsed);
       const bytes = await workbook.xlsx.writeBuffer(); const wb = new ExcelJS.Workbook(); await wb.xlsx.load(bytes);
