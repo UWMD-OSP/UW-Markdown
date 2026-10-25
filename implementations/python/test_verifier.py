@@ -16,8 +16,21 @@ class NonportableVerifierTests(unittest.TestCase):
         expected=json.loads((ROOT/'conformance/metrics/expected.json').read_text(encoding='utf8'))
         for item in expected:
             with self.subTest(example=item['example']):
-                source=next((ROOT/'examples').rglob(item['example'])).read_bytes()
-                report=verify_stated_metrics(parse(source))
+                path=next((ROOT/'examples').rglob(item['example']))
+                source=path.read_bytes()
+                if path.name.endswith('.uw.md'):
+                    # The reference example inventory also covers its optional
+                    # Lite bridge. Python claims structured Reader/Verifier,
+                    # so test its actual typed refusal, never an empty success.
+                    import importlib.util
+                    spec=importlib.util.spec_from_file_location('independent_verifier_cli',ROOT/'implementations/python/uwmd.py')
+                    cli=importlib.util.module_from_spec(spec);spec.loader.exec_module(cli)
+                    response,status=cli.main(['verify-metrics',str(path),'--json'])
+                    self.assertEqual(status,1)
+                    self.assertEqual(response['error']['code'],'SOURCE_CONTENT_MISMATCH')
+                    self.assertEqual(path.read_bytes(),source)
+                    continue
+                report=verify_stated_metrics(parse(source,filename=path.name,require_structured=True))
                 self.assertEqual(report['counts'],item['counts'])
                 actual={(e['id'],e['path']):e for e in report['evidence']}
                 self.assertEqual(set(actual),{(e['id'],e['path']) for e in item['evidence']})

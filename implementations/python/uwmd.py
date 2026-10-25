@@ -172,7 +172,7 @@ def main(arguments):
         from uwmd_property_cash_flows import assemble_property_cash_flows,AssemblyError
         try:
             path=Path(tail[0])
-            document=parse(path.read_bytes(),filename=path.name)
+            document=parse(path.read_bytes(),filename=path.name,require_structured=True)
             plan=parse_json_source(Path(tail[1]).read_bytes()).value
             return assemble_property_cash_flows(document,plan),0
         except AssemblyError as error:
@@ -195,7 +195,7 @@ def main(arguments):
             return {"error":{"message":"Unsupported verifier arguments"}},1
         try:
             path=Path(tail[0])
-            document=parse(path.read_bytes(),filename=path.name)
+            document=parse(path.read_bytes(),filename=path.name,require_structured=True)
             if command=="verify-cash-flows":
                 from uwmd_cash_flows import cash_flow_report
                 report=cash_flow_report(document,variant)
