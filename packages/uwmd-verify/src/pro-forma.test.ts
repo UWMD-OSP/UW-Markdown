@@ -160,3 +160,9 @@ it('completes malformed ledger bindings as visible findings and required gaps', 
   expect(r.profile_claim_findings).toContainEqual(expect.objectContaining({code:'out_of_universe_binding'}));
   expect(r.gaps).toHaveLength(1); expect(r.coverage.total).toBe(0);
 });
+
+it('keeps excluded-only external targets out of numeric assertion counts', () => {
+  const rel = { ...moicRel(), target: at('assumptions','/unused'), applicability: { applicable: false, reason: 'outside declared assessment' } };
+  const r = verifyProForma(specimen({pro_forma:claimOf([rel])},{assumptions:{unused:1.2},cash_flow_series:flows}));
+  expect(r.coverage.total).toBe(0); expect(r.exclusions).toHaveLength(1); expect(r.relationships).toHaveLength(0);
+});

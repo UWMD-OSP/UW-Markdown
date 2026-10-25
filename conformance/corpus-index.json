@@ -5548,7 +5548,7 @@
     },
     {
       "suite": "metrics",
-      "scenario": "all-class-LTV-uses-underwritten-value-with-lazy-price-fallback",
+      "scenario": "all-class-LTV-requires-the-declared-basis-without-fallback",
       "target": "verifier"
     },
     {

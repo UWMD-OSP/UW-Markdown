@@ -178,6 +178,12 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
     const rel = valid ? declaration as unknown as ProFormaRelationship : undefined;
     pending.push({ item, raw: declaration, ...(rel ? { rel } : {}), inputs, valid, origins: [origin] });
   });
+  // An external target introduced only by excluded relationships adds no
+  // assertion. Independently inventoried rows and protected homes stay visible.
+  for (const [key, item] of items) {
+    if (item.resolved && protectedHome(item.resolved, parsed.frontmatter.asset_class)) continue;
+    if (item.origins.every(origin => pending.some(p => p.item === item && p.excluded && p.origins.includes(origin)))) items.delete(key);
+  }
   // Physical grouping precedes context identity and all duplicate elimination.
   for (const p of pending) {
     const target = p.item.resolved;
