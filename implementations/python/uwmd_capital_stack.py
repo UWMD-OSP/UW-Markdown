@@ -3,6 +3,7 @@
 Stabilized annual service is not an IO-payment schedule. Original tranche
 order governs every sum; missing facts and zero denominators stay unavailable.
 """
+from uwmd_calc_errors import CalcError
 from uwmd_binding_sources import finite
 from uwmd_fdlibm import pinned_pow,divide
 from uwmd_numeric import quantize
@@ -35,7 +36,8 @@ def annual_service(tranche):
 
 def context(document):
     def value(section,path):
-        block=selected(document,section)
+        try:block=selected(document,section)
+        except CalcError:return None
         v=field(block.parsed.value,path) if block else None
         return v if finite(v) else None
     cost=value('sources_uses','uses.total')

@@ -1,4 +1,5 @@
 """Independent Format4.25 arithmetic with accepted RFC0092 native 2/4 quanta."""
+from uwmd_calc_errors import CalcError
 from uwmd_binding_sources import finite
 from uwmd_numeric import quantize
 from uwmd_spec_data import metric_dictionary
@@ -7,7 +8,8 @@ from uwmd_validation_selection import field
 
 
 def lease_up_context(document):
-    block=selected(document,'property')
+    try:block=selected(document,'property')
+    except CalcError:return dict(total_sf=None)
     if block is None: return dict(total_sf=None)
     payload=block.parsed.value
     cls=document.frontmatter.value.get('asset_class')
