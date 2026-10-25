@@ -20,6 +20,13 @@ python conformance/runner/runner.py --impl "python -m uwmd" --tier verifier --pr
 Python 3.10+, standard library only. That constraint is deliberate: a driver
 that needs a package index is a driver an air-gapped implementer cannot run.
 
+For receipt cases under an independent computation engine, explicitly supply
+both `--receipt-engine <name>` and `--receipt-engine-version <version>`. The
+runner records this configuration and applies Receipt5.3 to the marked finite
+disagreement cases (RFC0127). It still requires RCP-03, the recomputed ids and the
+correct RCP-07 presence, verdict and exit. Procedure refusals are never adapted.
+Without these options existing reference-engine baseline expectations apply.
+
 ## What it does not cover
 
 **`npm run conformance` remains the full CI gate:** 1,249 reference checks.

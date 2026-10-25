@@ -526,6 +526,13 @@ Implementations SHOULD emit UTF-8 regardless of platform locale.
 
 #### II.6a.3 What the driver may assume about output
 
+RFC0127 adds explicit conformance-driver configuration `--receipt-engine` and
+`--receipt-engine-version` (both together). Marked finite receipt-disagreement
+cases apply Receipt5.3 to that pair, retaining RCP-03/recomputed evidence and
+requiring the matching RCP-07 presence, verdict and exit. Procedure refusals are
+never adapted. These are runner options, not production CLI or manifest fields;
+no receipt or verification rule changes. The report records the supplied pair.
+
 The driver compares a response against a frozen baseline. Baselines are
 **projections**, not transcripts: a calc baseline names four fields, and
 a conforming implementation reporting `round_to` and `display` as well is

@@ -152,3 +152,20 @@ class ReceiptRecomputedIdsTests(unittest.TestCase):
         for actual in (["a", "b"], ["a", "a", "b", "extra"], ["b", "a", "a"]):
             self.assertTrue(runner.verdict_codes(expected, {"recomputed_ids": actual}, ["recomputed_ids"]))
         self.assertTrue(runner.verdict_codes(expected, {}, ["recomputed_ids"]))
+
+class ReceiptEngineIdentityTests(unittest.TestCase):
+    def test_finite_disagreement_uses_both_identity_members_without_weakening_evidence(self):
+        original={'verdict':'failed','expected_codes':['RCP-03'],'recomputed_ids':['cap_rate']}
+        other=runner.receipt_engine_expectation(original,True)
+        self.assertEqual(other,{'verdict':'unverifiable','expected_codes':['RCP-07','RCP-03'],'recomputed_ids':['cap_rate']})
+        self.assertEqual(original,{'verdict':'failed','expected_codes':['RCP-03'],'recomputed_ids':['cap_rate']})
+        self.assertEqual(runner.receipt_engine_expectation(other,False),original)
+        with self.assertRaises(runner.Failure):runner.receipt_engine_expectation({'expected_codes':['RCP-04']},True)
+
+    def test_only_explicit_finite_cases_are_adapted_never_procedure_refusals(self):
+        cases=[json.loads(path.read_text(encoding='utf8')) for path in runner.CASES_DIR.glob('*.case.json')]
+        adapted=[case for case in cases if case['expect'].get('receipt_engine_sensitive')]
+        self.assertEqual(len(adapted),9)
+        self.assertTrue(all(case['command']=='verify-receipt' for case in adapted))
+        refusal=next(case for case in cases if '21-dictionary-packless-refusal' in case['id'])
+        self.assertNotIn('receipt_engine_sensitive',refusal['expect'])
