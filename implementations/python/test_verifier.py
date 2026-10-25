@@ -27,7 +27,7 @@ class NonportableVerifierTests(unittest.TestCase):
                     cli=importlib.util.module_from_spec(spec);spec.loader.exec_module(cli)
                     response,status=cli.main(['verify-metrics',str(path),'--json'])
                     self.assertEqual(status,1)
-                    self.assertEqual(response['error']['code'],'SOURCE_CONTENT_MISMATCH')
+                    self.assertEqual(response['error']['code'],'REPRESENTATION_UNSUPPORTED_MEDIA_TYPE')
                     self.assertEqual(path.read_bytes(),source)
                     continue
                 report=verify_stated_metrics(parse(source,filename=path.name,require_structured=True))
