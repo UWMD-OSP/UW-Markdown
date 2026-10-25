@@ -147,7 +147,7 @@ def main(arguments):
             return {"error": {"message": str(error)}}, 2
         except Exception as error:
             return {"error": {"message": "Internal calculation failure: " + str(error)}}, 2
-    if arguments and arguments[0] in ("verify-cash-flows", "verify-metrics"):
+    if arguments and arguments[0] in ("verify-cash-flows", "verify-metrics", "verify-capital-stack", "verify-lease-up"):
         command=arguments[0]
         tail=arguments[1:]
         if not tail or tail[0].startswith("--"):
@@ -155,7 +155,7 @@ def main(arguments):
         variant=None
         rest=tail[1:]
         if rest and rest[-1]=="--json": rest=rest[:-1]
-        if command=="verify-cash-flows" and len(rest)==2 and rest[0]=="--variant":
+        if command!="verify-metrics" and len(rest)==2 and rest[0]=="--variant":
             variant=rest[1]
         elif rest:
             return {"error":{"message":"Unsupported verifier arguments"}},1
@@ -165,6 +165,11 @@ def main(arguments):
             if command=="verify-cash-flows":
                 from uwmd_cash_flows import cash_flow_report
                 report=cash_flow_report(document,variant)
+                return report,1 if report["status"]=="failed" else 0
+            if command in ("verify-capital-stack","verify-lease-up"):
+                from uwmd_capital_stack import capital_stack_report
+                from uwmd_lease_up import lease_up_report
+                report=(capital_stack_report if command=="verify-capital-stack" else lease_up_report)(document,variant)
                 return report,1 if report["status"]=="failed" else 0
             from uwmd_metrics import verify_stated_metrics
             report=verify_stated_metrics(document)
