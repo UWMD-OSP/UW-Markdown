@@ -1,9 +1,11 @@
 """Whole-source, exact-copy and current-example dictionary controls beyond portable projections."""
 import copy
+import asyncio
 import json
 from pathlib import Path
 import unittest
 from uwmd_reader import parse
+from uwmd_verifier import verify_source
 from uwmd_metrics import verify_stated_metrics
 from uwmd_property_cash_flows import assemble_property_cash_flows,_bounds,AssemblyError
 
@@ -23,6 +25,14 @@ class NonportableVerifierTests(unittest.TestCase):
                     got=actual[(evidence['id'],evidence['path'])]
                     for field in ('state','computed','comparison','comparison_decimals','stated_decimals'):
                         if field in evidence:self.assertEqual(got.get(field),evidence[field])
+    def test_whole_source_invokes_validation_and_provenance_before_base_math(self):
+        root=ROOT/'conformance/receipts/verify/14-dictionary-packless-clean'
+        source=(root/'deal.uwx.md').read_bytes()
+        report=asyncio.run(verify_source(source,filename='deal.uwx.md'))
+        self.assertEqual(report['rule_set'],'3.0')
+        self.assertIn('validation',report);self.assertIn('provenance',report)
+        self.assertIn(report['status'],('verified','failed','unverifiable'))
+        self.assertEqual((root/'deal.uwx.md').read_bytes(),source)
     def assembly_fixture(self):
         root=ROOT/'conformance/property-cash-flow-assembly/valid-quarterly'
         return parse((root/'deal.uwx.md').read_bytes()),json.loads((root/'plan.json').read_text(encoding='utf8'))

@@ -29,7 +29,7 @@ def _pointer(path):
 
 def dictionary_entries(asset_class):
     dictionary=metric_dictionary()
-    return [entry for collection in ('calculations','size_intensives')
+    return [entry for collection in ('calculations',)
             for entry in dictionary.get(collection,()) if asset_class in entry['asset_classes']]
 
 
