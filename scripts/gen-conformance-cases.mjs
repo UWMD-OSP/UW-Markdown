@@ -435,9 +435,16 @@ for (const id of dirs(join(CONFORMANCE, 'receipts', 'verify'))) {
   const file = existsSync(join(dir, 'expected-verdict-pack-less.json')) ? 'expected-verdict-pack-less.json' : 'expected-verdict.json';
   const expected = JSON.parse(readFileText(join(dir, file)));
   const inputs = existsSync(join(dir, 'inputs.json')) ? ['--inputs', 'inputs.json'] : [];
+  // Receipt5.3: these are finite disagreements, not procedure refusals. The
+  // explicitly configured verifier engine determines blame and the exit code.
+  const engineSensitive = new Set(['03-result-disagrees', '10-rehashed-one-cent',
+    '11-rehashed-subquantum-ratio', '15-dictionary-packless-wrong-value',
+    '16-dictionary-packless-wrong-unit', '19-dictionary-packless-other-engine',
+    '01-clean', '04-unknown-pack', '09-multifamily-old-pack-version']).has(id);
   add(`receipts/verify-${id}/verify-receipt`, 'verify-receipt', ['receipt.json', deal, ...inputs, '--json'], dir, {
     kind: 'verdict-codes', file, project: 'receipt-verification', fields: ['verdict', 'expected_codes', 'refused_code', ...(expected.recomputed_ids ? ['recomputed_ids'] : [])],
     exit_code: expected.refused_code || expected.verdict === 'failed' ? 1 : 0,
+    ...(engineSensitive ? { receipt_engine_sensitive: true } : {}),
   });
 }
 

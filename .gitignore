@@ -23,3 +23,6 @@ CLAUDE.local.md
 
 # Local Workers development state.
 .wrangler/
+
+# Python conformance-driver bytecode
+conformance/runner/__pycache__/

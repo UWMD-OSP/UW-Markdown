@@ -43,7 +43,7 @@ class DocumentCurrencyTests(unittest.TestCase):
                 self.assertEqual(process.returncode,1 if want else 0)
                 self.assertNotIn("overall_status",result)
                 self.assertEqual(path.read_bytes(),before)
-        self.assertEqual((main(["manifest"])[0]["capabilities"],main(["manifest"])[0]["profiles"]),(["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"],[]))
+        self.assertEqual((main(["manifest"])[0]["capabilities"],main(["manifest"])[0]["profiles"]),(['parse', 'calc-evaluate', 'validate', 'verify-reserve-accounts', 'verify-reserve-draws', 'verify-metrics', 'verify-cash-flows', 'verify-property-cash-flows', 'verify-waterfall', 'verify-capital-stack', 'verify-lease-up', 'verify-receipts'],[]))
         for command in ("validate","calc","verify"):
             self.assertNotEqual(main([command,"unused"])[1],0)
 

@@ -38,7 +38,7 @@ class ReserveTests(unittest.TestCase):
             with self.subTest(case=case["id"]):
                 _, problems = driver.run_case([sys.executable, "-B", str(ROOT / "implementations/python/uwmd.py")], case, 60)
                 self.assertEqual(problems, [])
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ['parse', 'calc-evaluate', 'validate', 'verify-reserve-accounts', 'verify-reserve-draws', 'verify-metrics', 'verify-cash-flows', 'verify-property-cash-flows', 'verify-waterfall', 'verify-capital-stack', 'verify-lease-up', 'verify-receipts'])
         self.assertNotEqual(main(["validate", "unused"])[1], 0)
         self.assertNotEqual(main(["calc", "unused"])[1], 0)
 

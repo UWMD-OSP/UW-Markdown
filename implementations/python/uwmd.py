@@ -1,4 +1,4 @@
-"""Node-free structured CLI; the manifest claims the Reader tier with parse, calc-evaluate and validate."""
+"""Node-free structured CLI; the manifest claims the base Verifier tier and no optional profiles."""
 import asyncio
 import json
 from pathlib import Path
@@ -61,17 +61,13 @@ def _validation_response(result):
 
 def main(arguments):
     if arguments == ["manifest"]:
-        return {"id": "org.uwmd.python", "name": "Independent Python structured reader foundation",
+        return {"id": "org.uwmd.python", "name": "Independent Python base Verifier",
                 "version": "0.0.0-dev", "format_version": "3.0", "protocol_version": "4.1.0",
-                # Certified by the RFC 0004 runner (Issue #354): the Reader tier
-                # plus calc-evaluate, validate and the two reserve verifiers it
-                # implements (RFC 0115 flags), each proven case by case. Not the
-                # Verifier tier: metric reproduction, the other stated-figure
-                # verifiers, POL-01/02 and receipts are absent, so their
-                # verify-* flags are unclaimed and those cases skip
-                # (Protocol II.2/II.5: publish capabilities, do not round up).
-                "tier": "reader", "capabilities": ["parse", "calc-evaluate", "validate",
-                                                   "verify-reserve-accounts", "verify-reserve-draws"],
+                # Base Verifier obligations are implemented independently from
+                # the accepted standard. CI requires the complete selected
+                # Reader/Verifier corpus with zero skips on all three OSes;
+                # separate nonportable controls cover policy and API boundaries.
+                "tier": "verifier", "capabilities": ['parse', 'calc-evaluate', 'validate', 'verify-reserve-accounts', 'verify-reserve-draws', 'verify-metrics', 'verify-cash-flows', 'verify-property-cash-flows', 'verify-waterfall', 'verify-capital-stack', 'verify-lease-up', 'verify-receipts'],
                 "profiles": []}, 0
     if arguments and arguments[0] == "resolve":
         # Existing accepted spelling only; no invented validate resolution flag.
@@ -147,6 +143,77 @@ def main(arguments):
             return {"error": {"message": str(error)}}, 2
         except Exception as error:
             return {"error": {"message": "Internal calculation failure: " + str(error)}}, 2
+    if arguments and arguments[0]=="verify-receipt":
+        tail=arguments[1:]
+        if len(tail)<2:return {"error":{"message":"verify-receipt <receipt.json> <file> [--inputs <inputs.json>] --json"}},1
+        from uwmd_receipts import verify_receipt,ReceiptError
+        rest=tail[2:]
+        if rest and rest[-1]=="--json":rest=rest[:-1]
+        inputs=None
+        try:
+            if rest:
+                if len(rest)!=2 or rest[0]!="--inputs":return {"error":{"message":"Unsupported receipt arguments"}},1
+                inputs=parse_json_source(Path(rest[1]).read_bytes()).value
+            try:receipt=parse_json_source(Path(tail[0]).read_bytes()).value
+            except (OSError,SourceError) as error:raise ReceiptError(str(error)) from error
+            source=Path(tail[1])
+            report=verify_receipt(receipt,source.read_bytes(),filename=source.name,inputs=inputs)
+            return report,1 if report["verdict"]=="failed" else 0
+        except ReceiptError as error:return {"error":error.projection()},1
+        except OSError as error:return {"error":{"message":str(error)}},2
+    if arguments and arguments[0]=="verify-property-cash-flows":
+        tail=arguments[1:]
+        if len(tail) not in (2,3) or len(tail)==3 and tail[2]!="--json":
+            return {"error":{"message":"verify-property-cash-flows <file> <plan.json> --json"}},1
+        from uwmd_property_cash_flows import assemble_property_cash_flows,AssemblyError
+        try:
+            path=Path(tail[0])
+            document=parse(path.read_bytes(),filename=path.name,require_structured=True)
+            plan=parse_json_source(Path(tail[1]).read_bytes()).value
+            return assemble_property_cash_flows(document,plan),0
+        except AssemblyError as error:
+            return {"error":error.projection()},1
+        except SourceError as error:
+            return {"error":{"message":str(error),**({"code":error.code,"category":"parse"} if hasattr(error,"code") else {})}},1
+        except OSError as error:
+            return {"error":{"message":str(error)}},2
+    if arguments and arguments[0] in ("verify-cash-flows", "verify-metrics", "verify-capital-stack", "verify-lease-up", "verify-waterfall"):
+        command=arguments[0]
+        tail=arguments[1:]
+        if not tail or tail[0].startswith("--"):
+            return {"error":{"message":command+" <file> [--variant <name>] --json"}},1
+        variant=None
+        rest=tail[1:]
+        if rest and rest[-1]=="--json": rest=rest[:-1]
+        if command!="verify-metrics" and len(rest)==2 and rest[0]=="--variant":
+            variant=rest[1]
+        elif rest:
+            return {"error":{"message":"Unsupported verifier arguments"}},1
+        try:
+            path=Path(tail[0])
+            document=parse(path.read_bytes(),filename=path.name,require_structured=True)
+            if command=="verify-cash-flows":
+                from uwmd_cash_flows import cash_flow_report
+                report=cash_flow_report(document,variant)
+                return report,1 if report["status"]=="failed" else 0
+            if command=="verify-waterfall":
+                from uwmd_waterfall import waterfall_report
+                report=waterfall_report(document,variant)
+                return report,1 if report["status"]=="failed" else 0
+            if command in ("verify-capital-stack","verify-lease-up"):
+                from uwmd_capital_stack import capital_stack_report
+                from uwmd_lease_up import lease_up_report
+                report=(capital_stack_report if command=="verify-capital-stack" else lease_up_report)(document,variant)
+                return report,1 if report["status"]=="failed" else 0
+            from uwmd_metrics import verify_stated_metrics
+            report=verify_stated_metrics(document)
+            return report,1 if report["counts"]["failed"] else 0
+        except CalcError as error:
+            return {"error":error.projection()},1
+        except SourceError as error:
+            return {"error":{"message":str(error),**({"code":error.code,"category":"parse"} if hasattr(error,"code") else {})}},1
+        except OSError as error:
+            return {"error":{"message":str(error)}},2
     if arguments and arguments[0] == "validate":
         tail=arguments[1:]
         if not tail or tail[0].startswith("--"):

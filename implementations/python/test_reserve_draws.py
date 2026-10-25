@@ -56,7 +56,7 @@ class ReserveDrawTests(unittest.TestCase):
                 self.assertEqual(problems, [])
         # Direct case execution deliberately does not alter catalogue selection,
         # generated cases, expectations or manifest flags to fake certification.
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ['parse', 'calc-evaluate', 'validate', 'verify-reserve-accounts', 'verify-reserve-draws', 'verify-metrics', 'verify-cash-flows', 'verify-property-cash-flows', 'verify-waterfall', 'verify-capital-stack', 'verify-lease-up', 'verify-receipts'])
         for command in ("validate", "calc"):
             self.assertNotEqual(main([command, "unused"])[1], 0)
 

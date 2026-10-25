@@ -1,5 +1,15 @@
 # 13 — Build status (living document)
 
+**Independent Python base Verifier — #354.** The standard-library implementation
+now supplies every base obligation, including POL-01/02 and the seven previously
+unclaimed verifier commands. The manifest claims Verifier with no optional
+profiles. CI requires every selected Reader/Verifier case with zero skips on
+Linux, Windows and macOS; nonportable controls cover current statement homes,
+exact copies, source policy and authentication ordering. RFC0127 configures the
+receipt engine identity explicitly in the driver. See the current
+[Python guide](../../implementations/python/README.md); older dated foundation
+checkpoints below do not describe the current claim. No release is implied.
+
 RFC0089 D1–D6 is accepted (2026-10-23). The production contract uses
 Envelope2.0, tagged nullable extension entries, total JSON/XML/CSV2.0.0 carriers
 and whole-model canonicalization2.0. Source accounting and full carrier schema
@@ -119,15 +129,9 @@ vocabulary. Core drops the layer registry and its builders, `uwmd layers`,
 starter products 101, 397 portable). Examples and fixtures drop
 `pipeline_state` and take neutral agent ids.
 
-**Python certified — Issue #354 (2026-10-21).** The independent Python
-implementation's manifest claims the Reader tier plus `parse`, `calc-evaluate`
-and `validate`; CI runs the portable Verifier-tier corpus on three OSes with
-`--no-skip`, so every case, including all 144 validate cases, must pass. The #425
-validate differences are closed, and `UWMD_SPEC_DIR` lets `validate` run outside
-a checkout. Not the Verifier tier: POL-01/02, dictionary reproduction, the
-stated-figure verifiers and receipts are not implemented in Python (Protocol
-§II.2/§II.5). Divergences found while certifying were fixed or filed: #404, #405,
-#406, #413 (fixed), #424 (spec-ambiguity, non-portable).
+**Python base Verifier — Issue #354.** See the current claim above and the
+implementation guide. The full Reader/Verifier corpus is required without
+capability skips; optional profiles remain unclaimed.
 
 **Release rules after launch ratified (owner, 2026-10-21).**
 [RELEASE_RULES](../playbooks/RELEASE_RULES.md) now records the owner's rulings:
@@ -263,7 +267,7 @@ former `conformance/metrics/statement-bindings.json`, now deleted). `uwmd verify
 and `verifyStatedMetrics` check every bound home, so a wrong
 `valuation.going_in_cap_rate`, `price_per_sf` or sizing DSCR fails even when
 `quick_metrics` is right (#416). `conformance/metrics/statement-homes/` proves
-each alias. The Python implementation has no metric verifier yet, so it has
+each alias. The Python implementation checks the same closed binding registry; earlier checkpoints had
 nothing to adopt.
 
 **Implemented RFC0098 — capital point in time (owner acceptance 2026-10-19).**

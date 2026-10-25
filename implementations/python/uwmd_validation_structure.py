@@ -130,6 +130,79 @@ def composition_rules(ledger):
                          "debt_structure point_in_time must be closing or stabilization", value=body["point_in_time"])
 
 
+def waterfall_terms(payload, issue):
+    """Shared admitted ladder predicates; no cash allocation or source selection."""
+    equity, tiers = payload.get("equity_split"), payload.get("tiers")
+    if (not isinstance(equity, dict) or set(equity) != {"lp", "gp"}
+            or not _unit(equity.get("lp")) or not _unit(equity.get("gp"))
+            or abs(equity["lp"] + equity["gp"] - 1) >= .0001):
+        issue("WF-01", "equity_split", "Contribution shares must be closed fractions summing to one")
+    previous, seen, previous_em, previous_irr = -1, set(), None, None
+    order = ("return_of_capital", "preferred_return", "catch_up", "split")
+    if not isinstance(tiers, list) or not tiers:
+        issue("WF-01", "tiers", "A nonempty ordered tier ladder is required")
+        tiers = []
+    for ti, tier in enumerate(tiers):
+        path = "tiers[" + str(ti) + "]"
+        def malformed(member, message):
+            issue("WF-01", path + ("." + member if member else ""), message)
+        if not isinstance(tier, dict) or tier.get("type") not in order:
+            malformed("", "Tier must have one admitted type")
+            continue
+        kind = tier["type"]; index = order.index(kind)
+        if index < previous or kind != "split" and kind in seen:
+            malformed("", "Tier types must follow the admitted order without repeats")
+        previous = index; seen.add(kind)
+        allowed = {"type"}
+        if kind == "preferred_return":
+            allowed |= {"rate", "accrual"}
+            rate = tier.get("rate")
+            if not finite(rate) or not 0 < rate < 1:
+                malformed("rate", "Preferred rate must be a fraction in (0,1)")
+            if tier.get("accrual") not in ("simple", "compound_annual"):
+                malformed("accrual", "Preferred accrual must name an admitted convention")
+        elif kind == "catch_up":
+            allowed |= {"gp_share", "target_promote"}
+            share, promote = tier.get("gp_share"), tier.get("target_promote")
+            if not _unit(share): malformed("gp_share", "Catch-up share must be a fraction")
+            if not finite(promote) or not 0 < promote < 1:
+                malformed("target_promote", "Target promote must be a fraction in (0,1)")
+            elif finite(share) and share <= promote:
+                malformed("gp_share", "Catch-up share must exceed target promote")
+        elif kind == "split":
+            allowed |= {"lp_share", "gp_share", "until_lp_em", "until_lp_irr", "hurdle_mode"}
+            lp, gp = tier.get("lp_share"), tier.get("gp_share")
+            if not _unit(lp): malformed("lp_share", "LP share must be a fraction")
+            if not _unit(gp): malformed("gp_share", "GP share must be a fraction")
+            if _unit(lp) and _unit(gp) and abs(lp + gp - 1) >= .0001:
+                malformed("", "Residual shares must sum to one")
+            em, irr, mode = tier.get("until_lp_em"), tier.get("until_lp_irr"), tier.get("hurdle_mode")
+            if em is not None:
+                if not finite(em) or em <= 0:
+                    malformed("until_lp_em", "Multiple hurdle must be positive")
+                elif previous_em is not None and quantize(em,4) <= previous_em:
+                    malformed("until_lp_em", "Multiple hurdles must strictly increase at ratio quantum")
+                if finite(em): previous_em = quantize(em,4)
+            if irr is not None:
+                if not finite(irr) or not 0 < irr < 1:
+                    malformed("until_lp_irr", "IRR hurdle must be a fraction in (0,1)")
+                elif previous_irr is not None and quantize(irr,6) <= previous_irr:
+                    malformed("until_lp_irr", "IRR hurdles must strictly increase at rate quantum")
+                if finite(irr): previous_irr = quantize(irr,6)
+            if (em is not None or irr is not None) and finite(lp) and lp <= 0:
+                malformed("lp_share", "A hurdle requires a positive LP share")
+            if mode is not None and (em is None or irr is None or mode not in ("both", "any")):
+                malformed("hurdle_mode", "Hurdle mode requires both stated hurdles and an admitted value")
+        if set(tier) - allowed: malformed("", "Tier has a member outside its closed grammar")
+    if tiers:
+        final = tiers[-1]
+        if (not isinstance(final,dict) or final.get("type") != "split"
+                or final.get("until_lp_em") is not None or final.get("until_lp_irr") is not None):
+            member = "until_lp_em" if isinstance(final,dict) and final.get("until_lp_em") is not None else "until_lp_irr" if isinstance(final,dict) and final.get("until_lp_irr") is not None else None
+            issue("WF-01", "tiers[" + str(len(tiers)-1) + "]." + member if member else "tiers", "The final tier must be an unbounded split")
+    return tiers
+
+
 def waterfall_rules(ledger):
     document = ledger.document
     cash = {dict(b.attributes).get("variant"): b
@@ -142,74 +215,7 @@ def waterfall_rules(ledger):
                         variant=dict(block.attributes).get("variant")))
                         if code in ("WF-10", "WF-12", "WF-13") else {})
             ledger.issue(code, severity, "distribution_waterfall", path, message, **evidence)
-        equity, tiers = payload.get("equity_split"), payload.get("tiers")
-        if (not isinstance(equity, dict) or set(equity) != {"lp", "gp"}
-                or not _unit(equity.get("lp")) or not _unit(equity.get("gp"))
-                or abs(equity["lp"] + equity["gp"] - 1) >= .0001):
-            issue("WF-01", "equity_split", "Contribution shares must be closed fractions summing to one")
-        previous, seen, previous_em, previous_irr = -1, set(), None, None
-        order = ("return_of_capital", "preferred_return", "catch_up", "split")
-        if not isinstance(tiers, list) or not tiers:
-            issue("WF-01", "tiers", "A nonempty ordered tier ladder is required")
-            tiers = []
-        for ti, tier in enumerate(tiers):
-            path = "tiers[" + str(ti) + "]"
-            def malformed(member, message):
-                issue("WF-01", path + ("." + member if member else ""), message)
-            if not isinstance(tier, dict) or tier.get("type") not in order:
-                malformed("", "Tier must have one admitted type")
-                continue
-            kind = tier["type"]; index = order.index(kind)
-            if index < previous or kind != "split" and kind in seen:
-                malformed("", "Tier types must follow the admitted order without repeats")
-            previous = index; seen.add(kind)
-            allowed = {"type"}
-            if kind == "preferred_return":
-                allowed |= {"rate", "accrual"}
-                rate = tier.get("rate")
-                if not finite(rate) or not 0 < rate < 1:
-                    malformed("rate", "Preferred rate must be a fraction in (0,1)")
-                if tier.get("accrual") not in ("simple", "compound_annual"):
-                    malformed("accrual", "Preferred accrual must name an admitted convention")
-            elif kind == "catch_up":
-                allowed |= {"gp_share", "target_promote"}
-                share, promote = tier.get("gp_share"), tier.get("target_promote")
-                if not _unit(share): malformed("gp_share", "Catch-up share must be a fraction")
-                if not finite(promote) or not 0 < promote < 1:
-                    malformed("target_promote", "Target promote must be a fraction in (0,1)")
-                elif finite(share) and share <= promote:
-                    malformed("gp_share", "Catch-up share must exceed target promote")
-            elif kind == "split":
-                allowed |= {"lp_share", "gp_share", "until_lp_em", "until_lp_irr", "hurdle_mode"}
-                lp, gp = tier.get("lp_share"), tier.get("gp_share")
-                if not _unit(lp): malformed("lp_share", "LP share must be a fraction")
-                if not _unit(gp): malformed("gp_share", "GP share must be a fraction")
-                if _unit(lp) and _unit(gp) and abs(lp + gp - 1) >= .0001:
-                    malformed("", "Residual shares must sum to one")
-                em, irr, mode = tier.get("until_lp_em"), tier.get("until_lp_irr"), tier.get("hurdle_mode")
-                if em is not None:
-                    if not finite(em) or em <= 0:
-                        malformed("until_lp_em", "Multiple hurdle must be positive")
-                    elif previous_em is not None and quantize(em,4) <= previous_em:
-                        malformed("until_lp_em", "Multiple hurdles must strictly increase at ratio quantum")
-                    if finite(em): previous_em = quantize(em,4)
-                if irr is not None:
-                    if not finite(irr) or not 0 < irr < 1:
-                        malformed("until_lp_irr", "IRR hurdle must be a fraction in (0,1)")
-                    elif previous_irr is not None and quantize(irr,6) <= previous_irr:
-                        malformed("until_lp_irr", "IRR hurdles must strictly increase at rate quantum")
-                    if finite(irr): previous_irr = quantize(irr,6)
-                if (em is not None or irr is not None) and finite(lp) and lp <= 0:
-                    malformed("lp_share", "A hurdle requires a positive LP share")
-                if mode is not None and (em is None or irr is None or mode not in ("both", "any")):
-                    malformed("hurdle_mode", "Hurdle mode requires both stated hurdles and an admitted value")
-            if set(tier) - allowed: malformed("", "Tier has a member outside its closed grammar")
-        if tiers:
-            final = tiers[-1]
-            if (not isinstance(final,dict) or final.get("type") != "split"
-                    or final.get("until_lp_em") is not None or final.get("until_lp_irr") is not None):
-                member = "until_lp_em" if isinstance(final,dict) and final.get("until_lp_em") is not None else "until_lp_irr" if isinstance(final,dict) and final.get("until_lp_irr") is not None else None
-                issue("WF-01", "tiers[" + str(len(tiers)-1) + "]." + member if member else "tiers", "The final tier must be an unbounded split")
+        tiers = waterfall_terms(payload, issue)
         reference = payload.get("cash_flow_ref")
         variant = reference.get("variant") if isinstance(reference, dict) else None
         series = cash.get(variant) if isinstance(variant, str) else None

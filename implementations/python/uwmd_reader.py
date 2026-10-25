@@ -99,6 +99,9 @@ def parse(raw: bytes, *, filename: str | None = None, require_structured: bool =
     structured = _UWX_FENCE.search(body) is not None
     if name is not None and name.endswith(".uw.md") and structured:
         raise ReaderError("SOURCE_CONTENT_MISMATCH", "structured records require .uwx.md")
+    if require_structured and name is not None and name.endswith(".uw.md"):
+        raise ReaderError("REPRESENTATION_UNSUPPORTED_MEDIA_TYPE",
+                          "The independent structured Reader does not claim the Lite bridge")
     # The reference's parse and validate commands refuse a .uwx.md with no
     # structured fence; its other commands read it. Callers opt in.
     if require_structured and name is not None and name.endswith(".uwx.md") and not structured:

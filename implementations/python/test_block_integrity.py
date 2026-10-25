@@ -86,7 +86,7 @@ class BlockIntegrityTests(unittest.TestCase):
                 self.assertEqual(driver.json_subset(dict(codes=want),projection),[])
                 self.assertEqual(proc.returncode,0 if actual["ok"] else 1)
                 self.assertEqual(path.read_bytes(),original)
-        self.assertEqual(main(["manifest"])[0]["capabilities"],["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"],['parse', 'calc-evaluate', 'validate', 'verify-reserve-accounts', 'verify-reserve-draws', 'verify-metrics', 'verify-cash-flows', 'verify-property-cash-flows', 'verify-waterfall', 'verify-capital-stack', 'verify-lease-up', 'verify-receipts'])
         self.assertEqual(main(["manifest"])[0]["profiles"],[])
         for command in ("validate","calc","verify"):
             self.assertNotEqual(main([command,"unused"])[1],0)
