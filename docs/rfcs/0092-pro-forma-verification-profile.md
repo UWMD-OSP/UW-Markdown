@@ -1,9 +1,10 @@
 ---
 rfc: 0092
 title: Verify stated pro forma identities under declared conventions
-status: draft
+status: accepted
 author: codex (owner-directed draft)
 created: 2026-10-17
+accepted: 2026-10-24
 affects:
   - format-spec
   - protocol-spec
@@ -872,7 +873,7 @@ ordered test to each inventoried row, using its actual selected home and the
 document's class rather than its label or authored row family:
 
 1. Classify the row as a computed assertion if the claim binds it as a target,
-   it is a §4b token target, its home is a dictionary calculation output for the
+   its home is the target home of a §4b token, its home is a dictionary calculation output for the
    document's class, or its home is one of the section2 return headlines
    `dcf.returns.levered_irr`, `dcf.returns.unlevered_irr`,
    `dcf.returns.equity_multiple` or `dcf.returns.npv`. The home tests apply even
