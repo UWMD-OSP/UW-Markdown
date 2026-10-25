@@ -42,7 +42,7 @@ quick_metrics:
         total=0
         for path in sorted((ROOT/'conformance/runner/cases').glob('*.case.json')):
             case=json.loads(path.read_text(encoding='utf8'))
-            if case['command'] not in ('verify-metrics','verify-cash-flows'): continue
+            if case['command'] not in ('verify-metrics','verify-cash-flows','verify-capital-stack','verify-lease-up'): continue
             total+=1
             with self.subTest(case=case['id']):
                 _,problems=driver.run_case(impl,case,60)
