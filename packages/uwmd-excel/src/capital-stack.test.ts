@@ -360,3 +360,92 @@ describe('a stack with no sizing figures', () => {
 // The stack section type is exercised end to end; keep the cast honest.
 const _typecheck: CapitalStack = { tranches: [...TRANCHES], sizing: [...SIZING] };
 void _typecheck;
+
+
+describe('#549 — split service and original-order arithmetic', () => {
+  it.each([
+    { class: 'preferred_equity', accrual: 'split', rate: 0.12, cash_rate: 0.04, accrued_rate: 0.08 },
+    { class: 'preferred_equity', accrual: 'split', cash_rate: 0.04 },
+    { class: 'preferred_equity', accrual: 'split', rate: 0.12 },
+    { class: 'preferred_equity', accrual: 'split', rate: 0.12, cash_rate: null },
+    { class: 'senior_debt', accrual: 'split', rate: 0.12, cash_rate: 0.04 },
+    { class: 'preferred_equity', accrual: 'accrued', rate: 0.12 },
+    { class: 'common_equity', rate: 0.12 },
+  ] as const)('matches native service for %j', async terms => {
+    const t = { id: 'layer', position: 1, amount: 1_000_000, ...terms } as Tranche;
+    const fig: SizingFigure = { id: 'coverage', fn: 'coverage', over: 'layer', value: 3 };
+    const parsed = file({
+      capital_stack: block('capital_stack', { tranches: [t], sizing: [fig] }),
+      noi_model: block('noi_model', { net_operating_income: 120_000 }),
+    });
+    const original = JSON.stringify(parsed);
+    const wb = new ExcelJS.Workbook();
+    const ws = writeCapitalStackSheet(wb, parsed)!;
+    const ds = namedCell(wb, trancheRangeName(1, 'ds'));
+    const actual = formulaOf(ds) === null ? (ds.value ?? null) : evalFormula(formulaOf(ds)!, {}, trancheCellReader(ws));
+    expect(actual).toBe(trancheAnnualDebtService(t));
+    expect(namedCell(wb, trancheRangeName(1, 'cash_rate')).value ?? null).toBe(t.cash_rate ?? null);
+    let sizingRow = 0;
+    ws.eachRow((row, i) => { if (row.getCell(1).value === 'coverage') sizingRow = i; });
+    const expected = recomputeSizing(fig, [t], capitalStackContext(parsed));
+    if (expected === null) expect(ws.getCell(`E${sizingRow}`).value).toBe('unverifiable');
+    else {
+      const names = { cs_noi: 120_000, cs_t1_ds: actual as number };
+      expect(evalFormula(formulaOf(ws.getCell(`E${sizingRow}`))!, names, trancheCellReader(ws))).toBe(expected);
+    }
+    if (t.accrual === 'split' && actual !== null) expect(formulaOf(ds)).toBe('D4*I4');
+    expect(JSON.stringify(parsed)).toBe(original);
+  });
+
+  it('keeps all six sizing procedures in source order while displaying by position', async () => {
+    const tranches: Tranche[] = [
+      { id: 'large', class: 'senior_debt', position: 3, amount: 1e16, rate: 0.04 },
+      { id: 'small_a', class: 'senior_debt', position: 1, amount: 1, rate: 0.04 },
+      { id: 'small_b', class: 'senior_debt', position: 2, amount: 1, rate: 0.04 },
+    ];
+    const figures: SizingFigure[] = [
+      { id: 'coverage', fn: 'coverage', over: 'small_a', value: 0 },
+      { id: 'blended', fn: 'blended_coverage', through: 3, value: 0 },
+      { id: 'yield', fn: 'debt_yield_through', through: 3, value: 0 },
+      { id: 'ltc', fn: 'ltc_through', through: 3, value: 0 },
+      { id: 'ltv', fn: 'ltv_through', through: 3, value: 0 },
+      { id: 'weighted', fn: 'weighted_cost', over: '*', value: 0 },
+    ];
+    const parsed = file({
+      capital_stack: block('capital_stack', { tranches, sizing: figures }),
+      noi_model: block('noi_model', { net_operating_income: 120_000 }),
+      valuation: block('valuation', { underwritten_value: 1e16 }),
+      sources_uses: block('sources_uses', { uses: { total: 1e16 } }),
+    });
+    const wb = new ExcelJS.Workbook();
+    writeCapitalStackSheet(wb, parsed);
+    // Exercise serialized formulas and the additional cash-rate column too.
+    const reloaded = new ExcelJS.Workbook();
+    await reloaded.xlsx.load(await wb.xlsx.writeBuffer() as ArrayBuffer);
+    const ws = reloaded.getWorksheet(CAPITAL_STACK_SHEET_NAME)!;
+    expect([4, 5, 6].map(r => ws.getCell(`A${r}`).value)).toEqual(['small_a', 'small_b', 'large']);
+    const read = trancheCellReader(ws);
+    const names: Record<string, number> = { cs_noi: 120_000, cs_total_cost: 1e16, cs_total_value: 1e16 };
+    const dsByRef: Record<string, number> = {};
+    for (const t of tranches) {
+      const cell = namedCell(reloaded, trancheRangeName(t.position, 'ds'));
+      const value = evalFormula(formulaOf(cell)!, {}, read);
+      names[trancheRangeName(t.position, 'ds')] = value;
+      dsByRef[`H${cell.row}`] = value;
+    }
+    const readWithDs = (ref: string) => ref in dsByRef ? dsByRef[ref]! : read(ref);
+    for (const fig of figures) {
+      let r = 0;
+      ws.eachRow((row, i) => { if (row.getCell(1).value === fig.id) r = i; });
+      expect(r).toBeGreaterThan(0);
+      const emitted = evalFormula(formulaOf(ws.getCell(`E${r}`))!, names, readWithDs);
+      expect(emitted, fig.id).toBe(recomputeSizing(fig, tranches, capitalStackContext(parsed)));
+    }
+    const sorted = [...tranches].sort((a, b) => a.position - b.position);
+    // The raw rounding-sensitive witness distinguishes source and display order.
+    expect(recomputeSizing(figures[3]!, tranches, capitalStackContext(parsed))).not.toBe(
+      recomputeSizing(figures[3]!, sorted, capitalStackContext(parsed)));
+    expect(recomputeSizing(figures[5]!, tranches, capitalStackContext(parsed))).not.toBe(
+      recomputeSizing(figures[5]!, sorted, capitalStackContext(parsed)));
+  });
+});
