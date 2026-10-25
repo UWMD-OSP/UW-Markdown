@@ -49,8 +49,8 @@ async def verify_source(raw,*,filename=None,receipts=(),inputs=None,reserve_draw
                 verification=verify_waterfall(payload,sources[0] if len(sources)==1 else None)
             report['sections'].append(dict(section=section,variant=variant,verification=verification))
             statuses.append(verification['verdict'])
-    report['reserve_accounts']=await verify_reserve_accounts(document)
-    report['reserve_draws']=await verify_reserve_draw_bindings(document,reserve_draw_plan) if reserve_draw_plan is not None else await verify_reserve_draw_bindings(document)
+    report['reserve_accounts']=verify_reserve_accounts(document)
+    report['reserve_draws']=verify_reserve_draw_bindings(document,reserve_draw_plan) if reserve_draw_plan is not None else verify_reserve_draw_bindings(document)
     for key in ('reserve_accounts','reserve_draws'):
         statuses.append(report[key]['state'])
     binding=validation.get('replacement_funding_verification')

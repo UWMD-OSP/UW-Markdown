@@ -29,7 +29,7 @@ def _pointer(path):
 
 def dictionary_entries(asset_class):
     dictionary=metric_dictionary()
-    return [entry for collection in ('calculations',)
+    return [entry for collection in ('calculations','size_intensives')
             for entry in dictionary.get(collection,()) if asset_class in entry['asset_classes']]
 
 
@@ -75,6 +75,14 @@ def verify_stated_metrics(document):
                 variant=dict(block.attributes).get('variant')
                 label=section+('['+variant+']' if variant is not None else '')+'.'+tail
                 homes.append((label,block.parsed.value,block.parsed.numbers,(block,tail)))
+        if entry['null_semantics']=='finite_stated_number':
+            # XIII raw-size selectors have their own registered property home,
+            # not calculation output aliases or frontmatter quick_metrics.
+            homes=[]
+            for block in current_blocks(document,'property'):
+                variant=dict(block.attributes).get('variant')
+                path='property'+('['+variant+']' if variant is not None else '')+'.'+entry['path']
+                homes.append((path,block.parsed.value,block.parsed.numbers,(block,entry['path'])))
         for path,payload,tokens,home in homes:
             local='quick_metrics.'+identifier if home is None else home[1]
             stated=field(payload,local)
@@ -88,6 +96,9 @@ def verify_stated_metrics(document):
                 # including the unlabelled/component case. Missing stays null.
                 context={'overrides':{path:field(home[0].parsed.value,path.partition('.')[2])
                          for path in entry['input_paths'] if path.startswith('noi_model.')}}
+            if entry['null_semantics']=='finite_stated_number':
+                context={'overrides':{path:field(home[0].parsed.value,path.partition('.')[2])
+                         for path in entry['input_paths'] if path.startswith('property.')}}
             value,reason=metric_value(document,entry,context)
             item=dict(id=identifier,path=path,stated=stated,stated_decimals=s,state='unverifiable',computed=None)
             if value is None:
