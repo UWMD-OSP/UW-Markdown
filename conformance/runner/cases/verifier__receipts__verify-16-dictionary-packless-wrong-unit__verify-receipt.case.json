@@ -23,6 +23,7 @@
       "refused_code",
       "recomputed_ids"
     ],
-    "exit_code": 1
+    "exit_code": 1,
+    "receipt_engine_sensitive": true
   }
 }

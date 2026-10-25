@@ -42,9 +42,9 @@ quick_metrics:
         total=0
         for path in sorted((ROOT/'conformance/runner/cases').glob('*.case.json')):
             case=json.loads(path.read_text(encoding='utf8'))
-            if case['command'] not in ('verify-metrics','verify-cash-flows','verify-capital-stack','verify-lease-up','verify-waterfall','verify-property-cash-flows'): continue
+            if case['command'] not in ('verify-metrics','verify-cash-flows','verify-capital-stack','verify-lease-up','verify-waterfall','verify-property-cash-flows','verify-receipt'): continue
             total+=1
             with self.subTest(case=case['id']):
-                _,problems=driver.run_case(impl,case,60)
+                _,problems=driver.run_case(impl,case,60,receipt_engine=("org.uwmd.python","0.0.0-dev"))
                 self.assertEqual(problems,[])
         self.assertGreater(total,0)

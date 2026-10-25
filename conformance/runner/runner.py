@@ -372,7 +372,18 @@ class Failure(Exception):
     pass
 
 
-def run_case(impl: list[str], case: dict, timeout: float) -> tuple[float, list[str]]:
+def receipt_engine_expectation(expected, differs):
+    """Receipt5.3 finite disagreement; this never adapts procedure refusals."""
+    result = dict(expected)
+    codes = [code for code in expected["expected_codes"] if code != "RCP-07"]
+    if "RCP-03" not in codes:
+        raise Failure("An engine-sensitive case must require a finite result disagreement")
+    result["expected_codes"] = (["RCP-07"] if differs else []) + codes
+    result["verdict"] = "unverifiable" if differs else "failed"
+    return result
+
+
+def run_case(impl: list[str], case: dict, timeout: float, *, receipt_engine=None) -> tuple[float, list[str]]:
     """Run one case. Returns (elapsed_seconds, problems)."""
     fixture = REPO_ROOT / case["fixture_dir"] if case.get("fixture_dir") else REPO_ROOT
     args = [
@@ -404,6 +415,15 @@ def run_case(impl: list[str], case: dict, timeout: float) -> tuple[float, list[s
 
     expect = case["expect"]
     expected_exit = expect.get("exit_code", 0)
+    engine_expected = None
+    engine_differs = None
+    if expect.get("receipt_engine_sensitive") and receipt_engine is not None:
+        baseline = REPO_ROOT / expect["file"] if "/" in expect["file"] else fixture / expect["file"]
+        engine_expected = json.loads(baseline.read_text(encoding="utf8"))
+        computation = json.loads(Path(args[0]).read_text(encoding="utf8"))["computation"]
+        engine_differs = tuple(receipt_engine) != (computation["engine"], computation["engine_version"])
+        engine_expected = receipt_engine_expectation(engine_expected, engine_differs)
+        expected_exit = 0 if engine_differs else 1
     if proc.returncode != expected_exit:
         # Exit code 2 is "unrecoverable internal error" in the protocol; stdout
         # is not required to be parseable, so say so rather than showing a diff.
@@ -439,7 +459,7 @@ def run_case(impl: list[str], case: dict, timeout: float) -> tuple[float, list[s
         got = normalize_text(str(actual[field]))
         return elapsed, [] if want == got else [_text_diff(want, got)]
 
-    expected = json.loads(baseline_path.read_text(encoding="utf-8"))
+    expected = engine_expected if engine_expected is not None else json.loads(baseline_path.read_text(encoding="utf-8"))
     if "baseline_pointer" in expect:
         expected = json_pointer(expected, expect["baseline_pointer"])
     if expect.get("ignore"):
@@ -448,7 +468,10 @@ def run_case(impl: list[str], case: dict, timeout: float) -> tuple[float, list[s
         expected = {k: v for k, v in expected.items() if k not in expect["ignore"]}
     actual = project(actual, expect.get("project"))
     if kind == "verdict-codes":
-        return elapsed, verdict_codes(expected, actual, expect.get("fields", []))
+        problems = verdict_codes(expected, actual, expect.get("fields", []))
+        if engine_differs is not None and ("RCP-07" in actual.get("codes", [])) != engine_differs:
+            problems.append("RCP-07 presence must match the explicitly configured engine identity")
+        return elapsed, problems
     if kind == "statement-states":
         return elapsed, statement_states(expected, actual)
     if kind == "json-exact":
@@ -554,6 +577,8 @@ def main() -> int:
         default="",
         help="Comma-separated Format versions (rule sets, RFC 0111) whose cases to run; default all.",
     )
+    parser.add_argument("--receipt-engine", default="", help="Explicit receipt computation-engine name under test (Receipt5.3).")
+    parser.add_argument("--receipt-engine-version", default="", help="Its exact version; supply both identity members together.")
     parser.add_argument("--manifest-out", default="", help="Write the JSON manifest here.")
     parser.add_argument("--timeout", type=float, default=60.0, help="Per-case timeout in seconds.")
     parser.add_argument(
@@ -564,6 +589,9 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    if bool(args.receipt_engine) != bool(args.receipt_engine_version):
+        parser.error("--receipt-engine and --receipt-engine-version must be supplied together")
+    receipt_engine = (args.receipt_engine, args.receipt_engine_version) if args.receipt_engine else None
     impl = shlex.split(args.impl)
 
     case_files = sorted(Path(args.cases).glob("*.case.json"))
@@ -631,7 +659,7 @@ def main() -> int:
             )
             continue
         try:
-            elapsed, problems = run_case(impl, case, args.timeout)
+            elapsed, problems = run_case(impl, case, args.timeout, receipt_engine=receipt_engine)
         except Failure as exc:
             print(f"Bail out! {exc}")
             return 2
@@ -667,6 +695,7 @@ def main() -> int:
             f"{manifest.get('id')}@{manifest.get('version')}" if manifest else "unidentified"
         ),
         "manifest": manifest,
+        "receipt_engine": dict(engine=receipt_engine[0], engine_version=receipt_engine[1]) if receipt_engine else None,
         "manifest_tier": manifest_tier,
         "tiers": sorted({c["target"] for c in cases if c["target"] in ("reader", "verifier")}),
         "profiles": sorted({c["target"] for c in cases if c["target"] in VOCABULARY["profiles"]}),

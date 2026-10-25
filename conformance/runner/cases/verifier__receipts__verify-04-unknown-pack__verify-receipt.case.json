@@ -22,6 +22,7 @@
       "expected_codes",
       "refused_code"
     ],
-    "exit_code": 0
+    "exit_code": 0,
+    "receipt_engine_sensitive": true
   }
 }
