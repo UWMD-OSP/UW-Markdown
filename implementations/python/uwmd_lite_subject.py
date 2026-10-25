@@ -8,7 +8,7 @@ from uwmd_source import SourceError
 
 
 def lite_subject(raw):
-    text=raw.decode('utf8-sig').replace('\r\n','\n')
+    text=raw.decode('utf-8-sig').replace('\r\n','\n')
     lines=text.split('\n')
     if not lines or lines[0]!='---':raise SourceError('Lite frontmatter is required')
     end=lines.index('---',1)
