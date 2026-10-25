@@ -147,6 +147,24 @@ def main(arguments):
             return {"error": {"message": str(error)}}, 2
         except Exception as error:
             return {"error": {"message": "Internal calculation failure: " + str(error)}}, 2
+    if arguments and arguments[0]=="verify-receipt":
+        tail=arguments[1:]
+        if len(tail)<2:return {"error":{"message":"verify-receipt <receipt.json> <file> [--inputs <inputs.json>] --json"}},1
+        from uwmd_receipts import verify_receipt,ReceiptError
+        rest=tail[2:]
+        if rest and rest[-1]=="--json":rest=rest[:-1]
+        inputs=None
+        try:
+            if rest:
+                if len(rest)!=2 or rest[0]!="--inputs":return {"error":{"message":"Unsupported receipt arguments"}},1
+                inputs=parse_json_source(Path(rest[1]).read_bytes()).value
+            try:receipt=parse_json_source(Path(tail[0]).read_bytes()).value
+            except (OSError,SourceError) as error:raise ReceiptError(str(error)) from error
+            source=Path(tail[1])
+            report=verify_receipt(receipt,source.read_bytes(),filename=source.name,inputs=inputs)
+            return report,1 if report["verdict"]=="failed" else 0
+        except ReceiptError as error:return {"error":error.projection()},1
+        except OSError as error:return {"error":{"message":str(error)}},2
     if arguments and arguments[0]=="verify-property-cash-flows":
         tail=arguments[1:]
         if len(tail) not in (2,3) or len(tail)==3 and tail[2]!="--json":
