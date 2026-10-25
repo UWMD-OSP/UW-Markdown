@@ -147,6 +147,22 @@ def main(arguments):
             return {"error": {"message": str(error)}}, 2
         except Exception as error:
             return {"error": {"message": "Internal calculation failure: " + str(error)}}, 2
+    if arguments and arguments[0]=="verify-property-cash-flows":
+        tail=arguments[1:]
+        if len(tail) not in (2,3) or len(tail)==3 and tail[2]!="--json":
+            return {"error":{"message":"verify-property-cash-flows <file> <plan.json> --json"}},1
+        from uwmd_property_cash_flows import assemble_property_cash_flows,AssemblyError
+        try:
+            path=Path(tail[0])
+            document=parse(path.read_bytes(),filename=path.name)
+            plan=parse_json_source(Path(tail[1]).read_bytes()).value
+            return assemble_property_cash_flows(document,plan),0
+        except AssemblyError as error:
+            return {"error":error.projection()},1
+        except SourceError as error:
+            return {"error":{"message":str(error),**({"code":error.code,"category":"parse"} if hasattr(error,"code") else {})}},1
+        except OSError as error:
+            return {"error":{"message":str(error)}},2
     if arguments and arguments[0] in ("verify-cash-flows", "verify-metrics", "verify-capital-stack", "verify-lease-up", "verify-waterfall"):
         command=arguments[0]
         tail=arguments[1:]
