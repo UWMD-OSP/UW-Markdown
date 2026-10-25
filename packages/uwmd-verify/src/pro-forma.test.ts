@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { expect, it } from 'vitest';
 import { verifyProForma } from './pro-forma.js';
-import { parseUWFile, blockPayload } from './parser.js';
+import { parseUWFile } from './parser.js';
 import type { UWBlock } from './types.js';
 const base = new URL('../../../conformance/pro-forma/', import.meta.url);
 const dirs = readdirSync(base, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name);
@@ -18,7 +18,7 @@ it.each(dirs)('satisfies the authored %s control without changing source bytes',
 it('separates current-model state from stale source and leaves the model unchanged', () => {
   const source = readFileSync(new URL('verified-moic/deal.uwx.md', base), 'utf8');
   const model = parseUWFile(source);
-  (blockPayload(model.sections.dcf as UWBlock) as Record<string, unknown>).result = 9;
+  (model.sections.dcf as UWBlock).content.result = 9;
   const before = JSON.stringify(model);
   const report = verifyProForma(model);
   expect(report.selection.operation).toBe('model');

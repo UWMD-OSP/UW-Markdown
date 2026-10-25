@@ -103,7 +103,7 @@ multifamily derived metrics. Each is a `ModuleCalcDecl`
 id | label | formula | unit
 ---|---|---|---
 `cap_rate` | Cap Rate | `noi_model.net_operating_income / valuation.purchase_price` | `%`
-`ltv` | LTV | `debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)` | `%`
+`ltv` | LTV | `debt_structure.loan_amount / (debt_structure.ltv_basis == 'purchase-price' ? valuation.purchase_price : (debt_structure.ltv_basis == 'underwritten-value' ? valuation.underwritten_value : (debt_structure.ltv_basis == 'total-project-cost' ? sources_uses.total_project_cost : null)))` | `%`
 `dscr` | DSCR | `noi_model.net_operating_income / debt_structure.annual_debt_service` | `x`
 `debt_yield` | Debt Yield | `noi_model.net_operating_income / debt_structure.loan_amount` | `%`
 `price_per_unit` | Price / Unit | `valuation.purchase_price / property.total_units` | `$`
@@ -182,7 +182,7 @@ A `ModuleManifest` (`requires_conformance: 'verifier'`, `asset_classes:
 id | label | formula | unit
 ---|---|---|---
 `cap_rate` | Cap Rate | `noi_model.net_operating_income / valuation.purchase_price` | `%`
-`ltv` | LTV | `debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)` | `%`
+`ltv` | LTV | `debt_structure.loan_amount / (debt_structure.ltv_basis == 'purchase-price' ? valuation.purchase_price : (debt_structure.ltv_basis == 'underwritten-value' ? valuation.underwritten_value : (debt_structure.ltv_basis == 'total-project-cost' ? sources_uses.total_project_cost : null)))` | `%`
 `ltc` | LTC | `debt_structure.loan_amount / sources_uses.uses.total` | `%`
 `dscr` | DSCR | `noi_model.net_operating_income / debt_structure.annual_debt_service` | `x`
 `debt_yield` | Debt Yield | `noi_model.net_operating_income / debt_structure.loan_amount` | `%`

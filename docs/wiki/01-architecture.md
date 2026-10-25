@@ -55,7 +55,7 @@ the Protocol 3.0 contract) splits the repo into two layers:
   the packages only.
 
 The Protocol defines two conformance tiers (`UW_PROTOCOL.md` Part II, typed
-in `protocol.ts` as `ConformanceTier`) and six optional profiles
+in `protocol.ts` as `ConformanceTier`) and seven optional profiles
 (`ConformanceProfile`):
 
 Tier | What it does | Reference impl

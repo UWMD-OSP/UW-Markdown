@@ -38,7 +38,7 @@ export const DATA_CENTER_PACK: ModuleManifest = {
     {
       "id": "ltv",
       "label": "LTV",
-      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == 'purchase-price' ? valuation.purchase_price : (debt_structure.ltv_basis == 'underwritten-value' ? valuation.underwritten_value : (debt_structure.ltv_basis == 'total-project-cost' ? sources_uses.total_project_cost : null)))",
       "unit": "%",
       "section_roles": {
         "debt_structure": "senior"
