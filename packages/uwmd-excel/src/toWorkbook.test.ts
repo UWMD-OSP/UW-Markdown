@@ -632,7 +632,7 @@ describe('toWorkbook — Excel ↔ evaluateCalc parity on a stated document', ()
     const values: Record<string, number | null> = {};
     for (const input of MULTIFAMILY_LAYOUT.namedInputs) {
       const n = namedNumber(wb, input.name);
-      if (['underwritten_value','ltv_basis','ltv_total_project_cost'].includes(input.name)) {
+      if (['underwritten_value','ltv_basis'].includes(input.name)) {
         // Parkview states no underwritten value; preserve the blank so the
         // explicit-basis contract remains unavailable.
         expect(n, input.name).toBeNull();
