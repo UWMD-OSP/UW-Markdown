@@ -21,6 +21,7 @@ it('uses source block ordinals and source precision, and model paths with explic
   const target = r.resolve(address('/a~1b/~0x'));
   expect(target.target).toMatchObject({ block_address_kind: 'source', block_address: 0 });
   expect(r.precision(target)).toBe(4);
+  expect(r.precision(target, new Map([[target.key, '0.75']]))).toBe(4);
   const current = proFormaAddressResolver(model, false);
   const mt = current.resolve(address('/a~1b/~0x'));
   expect(mt.target.block_address).toEqual(['sections', 'dcf', 'content']);

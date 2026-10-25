@@ -17,7 +17,7 @@ export * from './pro-forma-types.js';
 export interface VerifyProFormaOptions {
   /** Select only the claim block; every relationship still selects its own exact peers. */
   claimVariant?: string;
-  /** Original fractional numeric tokens keyed by the report's canonical assertion key.
+  /** Current-model fractional numeric tokens keyed by the report's canonical assertion key.
    * Model operations never consult stale raw/rawJson text for precision. */
   numericTokens?: ReadonlyMap<string, string>;
 }

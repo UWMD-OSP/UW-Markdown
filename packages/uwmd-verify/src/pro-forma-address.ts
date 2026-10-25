@@ -110,7 +110,8 @@ export function proFormaAddressResolver(parsed: ParsedUWFile, source: boolean) {
   };
   const precision = (r: ResolvedProFormaAddress, supplied?: ReadonlyMap<string, string>): number | undefined => {
     if (!finite(r.value)) return undefined;
-    const explicit = supplied?.get(r.key);
+    // Source operations use their admitted original token; overrides belong only to models.
+    const explicit = source ? undefined : supplied?.get(r.key);
     if (explicit !== undefined) return /^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$/.test(explicit) && Number(explicit) === r.value ? getStatedDecimals(explicit) : undefined;
     if (!source) return undefined;
     if (!r.block && r.parts.length === 2 && r.parts[0] === 'quick_metrics') return quickMetricDecimals(parsed.raw, String(r.parts[1]), r.value);
