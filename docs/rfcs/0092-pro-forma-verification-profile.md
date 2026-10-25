@@ -19,7 +19,10 @@ Propose the optional `pro-forma` verification profile for bounded return
 assertions, optional declared acquisition-ledger coverage and individually
 justified named identities. The broad L1 table is a candidate inventory for
 review, not accepted universal row verification. Producers state the selected
-assertions, their derivation evidence and conventions; Verifiers report coverage. UWMD does not generate projections or choose assumptions.
+assertions, their derivation evidence and conventions; Verifiers report coverage.
+Stated inputs/assumptions have their own visible inventory class outside assertion
+counts and do not by themselves affect the exit. UWMD does not generate
+projections or choose assumptions.
 RFC 0078 D1/D7 stand. The approved convention registry gains the owner's
 2026-10-17 addition, per-loan `ltv_basis`. **Draft, docs only:** no implementation,
 profile claim, schema, dictionary rule, diagnostic or receipt behavior activates.
@@ -313,8 +316,9 @@ document claiming the optional profile. It is the owner's explicit change to
 LTV semantics, not a second metric beside the implicit rule. Future synchronization
 includes same-loan CC-02, nested `sizing_metrics.ltv` bindings, dictionary/pack
 expressions and their reference/export consumers. Distinct capital-stack
-`ltv_through`/`ltc_through` retain their existing contracts; a cost-basis loan
-statement is not silently substituted for a different stack verb. Nothing is
+`ltc_through` retains its existing contract. The later 2026-10-24 ruling changes
+stack `ltv_through` value admission as specified in section4b.1; a cost-basis
+loan statement is not silently substituted for a different stack verb. Nothing is
 implemented here; downstream divergence is not resolved until implementation
 and actual adoption.
 
@@ -547,8 +551,10 @@ that verifier is reused.
 | Year-1 CoC | After-capex signed cash bridge and explicit initial equity | `CoC_1=cash_after_capex_1/(E+H)`, exactly as section3a U6; R, existing dictionary CoC precision. Before-capex and later-year ratios are outside L1. |
 | NPV | Exact ordered annual or dated stream and rate | Periodic terms use `CFk/P(1+r,k)`; dated terms use `amount_i*P(1+r,-t_i)`, each accumulated from +0 as section3a U3 prescribes. M; never conflate the two binary64 procedures. |
 
-A supplied assumption or fixed line with no independent identity remains an
-input-only, unverifiable row. Reading/copying it cannot earn a verified count;
+A supplied assumption or fixed input line with no computed assertion remains
+visibly inventoried in the separate input/assumption class, outside the assertion
+denominator and all three assertion-verdict counts. Its presence does not
+affect the exit. Reading/copying it cannot earn a verified count;
 a growth or build-up identity can verify its stated consequence.
 
 `P` means RFC0088's accepted `pinnedPow`, not a convenient host pow. Section3a pins admitted composed operations/domains; independent end-to-end
@@ -568,7 +574,7 @@ when one document states only a small subset.
 | Initial identity group | Exact existing authority and permitted binding | Boundary |
 |---|---|---|
 | Dated return/method binding | Format4.26 / Protocol VIII.9: `total_net`, `moic`, `xnpv`, `xirr` over one explicitly selected `cash_flow_series`, its ordered original rows, explicit day count (L1 admission actual/365f per section3a) and (for XNPV) stated rate. | Bind a headline to that exact stream and metric; preserve the existing metric's complete domain, comparison quantum, solver/refusal and verdict rules. A levered/unlevered label alone selects no stream or financial behavior. |
-| Point-in-time stack figures | Format4.24 / RFCs0026 and0033: the closed `coverage`, `blended_coverage`, `debt_yield_through`, `ltc_through`, `ltv_through`, `weighted_cost` vocabulary and exact `over`/`through`/`*` selector. | Reuse accepted stabilized stack service and source dependencies. This does not construct an actual loan schedule, impose that service on IO cash flows, or reinterpret stack LTV as per-loan LTV. |
+| Point-in-time stack figures | Format4.24 / RFCs0026 and0033: the six named verbs and their exact selectors, with section4b.1 pinning service, explicit-value LTV and whole-stack weighted cost. | The owner-directed LTV no-fallback change and explicit selector admission apply on implementation after acceptance. This does not generate an actual loan schedule or reinterpret stack LTV as per-loan LTV. |
 | Stated lease-up identities | Format4.25's period `net_cash_flow`, final `occupied_sf` and final `occupancy_rate`, using its current size context and signed components. | Reuse the existing verifier's quantum and missing-input behavior; do not invent an occupancy-to-rent-loss conversion or a stabilized annual extrapolation. |
 | Explicit per-loan LTV | The owner's three-option `debt_structure.ltv_basis` direction in section3, with the current LTV dictionary comparison precision. | One explicitly selected loan and chosen denominator; no fallback or new precision minimum. Other dictionary definitions and pending metric decisions are outside this work. |
 | Optional declared acquisition-ledger coverage | Existing explicit-coverage precedent in Protocol VIII.9.6 / RFC0045: inventory the producer's declared source rows and their explicit bindings/exclusions. | Account for membership and duplicates, not inferred completeness of the real transaction. Ledger monetary reconciliation requires its own enumerated procedure with section3a U7 precision; membership coverage alone is not arithmetic verification. |
@@ -610,7 +616,8 @@ cannot choose a stream, loan or missing context. Original ordered stream rows
 remain distinct, including equal-date/equal-value rows. A completely absent
 numeric target is not a fabricated zero assertion; declared-ledger obligations
 are accounted separately. S1–S5 are the independent comparison bundles required
-for this selected scope before acceptance; they remain incomplete. S6 belongs
+for this selected scope before acceptance. Received evidence now requires the
+owner-directed fresh second-reviewer pass after these repairs. S6 belongs
 only to the excluded land candidate and is not a preacceptance requirement.
 
 | Selected token | Exact bound inputs / selectors / applicable declarations | Unit and comparison | Domain, refusal and remaining evidence |
@@ -619,17 +626,17 @@ only to the excluded land candidate and is not a preacceptance requirement.
 | `moic` | Same exact selected original stream; separate positive inflows and negative outflows as native VIII.9, no inferred gross events from a different net stream. | x, native fixed4 decimals. | No outflows is unverifiable, not zero/infinite/failed by a new policy. Same-day distinct rows survive; signs/netting cannot be rewritten. S1. |
 | `xnpv` | Same selected dated stream and explicit finite rate>-1; `actual/365f`, dated timing; compare the actual bound headline target. | Series currency, native fixed2 decimals. | Native negative-power multiplication, original order, domain/refusal states; no annual-positive-power division substitution. Missing rate/stream is unverifiable; native procedure refusal retains failed evidence. S1. |
 | `xirr` | Same selected dated stream; dated timing, `irr_frequency=xirr`, explicit `actual/365f` and first-row anchor. | Fraction, native fixed6 decimals. | Exact VIII.9.3 bracket/endpoints/stopping/refusal behavior. Native no-bracket/procedure refusal is failed, not a new generic unavailable state. S1. |
-| `coverage` | One exact `capital_stack.sizing` target with `fn=coverage`, `over` selecting one existing tranche id, selected stated NOI and that tranche's accepted cash-service inputs. | x, native fixed2 decimals. | Exact native stabilized annual cash-service contract; missing/zero service or missing NOI is unverifiable. Not an actual IO-payment schedule. S2. |
+| `coverage` | One exact `capital_stack.sizing` target with `fn=coverage`, `over` selecting one existing tranche id, selected stated NOI and that tranche's cash-service inputs. | x, native fixed2 decimals. | Normative stabilized annual service procedure in4b.1; missing/zero service or missing NOI is unverifiable. Not an actual IO-payment schedule. S2. |
 | `blended_coverage` | `fn=blended_coverage`, exact `through` position and ordered qualifying tranches, selected NOI and native service dependencies. | x, native fixed2 decimals. | Native through-selection/service sum and refusal behavior; no alternate tranche/period substitution. S2. |
 | `debt_yield_through` | `fn=debt_yield_through`, exact `through`, selected NOI and native debt-tranche amounts at/above that position. | Fraction, native fixed4 decimals. | Missing/zero accepted denominator remains unavailable; not the new per-period NCF/current-balance candidate. S2. |
 | `ltc_through` | `fn=ltc_through`, exact `through` debt membership and selected total project cost. | Fraction, native fixed4 decimals. | Native stack context/domain; no value/price fallback for missing/zero cost. Distinct from per-loan `ltv`. S2. |
-| `ltv_through` | `fn=ltv_through`, exact `through` debt membership and selected native total value. | Fraction, native fixed4 decimals. | Native stack context/domain; no cost substitution or per-loan basis relabelling. S2. |
-| `weighted_cost` | `fn=weighted_cost`, whole-stack `over=*` and exact original tranche order, amounts and native eligible stated rates. | Fraction, native fixed4 decimals. | Reuse native eligible-rate membership and amount-weighted association; zero eligible base is unverifiable. Do not infer a missing rate or select a different stack. S2. |
+| `ltv_through` | `fn=ltv_through`, exact `through` debt membership and explicitly selected/bound `valuation.underwritten_value` in the same snapshot. | Fraction, native fixed4 decimals. | No purchase-price or cost fallback. Missing/null selected value is visibly missing/unverifiable; zero denominator retains native refusal. This changes the accepted context contract on implementation after acceptance (4b.1). S2. |
+| `weighted_cost` | `fn=weighted_cost`, explicit whole-stack `over="*"`, exact original tranche order, amounts and native eligible stated rates. | Fraction, native fixed4 decimals. | Missing or non-`*` selector is unsupported/unverifiable, completed exit1, never silently recomputed as whole stack. Zero eligible base is unverifiable. Procedure in4b.1. S2. |
 | `net_cash_flow` | Selected `lease_up_schedule`, admitted monthly/quarterly period key, exact target and signed `rent_revenue`, `concessions`, `ti_lc_capex`. | Currency, native fixed2 decimals. | Accepted ordered signed addition, all three components required. Missing component is unverifiable; do not change signs or annualize. S3. |
 | `final_occupied_sf` | Selected lease-up `stabilized_summary.occupied_sf` target against its admitted final schedule period's `occupied_sf`. | sqft, native fixed2 decimals. | Exact ordered/valid period domain; missing final value is unverifiable. No invented occupancy path or size conversion. S3. |
 | `final_occupancy_rate` | Selected lease-up summary rate; exact native occupied-SF source (final row, or explicitly stated summary fallback when native contract permits), and bound `leaseUpContext.total_sf` under the size registry. | Fraction, native fixed4 decimals. | Native missing/zero sqft-denominator behavior and dimensional limits. Retain summary/final dependency findings; never infer SF from kW/units or claim a trajectory achieved. S3. |
 | `ltv` | The same selected loan's direct explicit `ltv_basis`, `loan_amount` and exactly one selected price/value/project-cost home in section3. | Fraction, existing dictionary m2/r6 and source-token comparison. | Three owner-directed denominator choices; missing/unknown basis or missing/null chosen denominator unverifiable, no fallback. Existing zero-division/domain evidence retained; no new negative-value policy. Changes the existing all-class id even outside profile claims; no parallel metric. S4. |
-| `declared_ledger_membership` | Explicit optional acquisition-ledger universe, canonical source-event/row addresses, required roles and exact binding/exclusion declarations in this snapshot. | Membership only; no monetary quantum or extra numeric assertions. | No inferred transaction completeness. Required unbound/duplicate/conflicting membership produces visible gaps/findings; distinct equal-value events remain distinct. No monetary reconciliation. U9 option A requires completed exit1 for unmet required declared-ledger obligations. S5. |
+| `declared_ledger_membership` | Explicit optional acquisition-ledger universe, canonical source-event/row addresses, required roles and exact binding/exclusion declarations in this snapshot. | Membership only; no monetary quantum or extra numeric assertions. | No inferred transaction completeness. Required unbound/duplicate/conflicting membership is an unmet required obligation and causes completed exit1 under6a; distinct equal-value events remain distinct. No monetary reconciliation. U9 option A requires completed exit1 for unmet required declared-ledger obligations. S5. |
 
 S1 requires independently authored dated-stream comparisons for all four metrics,
 method/stream/target substitutions, same-day gross versus net, domain/refusal and
@@ -643,15 +650,77 @@ S5 requires independent declared-universe/role/address membership expectations,
 collisions/gaps/exclusions and owner-selected U9 option A paper vectors; it has
 no fictional spreadsheet arithmetic positive. Independently review its membership mapping alongside each
 complete numeric fixture. Existing arithmetic/API review is partial evidence
-only; actual spreadsheet/composed evidence remains absent for these complete
-fixtures. All evidence must record the provenance and recalculation listed in
-Conformance impact before final acceptance.
+only. The later independent S1–S5 evidence has now been received with its
+stated limits; the fresh second-reviewer pass must check it against the repaired
+bindings and assumption-row ruling before final acceptance. Preserve its original
+provenance/recalculation evidence and expectations, as required below.
 
 No new annual-periodic IRR/NPV, lender monthly IRR, monthly mortgage schedule,
 NOI/NCF bridge, per-period DSCR/DY, exit, gross-equity-multiple or year-1 CoC
 identity enters this initial vocabulary merely through section3a or4. Unknown,
-custom and input-only targets remain inventoried/unverifiable. A single empty
-native result cannot turn zero inventoried target assertions into assurance.
+custom computed targets remain inventoried/unverifiable. Pure stated-input/
+assumption rows remain visible in their separate class outside assertion counts.
+A single empty native result cannot turn zero inventoried target assertions into assurance.
+
+### 4b.1. Stack binding procedures — B2, B3 and B4
+
+**B2 — normative stabilized annual cash service.** For each admitted tranche,
+use its stated amount A, rate r and amortization_months n. Apply these branches
+in this order, following the accepted native association:
+
+1. Accrued/PIK (`accrual=accrued`) contributes +0 cash service.
+2. Split accrual requires preferred equity and an explicitly stated cash_rate;
+   service is `A*cash_rate`. Otherwise it is unavailable, not zero.
+3. Common equity contributes +0. For other remaining cases, absent/null rate is
+   unavailable. Cash-pay preferred equity contributes `A*r`.
+4. For a remaining debt tranche, absent/null n is the native non-amortizing
+   case. If n<=0, service is `A*r`. If n>0, set `i=r/12`, then set monthly
+   service to `A/n` when i=0, otherwise `(A*i)/(1-P(1+i,-n))`. Annual service
+   is that monthly result times12, in this exact association. P is the accepted
+   pinnedPow procedure. Do not reassociate powers/products or round monthly cash.
+
+Retain admitted tranche/domain validation, nonfinite/unavailable evidence and
+native fixed comparison quanta. `io_months` does not alter this stabilized
+constant; this is not an actual IO-payment schedule or generated maturity flow.
+`coverage` divides selected stated NOI by the selected tranche's service.
+`blended_coverage` sums service left to right from +0 in original tranche-array
+order over positions <=through, then divides NOI by that sum. Missing service/
+NOI or zero service denominator remains unverifiable. Do not sort the summation
+by position or substitute a different cash-service basis. PIK cash service is
+zero without erasing its debt balance from debt-yield/LTV/LTC membership.
+
+**B3 — explicitly selected stack value, no price fallback.** Profile
+`ltv_through` binds its denominator to an explicitly selected
+`valuation.underwritten_value` in the selected variant/source-model snapshot.
+A bare total_value supplied by a helper is insufficient without that binding.
+The numerator retains the native ordered sum of debt-class tranche amounts at
+positions <=through. Missing/null selected value stays a visible missing-value
+gap and makes a stated computed target unverifiable; another available purchase
+price or project cost cannot rescue it. Zero retains the native unavailable
+zero-denominator behavior. Do not infer a value from price, cost or an asset label.
+
+This is an explicit owner-directed change from the accepted native contract:
+Protocol VIII.5.1's note and `capitalStackContext` currently use
+`valuation.underwritten_value ?? valuation.purchase_price`. After RFC acceptance,
+implementation MUST synchronize that note, the stack context/value-admission
+path and profile consumers to remove the purchase-price fallback. It must also
+keep the distinct per-loan LTV basis change coordinated. This draft implements
+none of them. There is no pre-5.0 compatibility or migration work.
+
+**B4 — whole-stack weighted cost only.** `weighted_cost` requires an explicit
+`over="*"`. An absent or non-`*` selector, including `over="senior"` or a through
+selector in place of over, is an unsupported binding: the computed assertion
+is unverifiable and the completed assessment exits1. Never ignore the supplied
+selector, coerce it to `*`, or return the native whole-stack positive for it.
+For admitted `*`, iterate the whole original array, including every tranche with
+a stated rate; skip only absent/null-rate tranches under the native eligible-rate
+contract. Accumulate `weighted += amount*rate` and `base += amount`, both left
+to right from +0, and compute `weighted/base`. A split tranche uses its full
+stated rate here, not cash_rate; accrued tranches with a rate remain eligible.
+Zero base is unverifiable. Preserve native fixed4 comparison and nonfinite
+refusals. The standalone native helper's current selector-ignoring contrast is
+not authority to admit a profile non-`*` selector. Synchronize admission after
+acceptance; no runtime behavior changes in this draft.
 
 ### 4c. Explicit land stated-stream intake — outside the initial set
 
@@ -735,7 +804,8 @@ input bindings belong to its relationships, not extra target identities. A row
 may expose multiple named relationships, but their dependent operations do not multiply the
 number of verified figures. Report relationship results separately from terminal
 assertion counts, and group assertion counts by verdict and row family, including
-rows stated with no defined identity. Those rows remain visible as unverifiable;
+computed rows stated with no defined identity. Those assertions remain visible
+as unverifiable;
 they cannot disappear from coverage because no identity can be evaluated.
 
 Inventory the declared universe independently of the checks the implementation
@@ -783,7 +853,9 @@ accept the RFC.
 
 **Inventory and identity.** First inventory the document's stated pro forma
 rows, including input-only and unknown/custom identities, independently of which
-checks can run. The exact selected source/model and target address are authority;
+checks can run. Separate pure stated-input/assumption rows from computed
+assertions before forming assertion counts; both remain visible. The exact
+selected source/model and target address are authority;
 labels, equal values and implementation object identity are not. For a source
 operation retain the admitted original source and its selected physical block;
 for a model operation use the supplied current model, without silently reparsing
@@ -794,6 +866,24 @@ targets it binds, in the current selected blocks. Historical/superseded and
 unselected peers remain retained source/validation evidence, not additional
 current assertions merely because they are retained. A binding cannot silently
 select a historical or arbitrary peer; preserve the existing selection refusal.
+
+**Input/assumption class — owner ruling.** Pure stated inputs and assumption/
+input-only rows are listed in a separate ordered `inputs` collection, with their
+canonical source address, authored row family and input/assumption reason. They
+receive no financial assertion verdict. Report `input_count` separately;
+exclude these rows from assertion total, by_verdict and by_row_family sums.
+Their presence neither earns verification nor changes the exit code. Do not
+hide them as exclusions or drop them from the independent inventory.
+
+This does not reclassify an unsupported computed assertion as an assumption.
+An explicitly stated derived/headline target remains a computed assertion even
+if it is also an input to another check or labelled an assumption. Unknown/
+unsupported computed identities remain unverifiable and affect exit1. A
+contradictory/ambiguous computed-versus-input declaration cannot be used to
+launder that target out of the assertion inventory. Ordinary validation errors
+still affect the exit; an input's absence/invalidity can still make a dependent
+computed assertion unavailable or failed under its own contract. No fourth
+financial verdict is added. Apply the same address/order rules to `inputs`.
 
 **Canonical target context before keys.** Resolve each declaration against one
 admitted snapshot before duplicate elimination. A source block address is its
@@ -867,8 +957,10 @@ ambiguity as unverifiable unless an independently demonstrated failure takes
 precedence under the state rule below. The row family is descriptive and never chooses financial behavior.
 Report `total`, three `by_verdict` counts and the same three counts plus total
 for every nonempty `by_row_family` entry. The sums must agree exactly, and empty
-reports contain explicit zeros. Rows without a defined identity or independent
-relationship are unverifiable with distinct reasons, never coverage exclusions.
+reports contain explicit zeros. Computed assertions without a defined identity
+or independent relationship are unverifiable with distinct reasons, never
+coverage exclusions. Pure stated-input/assumption rows are in `inputs` and
+`input_count`, outside these assertion denominators and without an exit effect.
 Relationship/check/operation counts, if supplied, are separate from assertions.
 
 Report inapplicable relationships as exclusions with reasons. A component missing
@@ -882,6 +974,28 @@ An exclusion is not automatically an unmet obligation; a purported exclusion
 that conflicts with an explicitly required membership must be reported as that
 required gap rather than silently waiving it. Zero rows means zero assurance;
 there is no minimum-row refusal or vacuous aggregate `verified` claim.
+
+**B1 — required ledger binding conflicts and out-of-universe bindings.** A
+required ledger member is met only by one admitted, unambiguous binding to its
+canonical event and role. Missing, duplicate/reused or conflicting required
+bindings are unmet required obligations: preserve their gaps/findings and exit1
+under U9 A, even with zero computed assertions and every event mentioned.
+M07's one event assigned through two aliases/roles is such a conflict, not a
+satisfied obligation. Do not repair it by first/last selection. Identical repeated
+declarations of the same single binding may coalesce with all origins under the
+existing semantic-equality rule; allocating one event twice is not that case.
+Distinct equal-date/equal-value events retain their different canonical addresses.
+
+A binding to an event outside the explicitly declared universe (M15) is a
+profile-claim validation error, not a valid exclusion or harmless extra. Retain
+its typed error-severity finding separately from registered base validation;
+it participates in the existing validation-error exit predicate. When the claim
+can still be inventoried, assessment is completed/exit1. Do not expand the
+universe to absorb it, invent a numeric assertion or manufacture a missing
+required member. If inventory itself is impossible, existing request-refusal
+rules apply. This does not make absent undeclared rows failures. Future typed
+results must carry profile-claim findings separately from the base `validation`
+array; no new base validator code is introduced by this docs-only draft.
 
 **States and precedence.** Preserve each reused identity's existing numeric
 refusal/state rule: e.g. a stated dated XIRR refused by its accepted procedure is
@@ -922,7 +1036,7 @@ No command writes a document, cached result or receipt.
 
 | Outcome | JSON / exit contract |
 |---|---|
-| Completed assessment | `status: "completed"`, `profile: "pro-forma"`, `level: "L1"`, exact selection evidence, ordered `assertions` and `relationships`, `coverage`, `gaps`, `exclusions`, plus separate `validation`. **Owner-selected U9 option A:** Exit0 iff there are no validation errors, failed assertions, unverifiable assertions or unmet required obligations in an explicitly declared ledger universe. A genuinely gap-free zero-row claim exits0 with explicit zero coverage and no financial assurance claim. Exit1 otherwise; declared gaps remain separate from assertion counts, without fake assertions, minimum rows or operation refusal. |
+| Completed assessment | `status: "completed"`, `profile: "pro-forma"`, `level: "L1"`, exact selection evidence, ordered `assertions` and `relationships`, `inputs`, separate `input_count`, `coverage`, `gaps`, `exclusions`, profile-claim findings and separate base `validation`. **Owner-selected U9 option A:** Exit0 iff there are no validation errors (base or profile-claim), failed computed assertions, unverifiable computed assertions or unmet required obligations in an explicitly declared ledger universe. A gap-free claim with zero computed assertions exits0, even if inputs/assumptions are listed, with explicit zero assertion coverage and no financial assurance claim. Exit1 otherwise; declared gaps remain separate from assertion counts, without fake assertions, minimum rows or operation refusal. |
 | Operation cannot admit/inventory the request | `status: "refused"` and `error` satisfying ProtocolError; exit1. Preserve an existing typed source/selection error. Propose narrowly scoped `CALC-PRO-FORMA` (category `calc`) for malformed CLI/profile-claim syntax, absent explicit profile claim or an unreadable requested file only; do not use it as a fallback for uncoded Format failures, unknown identities or missing arithmetic inputs. No fabricated zero-coverage success. |
 | Unrecoverable internal implementation failure | Exit2 under II.6a.2; stdout need not be a result. A missing/unreadable requested file is the typed request refusal above, not a financial disagreement. |
 
@@ -944,8 +1058,14 @@ an absent undeclared row creates no required gap and does not alone cause exit1.
 A failed or unverifiable assertion, or a separate validation error, still causes
 exit1. Missing input for an inventoried row is a completed local unverifiable
 assessment; malformed/absent claim or inability to inventory the request remains
-a typed operation refusal. An FV error-band deal-quality flag is not by itself
-a validation error or profile arithmetic failure.
+a typed operation refusal. M07 required-binding reuse exits1 as an unmet required
+obligation; M15 exits1 as a profile-claim validation error. Under the later owner
+ruling, M10 now lists one verified computed assertion plus one separate input/
+assumption row and exits0 when otherwise clean. Its original total2/exit1 witness
+remains unchanged historical evidence. A claim containing only valid assumptions
+has zero computed assertions, visible inputs and exit0 with no financial assurance.
+Unknown computed assertions remain unverifiable/exit1. An FV error-band deal-quality
+flag is not by itself a validation error or profile arithmetic failure.
 
 The owner did not select the assertion-only exit0 alternative for required
 declared-ledger gaps. Retain its old predicate only as historical review evidence,
@@ -982,8 +1102,9 @@ support. Proposed case groups, not files created here:
   unknown identities; distinct assertion/relationship/family totals; duplicates,
   applicability exclusions, empty claims, blocked dependencies and required gaps
   without cells; thin/partial documents admitted without a minimum-row refusal,
-  zero-assertion coverage, and rows stated with no defined identity counted by
-  verdict and row family.
+  zero-assertion coverage, computed rows with no defined identity counted by
+  verdict/family, and separate visible input/assumption rows outside those counts
+  with no standalone exit effect; required-binding reuse and stray bindings.
   Capability skips are not passing evidence.
 - **Selection/source:** exact period/loan/variant, duplicate/missing periods,
   ambiguous peers, independently changed selected/unselected inputs, read-only
@@ -1059,7 +1180,9 @@ projection package, model-generation function, AI agent or module manifest.
 **U2 — resolved, owner decision 2026-10-17.** The pro forma profile verifies
 whatever the document states and reports coverage, with no minimum L1 row set
 required to claim it. Counts by verdict and row family include rows stated with
-no defined identity. A thin document gets a thin coverage report, not a refusal.
+no defined computed identity. The later 2026-10-24 ruling separates pure
+input/assumption rows from those assertion counts. A thin document gets a thin
+coverage report, not a refusal.
 This follows Format 4.24's "stated and verified, never trusted" and the #355
 reframe. That ruling resolves U2 only. U1/U9 are separately resolved by the
 2026-10-24 ruling below; U3–U7 by the 2026-10-23 ruling, and U8 separately below.
@@ -1087,6 +1210,21 @@ This resolves these two choices only. U3–U7 stay settled, U2/U8 remain resolve
 and independent finding closure plus selected S1–S5 evidence remain open.
 The RFC stays draft/unaccepted; no implementation, merge or release is authorized.
 
+## Owner ruling — 2026-10-24, independent evidence follow-through
+
+> Yes to all three: assumption rows are listed but don't fail the run; remove the stack LTV purchase-price fallback; one fresh second-reviewer pass after the B1-B4 fix.
+
+Pure stated-input/assumption rows are visible in their separate class, outside
+computed assertion denominators and without an exit effect. U9 A otherwise
+stands: validation errors, failed/unverifiable computed assertions and unmet
+required explicitly declared-ledger obligations exit1. Section4b.1 records the
+explicit change to the accepted stack LTV fallback for implementation only after
+acceptance. U1 A's exact fifteen entries, land exclusion/S6 scope and U3–U7 remain
+settled. One fresh second-reviewer pass is required at the repaired frozen head,
+including B1–B4, M10 and preservation/regression of the received S1–S5 evidence.
+It does not mean this builder independently closes its own changes. No final
+acceptance, implementation, merge, release or deployment is authorized here.
+
 ## Remaining acceptance gates and recommendation
 
 U3–U7 are resolved by the owner on 2026-10-23 within section3a's admissions.
@@ -1095,22 +1233,30 @@ implementer. U2/U8 remain resolved. This RFC stays **draft**.
 
 | Gate | Current proposal / recommendation | Required before acceptance |
 |---|---|---|
-| U1 — initial identity membership | Resolved: owner option A, exactly the fifteen section4b entries. Section4c land stays visible as identity_not_defined/unverifiable outside the initial set. | Independent complete-procedure/spreadsheet S1–S5 evidence before final acceptance. S6 is not required for preacceptance. No whole-registry activation or new monthly/NCF/CoC/land identity. |
-| U9 — coverage/transport | Resolved: owner option A, section6a's accounting and gap-sensitive completed exit1. Gap-free zero-row claims exit0 with no financial assurance; gaps/exclusions stay outside assertion denominators. No new receipt field. | Independent closure of ambiguity, duplicates, missing prerequisites, unselected/source-model mismatches and coverage/exit paper controls. Actual profile/CLI support proof follows acceptance. |
-| Independent red-team and procedure evidence | Complete independent closure of this clause-repair pass and independently authored composed-procedure/spreadsheet evidence before final acceptance; the initial clause review is bounded evidence already received. | Preacceptance: unchanged original witnesses, independent finding closure and spreadsheet/composed-procedure comparisons with actual engine/version/recalculation/provenance. After acceptance/before support: independent profile implementation and real read-only CLI transport evidence. Neither gate substitutes for the other. |
+| U1 — initial identity membership | Resolved: owner option A, exactly the fifteen section4b entries. Section4c land stays visible as identity_not_defined/unverifiable outside the initial set. | Received S1–S5 evidence is reported complete within its stated limits; one fresh second-reviewer pass must check the B1–B4/assumption repairs and retained evidence before final acceptance. S6 is not required for preacceptance. No whole-registry activation or new monthly/NCF/CoC/land identity. |
+| U9 — coverage/transport | Resolved: owner option A, section6a's accounting and gap-sensitive completed exit1. Gap-free zero-row claims exit0 with no financial assurance; gaps/exclusions stay outside assertion denominators. No new receipt field. | Fresh second-reviewer pass on required-ledger conflicts, out-of-universe validation, input/assumption separation and unchanged computed-assertion failure/exit controls. Actual profile/CLI support proof follows acceptance. |
+| Independent red-team and procedure evidence | The independent report closes F1/F2/F4 at clause level, matches the prior U9 predicate, and supplies S1–S5 Excel/composed/paper evidence. B1–B4 and the later assumption-row ruling are repaired here. | One fresh second-reviewer pass after these repairs, preserving original witnesses and checking revised versus native bindings. No builder closure or final acceptance is implied. Independent implemented-profile/actual CLI support proof remains post-acceptance. |
 
-The independent clause review is complete on bounded arithmetic/accepted-API
-and paper-contract evidence; its F1–F4 draft findings require independent closure
-against this revised text. Its rational/Decimal witnesses and accepted-native
-probes do not close independently authored spreadsheet or complete composed-
-procedure evidence. U1/U9 choices are resolved, but final RFC acceptance still
-requires finding closure and the independent S1–S5 procedure/spreadsheet
-comparisons specified above. S6 remains future land scope, not preacceptance.
-After acceptance, implementation and independent profile/CLI transport evidence
-precede any support claim; do not implement this unaccepted RFC to satisfy that
-later gate. Producer expectations, builder checks and green CI cannot substitute
-for independent authorship, actual spreadsheet engine/version/recalculation or
-whole-procedure evidence.
+Independent S1–S5 spreadsheet/composed-procedure and paper evidence has been
+received against the previous frozen text and accepted native contracts, with
+its stated limits. Preserve the original report, formulas, values, expectations
+and harness failures unchanged. B1–B4 and the assumption-row rule require the
+owner-directed fresh second-reviewer pass before final acceptance. Native
+contrasts and old M10 expectations must not be silently relabelled as results
+under this revised contract. Future monthly payoff observations remain future
+scope, not new U1 membership.
+
+The second reviewer must check the exact repaired head and its source identities,
+B1 ledger conflict/stray binding exits, B2 written service association against
+received S2 evidence, B3 no value fallback, B4 non-* selector refusal and M10's
+new input-class disposition. Retain both native contrast results and revised
+contract expectations; do not relabel a native positive as profile verification.
+Record second-reviewer provenance and remaining limits. This draft itself
+executes no profile/CLI or spreadsheet, and green CI is not independent closure.
+S6 remains outside preacceptance. After final acceptance, synchronized
+implementation and independent full-profile/actual read-only CLI support proof
+remain separate gates. No unaccepted implementation or prelaunch compatibility
+work is authorized.
 
 RFC0085 is implemented. RFC0089 is accepted and implemented at production
 `495220e7fa569659aaadcab0f06574d09a570703`; its bounded independent closure and
