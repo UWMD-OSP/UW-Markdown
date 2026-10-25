@@ -53,12 +53,12 @@ export const CS_INPUT_RANGES = {
 } as const;
 
 /** Per-tranche named ranges, keyed by the tranche's (unique) position. */
-export function trancheRangeName(position: number, field: 'amount' | 'rate' | 'ds'): string {
+export function trancheRangeName(position: number, field: 'amount' | 'rate' | 'cash_rate' | 'ds'): string {
   return `cs_t${position}_${field}`;
 }
 
 // Column assignments for the tranche table and the sizing block.
-const COL = { amount: 'D', rate: 'E', amort: 'G', ds: 'H' } as const;
+const COL = { amount: 'D', rate: 'E', cash_rate: 'I', amort: 'G', ds: 'H' } as const;
 const SIZING_COL = { stated: 'D', recomputed: 'E', agrees: 'F' } as const;
 
 const NUMBER_FORMATS = {
@@ -89,6 +89,10 @@ function absRef(sheet: string, cell: string): string {
  */
 function debtServiceFormula(t: Tranche, row: number): string | number | null {
   if (t.accrual === 'accrued') return 0;
+  if (t.accrual === 'split') {
+    if (t.class !== 'preferred_equity' || t.cash_rate === null || t.cash_rate === undefined) return null;
+    return `${COL.amount}${row}*${COL.cash_rate}${row}`;
+  }
   if (t.class === 'common_equity') return 0;
   if (t.rate === null || t.rate === undefined) return null;
   const amt = `${COL.amount}${row}`;
@@ -102,51 +106,54 @@ function debtServiceFormula(t: Tranche, row: number): string | number | null {
   return `${amt}*(${rate}/12)/(1-(1+${rate}/12)^(-${COL.amort}${row}))*12`;
 }
 
+/** Mirror the native left-to-right binary64 accumulator, including its +0 seed. */
+function orderedSum(terms: readonly string[]): string {
+  return terms.reduce((sum, term) => `(${sum}+(${term}))`, '0');
+}
+
 /**
  * The recomputed-figure formula, mirroring `recomputeSizing` over the sheet's
  * tranche rows. Callers only invoke this for figures the core verifier can
  * evaluate, so the selector is known to resolve and every referenced cell is
- * known to be populated. `rowOf` maps a tranche (by sorted index) to its sheet
- * row; rows are sorted by position, so a `through` prefix is contiguous.
+ * known to be populated. Arithmetic visits the original tranche array; `rowOf`
+ * maps each source index to its independently sorted display row.
  */
 function sizingFormula(
   fig: SizingFigure,
-  sorted: readonly Tranche[],
+  tranches: readonly Tranche[],
   rowOf: (index: number) => number,
 ): string {
   const prefix = (through: number): number[] =>
-    sorted.map((t, i) => (t.position <= through ? i : -1)).filter((i) => i >= 0);
+    tranches.map((t, i) => (t.position <= through ? i : -1)).filter((i) => i >= 0);
 
   switch (fig.fn) {
     case 'coverage': {
-      const i = sorted.findIndex((t) => t.id === fig.over);
-      return `${CS_INPUT_RANGES.noi}/${trancheRangeName(sorted[i].position, 'ds')}`;
+      const i = tranches.findIndex((t) => t.id === fig.over);
+      return `${CS_INPUT_RANGES.noi}/${trancheRangeName(tranches[i].position, 'ds')}`;
     }
     case 'blended_coverage': {
       const rows = prefix(fig.through as number).map(rowOf);
-      return `${CS_INPUT_RANGES.noi}/SUM(${COL.ds}${rows[0]}:${COL.ds}${rows[rows.length - 1]})`;
+      return `${CS_INPUT_RANGES.noi}/${orderedSum(rows.map(row => `${COL.ds}${row}`))}`;
     }
     case 'debt_yield_through': {
       const terms = prefix(fig.through as number)
-        .filter((i) => isDebtTranche(sorted[i]))
-        .map((i) => `${COL.amount}${rowOf(i)}`);
-      return `${CS_INPUT_RANGES.noi}/(${terms.join('+')})`;
+        .map((i) => isDebtTranche(tranches[i]) ? `${COL.amount}${rowOf(i)}` : '0');
+      return `${CS_INPUT_RANGES.noi}/${orderedSum(terms)}`;
     }
     case 'ltc_through':
     case 'ltv_through': {
       const terms = prefix(fig.through as number)
-        .filter((i) => isDebtTranche(sorted[i]))
-        .map((i) => `${COL.amount}${rowOf(i)}`);
+        .map((i) => isDebtTranche(tranches[i]) ? `${COL.amount}${rowOf(i)}` : '0');
       const denom =
         fig.fn === 'ltc_through' ? CS_INPUT_RANGES.total_cost : CS_INPUT_RANGES.total_value;
-      return `(${terms.length ? terms.join('+') : '0'})/${denom}`;
+      return `${orderedSum(terms)}/${denom}`;
     }
     case 'weighted_cost': {
-      const rated = sorted
+      const rated = tranches
         .map((t, i) => ({ t, i }))
         .filter(({ t }) => t.rate !== null && t.rate !== undefined);
-      const num = rated.map(({ i }) => `${COL.amount}${rowOf(i)}*${COL.rate}${rowOf(i)}`).join('+');
-      const den = rated.map(({ i }) => `${COL.amount}${rowOf(i)}`).join('+');
+      const num = orderedSum(rated.map(({ i }) => `${COL.amount}${rowOf(i)}*${COL.rate}${rowOf(i)}`));
+      const den = orderedSum(rated.map(({ i }) => `${COL.amount}${rowOf(i)}`));
       return `(${num})/(${den})`;
     }
   }
@@ -181,7 +188,7 @@ export function writeCapitalStackSheet(
   const ws = wb.addWorksheet(CAPITAL_STACK_SHEET_NAME);
   ws.columns = [
     { width: 18 }, { width: 18 }, { width: 10 }, { width: 16 },
-    { width: 10 }, { width: 10 }, { width: 11 }, { width: 20 },
+    { width: 10 }, { width: 10 }, { width: 11 }, { width: 20 }, { width: 12 },
   ];
 
   let row = 1;
@@ -190,7 +197,7 @@ export function writeCapitalStackSheet(
   ws.mergeCells(`A${row}:H${row}`);
   row += 2;
 
-  const headers = ['Tranche', 'Class', 'Position', 'Amount', 'Rate', 'Accrual', 'Amort (mo)', 'Annual Debt Service'];
+  const headers = ['Tranche', 'Class', 'Position', 'Amount', 'Rate', 'Accrual', 'Amort (mo)', 'Annual Debt Service', 'Cash Rate'];
   for (const [i, h] of headers.entries()) {
     const cell = ws.getRow(row).getCell(i + 1);
     cell.value = h;
@@ -216,6 +223,11 @@ export function writeCapitalStackSheet(
     rate.value = t.rate ?? null;
     rate.numFmt = NUMBER_FORMATS.percent;
     wb.definedNames.add(absRef(ws.name, `${COL.rate}${r}`), trancheRangeName(t.position, 'rate'));
+
+    const cashRate = ws.getCell(`${COL.cash_rate}${r}`);
+    cashRate.value = t.cash_rate ?? null;
+    cashRate.numFmt = NUMBER_FORMATS.percent;
+    wb.definedNames.add(absRef(ws.name, `${COL.cash_rate}${r}`), trancheRangeName(t.position, 'cash_rate'));
 
     ws.getCell(`F${r}`).value = t.accrual ?? '';
     ws.getCell(`${COL.amort}${r}`).value = t.amortization_months ?? null;
@@ -303,11 +315,11 @@ export function writeCapitalStackSheet(
     const agreesCell = ws.getCell(`${SIZING_COL.agrees}${row}`);
     // Emit a live formula only when the verifier itself can evaluate the figure;
     // an unevaluable one is labeled, never approximated by a blank-referencing SUM.
-    if (recomputeSizing(fig, sorted, ctx) === null) {
+    if (recomputeSizing(fig, stack.tranches, ctx) === null) {
       recomputedCell.value = 'unverifiable';
       agreesCell.value = 'unverifiable';
     } else {
-      recomputedCell.value = { formula: sizingFormula(fig, sorted, rowOf), result: undefined };
+      recomputedCell.value = { formula: sizingFormula(fig, stack.tranches, index => rowOf(sorted.indexOf(stack.tranches[index]))), result: undefined };
       recomputedCell.numFmt = sizingNumFmt(fig.fn);
       const dp = CAPITAL_STACK_SIZING_DECIMALS[fig.fn];
       agreesCell.value = {

@@ -649,3 +649,7 @@ Optional, asset-class-independent `reserve_accounts` (Format §4.28) carries clo
 All twelve classes have packs and Excel layouts. Data center uses critical IT kW; manufactured housing uses sites. Their layouts bind every class calculation and the six standard income metrics to stated inputs. Hospitality also binds the former module's hotel and F&B fields; a metric whose optional hotel inputs are missing is `#N/A`, as the calc engine's null (#487). The web editor includes both new class names, primary-size fields and standard class sections. The official module packages were retired after 3.0.0 and deleted by RFC 0081.
 
 The Lite bridge emits bare Format 3.0 for all twelve classes (RFC 0081 D12) and recognizes the two new classes' standard section/size anchors; a Lite source stating any other `uw_version` is refused.
+
+Capital-stack Excel sizing retains original tranche-array operation order even
+when display rows sort by position. Split preferred service reads its separate
+live cash-rate cell; weighted cost still reads the full rate (#549).
