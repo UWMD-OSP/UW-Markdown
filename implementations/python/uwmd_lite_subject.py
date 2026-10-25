@@ -14,13 +14,15 @@ def lite_subject(raw):
     end=lines.index('---',1)
     frontmatter=parse_frontmatter(('\n'.join(lines[1:end])+'\n').encode('utf8')).value
     if any(isinstance(value,(dict,list)) for value in frontmatter.values()):raise SourceError('Lite frontmatter admits scalars only')
-    if frontmatter.get('uw_version')!='3.0' or frontmatter.get('uw_lite_version') not in ('1.0',1.0):raise SourceError('Explicit kept Format and Lite versions are required')
+    if frontmatter.get('uw_version')!='3.0' or not (frontmatter.get('uw_lite_version')=='1.0' or type(frontmatter.get('uw_lite_version')) in (int,float) and frontmatter['uw_lite_version']==1.0):raise SourceError('Explicit kept Format and Lite versions are required')
+    if re.search(r'^```json[ \t]+uw:section=',text,re.MULTILINE):raise SourceError('Mixed structured and Lite source')
     fields=[];seen=set()
     for line in lines[end+1:]:
         if '<!--' not in line or 'uw:' not in line:continue
         match=re.fullmatch(r'[ \t]*[-*+][ \t]+(.+?):[ \t]+(.+?)[ \t]+<!--[ \t]*uw:([A-Za-z][A-Za-z0-9_.-]*)(.*?)[ \t]*-->[ \t]*',line)
         if not match:raise SourceError('Malformed anchored Lite field')
         label,display,path,attributes=match.groups()
+        if not display.strip():raise SourceError('Empty Lite value')
         attrs={}
         for token in attributes.split():
             pair=re.fullmatch(r'([A-Za-z][A-Za-z0-9_-]*)=([^\s=]+)',token)

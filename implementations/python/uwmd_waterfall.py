@@ -74,13 +74,15 @@ def allocate_waterfall(waterfall,series):
                             p['pref']=p['pref']-value; p['pref_received']=p['pref_received']+value
                 cash=cash-payment
             schedule.append(dict(date=date,by_tier=cells))
+    if any(not finite(p[key]) for p in parties.values() for key in ('unreturned','pref','contributions','distributions','roc','pref_received')):
+        raise CalcError('CALC-TYPE-001','Allocation has no finite outcome')
     outcomes={}
     for key,p in parties.items():
         item=dict(contributions=p['contributions'],distributions=p['distributions'],
                   moic=p['distributions']/p['contributions'] if p['contributions']!=0 else None)
         try:
             if not p['contributions']: raise CalcError('CALC-XIRR-DIVERGE','No contributed capital')
-            item['xirr']=xirr(p['flows'],dc)
+            item['xirr']=xirr(p['flows'],dc,anchor=anchor)
         except CalcError:
             item['xirr']=None
         outcomes[key]=item

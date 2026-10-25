@@ -43,7 +43,7 @@ def metric_value(document,entry,context=None):
             inputs=_Inputs(document,context or {},entry.get('section_roles',{}),{})
             for path in entry['input_paths']:
                 section,_,tail=path.partition('.')
-                if tail in SIZE_CONTRACT.get(section,{}):
+                if section in ('property','components') and tail in SIZE_CONTRACT.get(section,{}):
                     value=field(inputs.section(section),tail)
                     if finite(value) and value<0:
                         return None,'negative_size_denominator'
