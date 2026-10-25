@@ -853,8 +853,8 @@ accept the RFC.
 
 **Inventory and identity.** First inventory the document's stated pro forma
 rows, including input-only and unknown/custom identities, independently of which
-checks can run. Separate pure stated-input/assumption rows from computed
-assertions before forming assertion counts; both remain visible. The exact
+checks can run. Apply the single row-classification test below before forming
+assertion counts; both assertions and input-only rows remain visible. The exact
 selected source/model and target address are authority;
 labels, equal values and implementation object identity are not. For a source
 operation retain the admitted original source and its selected physical block;
@@ -867,25 +867,42 @@ unselected peers remain retained source/validation evidence, not additional
 current assertions merely because they are retained. A binding cannot silently
 select a historical or arbitrary peer; preserve the existing selection refusal.
 
-**Input/assumption class — owner ruling.** A row is a computed assertion when the claim binds it as a target, when it is a §4b token target, or when its home is a dictionary calculation output for the document's class; any other inventoried row with no claimed relationship is an input only when the claim declares it as one, and is otherwise `relationship_not_claimed`.
+**Row classification — owner input/assumption ruling.** Apply this single
+ordered test to each inventoried row, using its actual selected home and the
+document's class rather than its label or authored row family:
 
-Pure stated inputs and assumption/
-input-only rows are listed in a separate ordered `inputs` collection, with their
-canonical source address, authored row family and input/assumption reason. They
-receive no financial assertion verdict. Report `input_count` separately;
-exclude these rows from assertion total, by_verdict and by_row_family sums.
-Their presence neither earns verification nor changes the exit code. Do not
-hide them as exclusions or drop them from the independent inventory.
+1. Classify the row as a computed assertion if the claim binds it as a target,
+   it is a §4b token target, its home is a dictionary calculation output for the
+   document's class, or its home is one of the section2 return headlines
+   `dcf.returns.levered_irr`, `dcf.returns.unlevered_irr`,
+   `dcf.returns.equity_multiple` or `dcf.returns.npv`. The home tests apply even
+   without a claimed relationship. A row meeting this branch remains computed
+   if it is also an input to another check or is declared/labelled an input or
+   assumption; such a declaration cannot move it to the next branch.
+2. Only if branch1 does not apply, classify the row as input-only when the claim
+   explicitly declares it as an input/assumption.
+3. Otherwise retain the row as an unverifiable assertion with reason
+   `relationship_not_claimed`.
 
-This does not reclassify an unsupported computed assertion as an assumption.
-An explicitly stated derived/headline target remains a computed assertion even
-if it is also an input to another check or labelled an assumption. Unknown/
-unsupported computed identities remain unverifiable and affect exit1. A
-contradictory/ambiguous computed-versus-input declaration cannot be used to
-launder that target out of the assertion inventory. Ordinary validation errors
-still affect the exit; an input's absence/invalidity can still make a dependent
-computed assertion unavailable or failed under its own contract. No fourth
-financial verdict is added. Apply the same address/order rules to `inputs`.
+For the dictionary home test use the existing class-scoped calculation and its
+registered statement homes (quick_metrics, output_sections and aliases), never
+an inferred binding from a field name or input_paths. The section2
+`dcf.returns.discount_rate_used` home is not one of the four return headlines;
+its input-only classification still requires branch2. This classification does
+not define another financial identity or make an unchecked headline verified.
+Unknown/unsupported computed identities remain unverifiable and affect exit1.
+
+Only rows assigned to branch2 are listed in the separate ordered `inputs`
+collection, with their canonical source address, authored row family and
+input/assumption reason. They receive no financial assertion verdict. Report
+`input_count` separately; exclude these rows from assertion total, by_verdict
+and by_row_family sums. Their presence neither earns verification nor changes
+the exit code. Do not hide them as exclusions or drop them from the independent
+inventory. A contradictory/ambiguous declaration cannot override branch1 or
+launder a computed target out of the assertion inventory. Ordinary validation
+errors still affect the exit; an input's absence/invalidity can still make a
+dependent computed assertion unavailable or failed under its own contract. No
+fourth financial verdict is added. Apply the same address/order rules to `inputs`.
 
 **Canonical target context before keys.** Resolve each declaration against one
 admitted snapshot before duplicate elimination. A source block address is its
@@ -961,8 +978,9 @@ Report `total`, three `by_verdict` counts and the same three counts plus total
 for every nonempty `by_row_family` entry. The sums must agree exactly, and empty
 reports contain explicit zeros. Computed assertions without a defined identity
 or independent relationship are unverifiable with distinct reasons, never
-coverage exclusions. Pure stated-input/assumption rows are in `inputs` and
-`input_count`, outside these assertion denominators and without an exit effect.
+coverage exclusions. Only branch2 rows under the classification above are in
+`inputs` and `input_count`, outside these assertion denominators and without an
+exit effect; accounting never reclassifies a branch1 computed assertion.
 Relationship/check/operation counts, if supplied, are separate from assertions.
 
 Report inapplicable relationships as exclusions with reasons. A component missing
@@ -1004,8 +1022,8 @@ refusal/state rule: e.g. a stated dated XIRR refused by its accepted procedure i
 failed, whereas an undefined MOIC with no outflows is unverifiable. Do not
 flatten both into a new generic arithmetic policy. For new candidate identities
 whose contract is not yet accepted, report `identity_not_defined` rather than
-executing guessed arithmetic. A valid target with no relationship uses
-`relationship_not_claimed`; missing/null bound inputs use their existing
+executing guessed arithmetic. An assertion retained by the classification above
+with no claimed relationship uses `relationship_not_claimed`; missing/null bound inputs use their existing
 missing-input reason, with original typed evidence retained where available.
 
 Evaluate independently decidable relationships even when a peer cannot run.
@@ -1038,7 +1056,7 @@ No command writes a document, cached result or receipt.
 
 | Outcome | JSON / exit contract |
 |---|---|
-| Completed assessment | `status: "completed"`, `profile: "pro-forma"`, `level: "L1"`, exact selection evidence, ordered `assertions` and `relationships`, `inputs`, separate `input_count`, `coverage`, `gaps`, `exclusions`, profile-claim findings and separate base `validation`. **Owner-selected U9 option A:** Exit0 iff there are no validation errors (base or profile-claim), failed computed assertions, unverifiable computed assertions or unmet required obligations in an explicitly declared ledger universe. A gap-free claim with zero computed assertions exits0, even if inputs/assumptions are listed, with explicit zero assertion coverage and no financial assurance claim. Exit1 otherwise; declared gaps remain separate from assertion counts, without fake assertions, minimum rows or operation refusal. |
+| Completed assessment | `status: "completed"`, `profile: "pro-forma"`, `level: "L1"`, exact selection evidence, ordered `assertions` and `relationships`, `inputs`, separate `input_count`, `coverage`, `gaps`, `exclusions`, profile-claim findings and separate base `validation`. **Owner-selected U9 option A:** Exit0 iff there are no validation errors (base or profile-claim), failed computed assertions, unverifiable computed assertions or unmet required obligations in an explicitly declared ledger universe. A gap-free claim with zero computed assertions exits0, even if branch2 inputs/assumptions are listed, with explicit zero assertion coverage and no financial assurance claim. Exit1 otherwise; declared gaps remain separate from assertion counts, without fake assertions, minimum rows or operation refusal. |
 | Operation cannot admit/inventory the request | `status: "refused"` and `error` satisfying ProtocolError; exit1. Preserve an existing typed source/selection error. Propose narrowly scoped `CALC-PRO-FORMA` (category `calc`) for malformed CLI/profile-claim syntax, absent explicit profile claim or an unreadable requested file only; do not use it as a fallback for uncoded Format failures, unknown identities or missing arithmetic inputs. No fabricated zero-coverage success. |
 | Unrecoverable internal implementation failure | Exit2 under II.6a.2; stdout need not be a result. A missing/unreadable requested file is the typed request refusal above, not a financial disagreement. |
 
@@ -1064,8 +1082,9 @@ a typed operation refusal. M07 required-binding reuse exits1 as an unmet require
 obligation; M15 exits1 as a profile-claim validation error. Under the later owner
 ruling, M10 now lists one verified computed assertion plus one separate input/
 assumption row and exits0 when otherwise clean. Its original total2/exit1 witness
-remains unchanged historical evidence. A claim containing only valid assumptions
-has zero computed assertions, visible inputs and exit0 with no financial assurance.
+remains unchanged historical evidence. A claim whose inventoried rows all qualify
+for branch2 has zero computed assertions, visible inputs and exit0 with no
+financial assurance; an input declaration alone cannot establish that case.
 Unknown computed assertions remain unverifiable/exit1. An FV error-band deal-quality
 flag is not by itself a validation error or profile arithmetic failure.
 
