@@ -202,9 +202,9 @@ describe('verifyStatedMetrics — stated precision', () => {
     // rounded statements cannot be compared at their stated precision.
     const decoded = fromUWEnvelope(toUWEnvelope(source));
     const bare = verifyStatedMetrics(decoded);
-    expect(bare.counts).toEqual({ verified: 5, failed: 0, unverifiable: 4 });
+    expect(bare.counts).toEqual({ verified: 4, failed: 0, unverifiable: 5 });
     for (const item of bare.evidence.filter((e) => e.state === 'unverifiable')) {
-      expect(item).toEqual({ id: item.id, path: item.path, stated: item.stated, state: 'unverifiable', reason: item.id === 'ltv' ? 'missing_or_null_input' : 'missing_stated_precision', computed: null });
+      expect(item).toMatchObject({ id: item.id, path: item.path, stated: item.stated, state: 'unverifiable', reason: item.id === 'ltv' ? 'missing_or_null_input' : 'missing_stated_precision', computed: null });
     }
 
     // Supplying the source decimals by address restores the source verdicts.

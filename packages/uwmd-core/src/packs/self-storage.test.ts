@@ -99,8 +99,10 @@ describe('SELF_STORAGE_PACK', () => {
     const expenses = noi.content['expenses'] as Record<string, number>;
     const uses = sus.content['uses'] as Record<string, number>;
 
-    const values: Record<string, number | null> = {
-      ltv_basis: null, total_project_cost: null,
+    // This parity scenario explicitly authors purchase-price in its current model.
+    (parsed.sections['debt_structure'] as { content: Record<string, unknown> }).content.ltv_basis = 'purchase-price';
+    const values: Record<string, number | string | null> = {
+      ltv_basis: '"purchase-price"', total_project_cost: null,
       noi: noi.content['net_operating_income'] as number,
       effective_gross_income: lineValue(income['effective_gross_income']),
       gross_potential_rent: lineValue(income['gross_potential_rent']),

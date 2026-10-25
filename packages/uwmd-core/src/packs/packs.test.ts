@@ -206,8 +206,10 @@ describe('Excel emit ↔ evaluateCalc parity', () => {
     const propertyContent = parsed.sections['property'] as { content: Record<string, unknown> };
     const susContent = parsed.sections['sources_uses'] as { content: Record<string, unknown> };
 
-    const values: Record<string, number | null> = {
-      ltv_basis: null, total_project_cost: null,
+    // This parity scenario explicitly authors purchase-price in its current model.
+    (parsed.sections['debt_structure'] as { content: Record<string, unknown> }).content.ltv_basis = 'purchase-price';
+    const values: Record<string, number | string | null> = {
+      ltv_basis: '"purchase-price"', total_project_cost: null,
       noi: noiContent.content['net_operating_income'] as number,
       purchase_price: valuationContent.content['purchase_price'] as number,
       underwritten_value: (valuationContent.content['underwritten_value'] as number | undefined) ?? null,

@@ -103,8 +103,10 @@ describe('LAND_PACK', () => {
     const expenses = noi.content['expenses'] as Record<string, number>;
     const uses = sus.content['uses'] as Record<string, number>;
 
-    const values: Record<string, number | null> = {
-      ltv_basis: null, total_project_cost: null,
+    // This parity scenario explicitly authors purchase-price in its current model.
+    (parsed.sections['debt_structure'] as { content: Record<string, unknown> }).content.ltv_basis = 'purchase-price';
+    const values: Record<string, number | string | null> = {
+      ltv_basis: '"purchase-price"', total_project_cost: null,
       effective_gross_income: (noi.content['income'] as Record<string, number>)['effective_gross_income']!,
       total_operating_expenses: expenses['total_operating_expenses']!,
       purchase_price: valuation.content['purchase_price'] as number,

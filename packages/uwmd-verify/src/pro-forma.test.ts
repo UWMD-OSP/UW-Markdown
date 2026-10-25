@@ -151,3 +151,11 @@ it('validates every completed fixture report and accepted claim against the sync
   }
   expect(claimSchema({ profile: 'pro-forma', level: 'L2' })).toBe(false);
 });
+
+it('completes malformed ledger bindings as visible findings and required gaps', () => {
+  const event = at('cash_flow_series','/series/0');
+  const r = verifyProForma(specimen({ pro_forma: claimOf([], { ledger: { universe: [{event,role:'acquisition',required:true}], bindings:[{event}], exclusions:[] } }) }, {cash_flow_series:flows}));
+  expect(r.status).toBe('completed'); expect(r.exit_code).toBe(1);
+  expect(r.profile_claim_findings).toContainEqual(expect.objectContaining({code:'out_of_universe_binding'}));
+  expect(r.gaps).toHaveLength(1); expect(r.coverage.total).toBe(0);
+});

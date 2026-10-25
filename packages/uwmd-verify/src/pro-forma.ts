@@ -337,7 +337,7 @@ function assessLedger(ledger: ProFormaLedger, resolve: (address: unknown) => Res
     const key = JSON.stringify([member.key, u.role]);
     if (emitted.has(key)) continue; emitted.add(key);
     const matching = bindings.filter(b => b.key !== null && b.key === member.key);
-    const semantics = new Set(matching.map(b => canonicalize({ event: b.key, role: b.raw.role,
+    const semantics = new Set(matching.map(b => canonicalize({ event: b.key, role: b.raw.role ?? null,
       target: b.raw.target === undefined ? null : keyOf(b.raw.target), unknown: Object.entries(b.raw).filter(([k]) => !['event', 'role', 'target'].includes(k)) })));
     const excluded = ledger.exclusions.filter(e => record(e) && keyOf(e.event) === member.key && e.role === u.role);
     const conflictingUniverse = members.some(m => m !== member && m.key === member.key &&

@@ -337,6 +337,7 @@ section names, and never reported as passed or failed.
 | `portfolio` | Read and validate portfolio and relationship sidecars (Part XV). | `portfolio-relationships` |
 | `sensitivity` | Reproduce stated sensitivity grids (§VIII.7). | `calc-sensitivity` |
 | `stochastic` | Reproduce stated seeded distributions with the exact sampler (§VIII.8). | `calc-stochastic` |
+| `pro-forma` | Verify explicitly bound L1 assertions and declared-ledger membership under RFC0092 and its wire contract below. | `pro-forma-verify` |
 
 A Verifier without the Module profile reports module and
 document-declared calculations `unverifiable`, never wrong.

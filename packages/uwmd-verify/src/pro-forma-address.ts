@@ -67,7 +67,7 @@ export function proFormaAddressResolver(parsed: ParsedUWFile, source: boolean) {
             : ['extensions', address.section, 'blocks', indexes[0]!, 'block', 'content'];
         }
       }
-      if (!block || block.meta?.lifecycle?.superseded === true) throw new CalcError('CALC-RESOLVE-002', 'Exact current section variant is unavailable.');
+      if (!block || block.annotation.superseded === true || block.meta?.lifecycle?.superseded === true) throw new CalcError('CALC-RESOLVE-002', 'Exact current section variant is unavailable.');
       value = blockPayload(block);
     }
     const payload = value;
