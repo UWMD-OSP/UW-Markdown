@@ -1624,13 +1624,13 @@ switch (command) {
       const options = parseProFormaArgs(args);
       let bytes: Buffer;
       try { bytes = readFileSync(options.file); }
-      catch (error) { throw new CalcError('CALC-PRO-FORMA', 'Cannot read requested file: ' + (error instanceof Error ? error.message : String(error)), 'source'); }
+      catch (error) { throw new CalcError('CALC-PRO-FORMA', `Cannot read requested file: ${error instanceof Error ? error.message : String(error)}`, 'source'); }
       let source: string;
       try { source = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes); }
       catch { throw new UWSourceRepresentationError('SOURCE_UTF8_INVALID', 'Source bytes must be valid UTF-8.'); }
       const report = verifyProForma(source);
       if (options.json) console.log(JSON.stringify(report, null, 2));
-      else console.log('Pro-forma assessment: ' + report.coverage.total + ' computed assertions, ' + report.input_count + ' inputs; exit ' + report.exit_code);
+      else console.log(`Pro-forma assessment: ${report.coverage.total} computed assertions, ${report.input_count} inputs; exit ${report.exit_code}`);
       process.exitCode = report.exit_code;
     } catch (error) {
       const proto = error instanceof CalcError ? error.proto

@@ -134,13 +134,13 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
   };
   walk(blockPayload(block!), []);
   claim.rows.forEach((row, i) => {
-    const origin = '/pro_forma/rows/' + i;
+    const origin = `/pro_forma/rows/${i}`;
     if (!record(row)) { inventory(undefined, origin, false); addFinding('invalid_row', 'invalid_row', [origin]); return; }
     inventory(row.address, origin, false, row);
   });
   const pending: Array<{ item: Item; raw: unknown; rel?: ProFormaRelationship; inputs: Map<string, ResolvedProFormaAddress>; outcome?: ProFormaIdentityOutcome; valid: boolean; origins: string[]; excluded?: boolean }> = [];
   claim.relationships.forEach((declaration, i) => {
-    const origin = '/pro_forma/relationships/' + i;
+    const origin = `/pro_forma/relationships/${i}`;
     if (!record(declaration)) { inventory(undefined, origin, true); addFinding('invalid_relationship', 'invalid_relationship', [origin]); return; }
     const applicability = declaration.applicability;
     const item = inventory(declaration.target, origin, true);
@@ -156,7 +156,7 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
       if (!record(binding) || typeof binding.role !== 'string' || !allowedKeys(binding, ['role', 'address']) || inputs.has(binding.role)) { valid = false; continue; }
       try {
         const r = resolver.resolve(binding.address); inputs.set(binding.role, r);
-        if (finite(r.value)) inventory(binding.address, origin + '/inputs/' + j);
+        if (finite(r.value)) inventory(binding.address, `${origin}/inputs/${j}`);
       } catch (error) { valid = false; item.reasons.push(errorEvidence(error)?.code ?? 'unresolved_input'); }
     }
     // The native fallback occupancy source is a required computed prerequisite.
@@ -164,7 +164,7 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
       const schedule = inputs.get('schedule');
       if (schedule && record(schedule.value) && record(schedule.value.stabilized_summary) && finite(schedule.value.stabilized_summary.occupied_sf)) {
         const address = { ...schedule.address, pointer: '/stabilized_summary/occupied_sf' };
-        const r = resolver.resolve(address); inputs.set('native_occupied_summary', r); inventory(address, origin + '/native_prerequisite');
+        const r = resolver.resolve(address); inputs.set('native_occupied_summary', r); inventory(address, `${origin}/native_prerequisite`);
       }
     }
     if (valid && record(applicability) && applicability.applicable === false) {
@@ -246,7 +246,7 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
       if (entries.some(x => x.semantic !== sem)) { assertion.reasons.push('relationship_collision'); for (const e of entries) e.assertion.reasons.push('relationship_collision'); }
       entries.push({ semantic: sem, assertion }); ids.set(declaredId, entries);
     }
-    const coarseKey = assertion.key + ':' + String(record(p.raw) ? p.raw.identity : '') + ':' + String(record(p.raw) ? p.raw.procedure_version : '');
+    const coarseKey = `${assertion.key}:${String(record(p.raw) ? p.raw.identity : '')}:${String(record(p.raw) ? p.raw.procedure_version : '')}`;
     const variants = coarse.get(coarseKey) ?? [];
     if (variants.some(v => v.semantic !== sem)) {
       assertion.reasons.push('relationship_collision');
@@ -306,7 +306,8 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
     if (!a.relationships.length) a.reasons.push('relationship_not_claimed');
     a.reasons = [...new Set(a.reasons)];
     report.coverage.total++; report.coverage.by_verdict[a.state]++;
-    const counts = report.coverage.by_row_family[a.row_family] ??= { total: 0, verified: 0, failed: 0, unverifiable: 0 };
+    report.coverage.by_row_family[a.row_family] ??= { total: 0, verified: 0, failed: 0, unverifiable: 0 };
+    const counts = report.coverage.by_row_family[a.row_family]!;
     counts.total++; counts[a.state]++;
   }
   if (claim.ledger !== undefined) assessLedger(claim.ledger, resolver.resolve, report);
@@ -321,8 +322,8 @@ function assessLedger(ledger: ProFormaLedger, resolve: (address: unknown) => Res
     report.profile_claim_findings.push({ code: 'invalid_ledger', severity: 'error', reason: 'invalid_ledger', origins: ['/pro_forma/ledger'] }); return;
   }
   const keyOf = (address: unknown): string | null => { try { return resolve(address).physical_key; } catch { return null; } };
-  const members = ledger.universe.map((u, i) => ({ raw: u, key: record(u) ? keyOf(u.event) : null, origin: '/pro_forma/ledger/universe/' + i }));
-  const bindings = ledger.bindings.map((b, i) => ({ raw: b, key: record(b) ? keyOf(b.event) : null, origin: '/pro_forma/ledger/bindings/' + i }));
+  const members = ledger.universe.map((u, i) => ({ raw: u, key: record(u) ? keyOf(u.event) : null, origin: `/pro_forma/ledger/universe/${i}` }));
+  const bindings = ledger.bindings.map((b, i) => ({ raw: b, key: record(b) ? keyOf(b.event) : null, origin: `/pro_forma/ledger/bindings/${i}` }));
   for (const binding of bindings) {
     if (!record(binding.raw) || !allowedKeys(binding.raw, ['event', 'role', 'target']) || typeof binding.raw.role !== 'string' ||
       binding.key === null || !members.some(m => m.key === binding.key && record(m.raw) && m.raw.role === binding.raw.role)) {
@@ -352,7 +353,7 @@ function assessLedger(ledger: ProFormaLedger, resolve: (address: unknown) => Res
     }
   }
   ledger.exclusions.forEach((e, i) => {
-    const origin = '/pro_forma/ledger/exclusions/' + i;
+    const origin = `/pro_forma/ledger/exclusions/${i}`;
     if (!record(e) || !allowedKeys(e, ['event', 'role', 'reason']) || !addressShape(e.event) || typeof e.role !== 'string' ||
       typeof e.reason !== 'string' || !e.reason.length) {
       report.profile_claim_findings.push({ code: 'invalid_exclusion', severity: 'error', reason: 'invalid_exclusion', origins: [origin] }); return;

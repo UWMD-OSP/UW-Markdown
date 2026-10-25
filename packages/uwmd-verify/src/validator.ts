@@ -501,7 +501,7 @@ function checkCrossSectionConsistency(
             const implied = amount / value;
             const diff = Math.abs(implied - stated);
             if (diff > 0.005) issues.push({ code: 'CC-02', severity: 'warning', section: 'debt_structure', field: 'ltv',
-              message: 'CC-02: Stated LTV differs from loan amount divided by the explicit ' + String(basis) + ' denominator.', value: diff });
+              message: `CC-02: Stated LTV differs from loan amount divided by the explicit ${String(basis)} denominator.`, value: diff });
           }
         }
       }

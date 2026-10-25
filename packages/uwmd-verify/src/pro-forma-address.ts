@@ -13,7 +13,7 @@ export const record = (v: unknown): v is Record<string, unknown> =>
 export const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 const own = (v: unknown, key: string): boolean => (record(v) || Array.isArray(v)) && Object.hasOwn(v, key);
 export function pointerOf(parts: readonly (string | number)[]): string {
-  return parts.map(p => '/' + String(p).replace(/~/g, '~0').replace(/\//g, '~1')).join('');
+  return parts.map(p => `/${String(p).replace(/~/g, '~0').replace(/\//g, '~1')}`).join('');
 }
 export interface ResolvedProFormaAddress {
   address: ProFormaAddress;
@@ -90,7 +90,7 @@ export function proFormaAddressResolver(parsed: ParsedUWFile, source: boolean) {
         const row = cursor[parts[i] as number];
         if (record(row)) {
           if (typeof row.period === 'string') period = row.period;
-          else if (Number.isInteger(row.year)) period = 'Y' + String(row.year);
+          else if (Number.isInteger(row.year)) period = `Y${String(row.year)}`;
         }
       }
       cursor = (cursor as Record<string | number, unknown>)?.[parts[i]!];

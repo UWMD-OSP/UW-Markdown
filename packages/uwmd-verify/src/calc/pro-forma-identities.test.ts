@@ -5,8 +5,9 @@ import { evaluateProFormaIdentity } from './pro-forma-identities.js';
 import type { ProFormaRelationship } from '../pro-forma-types.js';
 const addr = (section: string, pointer = '') => ({ section, variant: null, pointer });
 function run(identity: string, stated: number, extras: Record<string, unknown>, bindings: Array<[string,string,string]>, options: Partial<ProFormaRelationship> = {}) {
-  const source = '---\nuw_version: "3.0"\nasset_class: office\ncurrency_code: USD\n---\n' + Object.entries({ dcf: { result: stated }, ...extras }).map(([section, value]) => `\n\`\`\`json uw:section=${section} source=manual\n${JSON.stringify(value)}\n\`\`\`\n`).join('');
-  const parsed = parseUWFile(source), resolver = proFormaAddressResolver(parsed, true);
+  const source = `---\nuw_version: "3.0"\nasset_class: office\ncurrency_code: USD\n---\n${Object.entries({ dcf: { result: stated }, ...extras }).map(([section, value]) => `\n\`\`\`json uw:section=${section} source=manual\n${JSON.stringify(value)}\n\`\`\`\n`).join('')}`;
+  const parsed = parseUWFile(source);
+  const resolver = proFormaAddressResolver(parsed, true);
   const target = resolver.resolve(addr('dcf', '/result'));
   const rel: ProFormaRelationship = { identity, procedure_version: '1', target: addr('dcf', '/result'), inputs: bindings.map(([role, section, pointer]) => ({ role, address: addr(section, pointer) })), unit: '%', currency: 'USD', ...options };
   return evaluateProFormaIdentity(rel, target, new Map(rel.inputs.map(b => [b.role, resolver.resolve(b.address)])), { cash_flow_timing: 'dated', irr_frequency: 'xirr', ...rel.conventions }, parsed, 6);

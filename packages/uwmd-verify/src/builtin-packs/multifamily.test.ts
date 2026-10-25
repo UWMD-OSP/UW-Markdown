@@ -88,7 +88,7 @@ describe.each(ASSET_CLASSES)('%s declared LTV basis (RFC 0092)', assetClass => {
   const ltv = getPackForAssetClass(assetClass)!.calculations!.find(c => c.id === 'ltv')!;
   const value = (basis: unknown, valuation: Record<string, unknown> = { purchase_price: 100000, underwritten_value: 120000 }, cost: unknown = 150000) => {
     const sections = { debt_structure: { loan_amount: 75000, ltv_basis: basis }, valuation, sources_uses: { total_project_cost: cost } };
-    const parsed = parseUWFile(`---\nuw_version: "3.0"\nasset_class: ${assetClass}\n---\n` + Object.entries(sections).map(([id, v]) => `\n\`\`\`json uw:section=${id} source=manual\n${JSON.stringify(v)}\n\`\`\`\n`).join(''));
+    const parsed = parseUWFile(`---\nuw_version: "3.0"\nasset_class: ${assetClass}\n---\n${Object.entries(sections).map(([id, v]) => `\n\`\`\`json uw:section=${id} source=manual\n${JSON.stringify(v)}\n\`\`\`\n`).join('')}`);
     return evaluateCalc(ltv, { parsed, prior_results: {}, locale: 'en-US' });
   };
   it.each([['purchase-price', 0.75], ['underwritten-value', 0.625], ['total-project-cost', 0.5]])('uses only the declared %s denominator', (basis, expected) => {

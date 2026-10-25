@@ -6,8 +6,8 @@ import type { UWBlock } from './types.js';
 const base = new URL('../../../conformance/pro-forma/', import.meta.url);
 const dirs = readdirSync(base, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name);
 it.each(dirs)('satisfies the authored %s control without changing source bytes', name => {
-  const source = readFileSync(new URL(name + '/deal.uwx.md', base), 'utf8');
-  const expected = JSON.parse(readFileSync(new URL(name + '/expected.json', base), 'utf8'));
+  const source = readFileSync(new URL(`${name}/deal.uwx.md`, base), 'utf8');
+  const expected = JSON.parse(readFileSync(new URL(`${name}/expected.json`, base), 'utf8'));
   const before = source;
   const report = verifyProForma(source);
   expect(report).toMatchObject(expected);
@@ -39,8 +39,7 @@ it('does not invoke accessors in an untrusted current model', () => {
 // Authored boundary controls exercise composed assessment rather than only helpers.
 const at = (section: string, pointer = '', variant: string | null = null) => ({ section, variant, pointer });
 function specimen(dcf: Record<string, unknown>, sections: Record<string, unknown> = {}) {
-  return '---\nuw_version: "3.0"\nasset_class: office\ncurrency_code: USD\ndeal_id: SYNTHETIC\ndeal_name: Synthetic controls\ndeal_stage: screening\n---\n' +
-    Object.entries({ dcf, ...sections }).map(([section, value]) => `\n\`\`\`json uw:section=${section} source=manual\n${JSON.stringify(value)}\n\`\`\`\n`).join('');
+  return `---\nuw_version: "3.0"\nasset_class: office\ncurrency_code: USD\ndeal_id: SYNTHETIC\ndeal_name: Synthetic controls\ndeal_stage: screening\n---\n${Object.entries({ dcf, ...sections }).map(([section, value]) => `\n\`\`\`json uw:section=${section} source=manual\n${JSON.stringify(value)}\n\`\`\`\n`).join('')}`;
 }
 const claimOf = (relationships: unknown[], extra: Record<string, unknown> = {}) => ({ profile: 'pro-forma', level: 'L1', convention_registry: 'uwmd.pro-forma.l1.1', rows: [], relationships, ...extra });
 const moicRel = () => ({ identity: 'moic', procedure_version: '1', target: at('dcf', '/result'), inputs: [{ role: 'stream', address: at('cash_flow_series') }], unit: 'x', conventions: { cash_flow_timing: 'dated' } });
@@ -52,7 +51,8 @@ it.each([
   { applicability: { applicable: false, reason: 'explicit exclusion' } },
   { unexpected: true },
 ])('retains conflicting complete semantics under one physical assertion: %j', change => {
-  const a = { ...moicRel(), id: 'same' }, b = { ...a, ...change };
+  const a = { ...moicRel(), id: 'same' };
+  const b = { ...a, ...change };
   const r = verifyProForma(specimen({ result: 1.2, pro_forma: claimOf([a,b]) }, { cash_flow_series: flows }));
   expect(r.assertions).toHaveLength(1);
   expect(r.assertions[0]!.state).toBe('unverifiable');
@@ -74,12 +74,11 @@ it('keeps an independently established failure when a conflicting method is unav
   expect(r.relationships.map(r => r.local_state)).toEqual(['failed','unverifiable']);
 });
 it('blocks self-copy and cycles whose local arithmetic agrees', () => {
-  const value = at('valuation', '/underwritten_value'), cost = at('sources_uses', '/total_project_cost');
+  const value = at('valuation', '/underwritten_value');
+  const cost = at('sources_uses', '/total_project_cost');
   const a = ltvRel(value, cost, at('debt_structure', '', 'cost'));
   const b = ltvRel(cost, value, at('debt_structure', '', 'value'));
-  const source = specimen({ pro_forma: claimOf([a,b]) }, { valuation: { underwritten_value: 1 }, sources_uses: { total_project_cost: 1 } }) +
-    '\n```json uw:section=debt_structure variant=cost source=manual\n{"_role":"senior","loan_amount":1,"ltv_basis":"total-project-cost"}\n```\n' +
-    '\n```json uw:section=debt_structure variant=value source=manual\n{"_role":"junior","loan_amount":1,"ltv_basis":"underwritten-value"}\n```\n';
+  const source = `${specimen({ pro_forma: claimOf([a,b]) }, { valuation: { underwritten_value: 1 }, sources_uses: { total_project_cost: 1 } })}\n\`\`\`json uw:section=debt_structure variant=cost source=manual\n{"_role":"senior","loan_amount":1,"ltv_basis":"total-project-cost"}\n\`\`\`\n\n\`\`\`json uw:section=debt_structure variant=value source=manual\n{"_role":"junior","loan_amount":1,"ltv_basis":"underwritten-value"}\n\`\`\`\n`;
   const r = verifyProForma(source);
   expect(r.relationships.map(r => r.local_state)).toEqual(['verified','verified']);
   expect(r.coverage.by_verdict).toEqual({ verified: 0, failed: 0, unverifiable: 2 });
@@ -99,7 +98,8 @@ it('does not let two selected loans create two assertions for one target', () =>
 it('uses exact model precision evidence and never stale source tokens', () => {
   const source = specimen({ result: 0.63, pro_forma: claimOf([ltvRel()], { rows: [{ address: at('valuation', '/underwritten_value'), kind: 'input' }] }) }, { valuation: { underwritten_value: 120 }, debt_structure: { loan_amount: 75, ltv_basis: 'underwritten-value' } });
   const model = parseUWFile(source);
-  const r = verifyProForma(model), key = r.assertions.find(a => a.address.section === 'dcf')!.key;
+  const r = verifyProForma(model);
+  const key = r.assertions.find(a => a.address.section === 'dcf')!.key;
   expect(r.relationships[0]!.reason).toBe('missing_stated_precision');
   const before = JSON.stringify(model);
   expect(verifyProForma(model, { numericTokens: new Map([[key, '0.63']]) }).relationships[0]!.state).toBe('verified');
@@ -108,7 +108,7 @@ it('uses exact model precision evidence and never stale source tokens', () => {
   expect(JSON.stringify(model)).toBe(before);
 });
 it.each(['0.63','6.3e-1','0.630000'])('retains original fractional LTV token precision: %s', token => {
-  const source = specimen({ result: 0.63, pro_forma: claimOf([ltvRel()], { rows: [{ address: at('valuation', '/underwritten_value'), kind: 'input' }] }) }, { valuation: { underwritten_value: 120 }, debt_structure: { loan_amount: 75, ltv_basis: 'underwritten-value' } }).replace('"result":0.63', '"result":' + token);
+  const source = specimen({ result: 0.63, pro_forma: claimOf([ltvRel()], { rows: [{ address: at('valuation', '/underwritten_value'), kind: 'input' }] }) }, { valuation: { underwritten_value: 120 }, debt_structure: { loan_amount: 75, ltv_basis: 'underwritten-value' } }).replace('"result":0.63', `"result":${token}`);
   expect(verifyProForma(source).relationships[0]!.state).toBe(token === '0.630000' ? 'failed' : 'verified');
 });
 it('does not recursively turn a helper stream into numeric assertions', () => {
@@ -121,7 +121,8 @@ it('keeps unknown input families visible without an assertion or exit effect', (
   expect(r.profile_claim_findings).toContainEqual(expect.objectContaining({ code: 'unrecognized_family' }));
 });
 it('accounts for distinct equal ledger events and conflicting target allocations', () => {
-  const event = at('cash_flow_series','/series/0'), other = at('cash_flow_series','/series/1');
+  const event = at('cash_flow_series','/series/0');
+  const other = at('cash_flow_series','/series/1');
   const ledger = { universe: [event,other].map(event => ({ event, role: 'acquisition', required: true })), bindings: [event,other].map(event => ({ event, role: 'acquisition' })), exclusions: [] };
   const assess = (value: unknown) => verifyProForma(specimen({ pro_forma: claimOf([], { ledger: value }) }, { cash_flow_series: { ...flows, series: [flows.series[0], flows.series[0]] } }));
   expect(assess(ledger).gaps).toHaveLength(0); expect(assess(ledger).coverage.total).toBe(0);
@@ -141,9 +142,9 @@ it('validates every completed fixture report and accepted claim against the sync
   const reportSchema = ajv.getSchema('https://uwmd.org/schemas/pro-forma-report.schema.json')!;
   const claimSchema = ajv.getSchema('https://uwmd.org/schemas/pro-forma-claim.schema.json')!;
   for (const name of dirs) {
-    const source = readFileSync(new URL(name + '/deal.uwx.md', base), 'utf8');
+    const source = readFileSync(new URL(`${name}/deal.uwx.md`, base), 'utf8');
     const report = verifyProForma(source);
-    expect(reportSchema(report), name + ': ' + JSON.stringify(reportSchema.errors)).toBe(true);
+    expect(reportSchema(report), `${name}: ${JSON.stringify(reportSchema.errors)}`).toBe(true);
     if (name === 'verified-moic' || name === 'empty') {
       const claim = (parseUWFile(source).sections.dcf as UWBlock).content.pro_forma;
       expect(claimSchema(claim), JSON.stringify(claimSchema.errors)).toBe(true);

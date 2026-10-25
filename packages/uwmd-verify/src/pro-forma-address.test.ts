@@ -11,15 +11,18 @@ it('decodes once against the actual tree and preserves typed indexes', () => {
   expect(() => r.resolve(address('/rows/01'))).toThrow();
   expect(() => r.resolve(address('/a~1b/~2x'))).toThrow();
   expect(() => r.resolve({ ...address(''), variant: 'default' })).toThrow();
-  const a = r.resolve(address('/rows/2')), b = r.resolve(address('/rows/10'));
+  const a = r.resolve(address('/rows/2'));
+  const b = r.resolve(address('/rows/10'));
   expect(compareProFormaTargets(a.target, b.target, a.parts, b.parts)).toBeLessThan(0);
 });
 it('uses source block ordinals and source precision, and model paths with explicit precision', () => {
   const model = parseUWFile(source);
-  const r = proFormaAddressResolver(model, true), target = r.resolve(address('/a~1b/~0x'));
+  const r = proFormaAddressResolver(model, true);
+  const target = r.resolve(address('/a~1b/~0x'));
   expect(target.target).toMatchObject({ block_address_kind: 'source', block_address: 0 });
   expect(r.precision(target)).toBe(4);
-  const current = proFormaAddressResolver(model, false), mt = current.resolve(address('/a~1b/~0x'));
+  const current = proFormaAddressResolver(model, false);
+  const mt = current.resolve(address('/a~1b/~0x'));
   expect(mt.target.block_address).toEqual(['sections', 'dcf', 'content']);
   expect(current.precision(mt)).toBeUndefined();
   expect(current.precision(mt, new Map([[mt.key, '0.7500']]))).toBe(4);

@@ -149,7 +149,7 @@ export function evaluateProFormaIdentity(
       if (!expectUnit('sqft')) return unavailableIdentity('unit_mismatch');
       const last = rows[rows.length - 1]!;
       if (!finite(last.occupied_sf)) return missing();
-      if (target.block === selected.block && target.address.pointer === '/schedule/' + (rows.length - 1) + '/occupied_sf') return unavailableIdentity('self_reference');
+      if (target.block === selected.block && target.address.pointer === `/schedule/${rows.length - 1}/occupied_sf`) return unavailableIdentity('self_reference');
       computed = last.occupied_sf;
       nativeSchedule = { ...schedule, schedule: rows.map(row => ({ period: row.period, occupied_sf: row.occupied_sf })), stabilized_summary: { occupied_sf: stated } };
     } else {
@@ -161,7 +161,7 @@ export function evaluateProFormaIdentity(
       if (!finite(size.value) || context.total_sf !== size.value) return unavailableIdentity('invalid_size_binding');
       const intensive = getSizeIntensive(parsed.frontmatter.asset_class);
       const expectedSize = intensive?.unit === 'sqft' ? intensive.path : intensive?.secondary.find(path => path.endsWith('sqft') || path.endsWith('square_feet'));
-      if (!expectedSize || size.address.pointer !== '/' + expectedSize || context.total_sf === null || context.total_sf === 0) return unavailableIdentity('invalid_size_binding');
+      if (!expectedSize || size.address.pointer !== `/${expectedSize}` || context.total_sf === null || context.total_sf === 0) return unavailableIdentity('invalid_size_binding');
       const lastSf = rows[rows.length - 1]!.occupied_sf;
       const sf = finite(lastSf) ? lastSf : schedule.stabilized_summary?.occupied_sf;
       if (!finite(sf)) return missing();
