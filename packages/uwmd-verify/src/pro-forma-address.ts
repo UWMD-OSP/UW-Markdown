@@ -49,8 +49,8 @@ export function proFormaAddressResolver(parsed: ParsedUWFile, source: boolean) {
     } else {
       const entry = Object.hasOwn(parsed.sections, address.section) ? parsed.sections[address.section] : undefined;
       if (entry && hasBlockShape(entry)) {
-        if ((entry.annotation.variant ?? null) === address.variant) {
-          block = entry; path = ['sections', address.section, 'content'];
+        if (((entry as UWBlock).annotation.variant ?? null) === address.variant) {
+          block = entry as UWBlock; path = ['sections', address.section, 'content'];
         }
       } else if (entry) {
         const matches = Object.entries(entry).filter(([, b]) => (b.annotation.variant ?? null) === address.variant);

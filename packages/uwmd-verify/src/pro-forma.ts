@@ -83,7 +83,8 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
   const parsed = source ? parseUWFile(input) : input;
   assertDataDescriptors(parsed);
   const block = resolveSectionBlock(parsed, 'dcf', options.claimVariant === undefined ? {} : { sectionVariants: { dcf: options.claimVariant } });
-  const raw = block ? blockPayload(block).pro_forma : undefined;
+  const payload = block ? blockPayload(block) : undefined;
+  const raw = record(payload) ? payload.pro_forma : undefined;
   try { assertJSONValue(raw); } catch { throw new CalcError('CALC-PRO-FORMA', 'An explicit JSON pro-forma claim is required.'); }
   if (!record(raw) || raw.profile !== 'pro-forma' || raw.level !== 'L1' || typeof raw.convention_registry !== 'string' ||
     !Array.isArray(raw.rows) || !Array.isArray(raw.relationships)) throw new CalcError('CALC-PRO-FORMA', 'Malformed or absent explicit pro-forma claim.');
@@ -201,7 +202,7 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
     selection: { operation: source ? 'source' : 'model', claim: claimResolved.target },
     assertions: [], relationships: [], inputs: [], input_count: 0,
     coverage: { total: 0, by_verdict: { verified: 0, failed: 0, unverifiable: 0 }, by_row_family: {} },
-    gaps, exclusions, profile_claim_findings: findings, validation: validateUWFile(parsed).issues, exit_code: 0 };
+    gaps, exclusions, profile_claim_findings: findings, validation: validateUWFile(input).issues, exit_code: 0 };
   const assertionsByPhysical = new Map<string, ProFormaAssertion>();
   const orderedItems = [...items.values()].sort((a, b) => a.resolved && b.resolved ? compareProFormaTargets(a.resolved.target, b.resolved.target, a.resolved.parts, b.resolved.parts) : a.resolved ? -1 : b.resolved ? 1 : 0);
   for (const item of orderedItems) {

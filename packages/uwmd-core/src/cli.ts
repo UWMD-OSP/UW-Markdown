@@ -6,7 +6,6 @@ import {
   verifyReserveAccounts,
   verifyProForma,
   UWMDParseError,
-  UWSourceRepresentationError,
   verifyCapitalStackDocument,
   verifyLeaseUpDocument,
   verifyWaterfallDocument,
