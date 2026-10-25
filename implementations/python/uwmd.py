@@ -147,7 +147,7 @@ def main(arguments):
             return {"error": {"message": str(error)}}, 2
         except Exception as error:
             return {"error": {"message": "Internal calculation failure: " + str(error)}}, 2
-    if arguments and arguments[0] in ("verify-cash-flows", "verify-metrics", "verify-capital-stack", "verify-lease-up"):
+    if arguments and arguments[0] in ("verify-cash-flows", "verify-metrics", "verify-capital-stack", "verify-lease-up", "verify-waterfall"):
         command=arguments[0]
         tail=arguments[1:]
         if not tail or tail[0].startswith("--"):
@@ -165,6 +165,10 @@ def main(arguments):
             if command=="verify-cash-flows":
                 from uwmd_cash_flows import cash_flow_report
                 report=cash_flow_report(document,variant)
+                return report,1 if report["status"]=="failed" else 0
+            if command=="verify-waterfall":
+                from uwmd_waterfall import waterfall_report
+                report=waterfall_report(document,variant)
                 return report,1 if report["status"]=="failed" else 0
             if command in ("verify-capital-stack","verify-lease-up"):
                 from uwmd_capital_stack import capital_stack_report
