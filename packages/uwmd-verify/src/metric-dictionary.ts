@@ -42,11 +42,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "multifamily"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,
@@ -199,11 +201,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "office"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,
@@ -410,11 +414,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "retail"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,
@@ -639,11 +645,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "industrial"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,
@@ -868,11 +876,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "self_storage"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,
@@ -1097,11 +1107,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "hospitality"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,
@@ -1434,11 +1446,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "mixed_use"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,
@@ -1899,11 +1913,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "senior_housing"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,
@@ -2164,11 +2180,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "student_housing"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,
@@ -2519,11 +2537,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "land"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,
@@ -2688,11 +2708,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "data_center"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,
@@ -3078,11 +3100,13 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "manufactured_housing"
       ],
-      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
+      "formula": "debt_structure.loan_amount / (debt_structure.ltv_basis == \"purchase-price\" ? valuation.purchase_price : (debt_structure.ltv_basis == \"underwritten-value\" ? valuation.underwritten_value : (debt_structure.ltv_basis == \"total-project-cost\" ? sources_uses.total_project_cost : null)))",
       "input_paths": [
         "debt_structure.loan_amount",
+        "debt_structure.ltv_basis",
+        "valuation.purchase_price",
         "valuation.underwritten_value",
-        "valuation.purchase_price"
+        "sources_uses.total_project_cost"
       ],
       "unit": "%",
       "round_to": 6,

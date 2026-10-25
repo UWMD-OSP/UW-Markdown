@@ -8,7 +8,7 @@ This document specifies how any party **verifies** a UW Markdown
 document: that it is well formed, that its stated figures agree with
 each other under the standard's definitions, and that its results
 reproduce from its stated inputs. It defines two conformance tiers,
-**Reader** and **Verifier**, and six optional verification profiles.
+**Reader** and **Verifier**, and seven optional verification profiles.
 
 The format spec defines what bytes are allowed on disk. This protocol
 defines what a document's contents mean and how a receiver checks them.
@@ -39,7 +39,7 @@ The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**",
 
 ### 0.2 Abstract
 
-The UW Protocol defines two conformance tiers and six optional
+The UW Protocol defines two conformance tiers and seven optional
 verification profiles. A Verifier MUST satisfy every Reader
 requirement. A profile adds to whichever tier the implementation
 claims.
@@ -57,8 +57,9 @@ claims.
 | Portfolio | `portfolio` | Portfolio and relationship sidecars (Part XV). |
 | Sensitivity | `sensitivity` | Reproduce stated sensitivity grids (§VIII.7). |
 | Stochastic | `stochastic` | Reproduce stated seeded distributions (§VIII.8). |
+| Pro forma | `pro-forma` | Bounded explicitly bound L1 assertions and declared-ledger membership (RFC0092). |
 
-Editing and AI-agent hosting are starter products, outside the Protocol. Conformance claims use only Reader and Verifier and the six profiles above.
+Editing and AI-agent hosting are starter products, outside the Protocol. Conformance claims use only Reader and Verifier and the seven profiles above.
 
 ### 0.3 Semantic versioning
 
@@ -398,7 +399,7 @@ the corpus" without that list does not identify what was run.
 
 Directory membership is **not** a normative signal. Each case is tagged
 with exactly one owner in [`conformance/corpus-index.json`](../conformance/corpus-index.json):
-`reader`, `verifier`, one of the six profiles, or `starter-products`.
+`reader`, `verifier`, one of the seven profiles, or `starter-products`.
 Directories are named by content (§Appendix C); their names do not
 make editor, agent, rendering, default/cascade, projection or refinement
 checks part of the standard. Starter checks remain in CI under
@@ -2733,9 +2734,9 @@ Raw primary-size selectors retain exact finite-number identity with minimum
 zero and `round_to: null`. Receipt outputs, result digests and starter Excel
 parity still use full effective `round_to`, independently of statement precision.
 
-Every class's `ltv` uses `debt_structure.loan_amount / valuation.underwritten_value`,
-falling back to `valuation.purchase_price` only when no underwritten value is
-stated. This agrees with the validator's CC-02 and capital-stack `ltv_through`.
+Every class's `ltv` selects its denominator through that same loan's explicit
+`debt_structure.ltv_basis` under RFC0092; no fallback is permitted. Native stack
+`ltv_through` reads only explicitly selected `valuation.underwritten_value`.
 
 All eleven income-class `cash_on_cash` entries (the nine RFC 0079 classes plus RFC 0080's `data_center` and `manufactured_housing`) use stated
 `dcf.annual_cash_flows.Y1.net_cash_flow_levered` over
@@ -4642,3 +4643,25 @@ validations:
 - **View model**: a per-section layout description used to render the
   section uniformly across implementations. A starter-product term
   (starter guide §IV).
+
+### RFC0092 bounded pro-forma wire contract
+
+The optional pro-forma L1 registry is uwmd.pro-forma.l1.1. Its complete executable vocabulary is total_net, moic, xnpv, xirr, coverage, blended_coverage, debt_yield_through, ltc_through, ltv_through, weighted_cost, net_cash_flow, final_occupied_sf, final_occupancy_rate, ltv, and non-arithmetic declared_ledger_membership. No sixteenth land, periodic-return, mortgage-schedule, NOI/NCF or CoC procedure is admitted. Registered convention vocabulary does not expand this list.
+
+An authored address is {section,variant,pointer}: variant is explicitly null or a string; frontmatter requires null; pointer is RFC6901. Resolve against the one current snapshot before keys, typed array indexes, context or deduplication; never select history or another peer. Source block addresses are zero-based retained physical ordinals; model block addresses are full typed document paths. Frontmatter uses its typed root path even in a source operation. These report identities are not cryptographic subjects.
+
+A dcf.pro_forma claim requires profile="pro-forma", level="L1", convention_registry, rows and relationships; conventions, timeline and ledger are optional. Empty arrays are valid. Rows contain address and optional family/kind (computed,input,assumption). Inventory numeric dcf leaves outside pro_forma/reserved metadata, all explicit rows, relationship targets and direct numeric inputs; a helper-object binding does not claim every leaf recursively. Apply RFC0092 §6a's single home/target classification before counts; input labels cannot override it. Closed descriptive families: growth, revenue, expenses, noi, ncf, debt_service, interest_principal, balance_balloon, dscr, debt_yield, ltv, exit, equity_sale_proceeds, cash_flows, irr, equity_multiple, cash_on_cash, npv, unclassified. Unknown/absent/conflicting families count once as unclassified; family never selects behavior.
+
+Relationships contain optional id, identity, procedure_version="1", target, ordered inputs {role,address}, unit, optional currency/conventions/selectors/applicability. Source token precision is evidence, never reconstructed from a parsed number. Retain unknown semantic members with local refusal evidence. Complete semantic equality includes all effective declarations, canonical selections, order, units/currency, precision and dependencies; validate before coalescing. Retain conflicts and every origin; no first/last winner. Selectors must agree with the actual native figure, period and selected loan.
+
+Roles are explicit: stream (cash_flow_series root), rate (XNPV numeric rate), optional anchor (that stream's first-row date); stack (capital_stack root), optional figure (its exact sizing entry), noi (noi_model.net_operating_income), cost (the selected native uses.total or total_uses), value (valuation.underwritten_value); schedule (lease_up_schedule root), total_sf (the native size-registry-selected property SF home); loan (debt_structure root), denominator (the exact declared-basis home). coverage requires over; cumulative stack verbs require through; weighted_cost requires over="*" and no through; period net_cash_flow requires the exact admitted period selector. Unknown roles/selectors cannot supply required inputs. The dated identities require cash_flow_timing=dated and explicit actual/365f; XIRR also requires irr_frequency=xirr. Currency-valued targets require an explicit matching document/relationship currency. Native contracts own remaining admission, operation order, quanta and refusals. No hidden context default may fill an unbound required input.
+
+Ledger shape is {universe,bindings,exclusions}; universe entries are {event,role,required}, bindings {event,role,target?}, exclusions {event,role,reason}. Canonical event identity precedes aliases, roles and duplicates. Exactly identical declarations may coalesce with origins. Reuse/conflicting roles, missing required bindings and required exclusions are unmet obligations. An out-of-universe binding is a separate profile-claim error. Equal-value distinct events remain distinct. Membership invents no numeric assertion.
+
+The completed report contains status/profile/level, selection, ordered assertions/relationships/inputs, input_count, coverage(total/by_verdict/by_row_family), gaps, exclusions, profile_claim_findings, separate unchanged base validation, and exit_code. Each assertion has one terminal state: demonstrated failure wins; otherwise unavailable/blocked required relationships or ambiguous context/family/conflicts make it unverifiable; only all required relationships verified may verify it. Cycles and self-copy cannot manufacture independent verification. Input-only rows carry no financial verdict and stay outside all assertion counts. Required-ledger gaps/exclusions stay separate. U9 A: completed exit0 iff no base/profile validation error, failed/unverifiable computed assertion or unmet required ledger obligation; exit1 otherwise. Zero assertions establish zero assurance.
+
+Malformed/absent claim or uninventoryable request refuses with status="refused" and existing ProtocolError; CALC-PRO-FORMA (calc) is restricted to malformed CLI/claim syntax, absent claim or unreadable requested file. Keep existing typed source/selection codes. Internal failures exit2. uwmd verify-pro-forma <file> --json emits one UTF-8 JSON document, diagnostics on stderr, and never writes source/model/meta/cache/receipt. No receipt contract changes. Schemas pro-forma-claim and pro-forma-report pin wire members; schema rejection is not a newly allocated base validator diagnostic.
+
+Per-loan ltv_basis is purchase-price, underwritten-value or total-project-cost, selecting valuation.purchase_price, valuation.underwritten_value or sources_uses.total_project_cost, respectively. Every class's existing ltv uses that same selected loan and explicit basis even without a profile claim, retains m2/r6 source-token comparison and existing zero/domain refusals, and has no fallback. Underwritten value is a stated valuation fact; total_project_cost is the producer's explicitly stated project-cost fact, not a generated uses rollup. CC-02 uses the same loan's declared basis and retains its existing tolerance/applicability. Native stack ltv_through uses underwritten_value only, with no purchase-price fallback; missing/null selected value stays unavailable.
+
+The public reference manifest MUST keep pro-forma and pro-forma-verify unclaimed until independent full-profile agreement (#551) and actual declared-runtime CLI proof (#552) are complete. Implementation tests and registry/schema availability do not establish support.

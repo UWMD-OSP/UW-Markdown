@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/debt-structure-ltv.schema.json",
+  "title": "Per-loan declared LTV basis",
+  "type": "object",
+  "properties": {
+    "ltv_basis": {
+      "enum": [
+        "purchase-price",
+        "underwritten-value",
+        "total-project-cost",
+        null
+      ]
+    }
+  },
+  "required": [],
+  "additionalProperties": true
+}

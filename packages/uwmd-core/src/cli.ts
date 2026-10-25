@@ -4,6 +4,9 @@ import { hasBlockShape } from './block-kind.js';
 import {
   verifyReserveDrawBindings,
   verifyReserveAccounts,
+  verifyProForma,
+  UWMDParseError,
+  UWSourceRepresentationError,
   verifyCapitalStackDocument,
   verifyLeaseUpDocument,
   verifyWaterfallDocument,
@@ -112,6 +115,7 @@ import {
 import { cmdPortfolioValidate, cmdPortfolioEdges } from './cli-portfolio.js';
 import { evaluateCalc } from './calc-display.js';
 import { parseCalculationContext } from './calculation-context.js';
+import { parseProFormaArgs } from './cli-pro-forma.js';
 import { parseCashFlowVerificationArgs, verifyCashFlowDocument } from './cli-cash-flows.js';
 import type { RenderFormat, RenderTier } from './renderer.js';
 import { buildContext } from './context-profiles.js';
@@ -1239,7 +1243,10 @@ const positional = extractPositionals(args);
   const vocabulary = flagVocabulary(command, positional[0]);
   const refusal = vocabulary === undefined ? undefined : unknownFlagMessage(vocabulary, flags);
   if (refusal !== undefined) {
-    console.error(refusal);
+    if (command === 'verify-pro-forma' && args.includes('--json')) {
+      const error = new CalcError('CALC-PRO-FORMA', refusal, 'arguments').proto;
+      console.log(JSON.stringify({ status: 'refused', error }));
+    } else console.error(refusal);
     process.exit(1);
   }
 }
@@ -1613,6 +1620,35 @@ switch (command) {
     process.exit(result.state === 'failed' || result.state === 'unverifiable' ? 1 : 0);
     break;
   }
+  case 'verify-pro-forma': {
+    try {
+      const options = parseProFormaArgs(args);
+      let bytes: Buffer;
+      try { bytes = readFileSync(options.file); }
+      catch (error) { throw new CalcError('CALC-PRO-FORMA', 'Cannot read requested file: ' + (error instanceof Error ? error.message : String(error)), 'source'); }
+      let source: string;
+      try { source = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes); }
+      catch { throw new UWSourceRepresentationError('SOURCE_UTF8_INVALID', 'Source bytes must be valid UTF-8.'); }
+      const report = verifyProForma(source);
+      if (options.json) console.log(JSON.stringify(report, null, 2));
+      else console.log('Pro-forma assessment: ' + report.coverage.total + ' computed assertions, ' + report.input_count + ' inputs; exit ' + report.exit_code);
+      process.exitCode = report.exit_code;
+    } catch (error) {
+      const proto = error instanceof CalcError ? error.proto
+        : error instanceof UWMDParseError || error instanceof UWSourceRepresentationError
+          ? { category: 'parse', code: error.code, message: error.message } : undefined;
+      if (proto) {
+        if (args.includes('--json')) console.log(JSON.stringify({ status: 'refused', error: proto }, null, 2));
+        else console.error(proto.message);
+        process.exitCode = 1;
+      } else {
+        console.error(error instanceof Error ? error.message : String(error));
+        process.exitCode = 2;
+      }
+    }
+    break;
+  }
+
   case 'verify-cash-flows': {
     try {
       const options = parseCashFlowVerificationArgs(args);
@@ -2017,6 +2053,7 @@ Commands:
   verify-reserve-draws <file> [plan.json] [--json]  Verify stated gross-expenditure draw bindings (read-only)
   verify-reserve-accounts <file> [--json]  Verify stated property reserve balances (read-only)
   verify-metrics <file> [--json]  Verify stated dictionary metrics only (read-only; a failed statement exits 1)
+  verify-pro-forma <file> [--json]  Assess an explicit bounded L1 claim (read-only; support unclaimed)
   verify-cash-flows <file> [--variant <name>] [--json]  Verify stated dated-cash-flow metrics (read-only)
   verify-property-cash-flows <file> <plan.json>  Assemble declared unlevered pre-tax property cash flows (JSON candidate only)
   verify-waterfall <file> [--variant <name>] [--json]  Verify stated distribution waterfall outcomes (read-only)

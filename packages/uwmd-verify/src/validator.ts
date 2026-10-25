@@ -477,24 +477,32 @@ function checkCrossSectionConsistency(
     }
   }
 
-  // CC-02: UW value in valuation must match LTV denominator in debt_structure
+  // RFC0092: same selected loan's explicit LTV basis, with no fallback.
   {
-    const got = requireSections(ledger, parsed, 'CC-02', [['valuation'], ['debt_structure']]);
-    if (got) {
-      const valuation = got['valuation']!.block;
-      const debtStructure = got['debt_structure']!.block;
-      const uwValue = num(deepGet(valuation.content, 'underwritten_value')) ?? num(deepGet(valuation.content, 'purchase_price'));
-      const loanAmt = num(deepGet(debtStructure.content, 'loan_amount'));
-      const ltvInDebt = num(deepGet(debtStructure.content, 'ltv'));
-      if (uwValue == null || uwValue <= 0) markSkipped(ledger, 'CC-02', 'field_absent', 'valuation.underwritten_value');
-      else if (loanAmt == null) markSkipped(ledger, 'CC-02', 'field_absent', 'debt_structure.loan_amount');
-      else if (ltvInDebt == null) markSkipped(ledger, 'CC-02', 'field_absent', 'debt_structure.ltv');
+    const debtGot = requireSections(ledger, parsed, 'CC-02', [['debt_structure']]);
+    if (debtGot) {
+      const debt = debtGot['debt_structure']!.block;
+      const basis = deepGet(debt.content, 'ltv_basis');
+      const denominator = basis === 'purchase-price' ? ['valuation', 'purchase_price']
+        : basis === 'underwritten-value' ? ['valuation', 'underwritten_value']
+        : basis === 'total-project-cost' ? ['sources_uses', 'total_project_cost'] : null;
+      if (!denominator) markSkipped(ledger, 'CC-02', 'field_absent', 'debt_structure.ltv_basis');
       else {
-        markEvaluated(ledger, 'CC-02');
-        const impliedLTV = loanAmt / uwValue;
-        const diff = Math.abs(impliedLTV - ltvInDebt);
-        if (diff > 0.005) {
-          issues.push({ code: 'CC-02', severity: 'warning', section: 'debt_structure', field: 'ltv', message: `CC-02: Implied LTV (${(impliedLTV * 100).toFixed(2)}%) from loan/value does not match stated LTV (${(ltvInDebt * 100).toFixed(2)}%) — check valuation.underwritten_value vs debt_structure.ltv`, value: diff });
+        const got = requireSections(ledger, parsed, 'CC-02', [[denominator[0]!]]);
+        if (got) {
+          const value = num(deepGet(got[denominator[0]!]!.block.content, denominator[1]!));
+          const amount = num(deepGet(debt.content, 'loan_amount'));
+          const stated = num(deepGet(debt.content, 'ltv'));
+          if (value == null || value <= 0) markSkipped(ledger, 'CC-02', 'field_absent', denominator.join('.'));
+          else if (amount == null) markSkipped(ledger, 'CC-02', 'field_absent', 'debt_structure.loan_amount');
+          else if (stated == null) markSkipped(ledger, 'CC-02', 'field_absent', 'debt_structure.ltv');
+          else {
+            markEvaluated(ledger, 'CC-02');
+            const implied = amount / value;
+            const diff = Math.abs(implied - stated);
+            if (diff > 0.005) issues.push({ code: 'CC-02', severity: 'warning', section: 'debt_structure', field: 'ltv',
+              message: 'CC-02: Stated LTV differs from loan amount divided by the explicit ' + String(basis) + ' denominator.', value: diff });
+          }
         }
       }
     }

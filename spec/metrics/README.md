@@ -66,9 +66,7 @@ entries and `x` entries use 2; dollar entries per SF/NRSF (ids containing `sqft`
 `psf`, or `nrsf`) use 2; other dollar entries use 0. Raw sizes use 0 and exact
 finite-number equality. The RFC's Decisions table explains each group.
 
-All twelve `ltv` entries divide loan amount by stated `valuation.underwritten_value`,
-falling back to `valuation.purchase_price` only when the former is absent/null,
-in agreement with CC-02 and capital-stack `ltv_through`.
+All twelve `ltv` entries use the same selected loan's explicit `ltv_basis`: purchase-price selects valuation.purchase_price, underwritten-value selects valuation.underwritten_value, total-project-cost selects sources_uses.total_project_cost. Missing/unknown basis or missing/null chosen denominator is unavailable; no fallback. Native stack ltv_through separately uses only underwritten value (RFC0092).
 Producers now need to state `sources_uses.equity_metrics.equity_total` for
 non-multifamily cash-on-cash. A single sole non-debt source can be documented as
 an identity of stated fields; neither the verifier nor the packs infer it.

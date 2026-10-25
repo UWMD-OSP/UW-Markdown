@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Implement accepted RFC0092 bounded pro-forma wire contract and assessment API/CLI (#550); synchronize explicit per-loan LTV basis and native stack underwritten-value admission. Full-profile support remains gated by #551/#552.
+
 - Fix #549: capital-stack Excel service uses the split preferred cash rate; sizing arithmetic follows original tranche order while display stays sorted by position.
 
 - Fix #544: verify ZIP local/central metadata, actual payload sizes and CRCs;

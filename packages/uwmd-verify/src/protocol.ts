@@ -98,6 +98,7 @@ export const CONFORMANCE_PROFILES = Object.freeze([
   'portfolio',
   'sensitivity',
   'stochastic',
+  'pro-forma',
 ] as const);
 
 export type ConformanceProfile = (typeof CONFORMANCE_PROFILES)[number];
@@ -185,7 +186,9 @@ export type ViewerCapability =
   /** Verifies stated reserve balances: `verify-reserve-accounts` (§VIII.11). */
   | 'verify-reserve-accounts'
   /** Verifies reserve draw bindings: `verify-reserve-draws` (§VIII.12). */
-  | 'verify-reserve-draws';
+  | 'verify-reserve-draws'
+  /** Optional RFC0092 profile; distinct from base Verifier obligations. */
+  | 'pro-forma-verify';
 
 /**
  * The capability flags a Verifier tier claim requires, one per Verifier
@@ -1977,7 +1980,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'CC-02', severity: 'warning',
     title: 'Stated LTV does not match the underwritten value',
-    description: 'debt_structure.ltv differs from debt_structure.loan_amount / valuation.underwritten_value (falling back to purchase_price) by more than 0.5 points.',
+    description: "debt_structure.ltv differs from debt_structure.loan_amount / the denominator selected by that loan's ltv_basis by more than 0.5 points.",
     remediation: 'Recompute LTV = loan_amount / underwritten value and restate debt_structure.ltv, or correct the value in valuation that the LTV was struck against.',
     spec_ref: '§5.3 CC-02',
   },
@@ -3120,3 +3123,5 @@ export interface LeaseUpVerificationReport
   extends SectionVerificationReport<import('./lease-up.js').LeaseUpVerification> {
   section: 'lease_up_schedule';
 }
+
+export type { ProFormaClaim, ProFormaReport, ProFormaRefusal } from './pro-forma-types.js';

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-dcf.schema.json",
+  "title": "DCF profile extension",
+  "type": "object",
+  "properties": {
+    "pro_forma": {
+      "$ref": "https://uwmd.org/schemas/pro-forma-claim.schema.json"
+    }
+  },
+  "required": [],
+  "additionalProperties": true
+}

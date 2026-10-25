@@ -84,35 +84,25 @@ describe.each(ASSET_CLASSES.filter(c => c !== 'land'))('%s deal-level cash_on_ca
   });
 });
 
-describe.each(ASSET_CLASSES)('%s LTV denominator (RFC 0079 revised D2)', assetClass => {
+describe.each(ASSET_CLASSES)('%s declared LTV basis (RFC 0092)', assetClass => {
   const ltv = getPackForAssetClass(assetClass)!.calculations!.find(c => c.id === 'ltv')!;
-  const value = (valuation: Record<string, unknown>) => {
-    const parsed = parseUWFile(`---
-uw_version: "3.0"
-asset_class: ${assetClass}
----
-
-\`\`\`json uw:section=valuation source=manual
-${JSON.stringify(valuation)}
-\`\`\`
-
-\`\`\`json uw:section=debt_structure source=manual
-{"loan_amount":75000}
-\`\`\`
-`);
+  const value = (basis: unknown, valuation: Record<string, unknown> = { purchase_price: 100000, underwritten_value: 120000 }, cost: unknown = 150000) => {
+    const sections = { debt_structure: { loan_amount: 75000, ltv_basis: basis }, valuation, sources_uses: { total_project_cost: cost } };
+    const parsed = parseUWFile(`---\nuw_version: "3.0"\nasset_class: ${assetClass}\n---\n` + Object.entries(sections).map(([id, v]) => `\n\`\`\`json uw:section=${id} source=manual\n${JSON.stringify(v)}\n\`\`\`\n`).join(''));
     return evaluateCalc(ltv, { parsed, prior_results: {}, locale: 'en-US' });
   };
-  it('prefers the stated underwritten value over price, and does not require the unused price', () => {
-    expect(value({ underwritten_value: 120000, purchase_price: 100000 })).toMatchObject({ ok: true, value: 0.625 });
-    expect(value({ underwritten_value: 120000 })).toMatchObject({ ok: true, value: 0.625 });
+  it.each([['purchase-price', 0.75], ['underwritten-value', 0.625], ['total-project-cost', 0.5]])('uses only the declared %s denominator', (basis, expected) => {
+    expect(value(basis)).toMatchObject({ ok: true, value: expected });
   });
-  it('falls back only for absent/null underwritten value', () => {
-    expect(value({ purchase_price: 100000 })).toMatchObject({ ok: true, value: 0.75 });
-    expect(value({ underwritten_value: null, purchase_price: 100000 })).toMatchObject({ ok: true, value: 0.75 });
-    expect(value({})).toMatchObject({ ok: true, value: null });
+  it.each([undefined, null, 'unknown'])('leaves missing or unknown basis unavailable: %s', basis => {
+    expect(value(basis)).toMatchObject({ ok: true, value: null });
   });
-  it('does not hide a stated zero or invalid underwritten value behind the price', () => {
-    expect(value({ underwritten_value: 0, purchase_price: 100000 })).toMatchObject({ ok: false, error: { code: 'CALC-DIV-ZERO' } });
-    expect(value({ underwritten_value: '120000', purchase_price: 100000 })).toMatchObject({ ok: false, error: { code: 'CALC-TYPE-001' } });
+  it('never substitutes price or uses.total for a missing selected fact', () => {
+    expect(value('underwritten-value', { purchase_price: 100000 })).toMatchObject({ ok: true, value: null });
+    expect(value('total-project-cost', {}, null)).toMatchObject({ ok: true, value: null });
+  });
+  it('preserves the native zero and invalid-number refusals', () => {
+    expect(value('underwritten-value', { underwritten_value: 0 })).toMatchObject({ ok: false, error: { code: 'CALC-DIV-ZERO' } });
+    expect(value('underwritten-value', { underwritten_value: '120000' })).toMatchObject({ ok: false, error: { code: 'CALC-TYPE-001' } });
   });
 });

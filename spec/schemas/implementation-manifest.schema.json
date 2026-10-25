@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/implementation-manifest.schema.json",
   "title": "UW Implementation Manifest",
-  "description": "Self-declaration that any conforming UW Markdown implementation SHOULD expose so consumers can discover what tier, verification profiles, capabilities, and asset classes it supports. Mirrors the ImplementationManifest interface in @uwmd/verify's protocol.ts. See UW_PROTOCOL.md §I.4 and Part II (Protocol 4.0 conformance model, RFC 0078).",
+  "description": "Self-declaration that any conforming UW Markdown implementation SHOULD expose so consumers can discover what tier, verification profiles, capabilities, and asset classes it supports. Mirrors the ImplementationManifest interface in @uwmd/verify's protocol.ts. See UW_PROTOCOL.md \u00a7I.4 and Part II (Protocol 4.0 conformance model, RFC 0078).",
   "type": "object",
   "required": [
     "id",
@@ -45,7 +45,7 @@
         "reader",
         "verifier"
       ],
-      "description": "Optional conformance tier; Verifier includes Reader. Partial capabilities may be stated without a tier (Protocol §II.5). No aliases."
+      "description": "Optional conformance tier; Verifier includes Reader. Partial capabilities may be stated without a tier (Protocol \u00a7II.5). No aliases."
     },
     "profiles": {
       "type": "array",
@@ -56,11 +56,12 @@
           "representations",
           "portfolio",
           "sensitivity",
-          "stochastic"
+          "stochastic",
+          "pro-forma"
         ]
       },
       "uniqueItems": true,
-      "description": "Optional verification profiles the implementation claims (UW_PROTOCOL §II.3, RFC 0078). module: evaluate module-declared and document-declared formulas. integrity: hash chains and block signatures. representations: UW Lite, XML mapping and CSV bundle. portfolio: portfolio and relationship sidecars. sensitivity: reproduce stated sensitivity grids. stochastic: reproduce stated seeded distributions. A profile adds to either tier. Absent means none."
+      "description": "Optional verification profiles the implementation claims (UW_PROTOCOL \u00a7II.3, RFC 0078). module: evaluate module-declared and document-declared formulas. integrity: hash chains and block signatures. representations: UW Lite, XML mapping and CSV bundle. portfolio: portfolio and relationship sidecars. sensitivity: reproduce stated sensitivity grids. stochastic: reproduce stated seeded distributions. A profile adds to either tier. Absent means none."
     },
     "capabilities": {
       "type": "array",
@@ -98,11 +99,12 @@
           "verify-lease-up",
           "verify-receipts",
           "verify-reserve-accounts",
-          "verify-reserve-draws"
+          "verify-reserve-draws",
+          "pro-forma-verify"
         ]
       },
       "uniqueItems": true,
-      "description": "Finer-grained capability flags. Tier and profiles carry the conformance claim; capabilities advertise partial conformance, and the starter-product claims (edit-*, render-*, refinement, capability-verify) that are outside the Protocol's tiers (UW_PROTOCOL §II.4). The verify-* flags name one Verifier obligation each and its §II.6a.1 subcommand (RFC 0115); a Verifier tier claim with a nonempty capability list must list every one of them (§II.5)."
+      "description": "Finer-grained capability flags. Tier and profiles carry the conformance claim; capabilities advertise partial conformance, and the starter-product claims (edit-*, render-*, refinement, capability-verify) that are outside the Protocol's tiers (UW_PROTOCOL \u00a7II.4). The verify-* flags name one Verifier obligation each and its \u00a7II.6a.1 subcommand (RFC 0115); a Verifier tier claim with a nonempty capability list must list every one of them (\u00a7II.5)."
     },
     "representations": {
       "type": "array",
@@ -255,27 +257,70 @@
   },
   "allOf": [
     {
-      "$comment": "RFC 0115 D2, Protocol §II.5: a Verifier tier claim requires every Verifier obligation flag. An absent or empty capability list claims every capability (§II.6a.5), so the rule applies only to a nonempty list.",
+      "$comment": "RFC 0115 D2, Protocol \u00a7II.5: a Verifier tier claim requires every Verifier obligation flag. An absent or empty capability list claims every capability (\u00a7II.6a.5), so the rule applies only to a nonempty list.",
       "if": {
-        "required": ["tier", "capabilities"],
+        "required": [
+          "tier",
+          "capabilities"
+        ],
         "properties": {
-          "tier": { "const": "verifier" },
-          "capabilities": { "minItems": 1 }
+          "tier": {
+            "const": "verifier"
+          },
+          "capabilities": {
+            "minItems": 1
+          }
         }
       },
       "then": {
         "properties": {
           "capabilities": {
             "allOf": [
-              { "contains": { "const": "verify-metrics" } },
-              { "contains": { "const": "verify-cash-flows" } },
-              { "contains": { "const": "verify-property-cash-flows" } },
-              { "contains": { "const": "verify-waterfall" } },
-              { "contains": { "const": "verify-capital-stack" } },
-              { "contains": { "const": "verify-lease-up" } },
-              { "contains": { "const": "verify-receipts" } },
-              { "contains": { "const": "verify-reserve-accounts" } },
-              { "contains": { "const": "verify-reserve-draws" } }
+              {
+                "contains": {
+                  "const": "verify-metrics"
+                }
+              },
+              {
+                "contains": {
+                  "const": "verify-cash-flows"
+                }
+              },
+              {
+                "contains": {
+                  "const": "verify-property-cash-flows"
+                }
+              },
+              {
+                "contains": {
+                  "const": "verify-waterfall"
+                }
+              },
+              {
+                "contains": {
+                  "const": "verify-capital-stack"
+                }
+              },
+              {
+                "contains": {
+                  "const": "verify-lease-up"
+                }
+              },
+              {
+                "contains": {
+                  "const": "verify-receipts"
+                }
+              },
+              {
+                "contains": {
+                  "const": "verify-reserve-accounts"
+                }
+              },
+              {
+                "contains": {
+                  "const": "verify-reserve-draws"
+                }
+              }
             ]
           }
         }

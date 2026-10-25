@@ -548,6 +548,8 @@ function writePipelineLogSheet(wb: ExcelJS.Workbook, parsed: ParsedUWFile): void
 const MIXED_USE_PROPERTY_INPUTS: ReadonlyArray<{ label: string; path: string }> = [
   { label: 'Purchase Price', path: 'valuation.purchase_price' },
   { label: 'Underwritten Value', path: 'valuation.underwritten_value' },
+  { label: 'Declared LTV Basis', path: 'debt_structure.ltv_basis' },
+  { label: 'LTV Total Project Cost', path: 'sources_uses.total_project_cost' },
   { label: 'Loan Amount', path: 'debt_structure.loan_amount' },
   { label: 'Annual Debt Service', path: 'debt_structure.annual_debt_service' },
   { label: 'Total Invested Equity', path: 'sources_uses.equity_metrics.equity_total' },
@@ -607,8 +609,12 @@ function writeMixedUseUnderwritingSheet(
     const { section, rest } = splitPath(input.path);
     ws.getCell(`A${row}`).value = input.label;
     const cell = ws.getCell(`B${row}`);
-    writeInputValue(cell, reader.number(section, rest));
-    cell.numFmt = fmtFor('currency');
+    if (input.path === 'debt_structure.ltv_basis') {
+      const text = reader.text(section, rest);
+      cell.value = typeof text === 'object' && text !== null ? { error: '#VALUE!' } : text;
+      cell.numFmt = '@';
+    }
+    else { writeInputValue(cell, reader.number(section, rest)); cell.numFmt = fmtFor('currency'); }
     wb.definedNames.add(abs(ws.name, row, 2), mixedUseName(input.path));
     row++;
   }

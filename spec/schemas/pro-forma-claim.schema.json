@@ -1,0 +1,587 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/pro-forma-claim.schema.json",
+  "title": "RFC0092 explicit bounded pro-forma claim",
+  "type": "object",
+  "properties": {
+    "profile": {
+      "const": "pro-forma"
+    },
+    "level": {
+      "const": "L1"
+    },
+    "convention_registry": {
+      "type": "string"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "$ref": "#/$defs/address"
+          },
+          "family": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "computed",
+              "input",
+              "assumption"
+            ]
+          }
+        },
+        "required": [
+          "address"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "identity": {
+            "type": "string"
+          },
+          "procedure_version": {
+            "const": "1"
+          },
+          "target": {
+            "$ref": "#/$defs/address"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string"
+                },
+                "address": {
+                  "$ref": "#/$defs/address"
+                }
+              },
+              "required": [
+                "role",
+                "address"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "unit": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "conventions": {
+            "type": "object",
+            "properties": {
+              "period_basis": {
+                "enum": [
+                  "monthly",
+                  "annual"
+                ]
+              },
+              "first_period": {
+                "enum": [
+                  "full",
+                  "stub"
+                ]
+              },
+              "cash_flow_timing": {
+                "enum": [
+                  "end",
+                  "dated",
+                  "mid",
+                  "beginning"
+                ]
+              },
+              "growth_application": {
+                "enum": [
+                  "anniversary-step",
+                  "calendar-step",
+                  "monthly-compound"
+                ]
+              },
+              "growth_start": {
+                "enum": [
+                  "period-1",
+                  "year-2"
+                ]
+              },
+              "vacancy_base": {
+                "enum": [
+                  "gross-potential-rent",
+                  "gross-potential-revenue"
+                ]
+              },
+              "credit_loss_base": {
+                "enum": [
+                  "gross-potential-rent",
+                  "gross-potential-revenue"
+                ]
+              },
+              "occupancy_method": {
+                "enum": [
+                  "percent-of-base",
+                  "stated-occupancy-path"
+                ]
+              },
+              "line_class": {
+                "enum": [
+                  "fixed",
+                  "per-unit",
+                  "per-occupied-unit",
+                  "per-sf",
+                  "percent-of-egi"
+                ]
+              },
+              "management_fee_base": {
+                "enum": [
+                  "egi",
+                  "egi-excluding-reimbursements"
+                ]
+              },
+              "reserves_placement": {
+                "enum": [
+                  "below-noi",
+                  "above-noi"
+                ]
+              },
+              "payment_frequency": {
+                "enum": [
+                  "monthly",
+                  "annual"
+                ]
+              },
+              "interest_accrual": {
+                "enum": [
+                  "30/360us",
+                  "actual/360",
+                  "actual/365f"
+                ]
+              },
+              "amortization_after_io": {
+                "enum": [
+                  "full-term",
+                  "remaining-term"
+                ]
+              },
+              "dscr_basis": {
+                "enum": [
+                  "noi",
+                  "ncf"
+                ]
+              },
+              "dscr_debt_service": {
+                "enum": [
+                  "actual",
+                  "amortizing-constant"
+                ]
+              },
+              "ltv_basis": {
+                "enum": [
+                  "purchase-price",
+                  "underwritten-value",
+                  "total-project-cost"
+                ]
+              },
+              "exit_noi_basis": {
+                "enum": [
+                  "forward-12",
+                  "trailing-12"
+                ]
+              },
+              "exit_noi_measure": {
+                "enum": [
+                  "noi",
+                  "ncf"
+                ]
+              },
+              "disposition_cost_base": {
+                "enum": [
+                  "gross-sale-price"
+                ]
+              },
+              "irr_frequency": {
+                "enum": [
+                  "annual-periodic",
+                  "monthly-compounded",
+                  "xirr"
+                ]
+              },
+              "cash_on_cash_numerator": {
+                "enum": [
+                  "before-capex",
+                  "after-capex"
+                ]
+              },
+              "debt_yield_basis": {
+                "type": "object",
+                "properties": {
+                  "income": {
+                    "enum": [
+                      "noi",
+                      "ncf"
+                    ]
+                  },
+                  "balance": {
+                    "enum": [
+                      "loan-at-close",
+                      "balance-at-period"
+                    ]
+                  }
+                },
+                "required": [
+                  "income",
+                  "balance"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          },
+          "selectors": {
+            "type": "object",
+            "properties": {
+              "over": {
+                "type": "string"
+              },
+              "through": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "period": {
+                "type": "string"
+              },
+              "loan": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          },
+          "applicability": {
+            "type": "object",
+            "properties": {
+              "applicable": {
+                "type": "boolean"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "applicable"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "identity",
+          "procedure_version",
+          "target",
+          "inputs",
+          "unit"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "conventions": {
+      "type": "object",
+      "properties": {
+        "period_basis": {
+          "enum": [
+            "monthly",
+            "annual"
+          ]
+        },
+        "first_period": {
+          "enum": [
+            "full",
+            "stub"
+          ]
+        },
+        "cash_flow_timing": {
+          "enum": [
+            "end",
+            "dated",
+            "mid",
+            "beginning"
+          ]
+        },
+        "growth_application": {
+          "enum": [
+            "anniversary-step",
+            "calendar-step",
+            "monthly-compound"
+          ]
+        },
+        "growth_start": {
+          "enum": [
+            "period-1",
+            "year-2"
+          ]
+        },
+        "vacancy_base": {
+          "enum": [
+            "gross-potential-rent",
+            "gross-potential-revenue"
+          ]
+        },
+        "credit_loss_base": {
+          "enum": [
+            "gross-potential-rent",
+            "gross-potential-revenue"
+          ]
+        },
+        "occupancy_method": {
+          "enum": [
+            "percent-of-base",
+            "stated-occupancy-path"
+          ]
+        },
+        "line_class": {
+          "enum": [
+            "fixed",
+            "per-unit",
+            "per-occupied-unit",
+            "per-sf",
+            "percent-of-egi"
+          ]
+        },
+        "management_fee_base": {
+          "enum": [
+            "egi",
+            "egi-excluding-reimbursements"
+          ]
+        },
+        "reserves_placement": {
+          "enum": [
+            "below-noi",
+            "above-noi"
+          ]
+        },
+        "payment_frequency": {
+          "enum": [
+            "monthly",
+            "annual"
+          ]
+        },
+        "interest_accrual": {
+          "enum": [
+            "30/360us",
+            "actual/360",
+            "actual/365f"
+          ]
+        },
+        "amortization_after_io": {
+          "enum": [
+            "full-term",
+            "remaining-term"
+          ]
+        },
+        "dscr_basis": {
+          "enum": [
+            "noi",
+            "ncf"
+          ]
+        },
+        "dscr_debt_service": {
+          "enum": [
+            "actual",
+            "amortizing-constant"
+          ]
+        },
+        "ltv_basis": {
+          "enum": [
+            "purchase-price",
+            "underwritten-value",
+            "total-project-cost"
+          ]
+        },
+        "exit_noi_basis": {
+          "enum": [
+            "forward-12",
+            "trailing-12"
+          ]
+        },
+        "exit_noi_measure": {
+          "enum": [
+            "noi",
+            "ncf"
+          ]
+        },
+        "disposition_cost_base": {
+          "enum": [
+            "gross-sale-price"
+          ]
+        },
+        "irr_frequency": {
+          "enum": [
+            "annual-periodic",
+            "monthly-compounded",
+            "xirr"
+          ]
+        },
+        "cash_on_cash_numerator": {
+          "enum": [
+            "before-capex",
+            "after-capex"
+          ]
+        },
+        "debt_yield_basis": {
+          "type": "object",
+          "properties": {
+            "income": {
+              "enum": [
+                "noi",
+                "ncf"
+              ]
+            },
+            "balance": {
+              "enum": [
+                "loan-at-close",
+                "balance-at-period"
+              ]
+            }
+          },
+          "required": [
+            "income",
+            "balance"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "timeline": {
+      "type": "object"
+    },
+    "ledger": {
+      "type": "object",
+      "properties": {
+        "universe": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "event": {
+                "$ref": "#/$defs/address"
+              },
+              "role": {
+                "type": "string"
+              },
+              "required": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "event",
+              "role",
+              "required"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "bindings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "event": {
+                "$ref": "#/$defs/address"
+              },
+              "role": {
+                "type": "string"
+              },
+              "target": {
+                "$ref": "#/$defs/address"
+              }
+            },
+            "required": [
+              "event",
+              "role"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "exclusions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "event": {
+                "$ref": "#/$defs/address"
+              },
+              "role": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "event",
+              "role",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "universe",
+        "bindings",
+        "exclusions"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "profile",
+    "level",
+    "convention_registry",
+    "rows",
+    "relationships"
+  ],
+  "additionalProperties": false,
+  "description": "Closed wire members; unknown identities, families or registry identifiers remain inventoried by an assessor. Schema rejection is not a new base validation code. Only uwmd.pro-forma.l1.1 and the fifteen accepted tokens are executable.",
+  "$defs": {
+    "address": {
+      "type": "object",
+      "properties": {
+        "section": {
+          "type": "string",
+          "minLength": 1
+        },
+        "variant": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pointer": {
+          "type": "string",
+          "pattern": "^(?:/.*)?$"
+        }
+      },
+      "required": [
+        "section",
+        "variant",
+        "pointer"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
