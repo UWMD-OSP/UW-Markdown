@@ -103,7 +103,11 @@ def assemble_property_cash_flows(document,plan):
     assertions['required']=[]
     assertions['properties']={key:{'type':'boolean'} for key in ASSERTIONS}
     problems=_violations(plan,spec,spec,'plan')
-    if problems:refuse('plan',problems[0]['field'],problems[0]['message'])
+    if problems:
+        problem=problems[0]
+        pointer=problem['field']
+        if problem['message']=='Member is outside the fixed closed object':pointer=pointer.rsplit('.',1)[0]
+        refuse('plan',pointer,problem['message'])
     if plan['basis']!='unlevered' or plan['tax_basis']!='pre_tax':refuse('basis_currency','plan','Only unlevered pre-tax cash is admitted')
     currency=plan['currency_code']
     if re.fullmatch('[A-Z]{3}',currency) is None:refuse('basis_currency','plan.currency_code','Explicit uppercase currency required')
@@ -130,8 +134,8 @@ def assemble_property_cash_flows(document,plan):
     periods=[row['period'] for row in lease.parsed.value['schedule']]
     acquisition,disposition=plan['acquisition_date'],plan['disposition_date']
     first_start,first_end=_bounds(periods[0]);last_start,last_end=_bounds(periods[-1])
-    final_ok=last_start<=disposition<last_end or plan.get('disposition_period_rule')=='allow_exclusive_end' and len(last_end)==10 and disposition==last_end
-    if not first_start<=acquisition<first_end or not acquisition<disposition or not final_ok:refuse('date_horizon','plan','Closing dates are outside admitted source periods')
+    final_ok=last_start<=disposition and (len(last_end)>10 or disposition<last_end) or plan.get('disposition_period_rule')=='allow_exclusive_end' and len(last_end)==10 and disposition==last_end
+    if not (first_start<=acquisition and (len(first_end)>10 or acquisition<first_end)) or not acquisition<disposition or not final_ok:refuse('date_horizon','plan','Closing dates are outside admitted source periods')
     for index,row in enumerate(projection['series']['series']):
         if not acquisition<=row['date']<=disposition:refuse('date_horizon',lp+'.schedule['+str(index)+']','Lease-up cash date lies outside the hold')
     for index,row in enumerate(supplement['series']):
