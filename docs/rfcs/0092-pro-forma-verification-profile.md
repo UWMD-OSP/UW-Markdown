@@ -672,7 +672,7 @@ in this order, following the accepted native association:
 2. Split accrual requires preferred equity and an explicitly stated cash_rate;
    service is `A*cash_rate`. Otherwise it is unavailable, not zero.
 3. Common equity contributes +0. For other remaining cases, absent/null rate is
-   unavailable. Cash-pay preferred equity contributes `A*r`.
+   unavailable. Remaining preferred equity (cash or absent accrual) contributes `A*r`.
 4. For a remaining debt tranche, absent/null n is the native non-amortizing
    case. If n<=0, service is `A*r`. If n>0, set `i=r/12`, then set monthly
    service to `A/n` when i=0, otherwise `(A*i)/(1-P(1+i,-n))`. Annual service
@@ -695,7 +695,7 @@ zero without erasing its debt balance from debt-yield/LTV/LTC membership.
 A bare total_value supplied by a helper is insufficient without that binding.
 The numerator retains the native ordered sum of debt-class tranche amounts at
 positions <=through. Missing/null selected value stays a visible missing-value
-gap and makes a stated computed target unverifiable; another available purchase
+finding and makes a stated computed target unverifiable; another available purchase
 price or project cost cannot rescue it. Zero retains the native unavailable
 zero-denominator behavior. Do not infer a value from price, cost or an asset label.
 
@@ -867,7 +867,9 @@ unselected peers remain retained source/validation evidence, not additional
 current assertions merely because they are retained. A binding cannot silently
 select a historical or arbitrary peer; preserve the existing selection refusal.
 
-**Input/assumption class — owner ruling.** Pure stated inputs and assumption/
+**Input/assumption class — owner ruling.** A row is a computed assertion when the claim binds it as a target, when it is a §4b token target, or when its home is a dictionary calculation output for the document's class; any other inventoried row with no claimed relationship is an input only when the claim declares it as one, and is otherwise `relationship_not_claimed`.
+
+Pure stated inputs and assumption/
 input-only rows are listed in a separate ordered `inputs` collection, with their
 canonical source address, authored row family and input/assumption reason. They
 receive no financial assertion verdict. Report `input_count` separately;
