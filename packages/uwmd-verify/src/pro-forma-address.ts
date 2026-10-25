@@ -29,9 +29,17 @@ export function addressShape(value: unknown): value is ProFormaAddress {
     typeof value.section === 'string' && value.section.length > 0 &&
     (value.variant === null || typeof value.variant === 'string') && typeof value.pointer === 'string';
 }
-export function proFormaAddressResolver(parsed: ParsedUWFile, source: boolean) {
+export function proFormaAddressResolver(parsed: ParsedUWFile, source: boolean, frontmatterOrder: ReadonlyMap<string, number> = new Map()) {
   const physical = source ? parsedPhysicalBlocks(parsed) : [];
   const tokens = new Map<UWBlock, Map<string, string>>();
+  const sourcePositions = new Map<UWBlock, Map<string, number>>();
+  const readSourceTokens = (block: UWBlock) => {
+    if (!tokens.has(block)) {
+      const positions = new Map<string, number>();
+      tokens.set(block, jsonNumericTokens(block.rawJson, positions));
+      sourcePositions.set(block, positions);
+    }
+  };
   const resolve = (raw: unknown): ResolvedProFormaAddress => {
     if (!addressShape(raw)) throw new CalcError('CALC-PRO-FORMA', 'Address requires section, explicit nullable variant and pointer.');
     const address = raw;
@@ -117,12 +125,21 @@ export function proFormaAddressResolver(parsed: ParsedUWFile, source: boolean) {
     if (!r.block && r.parts.length === 2 && r.parts[0] === 'quick_metrics') return quickMetricDecimals(parsed.raw, String(r.parts[1]), r.value);
     if (!r.block) return undefined;
     if (!tokens.has(r.block)) {
-      try { tokens.set(r.block, jsonNumericTokens(r.block.rawJson)); } catch { return undefined; }
+      try { readSourceTokens(r.block); } catch { return undefined; }
     }
     const token = tokens.get(r.block)!.get(JSON.stringify(r.parts.map(String)));
     return token !== undefined && Number(token) === r.value ? getStatedDecimals(token) : undefined;
   };
-  return { resolve, precision };
+  const sourcePosition = (r: ResolvedProFormaAddress): readonly [number, number] => {
+    if (r.block) {
+      readSourceTokens(r.block);
+      return [Number(r.target.block_address), sourcePositions.get(r.block)!.get(JSON.stringify(r.parts.map(String))) ?? Number.POSITIVE_INFINITY];
+    }
+    const parts = r.parts.map(String);
+    while (parts.length && !frontmatterOrder.has(JSON.stringify(parts))) parts.pop();
+    return [-1, frontmatterOrder.get(JSON.stringify(parts)) ?? -1];
+  };
+  return { resolve, precision, sourcePosition };
 }
 /** Compare typed addresses, with null first and actual array indexes numerically. */
 export function compareProFormaTargets(a: ProFormaTarget, b: ProFormaTarget, aParts: readonly (string | number)[] = [a.target_pointer], bParts: readonly (string | number)[] = [b.target_pointer]): number {

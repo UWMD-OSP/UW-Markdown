@@ -80,7 +80,9 @@ function errorEvidence(error: unknown): ProFormaFinding['error'] {
 }
 export function verifyProForma(input: string | ParsedUWFile, options: VerifyProFormaOptions = {}): ProFormaReport {
   const source = typeof input === 'string';
-  const parsed = source ? parseUWFile(input) : input;
+  const frontmatterOrder = new Map<string, number>();
+  let sourceMember = 0;
+  const parsed = source ? parseUWFile(input, { onFrontmatterMember: path => { frontmatterOrder.set(JSON.stringify(path), sourceMember++); } }) : input;
   assertDataDescriptors(parsed);
   const block = resolveSectionBlock(parsed, 'dcf', options.claimVariant === undefined ? {} : { sectionVariants: { dcf: options.claimVariant } });
   const payload = block ? blockPayload(block) : undefined;
@@ -89,7 +91,7 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
   if (!record(raw) || raw.profile !== 'pro-forma' || raw.level !== 'L1' || typeof raw.convention_registry !== 'string' ||
     !Array.isArray(raw.rows) || !Array.isArray(raw.relationships)) throw new CalcError('CALC-PRO-FORMA', 'Malformed or absent explicit pro-forma claim.');
   const claim = raw as unknown as ProFormaClaim;
-  const resolver = proFormaAddressResolver(parsed, source);
+  const resolver = proFormaAddressResolver(parsed, source, frontmatterOrder);
   const claimAddress = { section: 'dcf', variant: block!.annotation.variant ?? null, pointer: '/pro_forma' };
   const claimResolved = resolver.resolve(claimAddress);
   const items = new Map<string, Item>();
@@ -211,7 +213,16 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
     coverage: { total: 0, by_verdict: { verified: 0, failed: 0, unverifiable: 0 }, by_row_family: {} },
     gaps, exclusions, profile_claim_findings: findings, validation: validateUWFile(input).issues, exit_code: 0 };
   const assertionsByPhysical = new Map<string, ProFormaAssertion>();
-  const orderedItems = [...items.values()].sort((a, b) => a.resolved && b.resolved ? compareProFormaTargets(a.resolved.target, b.resolved.target, a.resolved.parts, b.resolved.parts) : a.resolved ? -1 : b.resolved ? 1 : 0);
+  const orderedItems = [...items.values()].sort((a, b) => {
+    if (!a.resolved || !b.resolved) return a.resolved ? -1 : b.resolved ? 1 : 0;
+    if (source) {
+      const x = resolver.sourcePosition(a.resolved);
+      const y = resolver.sourcePosition(b.resolved);
+      const position = x[0] - y[0] || x[1] - y[1];
+      if (position) return position;
+    }
+    return compareProFormaTargets(a.resolved.target, b.resolved.target, a.resolved.parts, b.resolved.parts);
+  });
   for (const item of orderedItems) {
     const computed = item.bound || (item.resolved ? protectedHome(item.resolved, parsed.frontmatter.asset_class) : false);
     const inputKind = item.kinds.find(k => k === 'input' || k === 'assumption');

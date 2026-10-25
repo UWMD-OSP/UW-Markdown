@@ -166,3 +166,14 @@ it('keeps excluded-only external targets out of numeric assertion counts', () =>
   const r = verifyProForma(specimen({pro_forma:claimOf([rel])},{assumptions:{unused:1.2},cash_flow_series:flows}));
   expect(r.coverage.total).toBe(0); expect(r.exclusions).toHaveLength(1); expect(r.relationships).toHaveLength(0);
 });
+
+it('retains lexical source targets while model keys use UTF-16 order', () => {
+  const source = specimen({z:1,a:2,pro_forma:claimOf([])}).replace('"z":1,"a":2','"z":1,"a":2,"10":3,"2":4');
+  expect(verifyProForma(source).assertions.map(a => a.address.pointer)).toEqual(['/z','/a','/10','/2']);
+  expect(verifyProForma(parseUWFile(source)).assertions.map(a => a.address.pointer)).toEqual(['/10','/2','/a','/z']);
+});
+it('places source frontmatter targets before physical fences without changing model ordering', () => {
+  const source = specimen({result:1,pro_forma:claimOf([], {rows:[{address:at('frontmatter','/quick_metrics/cap_rate')}]})}).replace('deal_stage: screening\n','deal_stage: screening\nquick_metrics:\n  cap_rate: 0.05\n');
+  expect(verifyProForma(source).assertions.map(a => a.address.section)).toEqual(['frontmatter','dcf']);
+  expect(verifyProForma(parseUWFile(source)).assertions.map(a => a.address.section)).toEqual(['dcf','frontmatter']);
+});

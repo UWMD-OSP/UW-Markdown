@@ -349,3 +349,11 @@ describe('RFC 0126 land carry NOI', () => {
     expect(verifyStatedMetric(definition(), p, -10, undefined, 0).state).toBe('verified');
   });
 });
+
+it('retains lexical value positions independently of numeric token spelling', () => {
+  const positions = new Map<string,number>();
+  const tokens = jsonNumericTokens('{"z":true,"10":"x","2":4.00}',positions);
+  expect(positions.get('["z"]')!).toBeLessThan(positions.get('["10"]')!);
+  expect(positions.get('["10"]')!).toBeLessThan(positions.get('["2"]')!);
+  expect(tokens.get('["2"]')).toBe('4.00');
+});

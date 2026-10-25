@@ -323,12 +323,13 @@ export function verifyStatedMetrics(
  * is validated by `JSON.parse` first, so invalid JSON throws its `SyntaxError`;
  * this walk records token spelling only. `jsonStatedDecimals` never throws.
  */
-export function jsonNumericTokens(source: string): Map<string, string> {
+export function jsonNumericTokens(source: string, valuePositions?: Map<string, number>): Map<string, string> {
   JSON.parse(source);
   const tokens = source.match(/"(?:[^"\\]|\\.)*"|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null|[{}\[\]:,]/g) ?? [];
   const numbers = new Map<string, string>();
   let i = 0;
   function value(path: string[]): void {
+    valuePositions?.set(JSON.stringify(path), i);
     const token = tokens[i++];
     if (token === '{') {
       if (tokens[i] === '}') { i++; return; }
