@@ -198,12 +198,10 @@ uw_version: "3.0"
       const value = makeBlock('valuation', {}, {
         provenance: { source, actor: 'agent/synthetic' }, lifecycle: { revision, superseded },
       });
-      return '\`\`\`json uw:section=valuation variant=' + variant + '\n'
-        + JSON.stringify({ _meta: value.meta }) + '\n\`\`\`\n';
+      return `\`\`\`json uw:section=valuation variant=${variant}\n${JSON.stringify({ _meta: value.meta })}\n\`\`\`\n`;
     };
-    return parseUWFile('---\nuw_version: "3.0"\n---\n'
-      + history.map((variant) => block(variant, 1, true)).join('')
-      + block('base', 1) + block('downside', 2, false, laterSource));
+    const priors = history.map((variant) => block(variant, 1, true)).join('');
+    return parseUWFile(`---\nuw_version: "3.0"\n---\n${priors}${block('base', 1)}${block('downside', 2, false, laterSource)}`);
   }
 
   it('checks missing supersede history on a later current variant', () => {

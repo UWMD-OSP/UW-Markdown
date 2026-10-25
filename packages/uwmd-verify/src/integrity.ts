@@ -622,9 +622,8 @@ function classifyActor(source: string): ActorClass {
 
 function authorityAllows(authority: EditPolicy['authority'], actor: ActorClass): boolean {
   switch (authority) {
-    // `unknown` passes `either`: refusing it would turn every legacy source in
-    // the wild into a POL-01, which is a migration, not a bug fix. It can
-    // never satisfy the three restricted classes below.
+    // An unknown source has no restricted authority class; §V.3 permits it
+    // only under `either`, alongside the other non-system classes.
     case 'either':
       return actor !== 'system';
     case 'agent_only':
