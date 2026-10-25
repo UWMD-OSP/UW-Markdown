@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Correct reference provenance verification to derive authority from the source namespace and check every current variant against its own visible supersede history (Protocol V.3/V.10, RFC0090).
+
 - Complete the independent standard-library Python base Verifier (#354): dictionary statements, dated cash flows, lease-up, stack sizing, waterfall, explicit cash assembly, provenance policy and packless receipts. RFC0127 makes portable receipt disagreements engine-relative without changing receipt semantics; three-platform CI requires zero skips.
 
 - Implement accepted RFC0092 bounded pro-forma wire contract and assessment API/CLI (#550); synchronize explicit per-loan LTV basis and native stack underwritten-value admission. Full-profile support remains gated by #551/#552.

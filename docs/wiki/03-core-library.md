@@ -1,5 +1,10 @@
 # 03 — Core library (`@uwmd/verify` and `@uwmd/core`)
 
+`verifyProvenance` derives authority from `_meta.provenance.source`; the descriptive
+principal does not select an authority class. It checks every current variant,
+and POL-02 requires visible superseded history for that same variant (Protocol
+V.3/V.10, RFC0090).
+
 The validator follows the Format's null-is-unstated rule for tax stabilization
 and optional hedge terms. CC-15 selects base, default, then a sole lease-up
 variant. Replacement funding verification reports unresolvable_source before
