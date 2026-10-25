@@ -149,7 +149,7 @@ def assemble_property_cash_flows(document,plan):
             for row_index in entry['rows']:
                 if not isinstance(row_index,(int,float)) or isinstance(row_index,bool) or row_index!=int(row_index) or not 0<=row_index<len(supplement['series']) or row_index in row_cells:
                     refuse('coverage',pointer+'.rows','Every supplemental row identity must be valid and used once')
-                row_cells[row_index]=cell
+                row_cells[int(row_index)]=cell
     if set(coverage)!=set(required) or len(row_cells)!=len(supplement['series']):refuse('coverage','plan.coverage','Every required cell and source row must be accounted for')
     for row_index,cell in row_cells.items():
         row=supplement['series'][row_index];slot,category=cell
@@ -187,7 +187,7 @@ def assemble_property_cash_flows(document,plan):
     if 'sale_deductions' in plan:
         deductions=[];seen=set()
         for index,deduction in enumerate(plan['sale_deductions']):
-            pointer='plan.sale_deductions['+str(index)+']';row=deduction['row'];name=deduction['name']
+            pointer='plan.sale_deductions['+str(index)+']';row=int(deduction['row']);name=deduction['name']
             if name in ('prepayment_penalty','defeasance','loan_payoff'):refuse('sale_deduction',pointer+'.name','Financing deduction is outside unlevered scope')
             if row not in costs or row in seen:refuse('sale_deduction',pointer+'.row','Deduction must name each sale-cost row exactly once')
             seen.add(row)
@@ -201,7 +201,7 @@ def assemble_property_cash_flows(document,plan):
         gross=coverage[('disposition','gross_sale')].get('rows',[])
         if not gross:refuse('sale_deduction','plan.net_sale_proceeds','A gross-sale row is required')
         computed=0.0
-        for index in sorted([*gross,*costs]):computed=computed+supplement['series'][index]['amount']
+        for index in sorted([*gross,*costs]):computed=computed+supplement['series'][int(index)]['amount']
         stated=plan['net_sale_proceeds']
         if quantize(computed,2)!=quantize(stated,2):refuse('sale_deduction','plan.net_sale_proceeds','Net sale proceeds disagree')
         result['net_sale_proceeds']=dict(status='verified',stated=stated,computed=computed)
