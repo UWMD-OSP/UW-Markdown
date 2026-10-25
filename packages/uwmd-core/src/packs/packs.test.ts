@@ -36,8 +36,8 @@ import { emitCalcExcelFormula, emitExcelFormula, ExcelEmitError, emitFromAst } f
 // Evaluate only the emitted arithmetic/IF subset used by these pack tests.
 // A blank named cell is represented by null; Excel distinguishes blank from 0.
 function excelValue(formula: string): number | null {
-  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
-  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression), expression).toBe(true);
+  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null').replace(/(?<![<>=!])=(?!=)/g, '===');
+  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression.replaceAll('"purchase-price"', '0').replaceAll('"underwritten-value"', '0').replaceAll('"total-project-cost"', '0')), expression).toBe(true);
   // eslint-disable-next-line no-new-func
   return new Function('IF', `return (${expression});`)(
     (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
@@ -75,7 +75,8 @@ describe('MULTIFAMILY_PACK', () => {
     for (const c of MULTIFAMILY_PACK.calculations ?? []) {
       const r = evaluateCalc(c, ctx);
       expect(r.ok, `${c.id}: ${r.error?.message ?? ''}`).toBe(true);
-      expect(typeof r.value).toBe('number');
+      if (c.id === 'ltv') expect(r.value).toBeNull();
+      else expect(typeof r.value).toBe('number');
     }
   });
 });
@@ -85,7 +86,9 @@ describe('emitExcelFormula', () => {
     ['noi_model.net_operating_income', 'noi'],
     ['valuation.purchase_price', 'purchase_price'],
       ['valuation.underwritten_value', 'underwritten_value'],
-    ['debt_structure.loan_amount', 'loan_amount'],
+    ['debt_structure.ltv_basis', 'ltv_basis'],
+  ['sources_uses.total_project_cost', 'total_project_cost'],
+  ['debt_structure.loan_amount', 'loan_amount'],
     ['debt_structure.annual_debt_service', 'annual_debt_service'],
     ['property.total_units', 'total_units'],
     ['property.total_nra_sqft', 'total_nra_sqft'],
@@ -186,7 +189,9 @@ describe('Excel emit ↔ evaluateCalc parity', () => {
       ['noi_model.net_operating_income', 'noi'],
       ['valuation.purchase_price', 'purchase_price'],
       ['valuation.underwritten_value', 'underwritten_value'],
-      ['debt_structure.loan_amount', 'loan_amount'],
+      ['debt_structure.ltv_basis', 'ltv_basis'],
+  ['sources_uses.total_project_cost', 'total_project_cost'],
+  ['debt_structure.loan_amount', 'loan_amount'],
       ['debt_structure.annual_debt_service', 'annual_debt_service'],
       ['property.total_units', 'total_units'],
       ['property.total_nra_sqft', 'total_nra_sqft'],
@@ -202,6 +207,7 @@ describe('Excel emit ↔ evaluateCalc parity', () => {
     const susContent = parsed.sections['sources_uses'] as { content: Record<string, unknown> };
 
     const values: Record<string, number | null> = {
+      ltv_basis: null, total_project_cost: null,
       noi: noiContent.content['net_operating_income'] as number,
       purchase_price: valuationContent.content['purchase_price'] as number,
       underwritten_value: (valuationContent.content['underwritten_value'] as number | undefined) ?? null,
@@ -223,7 +229,7 @@ describe('Excel emit ↔ evaluateCalc parity', () => {
       // Replace whole-word identifiers with their numeric values.
       for (const [, name] of namedRanges) {
         const re = new RegExp(`\\b${name}\\b`, 'g');
-        formula = formula.replace(re, String(values[name]));
+        formula = formula.replace(re, String(values[name] ?? 'null'));
       }
       // Safe: at this point `formula` contains only digits, dots, parens, and +-*/.
 

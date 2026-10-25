@@ -93,7 +93,7 @@ describe('RFC 0040 role selection', () => {
   });
   it('restores all four senior debt checks including direct CC-03', () => {
     const result = validateUWFile(file({
-      debt_structure: { senior: block({ _role: 'senior', loan_amount: 600, ltv: 0.6, annual_debt_service: 50, underwritten_noi: 100, dscr: 2 }), junior: block({ _role: 'junior', loan_amount: 999 }) },
+      debt_structure: { senior: block({ _role: 'senior', loan_amount: 600, ltv_basis: 'underwritten-value', ltv: 0.6, annual_debt_service: 50, underwritten_noi: 100, dscr: 2 }), junior: block({ _role: 'junior', loan_amount: 999 }) },
       sources_uses: block({ sources: { loan_amount: 600 } }, 'sources_uses'),
       valuation: block({ underwritten_value: 1000 }, 'valuation'),
       noi_model: block({ net_operating_income: 100 }, 'noi_model'),
@@ -161,7 +161,7 @@ describe('RFC 0040 conformance fixture coverage', () => {
   const fixture = (name: string) => validateUWFile(parseUWFile(readFileSync(resolve(process.cwd(), '../..', 'conformance/documents/fixtures', `${name}.uwx.md`), 'utf8')));
   it('evaluates the producer-keyed statements in the real Markdown fixture', () => {
     const result = fixture('10-declared-roles');
-    for (const code of ['CC-01', 'CC-02', 'CC-03', 'CC-05', 'CC-09']) expect(result.coverage[code]?.status, code).toBe('evaluated');
+    for (const code of ['CC-01', 'CC-03', 'CC-05', 'CC-09']) expect(result.coverage[code]?.status, code).toBe('evaluated');
     expect(result.issues.filter(issue => issue.code === 'CC-16')).toEqual([]);
   });
   it('reports a consulted senior collision once, with the affected rules', () => {

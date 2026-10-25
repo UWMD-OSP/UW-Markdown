@@ -48,7 +48,7 @@ describe('validateUWFile — CC cross-section consistency', () => {
     },
     {
       code: 'CC-02', severity: 'warning', field: 'ltv',
-      sections: { valuation: block('valuation', { underwritten_value: 1_000 }), debt_structure: block('debt_structure', { loan_amount: 700, ltv: 0.6 }) },
+      sections: { valuation: block('valuation', { underwritten_value: 1_000 }), debt_structure: block('debt_structure', { loan_amount: 700, ltv_basis: 'underwritten-value', ltv: 0.6 }) },
     },
     {
       code: 'CC-03', severity: 'error', field: 'sources.loan_amount',

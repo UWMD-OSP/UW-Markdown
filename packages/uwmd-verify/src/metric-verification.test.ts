@@ -39,7 +39,7 @@ const simple = (): ParsedUWFile => deal({
   property: block('property', { total_units: 1 }),
   valuation: block('valuation', { purchase_price: 100000.21 }),
   noi_model: block('noi_model', { net_operating_income: 50000 }),
-  debt_structure: block('debt_structure', { annual_debt_service: 25000, loan_amount: 75000 }),
+  debt_structure: block('debt_structure', { annual_debt_service: 25000, loan_amount: 75000, ltv_basis: 'purchase-price' }),
 });
 
 describe('verifyStatedMetrics — the builtin examples', () => {
@@ -196,7 +196,7 @@ describe('verifyStatedMetrics — stated precision', () => {
     const source = parseUWFile(repo('conformance/rfc-0089/fixtures/complete-current.uwx.md'));
     const fromSource = verifyStatedMetrics(source);
     // Five quick_metrics/primary-size statements plus four section homes (RFC 0099).
-    expect(fromSource.counts).toEqual({ verified: 9, failed: 0, unverifiable: 0 });
+    expect(fromSource.counts).toEqual({ verified: 7, failed: 0, unverifiable: 2 });
 
     // A decoded document has no rawJson or frontmatter source text, so the
     // rounded statements cannot be compared at their stated precision.
@@ -204,7 +204,7 @@ describe('verifyStatedMetrics — stated precision', () => {
     const bare = verifyStatedMetrics(decoded);
     expect(bare.counts).toEqual({ verified: 5, failed: 0, unverifiable: 4 });
     for (const item of bare.evidence.filter((e) => e.state === 'unverifiable')) {
-      expect(item).toEqual({ id: item.id, path: item.path, stated: item.stated, state: 'unverifiable', reason: 'missing_stated_precision', computed: null });
+      expect(item).toEqual({ id: item.id, path: item.path, stated: item.stated, state: 'unverifiable', reason: item.id === 'ltv' ? 'missing_or_null_input' : 'missing_stated_precision', computed: null });
     }
 
     // Supplying the source decimals by address restores the source verdicts.

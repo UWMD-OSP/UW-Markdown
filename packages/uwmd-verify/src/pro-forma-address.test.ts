@@ -25,3 +25,18 @@ it('uses source block ordinals and source precision, and model paths with explic
   expect(current.precision(mt, new Map([[mt.key, '0.7500']]))).toBe(4);
   for (const token of ['+0.75', '.75', '00.75', '0.7501', ' 0.75']) expect(current.precision(mt, new Map([[mt.key, token]]))).toBeUndefined();
 });
+
+it('keeps unlabelled, literal default and superseded physical blocks distinct', () => {
+  const text = '---\nuw_version: "3.0"\nasset_class: office\n---\n' +
+    '\n```json uw:section=cash_flow_series source=manual\n{"series":[{"amount":1}]}\n```\n' +
+    '\n```json uw:section=cash_flow_series variant=default source=manual\n{"series":[{"amount":2}]}\n```\n';
+  const r = proFormaAddressResolver(parseUWFile(text), true);
+  expect(() => r.resolve({ section: 'cash_flow_series', variant: null, pointer: '/series/0/amount' })).toThrow();
+  expect(r.resolve({ section: 'cash_flow_series', variant: 'default', pointer: '/series/0/amount' }).target.block_address).toBe(1);
+});
+it('decodes escaped map keys exactly once and refuses inherited or noncanonical array addresses', () => {
+  const text = source.replace('"0":5', '"~1":7,"0":5');
+  const r = proFormaAddressResolver(parseUWFile(text), true);
+  expect(r.resolve(address('/~01')).value).toBe(7);
+  for (const pointer of ['/toString','/rows/-','/rows/+1','/rows/1e0','/rows/1.0','/rows/9007199254740992']) expect(() => r.resolve(address(pointer))).toThrow();
+});

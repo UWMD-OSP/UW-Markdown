@@ -172,9 +172,9 @@ export function controls(root) {
       assert.equal(verifyStatedMetric(m, p, 0).reason, 'CALC-DIV-ZERO');
       assert.equal(metric('dscr').null_semantics, 'expression');
     }],
-    ['all-class-LTV-uses-underwritten-value-with-lazy-price-fallback', () => {
+    ['all-class-LTV-requires-the-declared-basis-without-fallback', () => {
       for (const cls of d.calculations.filter(m => m.id === 'ltv').flatMap(m => m.asset_classes)) {
-        const p = simple(); p.sections.valuation.content.underwritten_value = 120000;
+        const p = simple(); p.sections.debt_structure.content.ltv_basis = 'underwritten-value'; p.sections.valuation.content.underwritten_value = 120000;
         assert.equal(verifyStatedMetric(metric('ltv', cls), p, 0.625).state, 'verified');
         assert.equal(verifyStatedMetric(metric('ltv', cls), p, 0.749998).state, 'failed');
         delete p.sections.valuation.content.purchase_price;
@@ -183,6 +183,8 @@ export function controls(root) {
         assert.equal(verifyStatedMetric(metric('ltv', cls), p, 0.625).reason, 'CALC-DIV-ZERO');
         p.sections.valuation.content.underwritten_value = null;
         p.sections.valuation.content.purchase_price = 100000.21;
+        assert.equal(verifyStatedMetric(metric('ltv', cls), p, 0.749998).state, 'unverifiable');
+        p.sections.debt_structure.content.ltv_basis = 'purchase-price';
         assert.equal(verifyStatedMetric(metric('ltv', cls), p, 0.749998).state, 'verified');
       }
     }],

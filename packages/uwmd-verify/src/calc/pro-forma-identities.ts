@@ -88,6 +88,13 @@ export function evaluateProFormaIdentity(
     const selected = home('stack', 'capital_stack', '');
     if (!selected || !record(selected.value) || !Array.isArray(selected.value.tranches)) return missing();
     if (target.block === selected.block && target.address.pointer.startsWith('/tranches/')) return unavailableIdentity('self_reference');
+    const tranches = selected.value.tranches;
+    // Admit the native structural domains before a typed helper reads them.
+    if (!tranches.length || tranches.some(t => !record(t) || typeof t.id !== 'string' || !t.id.length ||
+      !['senior_debt', 'mezzanine_debt', 'preferred_equity', 'common_equity', 'bridge', 'seller_financing', 'other_debt'].includes(String(t.class)) ||
+      !Number.isInteger(t.position) || Number(t.position) < 1 || !finite(t.amount) || t.amount < 0 ||
+      (t.rate != null && !finite(t.rate)) || (t.amortization_months != null && (!Number.isInteger(t.amortization_months) || Number(t.amortization_months) < 0)))) return unavailableIdentity('invalid_native_stack');
+    if (new Set(tranches.map(t => t.id)).size !== tranches.length || new Set(tranches.map(t => t.position)).size !== tranches.length) return unavailableIdentity('ambiguous_native_stack');
     const stack = selected.value as unknown as CapitalStack;
     const selector = rel.selectors ?? {};
     const over = selector.over; const through = selector.through;
@@ -122,6 +129,7 @@ export function evaluateProFormaIdentity(
     if (!selected || !record(selected.value) || !Array.isArray(selected.value.schedule)) return missing();
     const schedule = selected.value as unknown as LeaseUpSchedule;
     const rows = schedule.schedule;
+    if (rows.some(row => !record(row) || typeof row.period !== 'string')) return unavailableIdentity('invalid_period_selection');
     if (!['monthly', 'quarterly'].includes(schedule.period_granularity) || rows.length === 0) return unavailableIdentity('invalid_period_selection');
     const ordinals = rows.map(row => leaseUpPeriodOrdinal(row.period, schedule.period_granularity));
     if (ordinals.some((n, i) => n === null || (i > 0 && n !== ordinals[i - 1]! + 1))) return unavailableIdentity('invalid_period_selection');

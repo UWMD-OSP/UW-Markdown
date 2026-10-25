@@ -138,7 +138,7 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
     if (!record(row)) { inventory(undefined, origin, false); addFinding('invalid_row', 'invalid_row', [origin]); return; }
     inventory(row.address, origin, false, row);
   });
-  const pending: Array<{ item: Item; raw: unknown; rel?: ProFormaRelationship; inputs: Map<string, ResolvedProFormaAddress>; outcome?: ProFormaIdentityOutcome; valid: boolean; origins: string[] }> = [];
+  const pending: Array<{ item: Item; raw: unknown; rel?: ProFormaRelationship; inputs: Map<string, ResolvedProFormaAddress>; outcome?: ProFormaIdentityOutcome; valid: boolean; origins: string[]; excluded?: boolean }> = [];
   claim.relationships.forEach((declaration, i) => {
     const origin = '/pro_forma/relationships/' + i;
     if (!record(declaration)) { inventory(undefined, origin, true); addFinding('invalid_relationship', 'invalid_relationship', [origin]); return; }
@@ -169,7 +169,8 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
     }
     if (valid && record(applicability) && applicability.applicable === false) {
       exclusions.push({ origin, reason: String(applicability.reason) });
-      item.bound = pending.some(p => p.item === item);
+      item.bound = pending.some(p => p.item === item && !p.excluded);
+      pending.push({ item, raw: declaration, rel: declaration as unknown as ProFormaRelationship, inputs, valid, origins: [origin], excluded: true });
       // An excluded absent statement is a declaration finding, not a numeric claim.
       if (!item.resolved && item.origins.length === 1) items.delete(JSON.stringify(['declaration', origin]));
       return;
@@ -180,7 +181,7 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
   // Physical grouping precedes context identity and all duplicate elimination.
   for (const p of pending) {
     const target = p.item.resolved;
-    if (!target || !p.rel) continue;
+    if (!target || !p.rel || p.excluded) continue;
     const selector = p.rel.selectors ?? {};
     const loan = p.rel.identity === 'ltv' ? p.inputs.get('loan') : undefined;
     if (loan) {
@@ -209,13 +210,13 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
     const computed = item.bound || (item.resolved ? protectedHome(item.resolved, parsed.frontmatter.asset_class) : false);
     const inputKind = item.kinds.find(k => k === 'input' || k === 'assumption');
     const family = familyOf(item.families);
+    if (item.families.some(f => !(PRO_FORMA_FAMILIES as readonly string[]).includes(f))) addFinding('unrecognized_family', 'unrecognized_family', item.origins, 'indeterminate');
     if (!computed && inputKind && item.reasons.length === 0 && new Set(item.kinds).size === 1 && new Set(item.families).size <= 1) {
       report.inputs.push({ address: item.address, target: item.resolved?.target ?? null, origins: item.origins,
         row_family: family, reason: inputKind as 'input' | 'assumption' });
       continue;
     }
     if (new Set(item.families).size > 1) item.reasons.push('ambiguous_family');
-    if (item.families.some(f => !(PRO_FORMA_FAMILIES as readonly string[]).includes(f))) addFinding('unrecognized_family', 'unrecognized_family', item.origins, 'indeterminate');
     const assertion: ProFormaAssertion = { key: item.resolved?.key ?? JSON.stringify(['declaration', item.origins[0]]),
       target: item.resolved?.target ?? null, address: item.address, origins: item.origins,
       row_family: family, stated: finite(item.resolved?.value) ? item.resolved.value : null,
@@ -239,10 +240,11 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
     if (p.valid && seen.has(duplicateKey)) {
       report.relationships[seen.get(duplicateKey)!]!.origins.push(...p.origins); continue;
     }
-    if (p.rel?.id !== undefined) {
-      const entries = ids.get(p.rel.id) ?? [];
+    const declaredId = record(p.raw) && typeof p.raw.id === 'string' ? p.raw.id : undefined;
+    if (declaredId !== undefined) {
+      const entries = ids.get(declaredId) ?? [];
       if (entries.some(x => x.semantic !== sem)) { assertion.reasons.push('relationship_collision'); for (const e of entries) e.assertion.reasons.push('relationship_collision'); }
-      entries.push({ semantic: sem, assertion }); ids.set(p.rel.id, entries);
+      entries.push({ semantic: sem, assertion }); ids.set(declaredId, entries);
     }
     const coarseKey = assertion.key + ':' + String(record(p.raw) ? p.raw.identity : '') + ':' + String(record(p.raw) ? p.raw.procedure_version : '');
     const variants = coarse.get(coarseKey) ?? [];
@@ -251,6 +253,7 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
       for (const variant of variants) variant.assertion.reasons.push('relationship_collision');
     }
     variants.push({ semantic: sem, assertion }); coarse.set(coarseKey, variants);
+    if (p.excluded) continue;
     let outcome = !p.valid || !p.rel ? unavailableIdentity('invalid_relationship')
       : claim.convention_registry !== PRO_FORMA_REGISTRY ? unavailableIdentity('unsupported_registry')
       : claim.conventions !== undefined && !validConventions(claim.conventions) ? unavailableIdentity('unsupported_convention')

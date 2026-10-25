@@ -1979,9 +1979,9 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   },
   {
     code: 'CC-02', severity: 'warning',
-    title: 'Stated LTV does not match the underwritten value',
-    description: "debt_structure.ltv differs from debt_structure.loan_amount / the denominator selected by that loan's ltv_basis by more than 0.5 points.",
-    remediation: 'Recompute LTV = loan_amount / underwritten value and restate debt_structure.ltv, or correct the value in valuation that the LTV was struck against.',
+    title: 'Stated LTV does not match the declared basis',
+    description: "debt_structure.ltv differs from debt_structure.loan_amount / the valuation or sources_uses denominator selected by that loan's ltv_basis by more than 0.5 points.",
+    remediation: 'Recompute LTV from the selected loan_amount and declared ltv_basis denominator in valuation or sources_uses, and correct the stated LTV or its source input.',
     spec_ref: '§5.3 CC-02',
   },
   {

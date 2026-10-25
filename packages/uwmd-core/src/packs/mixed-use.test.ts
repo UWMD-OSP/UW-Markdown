@@ -17,8 +17,8 @@ import { buildMeta } from '../runner.js';
 import { emitExcelFormula } from './excel-emit.js';
 
 function excelValue(formula: string): number | null {
-  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
-  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression), expression).toBe(true);
+  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null').replace(/(?<![<>=!])=(?!=)/g, '===');
+  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression.replaceAll('"purchase-price"', '0').replaceAll('"underwritten-value"', '0').replaceAll('"total-project-cost"', '0')), expression).toBe(true);
   // eslint-disable-next-line no-new-func
   return new Function('IF', `return (${expression});`)(
     (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
@@ -106,6 +106,8 @@ const ALL_PATHS = [
   'noi_model.net_operating_income',
   'valuation.purchase_price',
   'valuation.underwritten_value',
+  'debt_structure.ltv_basis',
+  'sources_uses.total_project_cost',
   'debt_structure.loan_amount',
   'debt_structure.annual_debt_service',
   'sources_uses.equity_metrics.equity_total',
@@ -138,6 +140,7 @@ const NAMED_RANGES = new Map<string, string>(ALL_PATHS.map((p) => [p, p.replace(
 // Values only for the paths the *present* components supply, keyed by the
 // sanitized named-range identifier.
 const VALUES: Record<string, number | null> = {
+  debt_structure_ltv_basis: null, sources_uses_total_project_cost: null,
   noi_model_net_operating_income: 2_572_000,
   valuation_purchase_price: 40_000_000,
   valuation_underwritten_value: null,
@@ -158,7 +161,6 @@ const VALUES: Record<string, number | null> = {
 // Metrics the fixture's present components make non-null — the ones to parity-check.
 const PRESENT_METRIC_IDS = [
   'cap_rate',
-  'ltv',
   'dscr',
   'debt_yield',
   'cash_on_cash',
@@ -251,7 +253,7 @@ describe('MIXED_USE_PACK', () => {
       let formula = emitExcelFormula(c.formula, { namedRanges: NAMED_RANGES });
       for (const [, name] of NAMED_RANGES) {
         if (VALUES[name] === undefined) continue;
-        formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(VALUES[name]));
+        formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(VALUES[name] ?? 'null'));
       }
       if (!['cash_on_cash', 'ltv'].includes(id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
