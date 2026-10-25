@@ -1,4 +1,7 @@
 {
-  "verdict": "verified",
-  "expected_codes": []
+  "verdict": "unverifiable",
+  "expected_codes": [
+    "RCP-03",
+    "RCP-07"
+  ]
 }

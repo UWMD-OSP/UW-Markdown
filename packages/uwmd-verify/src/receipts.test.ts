@@ -1013,7 +1013,7 @@ describe('JCS Unicode admission at receipt boundaries', () => {
     const expected = JSON.parse(await readFile(resolve(fixture, 'expected-receipt.json'), 'utf8')) as UWReceipt;
     expect((await resolveReceiptSubject(raw, { filename: 'control.uwx.md' })).subject).toEqual(expected.subject);
     // The current explicit-basis contract leaves LTV unavailable in this source.
-    expect((await verifyReceipt(expected, raw, { filename: 'control.uwx.md' })).verdict).toBe('failed');
+    expect((await verifyReceipt(expected, raw, { filename: 'control.uwx.md' })).verdict).toBe('verified');
   });
 });
 

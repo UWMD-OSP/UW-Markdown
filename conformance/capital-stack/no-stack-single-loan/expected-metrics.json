@@ -1,9 +1,12 @@
 {
-  "why": "The RFC 0026 additivity pin: with no capital_stack section, every single-loan multifamily pack metric equals the pre-RFC result, and no CS-* validator rule fires. Hand-verified: 1.3M/20M, 14M/20M, 1.3M/1.01M, 1.3M/14M, 20M/100, 14M/100, 14M/90k, 290k/6M — each quantized at the pack's round_to.",
-  "no_codes_with_prefix": ["CS-", "CC-03"],
+  "why": "Current no-stack single-loan control. The source declares no ltv_basis, so LTV is unavailable under RFC0092; the other metrics and CS/CC-03 applicability remain pinned.",
+  "no_codes_with_prefix": [
+    "CS-",
+    "CC-03"
+  ],
   "metrics": {
     "cap_rate": 0.065,
-    "ltv": 0.7,
+    "ltv": null,
     "dscr": 1.2871,
     "debt_yield": 0.092857,
     "price_per_unit": 200000,

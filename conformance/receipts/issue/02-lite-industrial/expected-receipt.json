@@ -65,9 +65,9 @@
       },
       {
         "calc_id": "ltv",
-        "value": 0.6,
+        "value": null,
         "unit": "%",
-        "computed": true
+        "computed": false
       },
       {
         "calc_id": "noi_per_sqft",
@@ -88,7 +88,7 @@
         "computed": false
       }
     ],
-    "results_digest": "sha256:82d6aec9f7a54924ea1cdc18b53072cd13ecf04c59e34d7a771a0b74277dda47"
+    "results_digest": "sha256:e8ef9298f6ac324a6c0f940a9b4245a38df5ce52da9a840b0b077adca76b11ed"
   },
   "policy": {
     "policy_set": "builtin",
