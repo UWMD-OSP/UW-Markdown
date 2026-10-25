@@ -84,8 +84,10 @@ def verify_stated_metrics(document):
             context={}
             # RFC0126 pins a land NOI statement's own current physical variant.
             if identifier=='land_carry_noi' and home is not None and home[0].section=='noi_model':
-                variant=dict(home[0].attributes).get('variant','default')
-                context={'sectionVariants':{'noi_model':variant}}
+                # Bind every NOI operand to this exact physical current home,
+                # including the unlabelled/component case. Missing stays null.
+                context={'overrides':{path:field(home[0].parsed.value,path.partition('.')[2])
+                         for path in entry['input_paths'] if path.startswith('noi_model.')}}
             value,reason=metric_value(document,entry,context)
             item=dict(id=identifier,path=path,stated=stated,stated_decimals=s,state='unverifiable',computed=None)
             if value is None:
