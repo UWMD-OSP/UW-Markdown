@@ -49,7 +49,8 @@ def verify_provenance(document,policies=None):
             def issue(code,message):
                 issues.append(dict(code=code,severity='error',section=section,message=message,value=dict(variant=variant)))
             if not allows:issue('POL-01','Parsed source actor is not authorized for this policy')
-            lifecycle=meta.get('lifecycle') or {}
+            lifecycle=meta.get('lifecycle')
+            if not isinstance(lifecycle,dict):lifecycle={}
             revision=lifecycle.get('revision')
             prior=any(b.section==section and dict(b.attributes).get('variant')==variant and source_superseded(b) for b in document.source.blocks)
             if policy['supersede_on_edit'] and finite(revision) and revision>1 and not prior:

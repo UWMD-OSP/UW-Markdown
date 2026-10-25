@@ -25,6 +25,7 @@ def lease_up_context(document):
 def verify_lease_up_schedule(payload,ctx):
     issues=[]
     rows=payload.get('schedule') or []
+    if not isinstance(rows,list) or any(not isinstance(row,dict) for row in rows):return result([finding('LU-UNEVALUABLE','indeterminate','Schedule rows are invalid')])
     def compare(stated,raw,places,code,period=None):
         extra={'period':period} if isinstance(period,str) else {}
         if not finite(raw):

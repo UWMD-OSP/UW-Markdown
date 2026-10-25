@@ -13,11 +13,11 @@ from uwmd_envelope import source_digest
 from uwmd_expressions import ExpressionError,parse_expression,expression_references
 from uwmd_jcs import canonicalize
 from uwmd_lite_subject import lite_subject
-from uwmd_metrics import dictionary_entries,metric_value
+from uwmd_metrics import metric_value
 from uwmd_numeric import quantize
 from uwmd_periods import PeriodError
 from uwmd_reader import parse
-from uwmd_spec_data import schema
+from uwmd_spec_data import schema,metric_dictionary
 from uwmd_validation_optional_shapes import _violations
 from uwmd_verifier_common import finding
 
@@ -76,7 +76,7 @@ def verify_receipt(receipt,raw,*,filename=None,inputs=None,signature_verifier=No
     recomputed=[];disagreements=[]
     # Lite compilation belongs to an optional representation profile. Its
     # canonical subject can still decide digest/input/authentication findings.
-    entries={e['id']:e for e in dictionary_entries(document.frontmatter.value.get('asset_class'))} if document else {}
+    entries={e['id']:e for e in metric_dictionary()['calculations'] if document.frontmatter.value.get('asset_class') in e['asset_classes']} if document else {}
     cache={};visiting=set()
     def compute(identifier):
         if identifier in cache:return cache[identifier]

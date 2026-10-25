@@ -48,6 +48,7 @@ def context(document):
 
 def sizing_value(stack,figure,ctx):
     tranches=stack.get('tranches',[])
+    if not isinstance(tranches,list) or any(not isinstance(t,dict) for t in tranches):return None
     fn=figure.get('fn')
     if fn=='weighted_cost':
         if figure.get('over')!='*' or 'through' in figure: return None
@@ -89,7 +90,12 @@ def sizing_value(stack,figure,ctx):
 def verify_capital_stack(stack,ctx):
     issues=[]
     sizing=[]
-    for figure in stack.get('sizing') or []:
+    declarations=stack.get('sizing') or []
+    if not isinstance(declarations,list):return result([finding('CS-SIZING-UNEVALUABLE','indeterminate','Sizing array required')],sizing=[])
+    for figure in declarations:
+        if not isinstance(figure,dict) or not isinstance(figure.get('fn'),str) or figure['fn'] not in DECIMALS or not isinstance(figure.get('id'),str) or not finite(figure.get('value')):
+            issues.append(finding('CS-SIZING-UNEVALUABLE','indeterminate','Malformed sizing declaration'))
+            continue
         fn=figure['fn']
         raw=sizing_value(stack,figure,ctx)
         agrees=finite(raw) and quantize(figure['value'],DECIMALS[fn])==quantize(raw,DECIMALS[fn])

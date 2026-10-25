@@ -21,6 +21,7 @@ Run from this checkout with its matching normative spec data:
 
 ```sh
 python -B implementations/python/uwmd.py manifest
+python -B implementations/python/uwmd.py calc synthetic.uwx.md calculations.json --json
 python -B implementations/python/uwmd.py validate synthetic.uwx.md --json
 python -B implementations/python/uwmd.py verify-metrics synthetic.uwx.md --json
 python -B implementations/python/uwmd.py verify-cash-flows synthetic.uwx.md --variant base --json

@@ -5,7 +5,7 @@ from uwmd_waterfall import allocate_waterfall,verify_waterfall
 
 class WaterfallTests(unittest.TestCase):
     def sample(self):
-        return dict(equity_split=dict(lp=.9,gp=.1),tiers=[dict(type='return_of_capital'),dict(type='preferred_return',rate=.08,accrual='simple'),dict(type='split',lp_share=.8,gp_share=.2)]),dict(day_count='actual/365f',series=[dict(date='2025-01-01',amount=-100),dict(date='2026-01-01',amount=150)])
+        return dict(cash_flow_ref=dict(variant='base'),equity_split=dict(lp=.9,gp=.1),tiers=[dict(type='return_of_capital'),dict(type='preferred_return',rate=.08,accrual='simple'),dict(type='split',lp_share=.8,gp_share=.2)]),dict(day_count='actual/365f',series=[dict(date='2025-01-01',amount=-100),dict(date='2026-01-01',amount=150)])
     def test_conservation_snapshot_and_clawback_never_inserts_a_cash_row(self):
         waterfall,series=self.sample();before=copy.deepcopy((waterfall,series))
         ordinary=allocate_waterfall(waterfall,series)
@@ -26,3 +26,9 @@ class WaterfallTests(unittest.TestCase):
         report=verify_waterfall(waterfall,series)
         self.assertEqual(report['verdict'],'failed')
         self.assertEqual({i['code'] for i in report['issues']},{'WF-UNEVALUABLE','WF-PROCEDURE-REFUSES'})
+
+    def test_invalid_terms_never_become_a_verified_allocation(self):
+        waterfall,series=self.sample();waterfall['equity_split']['lp']=.99
+        self.assertEqual(verify_waterfall(waterfall,series)['verdict'],'unverifiable')
+        waterfall,series=self.sample();waterfall['tiers'][0]={'type':'unknown'}
+        self.assertEqual(verify_waterfall(waterfall,series)['verdict'],'unverifiable')

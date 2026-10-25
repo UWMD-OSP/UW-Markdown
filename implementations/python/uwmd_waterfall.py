@@ -6,6 +6,9 @@ from uwmd_fdlibm import pinned_pow
 from uwmd_numeric import year_fraction,quantize
 from uwmd_verifier_common import selected,result,finding
 from uwmd_validation_selection import current_blocks
+from uwmd_validation_structure import waterfall_terms
+from uwmd_validation_optional_shapes import _violations
+from uwmd_spec_data import schema
 
 
 def allocate_waterfall(waterfall,series):
@@ -103,7 +106,17 @@ def allocate_waterfall(waterfall,series):
 
 
 def verify_waterfall(waterfall,series):
-    if series is None or any(f[0] in ('CF-01','CF-02') for f in cash_flow_findings(series)):
+    spec=schema('section-distribution-waterfall.schema.json')
+    view={k:v for k,v in waterfall.items() if k not in ('_meta','_role','_overrides','_notes')} if isinstance(waterfall,dict) else waterfall
+    malformed=_violations(view,spec,spec)
+    terms=[]
+    if not malformed:
+        waterfall_terms(view,lambda code,field,message,*args,**kwargs:terms.append((code,field,message)))
+        clawback=view.get('clawback')
+        if clawback and clawback.get('basis')=='lp_preferred_shortfall' and not any(tier['type']=='preferred_return' for tier in view['tiers']):terms.append(('WF-11','clawback','Preferred tier required'))
+    if malformed or terms:
+        return result([finding('WF-UNEVALUABLE','indeterminate','Waterfall terms are structurally invalid')])
+    if series is None or any(f[0] in ('CF-01','CF-02') for f in cash_flow_findings(series)) or not any(row['amount']<0 for row in series.get('series',[])):
         return result([finding('WF-UNEVALUABLE','indeterminate','Referenced series is absent or invalid')])
     issues=[]
     try:

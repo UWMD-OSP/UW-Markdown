@@ -44,3 +44,11 @@ class ReceiptTests(unittest.TestCase):
         receipt.pop('inputs_provenance');receipt['computation']['results_digest']='sha256:'+'0'*64
         result=verify_receipt(receipt,source,filename='deal.uwx.md')
         self.assertEqual([i['code'] for i in result['issues']],['RCP-04'])
+
+    def test_raw_size_selector_is_not_a_receipt_calculation_id(self):
+        receipt,source=self.fixture()
+        receipt['computation']['results']=[dict(calc_id='total_units',value=77,unit='units',computed=True)]
+        receipt['computation']['results_digest']=_hash(receipt['computation']['results'])
+        report=verify_receipt(receipt,source,filename='deal.uwx.md')
+        self.assertEqual([i['code'] for i in report['issues']],['RCP-05'])
+        self.assertEqual(report['recomputed'],[])
