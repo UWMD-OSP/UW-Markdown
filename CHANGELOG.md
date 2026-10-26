@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Correct the downloadable LLM indexes to label the current Protocol4.1.0; no contract, package version or launch wiring changes.
+
 - Prepare accurate local MCP directory metadata/checklists and anonymous aggregate adoption counts; clarify unavailable statements in the authoring skill. Nothing is listed or deployed.
 - Harden verification regression coverage with seeded canonicalization, receipt authentication, source tamper, Unicode, CSV/XML and bounded ZIP adversarial properties.
 

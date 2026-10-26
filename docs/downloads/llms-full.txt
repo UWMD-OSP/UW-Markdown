@@ -29,7 +29,7 @@ UW Markdown is an open standard for commercial real-estate underwriting. Its pri
 ## Normative and interoperability documentation
 
 - Format specification (Format 3.0, the only admitted version): https://uwmd.org/spec/format
-- Protocol (4.0.0): https://uwmd.org/spec/protocol
+- Protocol (4.1.0): https://uwmd.org/spec/protocol
 - UW Lite 1.0: https://uwmd.org/spec/lite
 - Verification receipt (receipt_version 1.1): https://uwmd.org/spec/receipt
 - XML mapping 1.0: https://uwmd.org/spec/xml
