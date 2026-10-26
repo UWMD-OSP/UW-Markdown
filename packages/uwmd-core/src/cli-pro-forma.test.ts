@@ -1,5 +1,5 @@
 import { readFileSync, readdirSync } from 'node:fs';
-import { spawnSync } from 'node:child_process';
+import { runProcess } from '../../../test/cli.mjs';
 import { fileURLToPath } from 'node:url';
 import { expect, it } from 'vitest';
 import { parseProFormaArgs } from './cli-pro-forma.js';
@@ -20,11 +20,11 @@ it('keeps the public support claim gated on independent implementation and CLI p
 
 const regressions = new URL('../../../conformance/pro-forma/', import.meta.url);
 const defects = readdirSync(regressions).filter(name => name.startsWith('d1-') || name.startsWith('d2-') || name.startsWith('rfc0128-'));
-it.each(defects)('reports the reference regression exit and JSON without rewriting %s', name => {
+it.each(defects)('reports the reference regression exit and JSON without rewriting %s', async name => {
   const file = new URL(`${name}/deal.uwx.md`, regressions);
   const expected = JSON.parse(readFileSync(new URL(`${name}/expected.json`, regressions), 'utf8'));
   const before = readFileSync(file);
-  const child = spawnSync(process.execPath, [fileURLToPath(new URL('../../uwmd-cli/bin/uwmd.mjs', import.meta.url)), 'verify-pro-forma', fileURLToPath(file), '--json'], { encoding: 'utf8' });
+  const child = await runProcess(process.execPath, [fileURLToPath(new URL('../../uwmd-cli/bin/uwmd.mjs', import.meta.url)), 'verify-pro-forma', fileURLToPath(file), '--json'], { encoding: 'utf8' });
   expect(child.status, child.stderr).toBe(expected.exit_code);
   expect(JSON.parse(child.stdout)).toMatchObject(expected);
   expect(readFileSync(file)).toEqual(before);
