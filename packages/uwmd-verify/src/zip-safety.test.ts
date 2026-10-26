@@ -1,3 +1,4 @@
+import fc from 'fast-check';
 import { strToU8, zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
 import { extractZipSafely, inspectZipSafety } from './zip-safety.js';
@@ -79,5 +80,24 @@ describe('actual ZIP transport integrity (#544)', () => {
     const start = 30 + view.getUint16(26, true) + view.getUint16(28, true);
     bytes[start] = 255;
     expect(() => extractZipSafely(bytes, {}, refuse)).toThrow(/ZIP_INVALID/);
+  });
+});
+
+
+describe('seeded ZIP transport adversarial properties', () => {
+  it('rejects every sampled truncation and retains the supplied input bytes', () => {
+    const bytes = archive(6);
+    fc.assert(fc.property(fc.integer({ min: 0, max: bytes.length - 1 }), cut => {
+      const truncated = bytes.slice(0, cut); const before = truncated.slice();
+      expect(() => extractZipSafely(truncated, {}, refuse)).toThrow(/ZIP_INVALID/);
+      expect(truncated).toEqual(before);
+    }), { seed: 128007, numRuns: 150 });
+  });
+  it('honors configured expanded-byte limits before accepting otherwise valid archives', () => {
+    fc.assert(fc.property(fc.uint8Array({ minLength: 1, maxLength: 512 }), payload => {
+      const bytes = zipSync({ 'synthetic.bin': payload }, { level: 0 });
+      expect(extractZipSafely(bytes, { maxUncompressedBytes: payload.length }, refuse)['synthetic.bin']).toEqual(payload);
+      expect(() => extractZipSafely(bytes, { maxUncompressedBytes: payload.length - 1 }, refuse)).toThrow(/SIZE_LIMIT/);
+    }), { seed: 128008, numRuns: 80 });
   });
 });

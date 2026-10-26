@@ -1,3 +1,4 @@
+import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -232,5 +233,25 @@ describe('JCS document artifact error boundaries', () => {
     expect(calls).toBe(1);
     expect(await verifyDocumentSignature(SOURCE, signed, { signatureVerifier: { verify: async () => { throw new TypeError('offline'); } } }))
       .toMatchObject({ state: 'unverifiable', reason: 'backend_error', issues: [{ code: 'INT-13' }] });
+  });
+});
+
+
+describe('seeded document authentication adversarial properties', () => {
+  it('refuses decoded duplicate keys even when one spelling uses JSON escapes', async () => {
+    await fc.assert(fc.asyncProperty(fc.integer(), async value => {
+      const duplicate = SOURCE.replace('"value":100', `"value":${value},"\\u0076alue":${value}`);
+      await expect(resolveDocumentSigningSubject(duplicate)).rejects.toBeInstanceOf(DocumentSigningError);
+    }), { seed: 128013, numRuns: 100 });
+  });
+  it('binds Unicode body edits and refuses them before invoking the signature backend', async () => {
+    const signed = await artifact();
+    await fc.assert(fc.asyncProperty(fc.fullUnicodeString({ minLength: 1, maxLength: 24 }), async text => {
+      const edited = SOURCE.replace('"value":100', `"value":${JSON.stringify(text)}`);
+      let calls = 0;
+      const result = await verifyDocumentSignature(edited, signed, { signatureVerifier: { verify: async () => { calls++; return { ok: true }; } } });
+      expect(result).toMatchObject({ state: 'failed', reason: 'subject_mismatch' });
+      expect(calls).toBe(0);
+    }), { seed: 128014, numRuns: 70 });
   });
 });
