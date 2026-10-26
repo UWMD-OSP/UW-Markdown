@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Correct RFC0092 D1/D2 reference regressions: keep unresolved declared inputs outside assertion coverage, and add a summary occupancy prerequisite only when it is the native fallback source. Copy ten synthetic regression repros into conformance; pro-forma support remains unclaimed.
+
 - Correct reference provenance verification to derive authority from the source namespace and check every current variant against its own visible supersede history (Protocol V.3/V.10, RFC0090).
 
 - Complete the independent standard-library Python base Verifier (#354): dictionary statements, dated cash flows, lease-up, stack sizing, waterfall, explicit cash assembly, provenance policy and packless receipts. RFC0127 makes portable receipt disagreements engine-relative without changing receipt semantics; three-platform CI requires zero skips.

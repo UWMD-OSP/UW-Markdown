@@ -5,6 +5,11 @@ principal does not select an authority class. It checks every current variant,
 and POL-02 requires visible superseded history for that same variant (Protocol
 V.3/V.10, RFC0090).
 
+The pro-forma assessor preserves unresolved declared inputs as inputs with null
+targets (RFC0092 §6a). Final occupancy uses stated final-row SF before the
+summary fallback; only a selected fallback adds the existing summary prerequisite
+(§4b). These reference regressions add no profile support claim.
+
 The validator follows the Format's null-is-unstated rule for tax stabilization
 and optional hedge terms. CC-15 selects base, default, then a sole lease-up
 variant. Replacement funding verification reports unresolvable_source before

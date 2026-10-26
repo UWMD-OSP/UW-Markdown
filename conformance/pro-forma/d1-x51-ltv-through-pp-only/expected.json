@@ -1,0 +1,40 @@
+{
+  "status": "completed",
+  "exit_code": 1,
+  "input_count": 2,
+  "inputs": [
+    {
+      "address": {
+        "section": "valuation",
+        "variant": null,
+        "pointer": "/purchase_price"
+      },
+      "reason": "input"
+    },
+    {
+      "address": {
+        "section": "valuation",
+        "variant": null,
+        "pointer": "/underwritten_value"
+      },
+      "reason": "input",
+      "target": null
+    }
+  ],
+  "assertions": [
+    {
+      "address": {
+        "pointer": "/sizing/4/value"
+      },
+      "state": "unverifiable"
+    }
+  ],
+  "coverage": {
+    "total": 1,
+    "by_verdict": {
+      "verified": 0,
+      "failed": 0,
+      "unverifiable": 1
+    }
+  }
+}

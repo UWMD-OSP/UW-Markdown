@@ -161,12 +161,17 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
         if (finite(r.value)) inventory(binding.address, `${origin}/inputs/${j}`);
       } catch (error) { valid = false; item.reasons.push(errorEvidence(error)?.code ?? 'unresolved_input'); }
     }
-    // The native fallback occupancy source is a required computed prerequisite.
+    // Match the native source selection: summary SF is a prerequisite only
+    // when the final row does not supply finite occupied SF (RFC0092 §4b).
     if (declaration.identity === 'final_occupancy_rate') {
       const schedule = inputs.get('schedule');
-      if (schedule && record(schedule.value) && record(schedule.value.stabilized_summary) && finite(schedule.value.stabilized_summary.occupied_sf)) {
-        const address = { ...schedule.address, pointer: '/stabilized_summary/occupied_sf' };
-        const r = resolver.resolve(address); inputs.set('native_occupied_summary', r); inventory(address, `${origin}/native_prerequisite`);
+      if (schedule && record(schedule.value)) {
+        const rows = schedule.value.schedule;
+        const final = Array.isArray(rows) ? rows[rows.length - 1] : undefined;
+        if ((!record(final) || !finite(final.occupied_sf)) && record(schedule.value.stabilized_summary) && finite(schedule.value.stabilized_summary.occupied_sf)) {
+          const address = { ...schedule.address, pointer: '/stabilized_summary/occupied_sf' };
+          const r = resolver.resolve(address); inputs.set('native_occupied_summary', r); inventory(address, `${origin}/native_prerequisite`);
+        }
       }
     }
     if (valid && record(applicability) && applicability.applicable === false) {
@@ -228,7 +233,10 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
     const inputKind = item.kinds.find(k => k === 'input' || k === 'assumption');
     const family = familyOf(item.families);
     if (item.families.some(f => !(PRO_FORMA_FAMILIES as readonly string[]).includes(f))) addFinding('unrecognized_family', 'unrecognized_family', item.origins, 'indeterminate');
-    if (!computed && inputKind && item.reasons.length === 0 && new Set(item.kinds).size === 1 && new Set(item.families).size <= 1) {
+    // Resolution absence does not turn a branch-2 input into an assertion.
+    // Preserve malformed address/declaration handling and computed precedence.
+    const inputOnlyReasons = item.reasons.every(reason => reason === 'CALC-RESOLVE-001' || reason === 'CALC-RESOLVE-002');
+    if (!computed && inputKind && inputOnlyReasons && new Set(item.kinds).size === 1 && new Set(item.families).size <= 1) {
       report.inputs.push({ address: item.address, target: item.resolved?.target ?? null, origins: item.origins,
         row_family: family, reason: inputKind as 'input' | 'assumption' });
       continue;

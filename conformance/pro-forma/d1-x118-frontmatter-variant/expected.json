@@ -1,0 +1,25 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "input_count": 1,
+  "inputs": [
+    {
+      "address": {
+        "section": "frontmatter",
+        "variant": "x",
+        "pointer": "/deal_stage"
+      },
+      "reason": "input",
+      "target": null
+    }
+  ],
+  "assertions": [],
+  "coverage": {
+    "total": 0,
+    "by_verdict": {
+      "verified": 0,
+      "failed": 0,
+      "unverifiable": 0
+    }
+  }
+}

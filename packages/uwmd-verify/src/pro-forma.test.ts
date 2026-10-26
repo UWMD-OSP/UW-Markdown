@@ -177,3 +177,35 @@ it('places source frontmatter targets before physical fences without changing mo
   expect(verifyProForma(source).assertions.map(a => a.address.section)).toEqual(['frontmatter','dcf']);
   expect(verifyProForma(parseUWFile(source)).assertions.map(a => a.address.section)).toEqual(['dcf','frontmatter']);
 });
+
+// D1/D2 reference regressions; the separate text questions remain unresolved.
+it.each(['input', 'assumption'])('keeps an unresolved declared %s outside assertion coverage', kind => {
+  const source = readFileSync(new URL('d1-x81-input-declared-missing/deal.uwx.md', base), 'utf8').replace('"kind":"input"', `"kind":"${kind}"`);
+  const report = verifyProForma(source);
+  expect(report.inputs).toMatchObject([{ target: null, reason: kind }]);
+  expect(report.assertions).toEqual([]);
+  expect(report.exit_code).toBe(0);
+});
+it('retains malformed address and row-declaration handling', () => {
+  const source = readFileSync(new URL('d1-x81-input-declared-missing/deal.uwx.md', base), 'utf8');
+  for (const malformed of [source.replace('/absent_input', 'not-a-pointer'), source.replace('"kind":"input"', '"kind":"input","unexpected":true')]) {
+    const report = verifyProForma(malformed);
+    expect(report.inputs).toEqual([]);
+    expect(report.assertions).toHaveLength(1);
+    expect(report.exit_code).toBe(1);
+  }
+});
+it('retains existing summary-fallback dependencies when final-row SF is absent', () => {
+  const source = readFileSync(new URL('d2-x133-occupancy-final-row-unclaimed-summary/deal.uwx.md', base), 'utf8');
+  expect(source).toContain('"occupied_sf":1900,"rent_revenue"');
+  const report = verifyProForma(source.replace('"occupied_sf":1900,"rent_revenue"', '"rent_revenue"'));
+  const summary = report.assertions.find(a => a.address.pointer === '/stabilized_summary/occupied_sf')!;
+  expect(summary.state).toBe('unverifiable');
+  expect(report.relationships[0]).toMatchObject({ local_state: 'verified', state: 'unverifiable', reason: 'blocked_dependency', dependencies: [summary.key] });
+});
+it('uses a stated zero in the final row rather than the positive summary fallback', () => {
+  const source = readFileSync(new URL('d2-x133-occupancy-final-row-unclaimed-summary/deal.uwx.md', base), 'utf8');
+  const report = verifyProForma(source.replace('"occupied_sf":1900,"rent_revenue"', '"occupied_sf":0,"rent_revenue"').replace('"occupancy_rate":0.95', '"occupancy_rate":0'));
+  expect(report.relationships[0]).toMatchObject({ computed: 0, local_state: 'verified', state: 'verified', dependencies: [] });
+  expect(report.assertions).toHaveLength(1);
+});

@@ -1,0 +1,40 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "input_count": 1,
+  "inputs": [
+    {
+      "address": {
+        "section": "property",
+        "variant": null,
+        "pointer": "/rentable_square_feet"
+      },
+      "reason": "input"
+    }
+  ],
+  "assertions": [
+    {
+      "address": {
+        "pointer": "/stabilized_summary/occupancy_rate"
+      },
+      "state": "verified"
+    }
+  ],
+  "coverage": {
+    "total": 1,
+    "by_verdict": {
+      "verified": 1,
+      "failed": 0,
+      "unverifiable": 0
+    }
+  },
+  "relationships": [
+    {
+      "identity": "final_occupancy_rate",
+      "state": "verified",
+      "local_state": "verified",
+      "computed": 0.95,
+      "dependencies": []
+    }
+  ]
+}
