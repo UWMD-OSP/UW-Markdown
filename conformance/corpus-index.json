@@ -7005,6 +7005,56 @@
       "suite": "pro-forma",
       "scenario": "required-exclusion",
       "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "d1-x81-input-declared-missing",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "d1-x118-frontmatter-variant",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "d1-x51-ltv-through-pp-only",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "d1-s4-b-basis-absent",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "d1-s4-b-basis-unknown",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "d1-s4-b-pp-zero",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "d1-s4-b-tpc-missing-others-present",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "d1-s4-b-uw-missing-pp-present",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "d2-x133-occupancy-final-row-unclaimed-summary",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "d2-x134-occupancy-final-row-wrong-summary",
+      "target": "pro-forma"
     }
   ]
 }

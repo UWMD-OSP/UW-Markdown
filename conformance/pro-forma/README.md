@@ -8,3 +8,11 @@ claim independent-implementation or actual cross-runtime CLI proof (#551/#552).
 Run after building: `node scripts/run-conformance.mjs --profile=pro-forma`.
 The public implementation manifest deliberately omits this profile until both
 separate support gates pass. The portable driver remains unchanged.
+
+The `d1-*` and `d2-*` cases copy ten synthetic regression repro documents
+byte-for-byte. D1 checks unresolved declared inputs without laundering unavailable
+computed targets or invalid LTV selections. D2 checks the actual final-row source,
+including a separately failed summary alongside a verified rate. Other source
+controls preserve current fallback dependency and malformed-declaration handling.
+These cases do not decide the separate RFC0092 text questions or close either
+support gate.

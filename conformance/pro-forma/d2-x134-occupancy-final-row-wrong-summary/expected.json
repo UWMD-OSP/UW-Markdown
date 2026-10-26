@@ -1,0 +1,53 @@
+{
+  "status": "completed",
+  "exit_code": 1,
+  "input_count": 1,
+  "inputs": [
+    {
+      "address": {
+        "section": "property",
+        "variant": null,
+        "pointer": "/rentable_square_feet"
+      },
+      "reason": "input"
+    }
+  ],
+  "assertions": [
+    {
+      "address": {
+        "pointer": "/stabilized_summary/occupied_sf"
+      },
+      "state": "failed"
+    },
+    {
+      "address": {
+        "pointer": "/stabilized_summary/occupancy_rate"
+      },
+      "state": "verified"
+    }
+  ],
+  "coverage": {
+    "total": 2,
+    "by_verdict": {
+      "verified": 1,
+      "failed": 1,
+      "unverifiable": 0
+    }
+  },
+  "relationships": [
+    {
+      "identity": "final_occupancy_rate",
+      "state": "verified",
+      "local_state": "verified",
+      "computed": 0.95,
+      "dependencies": []
+    },
+    {
+      "identity": "final_occupied_sf",
+      "state": "failed",
+      "local_state": "failed",
+      "computed": 1900,
+      "dependencies": []
+    }
+  ]
+}

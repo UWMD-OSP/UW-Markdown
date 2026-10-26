@@ -1,0 +1,47 @@
+{
+  "status": "completed",
+  "exit_code": 1,
+  "input_count": 3,
+  "inputs": [
+    {
+      "address": {
+        "section": "valuation",
+        "variant": null,
+        "pointer": "/purchase_price"
+      },
+      "reason": "input"
+    },
+    {
+      "address": {
+        "section": "valuation",
+        "variant": null,
+        "pointer": "/underwritten_value"
+      },
+      "reason": "input"
+    },
+    {
+      "address": {
+        "section": "sources_uses",
+        "variant": null,
+        "pointer": "/total_project_cost"
+      },
+      "reason": "input"
+    }
+  ],
+  "assertions": [
+    {
+      "address": {
+        "pointer": "/sizing_metrics/ltv"
+      },
+      "state": "unverifiable"
+    }
+  ],
+  "coverage": {
+    "total": 1,
+    "by_verdict": {
+      "verified": 0,
+      "failed": 0,
+      "unverifiable": 1
+    }
+  }
+}
