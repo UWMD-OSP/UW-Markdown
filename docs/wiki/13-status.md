@@ -8,7 +8,7 @@ Linux, Windows and macOS; nonportable controls cover current statement homes,
 exact copies, source policy and authentication ordering. RFC0127 configures the
 receipt engine identity explicitly in the driver. See the current
 [Python guide](../../implementations/python/README.md); older dated foundation
-checkpoints below do not describe the current claim. No release is implied.
+checkpoints below do not describe the current claim. Property cash-flow selection refusals point at the exact unavailable source section/variant; plan admission remains a separate earlier stage (Protocol VIII.9.6, #559). No release is implied.
 
 RFC0089 D1–D6 is accepted (2026-10-23). The production contract uses
 Envelope2.0, tagged nullable extension entries, total JSON/XML/CSV2.0.0 carriers

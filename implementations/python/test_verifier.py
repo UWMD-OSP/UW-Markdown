@@ -62,6 +62,32 @@ class NonportableVerifierTests(unittest.TestCase):
             if 'output_rows' in cell:self.assertEqual(cell['output_rows'],sorted(cell['output_rows']))
         result['plan']['assertions']['cash_amounts_only']=False
         self.assertTrue(plan['assertions']['cash_amounts_only'])
+    def test_assembly_selection_names_the_unavailable_exact_source(self):
+        for group,section in (("lease_up","lease_up_schedule"),("supplemental","cash_flow_series")):
+            with self.subTest(group=group):
+                document,plan=self.assembly_fixture()
+                plan[group]["source_variant"]="synthetic-missing"
+                before=copy.deepcopy((document,plan))
+                with self.assertRaises(AssemblyError) as caught:
+                    assemble_property_cash_flows(document,plan)
+                error=caught.exception.projection()
+                self.assertEqual(error["code"],"CALC-CF-ASSEMBLY")
+                self.assertEqual(error["reason"],"selection")
+                self.assertEqual(error["pointer"],"sections."+section+'["synthetic-missing"]')
+                self.assertEqual(error["evidence"]["selection"]["code"],"CALC-PERIOD-003")
+                self.assertEqual((document,plan),before)
+    def test_assembly_selection_order_and_plan_admission_remain_distinct(self):
+        document,plan=self.assembly_fixture()
+        plan["lease_up"]["source_variant"]="lease-missing"
+        plan["supplemental"]["source_variant"]="cash-missing"
+        with self.assertRaises(AssemblyError) as caught:
+            assemble_property_cash_flows(document,plan)
+        self.assertEqual(caught.exception.pointer,'sections.lease_up_schedule["lease-missing"]')
+        plan["extra"]=True
+        with self.assertRaises(AssemblyError) as caught:
+            assemble_property_cash_flows(document,plan)
+        self.assertEqual(caught.exception.reason,"plan")
+        self.assertEqual(caught.exception.pointer,"plan")
     def test_year_10000_is_only_an_unrepresentable_boundary(self):
         self.assertEqual(_bounds('9999-12'),('9999-12-01','10000-01-01'))
         self.assertEqual(_bounds('0099-Q4'),('0099-10-01','0100-01-01'))
