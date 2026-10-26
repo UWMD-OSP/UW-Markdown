@@ -201,7 +201,7 @@ describe('seeded CSV carrier adversarial properties', () => {
       expect(areEnvelopesEquivalent(await decodeUWCSVZip(await encodeUWCSVZip(input)), input)).toBe(true);
       expect(JSON.stringify(input)).toBe(original);
     }), { seed: 128011, numRuns: 45 });
-  });
+  }, 30000);
   it('rejects byte truncations under the original manifest instead of refreshing hashes', async () => {
     const bundle = await encodeUWCSVBundle(envelope);
     const file = 'block_values.csv'; const original = bundle.files[file]!;

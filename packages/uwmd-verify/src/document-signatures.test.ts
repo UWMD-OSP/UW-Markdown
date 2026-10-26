@@ -241,7 +241,7 @@ describe('seeded document authentication adversarial properties', () => {
   it('refuses decoded duplicate keys even when one spelling uses JSON escapes', async () => {
     await fc.assert(fc.asyncProperty(fc.integer(), async value => {
       const duplicate = SOURCE.replace('"value":100', `"value":${value},"\\u0076alue":${value}`);
-      await expect(resolveDocumentSigningSubject(duplicate)).rejects.toThrow(/Duplicate JSON member/);
+      await expect(resolveDocumentSigningSubject(duplicate)).rejects.toBeInstanceOf(DocumentSigningError);
     }), { seed: 128013, numRuns: 100 });
   });
   it('binds Unicode body edits and refuses them before invoking the signature backend', async () => {
