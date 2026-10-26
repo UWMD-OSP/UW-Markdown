@@ -54,7 +54,7 @@ function protectedHome(r: ResolvedProFormaAddress, assetClass: string): boolean 
   return false;
 }
 const relationKeys = ['id', 'identity', 'procedure_version', 'target', 'inputs', 'unit', 'currency', 'conventions', 'selectors', 'applicability'];
-const selectorKeys = ['over', 'through', 'period', 'loan'];
+const selectorKeys = ['over', 'through', 'period'];
 const conventions: Readonly<Record<string, readonly unknown[]>> = {
   period_basis: ['monthly', 'annual'], first_period: ['full', 'stub'], cash_flow_timing: ['end', 'dated', 'mid', 'beginning'],
   growth_application: ['anniversary-step', 'calendar-step', 'monthly-compound'], growth_start: ['period-1', 'year-2'],
@@ -208,7 +208,6 @@ export function verifyProForma(input: string | ParsedUWFile, options: VerifyProF
       if (rows.filter(row => record(row) && row.period === selector.period).length === 1 && target.target.period_key === null) target.target.period_key = selector.period;
     }
     if (selector.period !== undefined && selector.period !== target.target.period_key) p.item.reasons.push('period_context_mismatch');
-    if (selector.loan !== undefined && selector.loan !== target.target.loan_ref) p.item.reasons.push('loan_context_mismatch');
     target.key = JSON.stringify([target.target.block_address_kind, target.target.block_address, target.address.section, target.address.variant,
       target.parts, target.target.period_key, target.target.loan_ref]);
   }
@@ -351,7 +350,7 @@ function assessLedger(ledger: ProFormaLedger, resolve: (address: unknown) => Res
   const bindings = ledger.bindings.map((b, i) => ({ raw: b, key: record(b) ? keyOf(b.event) : null, origin: `/pro_forma/ledger/bindings/${i}` }));
   for (const binding of bindings) {
     if (!record(binding.raw) || !allowedKeys(binding.raw, ['event', 'role', 'target']) || typeof binding.raw.role !== 'string' ||
-      binding.key === null || !members.some(m => m.key === binding.key && record(m.raw) && m.raw.role === binding.raw.role)) {
+      binding.key === null || !members.some(m => m.key === binding.key)) {
       report.profile_claim_findings.push({ code: 'out_of_universe_binding', severity: 'error', reason: 'out_of_universe_binding', origins: [binding.origin] });
     }
   }
@@ -365,6 +364,9 @@ function assessLedger(ledger: ProFormaLedger, resolve: (address: unknown) => Res
     const matching = bindings.filter(b => b.key !== null && b.key === member.key);
     const semantics = new Set(matching.map(b => canonicalize({ event: b.key, role: b.raw.role ?? null,
       target: b.raw.target === undefined ? null : keyOf(b.raw.target), unknown: Object.entries(b.raw).filter(([k]) => !['event', 'role', 'target'].includes(k)) })));
+    // RFC0128: canonical event membership is independent of the declared role.
+    const roleConflict = matching.some(b => typeof b.raw.role === 'string' &&
+      !members.some(m => m.key === member.key && record(m.raw) && m.raw.role === b.raw.role));
     const excluded = ledger.exclusions.filter(e => record(e) && keyOf(e.event) === member.key && e.role === u.role);
     const conflictingUniverse = members.some(m => m !== member && m.key === member.key &&
       (!record(m.raw) || m.raw.role !== u.role || m.raw.required !== u.required));
@@ -372,7 +374,7 @@ function assessLedger(ledger: ProFormaLedger, resolve: (address: unknown) => Res
       (b.raw.target === undefined || keyOf(b.raw.target) !== null)) && semantics.size === 1 && !conflictingUniverse;
     if (!admitted || (u.required && excluded.length > 0)) {
       report.gaps.push({ event: u.event, role: u.role, required: u.required,
-        reason: member.key === null ? 'unresolved_member' : conflictingUniverse || semantics.size > 1 ? 'conflicting_membership'
+        reason: member.key === null ? 'unresolved_member' : roleConflict ? 'role_conflict' : conflictingUniverse || semantics.size > 1 ? 'conflicting_membership'
           : excluded.length > 0 && u.required ? 'required_member_excluded' : matching.length ? 'invalid_binding' : 'unbound_member',
         origins: members.filter(m => m.key === member.key && record(m.raw) && m.raw.role === u.role).map(m => m.origin).concat(matching.map(b => b.origin)) });
     }

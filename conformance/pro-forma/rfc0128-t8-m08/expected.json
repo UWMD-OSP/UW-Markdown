@@ -1,0 +1,28 @@
+{
+  "status": "completed",
+  "exit_code": 1,
+  "input_count": 0,
+  "coverage": {
+    "total": 0,
+    "by_verdict": {
+      "verified": 0,
+      "failed": 0,
+      "unverifiable": 0
+    }
+  },
+  "profile_claim_findings": [],
+  "gaps": [
+    {
+      "role": "closing_capex",
+      "required": true,
+      "reason": "required_member_excluded"
+    }
+  ],
+  "exclusions": [
+    {
+      "origin": "/pro_forma/ledger/exclusions/0",
+      "reason": "not applicable"
+    }
+  ],
+  "relationships": []
+}

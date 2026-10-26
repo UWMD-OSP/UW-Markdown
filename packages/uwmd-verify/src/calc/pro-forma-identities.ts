@@ -49,8 +49,8 @@ export function evaluateProFormaIdentity(
     ltv: ['loan', 'denominator'],
   };
   if (roles[identity] && [...inputs.keys()].some(role => !roles[identity]!.includes(role))) return unavailableIdentity('unsupported_input_role');
-  const selectors = identity === 'coverage' ? ['over', 'period', 'loan'] : identity === 'weighted_cost' ? ['over', 'period', 'loan']
-    : ['blended_coverage', 'debt_yield_through', 'ltc_through', 'ltv_through'].includes(identity) ? ['through', 'period', 'loan'] : ['period', 'loan'];
+  const selectors = identity === 'coverage' ? ['over', 'period'] : identity === 'weighted_cost' ? ['over', 'period']
+    : ['blended_coverage', 'debt_yield_through', 'ltc_through', 'ltv_through'].includes(identity) ? ['through', 'period'] : ['period'];
   if (Object.keys(rel.selectors ?? {}).some(key => !selectors.includes(key))) return unavailableIdentity('unsupported_selector');
   if (['total_net', 'moic', 'xnpv', 'xirr'].includes(identity)) {
     const stream = home('stream', 'cash_flow_series', '');
@@ -181,6 +181,8 @@ export function evaluateProFormaIdentity(
       : basis === 'underwritten-value' ? ['valuation', '/underwritten_value']
       : basis === 'total-project-cost' ? ['sources_uses', '/total_project_cost'] : null;
     if (!expected) return unavailableIdentity('missing_or_unknown_ltv_basis');
+    // RFC0128: a supplied effective convention constrains, never replaces, the loan's own basis.
+    if (conventions.ltv_basis !== undefined && conventions.ltv_basis !== basis) return unavailableIdentity('convention_contradiction');
     if (target.address.section === 'debt_structure' && target.block !== loan.block) return unavailableIdentity('loan_context_mismatch');
     if (!denominator || denominator.address.section !== expected[0] || denominator.address.pointer !== expected[1]) return unavailableIdentity('denominator_binding_mismatch');
     if (!finite(denominator.value)) return missing();

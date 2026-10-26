@@ -3124,4 +3124,5 @@ export interface LeaseUpVerificationReport
   section: 'lease_up_schedule';
 }
 
-export type { ProFormaClaim, ProFormaReport, ProFormaRefusal } from './pro-forma-types.js';
+// RFC0128: closed authored selectors are over/through/period; loan input supplies report loan_ref.
+export type { ProFormaClaim, ProFormaReport, ProFormaRefusal, ProFormaSelectors } from './pro-forma-types.js';

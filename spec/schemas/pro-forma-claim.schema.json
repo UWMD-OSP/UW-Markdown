@@ -11,7 +11,8 @@
       "const": "L1"
     },
     "convention_registry": {
-      "type": "string"
+      "type": "string",
+      "description": "An unsupported string registry is an error-severity profile-claim finding, including on an empty claim; the assessor completes with exit 1."
     },
     "rows": {
       "type": "array",
@@ -78,7 +79,8 @@
             "type": "string"
           },
           "currency": {
-            "type": "string"
+            "type": "string",
+            "description": "Required for unit $ and must exactly equal document frontmatter.currency_code; cross-document equality is checked by the assessor."
           },
           "conventions": {
             "type": "object",
@@ -247,7 +249,8 @@
               }
             },
             "required": [],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "description": "Effective conventions include relationship overrides; a supplied ltv_basis must equal the selected loan own ltv_basis and never fills a missing basis."
           },
           "selectors": {
             "type": "object",
@@ -261,13 +264,11 @@
               },
               "period": {
                 "type": "string"
-              },
-              "loan": {
-                "type": "string"
               }
             },
             "required": [],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "description": "RFC0128: closed selectors over/through/period; select the loan through the exact loan input address, never selectors.loan."
           },
           "applicability": {
             "type": "object",
@@ -292,7 +293,26 @@
           "inputs",
           "unit"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "unit": {
+                  "const": "$"
+                }
+              },
+              "required": [
+                "unit"
+              ]
+            },
+            "then": {
+              "required": [
+                "currency"
+              ]
+            }
+          }
+        ]
       }
     },
     "conventions": {
@@ -545,7 +565,8 @@
         "bindings",
         "exclusions"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "description": "For admitted bindings, canonical event identity alone determines universe membership; an undeclared role on a known event is a required-sensitive role_conflict gap."
     }
   },
   "required": [

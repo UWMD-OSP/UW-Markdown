@@ -7055,6 +7055,101 @@
       "suite": "pro-forma",
       "scenario": "d2-x134-occupancy-final-row-wrong-summary",
       "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t1-x31-currency-missing",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t1-x32-currency-rel-only",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t1-s1-a",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t4-x64-ltv-convention-contradiction",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t5-x17-unknown-registry-empty",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t6-x75-ledger-wrong-role",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t6-x79-ledger-optional-other-role",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t6-x79b-ledger-required-plus-other-role",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t6-m07",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t6-m15",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t9-x135-occupancy-summary-fallback-unclaimed",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t11-x66-ltv-loan-selector",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t11-x166-roles-loan-selector",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t11-x160-roles-ltv-purchase-price",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t3-x12-unknown-claim-member",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t3-x16-bad-convention-global",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t7-m09",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t8-m08",
+      "target": "pro-forma"
+    },
+    {
+      "suite": "pro-forma",
+      "scenario": "rfc0128-t13-x34-ledger-token-as-rel",
+      "target": "pro-forma"
     }
   ]
 }

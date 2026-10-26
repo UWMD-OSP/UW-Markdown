@@ -16,3 +16,9 @@ including a separately failed summary alongside a verified rate. Other source
 controls preserve current fallback dependency and malformed-declaration handling.
 These cases do not decide the separate RFC0092 text questions or close either
 support gate.
+
+The `rfc0128-*` cases copy nineteen synthetic comparison documents byte-for-byte
+and pin the accepted currency, basis, registry, event/role, fallback and public
+loan-selection clarification. Report-only controls retain the current output
+rules. These reference regressions do not run the independent implementation or
+establish either support gate.

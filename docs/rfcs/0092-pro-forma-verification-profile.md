@@ -1309,3 +1309,17 @@ lands here.
 ## Accepted wire synchronization — 2026-10-25
 
 The owner accepted the exact wire proposal (proposal blob0eb526fdb100197ada256c5a7f47b9961ba00ef3), including the registry identifier, closed descriptive families and address/row/relationship/ledger/report shapes. U1 A, U9 A and U3–U7 are unchanged. The synchronized current Format/Protocol RFC0092 wire sections and pro-forma-claim/pro-forma-report schemas define the public contract. Earlier proposal/gate wording above is the design history, not a competing active wire version. The reference implements the accepted scope without advertising full-profile support until the separate independent and CLI gates pass.
+
+
+## Accepted clarification — RFC0128, 2026-10-25
+
+[RFC0128](0128-pro-forma-clarifications.md) governs the current section4b/6a
+admission and report details: every money relationship states currency equal to
+the document; a supplied effective LTV basis must agree with the selected loan;
+an unknown registry is an error-severity profile finding even for an empty claim;
+ledger membership is event-level with required-sensitive undeclared-role gaps;
+an actually used summary fallback must be claimed and verified; and the exact
+loan input replaces authored selectors.loan. Its seven report-only sentences
+pin the existing reference presentation. Financial formulas, procedures,
+quanta and the fifteen-entry registry are unchanged, and support gates remain
+separate.

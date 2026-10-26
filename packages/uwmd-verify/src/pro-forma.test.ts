@@ -151,7 +151,7 @@ it('validates every completed fixture report and accepted claim against the sync
     }
   }
   expect(claimSchema({ profile: 'pro-forma', level: 'L2' })).toBe(false);
-});
+}, 30_000);
 
 it('completes malformed ledger bindings as visible findings and required gaps', () => {
   const event = at('cash_flow_series','/series/0');
@@ -208,4 +208,43 @@ it('uses a stated zero in the final row rather than the positive summary fallbac
   const report = verifyProForma(source.replace('"occupied_sf":1900,"rent_revenue"', '"occupied_sf":0,"rent_revenue"').replace('"occupancy_rate":0.95', '"occupancy_rate":0'));
   expect(report.relationships[0]).toMatchObject({ computed: 0, local_state: 'verified', state: 'verified', dependencies: [] });
   expect(report.assertions).toHaveLength(1);
+});
+
+// RFC0128: explicit admission and report details; no support-gate claim.
+it('rejects a contradictory effective LTV basis without changing the selected loan', () => {
+  const source = readFileSync(new URL('rfc0128-t4-x64-ltv-convention-contradiction/deal.uwx.md', base), 'utf8');
+  const edit = (global: boolean, override: boolean) => source.split('\n').map(line => {
+    if (!line.startsWith('{') || !line.includes('"pro_forma"')) return line;
+    const value = JSON.parse(line);
+    if (global) { value.pro_forma.conventions = { ltv_basis: 'underwritten-value' }; delete value.pro_forma.relationships[0].conventions; }
+    if (override) value.pro_forma.relationships[0].conventions = { ltv_basis: 'purchase-price' };
+    return JSON.stringify(value);
+  }).join('\n');
+  expect(verifyProForma(edit(true, false)).relationships[0]).toMatchObject({ state: 'unverifiable', computed: null, reason: 'convention_contradiction' });
+  for (const matched of [edit(false, true), edit(true, true)]) expect(verifyProForma(matched).relationships[0]).toMatchObject({ state: 'verified', computed: 0.75 });
+});
+it('uses only the bound loan address and rejects an authored internal loan key', () => {
+  const source = readFileSync(new URL('rfc0128-t11-x160-roles-ltv-purchase-price/deal.uwx.md', base), 'utf8');
+  const before = verifyProForma(source);
+  expect(before.relationships[0]!.state).toBe('verified');
+  const derived = before.assertions[0]!.target!.loan_ref;
+  expect(derived).not.toBeNull();
+  const supplied = source.replace('"unit":"%"', `"unit":"%","selectors":{"loan":${JSON.stringify(derived)}}`);
+  expect(verifyProForma(supplied).relationships[0]).toMatchObject({ local_state: 'unverifiable', state: 'unverifiable', computed: null, reason: 'invalid_relationship' });
+});
+it('pins existing non-money dated currency mismatch and LTV computed presentation', () => {
+  const currency = verifyProForma(readFileSync(new URL('semantic-collision/deal.uwx.md', base), 'utf8'));
+  expect(currency.relationships).toContainEqual(expect.objectContaining({ local_state: 'unverifiable', reason: 'currency_mismatch' }));
+  const source = specimen({ result: 0.63, pro_forma: claimOf([ltvRel()], { rows: [{ address: at('valuation', '/underwritten_value'), kind: 'input' }] }) }, { valuation: { underwritten_value: 120 }, debt_structure: { loan_amount: 75, ltv_basis: 'underwritten-value' } });
+  expect(verifyProForma(source).relationships[0]).toMatchObject({ state: 'verified', computed: 0.63 });
+});
+it('puts unresolved targets last in stable declaration order within each collection', () => {
+  const source = specimen({ computed: 1, assumption: 2, pro_forma: claimOf([], { rows: [
+    { address: at('dcf', '/missing_z') }, { address: at('dcf', '/missing_a') },
+    { address: at('dcf', '/input_z'), kind: 'input' }, { address: at('dcf', '/assumption'), kind: 'input' },
+    { address: at('dcf', '/input_a'), kind: 'input' },
+  ] }) });
+  const report = verifyProForma(source);
+  expect(report.assertions.map(a => a.address.pointer)).toEqual(['/computed', '/missing_z', '/missing_a']);
+  expect(report.inputs.map(i => i.address.pointer)).toEqual(['/assumption', '/input_z', '/input_a']);
 });

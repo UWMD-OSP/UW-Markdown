@@ -5,6 +5,12 @@ principal does not select an authority class. It checks every current variant,
 and POL-02 requires visible superseded history for that same variant (Protocol
 V.3/V.10, RFC0090).
 
+RFC0128 pins the bounded pro-forma admission/report contract: effective LTV
+conventions must agree with the bound loan, universe membership is by event and
+undeclared roles produce required-sensitive gaps, and the exact loan input is the
+sole loan selector. Report loan_ref remains derived; authored selectors.loan is
+unsupported. Profile support is still gated by #551/#552.
+
 The pro-forma assessor preserves unresolved declared inputs as inputs with null
 targets (RFC0092 §6a). Final occupancy uses stated final-row SF before the
 summary fallback; only a selected fallback adds the existing summary prerequisite
