@@ -254,6 +254,9 @@ are exact.
 
 ## Excel converter — `packages/uwmd-excel` (`@uwmd/excel`; see VERSIONS.md)
 
+Mixed-use reverse import reads the declared `debt_structure.ltv_basis` as text (or null for a blank cell), matching the other layouts. Numeric inputs stay strict; cached formula outputs are never imported (#561).
+
+
 `.uw.md → .xlsx`. Depends on `@uwmd/core` + `exceljs`. CLI bin:
 `uwmd-excel <input.uw.md> [-o output.xlsx]`.
 

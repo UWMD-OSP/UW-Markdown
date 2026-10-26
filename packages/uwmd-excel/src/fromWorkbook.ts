@@ -242,7 +242,11 @@ function fromMixedUseWorkbook(wb: ExcelJS.Workbook, layout: WorkbookLayout): Rec
     if (path === 'noi_model.net_operating_income') continue; // the consolidation SUM
     const dot = path.indexOf('.');
     const name = mixedUseName(path);
-    setPath(sectionFor(sections, path.slice(0, dot)), path.slice(dot + 1), scalarNumberOrNull(namedCell(wb, name), name));
+    const cell = namedCell(wb, name);
+    const value = path === 'debt_structure.ltv_basis'
+      ? scalarTextOrNull(cell, name)
+      : scalarNumberOrNull(cell, name);
+    setPath(sectionFor(sections, path.slice(0, dot)), path.slice(dot + 1), value);
   }
 
   const sheet = wb.getWorksheet('Operating Statement');
