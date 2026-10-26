@@ -15,8 +15,8 @@ test('requests only anonymous aggregate endpoints and retains only counts', asyn
     return response({ message: '3', label: 'aggregate' });
   });
   assert.equal(urls.length, 10); assert.equal(report.npm_downloads[0].downloads, 17);
-  assert.equal(report.forks.count, 3); assert.equal(report.outside_issues.count, 3);
-  assert.equal(report.directory_installs.count, null);
+  assert.equal(report.forks.count, 3); assert.equal(report.issues_excluding_publisher_account.count, 3);
+  assert.equal(report.directory_installs.count, null); assert.equal(report.outside_issues.count, null);
 });
 test('unavailable, rounded, negative and oversized aggregates never become zero', async () => {
   for (const message of ['1.2k', '-1', 'unknown']) {
@@ -26,6 +26,6 @@ test('unavailable, rounded, negative and oversized aggregates never become zero'
   const oversized = await collectAdoption(async () => new Response('x'.repeat(8193)));
   assert.equal(oversized.forks.reason, 'aggregate_too_large');
   const failed = await collectAdoption(async () => { throw new Error('synthetic failure'); });
-  assert.equal(failed.outside_issues.reason, 'aggregate_unavailable');
+  assert.equal(failed.issues_excluding_publisher_account.reason, 'aggregate_unavailable');
   assert.ok(!JSON.stringify(failed).includes('synthetic failure'));
 });

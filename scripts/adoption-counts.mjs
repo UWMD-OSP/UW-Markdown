@@ -37,12 +37,12 @@ export async function collectAdoption(fetcher = fetch) {
     return { package: `@uwmd/${name}`, downloads: valid ? data.downloads : null, start: valid ? data.start : null, end: valid ? data.end : null, source, ...(valid ? {} : { reason: result.reason ?? 'invalid_aggregate' }) };
   }));
   const query = `repo:${REPO} is:issue -author:UWMD-OSP`;
-  const sources = { forks: `https://img.shields.io/github/forks/${REPO}.json`, outside_issues: `https://img.shields.io/github/issues-search/${REPO}.json?query=${encodeURIComponent(query)}` };
+  const sources = { forks: `https://img.shields.io/github/forks/${REPO}.json`, issues_excluding_publisher_account: `https://img.shields.io/github/issues-search/${REPO}.json?query=${encodeURIComponent(query)}` };
   const badges = await Promise.all(Object.entries(sources).map(async ([key, source]) => {
     const result = await aggregate(source, fetcher); const count = badgeCount(result.value);
     return [key, { count, source, ...(count === null ? { reason: result.reason ?? 'count_unavailable_or_compact' } : {}) }];
   }));
-  return { schema_version: 1, npm_downloads: downloads, ...Object.fromEntries(badges), directory_installs: { count: null, reason: 'no_documented_public_aggregate_endpoint' }, limitations: ['Downloads include CI and maintainer activity; they are not unique users.', 'Fork totals do not prove independent use.', 'Outside issues means issues excluding the public UWMD-OSP account, including closed issues; bots and other maintainer accounts may remain. No author identities or issue records are requested.', 'Badges can be cached; compact values and errors remain unknown.', 'No authentication, cookies, contact headers, user lists or private analytics.'] };
+  return { schema_version: 1, npm_downloads: downloads, ...Object.fromEntries(badges), outside_issues: { count: null, reason: 'public_aggregates_do_not_classify_all_maintainer_and_bot_accounts' }, directory_installs: { count: null, reason: 'no_documented_public_aggregate_endpoint' }, limitations: ['Downloads include CI and maintainer activity; they are not unique users.', 'Fork totals do not prove independent use.', 'The issue proxy excludes the public UWMD-OSP account and includes closed issues; bots and other maintainer accounts may remain. No author identities or issue records are requested.', 'Badges can be cached; compact values and errors remain unknown.', 'No authentication, cookies, contact headers, user lists or private analytics.'] };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
