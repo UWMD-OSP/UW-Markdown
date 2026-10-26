@@ -177,7 +177,7 @@ describe('fromWorkbook — mixed_use per-component statements (#411)', () => {
     return { wb, components: block.content };
   }
 
-  const basisSource = (basis: string) => '---\nuw_version: "3.0"\nasset_class: mixed_use\ncurrency_code: USD\n---\n\n```json uw:section=debt_structure\n' + JSON.stringify({ ltv_basis: basis }) + '\n```\n';
+  const basisSource = (basis: string) => `---\nuw_version: "3.0"\nasset_class: mixed_use\ncurrency_code: USD\n---\n\n\`\`\`json uw:section=debt_structure\n${JSON.stringify({ ltv_basis: basis })}\n\`\`\`\n`;
   const named = (wb: ExcelJS.Workbook, name: string) => {
     const range = wb.definedNames.getRanges(name).ranges[0]!;
     const [sheet, reference] = range.split('!');
