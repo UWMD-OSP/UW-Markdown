@@ -658,3 +658,5 @@ when display rows sort by position. Split preferred service reads its separate
 live cash-rate cell; weighted cost still reads the full rate (#549).
 
 Agent-discovery preparation includes `docs/launch/agent-discovery/listing-metadata.json` and `LAUNCH-CHECKLIST.md`; stdio transport does not imply remote-directory readiness. `node scripts/adoption-counts.mjs` reads public aggregate counters without tokens, authors or user lists and reports unknown values honestly.
+
+The downloadable `docs/downloads/llms.txt` and expanded index label the accepted current Protocol4.1.0. Updating this resource label does not change protocol/package versions or enable staged launch routes.
