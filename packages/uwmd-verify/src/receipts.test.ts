@@ -1,3 +1,4 @@
+import fc from 'fast-check';
 // Receipts — RFC 0016 / `spec/UW_RECEIPT.md`.
 //
 // The behaviours worth pinning: issuance is total (a receipt or a typed error,
@@ -1275,5 +1276,29 @@ describe('RFC 0124 Lite receipt rule-set boundaries', () => {
     receipt.computation.rule_set = '99.0';
     receipt.signature = { algorithm: 'ed25519', key_id: 'test', value: 'AA==' };
     expect((await verifyReceipt(receipt, source, { filename: LITE_DEAL, packs: [] })).issues[0]!.code).toBe('RCP-13');
+  });
+});
+
+
+describe('seeded real-signature receipt adversarial properties', () => {
+  it('rejects signature bit changes before recomputation and ignores member insertion order', async () => {
+    const source = await parkview();
+    const receipt = await issueReceipt(source, { filename: PARKVIEW, issued_at: ISSUED_AT });
+    const key = createPrivateKey({ key: Buffer.concat([Buffer.from('302e020100300506032b657004220420', 'hex'), Buffer.from('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f', 'hex')]), format: 'der', type: 'pkcs8' });
+    const publicKey = createPublicKey(key);
+    receipt.signature = { algorithm: 'ed25519', key_id: 'synthetic-property-key', value: sign(null, Buffer.from(receiptSigningPayload(receipt)), key).toString('base64') };
+    const options = { filename: PARKVIEW, signatureVerifier: { verify: async (actual: UWReceipt, payload: string) => verifyEd25519(null, Buffer.from(payload), publicKey, Buffer.from(actual.signature!.value, 'base64')) } };
+    expect((await verifyReceipt(receipt, source, options)).verdict).toBe('verified');
+    const original = JSON.stringify(receipt);
+    const reordered = Object.fromEntries(Object.entries(receipt).reverse()) as unknown as UWReceipt;
+    expect(receiptSigningPayload(reordered)).toBe(receiptSigningPayload(receipt));
+    expect((await verifyReceipt(reordered, source, options)).verdict).toBe('verified');
+    await fc.assert(fc.asyncProperty(fc.integer({ min: 0, max: 63 }), fc.integer({ min: 0, max: 7 }), async (index, bit) => {
+      const changed = structuredClone(receipt); const bytes = Buffer.from(changed.signature!.value, 'base64');
+      bytes[index] = bytes[index]! ^ (1 << bit); changed.signature!.value = bytes.toString('base64');
+      const result = await verifyReceipt(changed, source, options);
+      expect(result.verdict).toBe('failed'); expect(result.issues.map(issue => issue.code)).toEqual(['RCP-01']);
+      expect(result.recomputed).toBeUndefined(); expect(JSON.stringify(receipt)).toBe(original);
+    }), { seed: 128015, numRuns: 100 });
   });
 });

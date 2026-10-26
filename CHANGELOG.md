@@ -9,6 +9,7 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 - Prepare accurate local MCP directory metadata/checklists and anonymous aggregate adoption counts; clarify unavailable statements in the authoring skill. Nothing is listed or deployed.
+- Harden verification regression coverage with seeded canonicalization, receipt authentication, source tamper, Unicode, CSV/XML and bounded ZIP adversarial properties.
 
 - Fix #561: mixed-use Excel import preserves the declared LTV basis as text, matching the exporter and other layouts while retaining strict numeric cells and formula-output protection.
 

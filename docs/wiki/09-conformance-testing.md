@@ -880,3 +880,5 @@ pack absence cannot mask a same-engine dictionary mismatch or corrupt digest.
 ## RFC 0124
 
 Accepted on 2026-10-22: Lite declares uw_version explicitly; no reader, compilation, canonicalization or receipt path authors an implicit rule set.
+
+Seeded adversarial properties in the existing verifier test files exercise insertion order, finite binary64 extremes, Unicode, escaped duplicate members, authenticated tamper rejection before recomputation, CSV/XML round trips and truncation/ZIP byte limits. Fixed seeds128005–128016 make failures reproducible; they change no financial convention or expectation baseline.

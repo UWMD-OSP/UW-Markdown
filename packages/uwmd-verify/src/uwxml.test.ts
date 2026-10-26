@@ -1,3 +1,4 @@
+import fc from 'fast-check';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -96,5 +97,26 @@ describe('XML2 direct JSON-value admission', () => {
   });
   it('refuses nonfinite values before writing a carrier', async () => {
     await expect(stringifyUWXml({ ...envelope, invalid: Number.NaN })).rejects.toThrow(/nonfinite/);
+  });
+});
+
+
+describe('seeded XML carrier adversarial properties', () => {
+  it('round-trips Unicode, quote/control characters, unsafe keys and finite number extremes', async () => {
+    await fc.assert(fc.asyncProperty(fc.fullUnicodeString({ maxLength: 32 }), fc.double({ noNaN: true, noDefaultInfinity: true }), async (text, number) => {
+      const input = structuredClone(envelope);
+      input['x_synthetic_fuzz'] = { [text]: [text, number, null, true, '\u0000\n\r\t"<&', '\u00e9', 'e\u0301'] };
+      const before = JSON.stringify(input);
+      const output = await parseUWXml(await stringifyUWXml(input));
+      expect(areEnvelopesEquivalent(output, input)).toBe(true);
+      expect(JSON.stringify(input)).toBe(before);
+    }), { seed: 128009, numRuns: 65 });
+  });
+  it('refuses truncated roots and an explicit byte budget without admitting partial documents', async () => {
+    const xml = await stringifyUWXml(envelope); const close = xml.lastIndexOf('</');
+    await fc.assert(fc.asyncProperty(fc.integer({ min: 0, max: close }), async cut => {
+      await expect(parseUWXml(xml.slice(0, cut))).rejects.toBeInstanceOf(UWXmlError);
+    }), { seed: 128010, numRuns: 60 });
+    await expect(parseUWXml(xml, { maxBytes: new TextEncoder().encode(xml).length - 1 })).rejects.toBeInstanceOf(UWXmlError);
   });
 });

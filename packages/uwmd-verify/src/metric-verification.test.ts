@@ -1,3 +1,4 @@
+import fc from 'fast-check';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -356,4 +357,23 @@ it('retains lexical value positions independently of numeric token spelling', ()
   expect(positions.get('["z"]')!).toBeLessThan(positions.get('["10"]')!);
   expect(positions.get('["10"]')!).toBeLessThan(positions.get('["2"]')!);
   expect(tokens.get('["2"]')).toBe('4.00');
+});
+
+
+describe('seeded source verification adversarial properties', () => {
+  it('keeps exact primary-size copies invariant under JSON member order and detects changed statements', () => {
+    fc.assert(fc.property(fc.integer({ min: 1, max: 1000000 }), units => {
+      const front = '---\nuw_version: "3.0"\nasset_class: multifamily\n---\n';
+      const make = (stated: number, reverse: boolean) => {
+        const content = { _meta: { section: 'property' }, total_units: units };
+        const body = JSON.stringify(reverse ? Object.fromEntries(Object.entries(content).reverse()) : content);
+        return front.replace('asset_class: multifamily', `asset_class: multifamily\nquick_metrics:\n  total_units: ${stated}`) + '\n```json uw:section=property\n' + body + '\n```\n';
+      };
+      const first = verifyStatedMetrics(parseUWFile(make(units, false)));
+      const reordered = verifyStatedMetrics(parseUWFile(make(units, true)));
+      expect(reordered).toEqual(first);
+      const changed = verifyStatedMetrics(parseUWFile(make(units + 1, false)));
+      expect(changed.evidence.find(e => e.path === 'quick_metrics.total_units')?.state).toBe('failed');
+    }), { seed: 128016, numRuns: 150 });
+  });
 });

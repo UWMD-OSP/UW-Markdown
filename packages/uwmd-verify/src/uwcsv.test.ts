@@ -1,3 +1,4 @@
+import fc from 'fast-check';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { strToU8, zipSync } from 'fflate';
@@ -185,5 +186,29 @@ describe('source admission and received descriptor precedence', () => {
   it('refuses a forged singleton variant descriptor before current/stale semantic stamps', async () => {
     const packet = JSON.parse(readFileSync(resolve(process.cwd(), '../../conformance/rfc-0089/integration-controls/csv-descriptor-cases.json'), 'utf8'));
     for (const item of packet.cases) await expect(decodeUWCSVBundle({files: item.files})).rejects.toThrow(/CSV descriptor agreement/);
+  });
+});
+
+
+describe('seeded CSV carrier adversarial properties', () => {
+  it('retains quoted multiline Unicode values and number extremes through bundle and ZIP', async () => {
+    await fc.assert(fc.asyncProperty(fc.fullUnicodeString({ maxLength: 24 }), fc.double({ noNaN: true, noDefaultInfinity: true }), async (text, number) => {
+      const input = structuredClone(envelope);
+      input['x_synthetic_fuzz'] = { ['key/"~,' + text]: [text, number, '\r\n"quoted",\n', null] };
+      const original = JSON.stringify(input);
+      const bundle = await encodeUWCSVBundle(input);
+      expect(areEnvelopesEquivalent(await decodeUWCSVBundle(bundle), input)).toBe(true);
+      expect(areEnvelopesEquivalent(await decodeUWCSVZip(await encodeUWCSVZip(input)), input)).toBe(true);
+      expect(JSON.stringify(input)).toBe(original);
+    }), { seed: 128011, numRuns: 45 });
+  });
+  it('rejects byte truncations under the original manifest instead of refreshing hashes', async () => {
+    const bundle = await encodeUWCSVBundle(envelope);
+    const file = 'block_values.csv'; const original = bundle.files[file]!;
+    await fc.assert(fc.asyncProperty(fc.integer({ min: 0, max: original.length - 1 }), async cut => {
+      const truncated = { files: { ...bundle.files, [file]: original.slice(0, cut) } };
+      await expect(decodeUWCSVBundle(truncated)).rejects.toBeInstanceOf(UWCSVError);
+      expect(bundle.files[file]).toBe(original);
+    }), { seed: 128012, numRuns: 70 });
   });
 });

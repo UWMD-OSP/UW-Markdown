@@ -1,3 +1,4 @@
+import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { canonicalize } from './integrity-canonical.js';
 
@@ -61,5 +62,24 @@ describe('canonicalize — RFC 8785 (JCS)', () => {
     expect(canonicalize({ '\ue000': 2, '\ud83d\ude00': 1 }))
       .toBe('{"\ud83d\ude00":1,"\ue000":2}');
     expect(canonicalize('\u00e9')).not.toBe(canonicalize('e\u0301'));
+  });
+});
+
+
+describe('seeded canonicalization adversarial properties', () => {
+  it('ignores object insertion order recursively while preserving arrays and every JSON value', () => {
+    const reverse = (value: unknown): unknown => Array.isArray(value) ? value.map(reverse)
+      : value !== null && typeof value === 'object' ? Object.fromEntries(Object.entries(value).reverse().map(([key, item]) => [key, reverse(item)])) : value;
+    fc.assert(fc.property(fc.jsonValue({ maxDepth: 3 }), value => {
+      const before = JSON.stringify(value);
+      expect(canonicalize(value)).toBe(canonicalize(reverse(value)));
+      expect(JSON.stringify(value)).toBe(before);
+    }), { seed: 128005, numRuns: 250 });
+  });
+  it('retains finite binary64 values through canonical JSON, including subnormals and exponent boundaries', () => {
+    fc.assert(fc.property(fc.double({ noNaN: true, noDefaultInfinity: true }), value => {
+      const decoded = JSON.parse(canonicalize(value)) as number;
+      expect(decoded).toBe(value === 0 ? 0 : value);
+    }), { seed: 128006, numRuns: 500, examples: [[Number.MIN_VALUE], [Number.MAX_VALUE], [1e-7], [1e21], [-0]] });
   });
 });
