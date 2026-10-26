@@ -11,6 +11,7 @@ test('requests only anonymous aggregate endpoints and retains only counts', asyn
     assert.equal(options.credentials, 'omit'); assert.equal(options.redirect, 'error');
     if (url.startsWith('https://api.npmjs.org/')) return response({ downloads: 17, start: '2026-09-01', end: '2026-09-30', package: url.slice(url.indexOf('@uwmd/')) });
     assert.ok(url.startsWith('https://img.shields.io/github/'));
+    if (url.includes('issues-search')) assert.ok(url.includes('/UWMD-OSP/UW-Markdown.json?query='));
     return response({ message: '3', label: 'aggregate' });
   });
   assert.equal(urls.length, 10); assert.equal(report.npm_downloads[0].downloads, 17);
