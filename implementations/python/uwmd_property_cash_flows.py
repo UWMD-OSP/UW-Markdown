@@ -115,12 +115,17 @@ def assemble_property_cash_flows(document,plan):
         if plan[group]['currency_code']!=currency:refuse('basis_currency','plan.'+group+'.currency_code','Source currency assertion differs')
     for key in ASSERTIONS:
         if plan['assertions'].get(key) is not True:refuse('coverage','plan.assertions.'+key,'Literal true economic assertion required')
-    try:
-        lease=_source(document,'lease_up_schedule',plan['lease_up']['source_variant'])
-        supplemental=_source(document,'cash_flow_series',plan['supplemental']['source_variant'])
-    except CalcError as error:refuse('selection','plan',str(error),dict(selection=error.projection()))
+    # Protocol VIII.9.6: a valid plan can name an unavailable exact source.
+    # Keep that selection failure at its source, after plan admission and in
+    # lease-up-before-supplemental order, retaining the original nested issue.
     lp='sections.lease_up_schedule['+json.dumps(plan['lease_up']['source_variant'])+']'
     sp='sections.cash_flow_series['+json.dumps(plan['supplemental']['source_variant'])+']'
+    try:
+        lease=_source(document,'lease_up_schedule',plan['lease_up']['source_variant'])
+    except CalcError as error:refuse('selection',lp,str(error),dict(selection=error.projection()))
+    try:
+        supplemental=_source(document,'cash_flow_series',plan['supplemental']['source_variant'])
+    except CalcError as error:refuse('selection',sp,str(error),dict(selection=error.projection()))
     supplement=supplemental.parsed.value
     structural=cash_source_issues(supplement)
     if structural:refuse('structure',sp,structural[0])

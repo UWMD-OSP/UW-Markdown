@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Fix #559: Python property cash-flow selection refusals identify the unavailable exact section/variant, preserving refusal order and original nested evidence instead of pointing at a valid plan.
+
 - Clarify RFC0092 admission and reports in accepted RFC0128: refuse contradictory LTV-basis conventions, use event-level ledger membership with required-sensitive role conflicts, and remove redundant selectors.loan. Pin currency, registry, summary-fallback and report rules without changing financial procedures or claiming profile support.
 
 - Correct RFC0092 D1/D2 reference regressions: keep unresolved declared inputs outside assertion coverage, and add a summary occupancy prerequisite only when it is the native fallback source. Copy ten synthetic regression repros into conformance; pro-forma support remains unclaimed.
