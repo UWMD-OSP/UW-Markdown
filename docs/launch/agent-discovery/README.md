@@ -1,8 +1,9 @@
 # Agent-discovery kit (staged for launch)
 
 Launch criterion F: an agent that has never heard of UW Markdown can find it,
-write a record, and check that record without installing anything. Everything
-here is **built and tested but not published**. Nothing below is listed or live,
+write a record, and check that record without installing anything. The core pieces
+are **built and tested but not published**. Directory eligibility and packaging
+remain launch prerequisites, not completed listings. Nothing below is listed or live,
 and wiring it in is a launch-day step for the owner.
 
 | Piece | Where it lives | State |
@@ -45,3 +46,9 @@ resolves the moment the site deploys.
 The site deploys from `main`, so anything wired into its build goes live on
 merge. Keeping the pieces out of the build until launch lets each be reviewed,
 and keeps the owner in charge of listing and publication.
+
+## Listing preparation and aggregate measurement
+
+[Listing metadata](listing-metadata.json) describes the existing local stdio tools and marks unavailable policy URLs explicitly. Follow the [launch checklist](LAUNCH-CHECKLIST.md) for MCP Registry, Claude desktop/plugin and ChatGPT desktop eligibility. No public HTTPS connector or directory availability is implied.
+
+`node scripts/adoption-counts.mjs` reads only anonymous public aggregate endpoints and writes one JSON report. Its bounded response parser keeps unavailable/compact values unknown, not zero. It never requests issue authors, fork owners, user lists, tokens or private analytics. See the checklist for the exact proxy limits.

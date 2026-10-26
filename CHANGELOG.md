@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Prepare accurate local MCP directory metadata/checklists and anonymous aggregate adoption counts; clarify unavailable statements in the authoring skill. Nothing is listed or deployed.
+
 - Fix #561: mixed-use Excel import preserves the declared LTV basis as text, matching the exporter and other layouts while retaining strict numeric cells and formula-output protection.
 
 - Fix #559: Python property cash-flow selection refusals identify the unavailable exact section/variant, preserving refusal order and original nested evidence instead of pointing at a valid plan.

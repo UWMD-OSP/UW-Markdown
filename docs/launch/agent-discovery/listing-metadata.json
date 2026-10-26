@@ -1,0 +1,20 @@
+{
+  "status": "prepared_only_not_submitted",
+  "name": "UW Markdown",
+  "publisher": "UWMD-OSP",
+  "summary": "Validate and verify synthetic UW Markdown records using deterministic, read-only reference tools.",
+  "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+  "documentation": "https://github.com/UWMD-OSP/UW-Markdown/tree/main/packages/uwmd-mcp",
+  "license": "MIT",
+  "transport": "stdio",
+  "tools": ["uwmd_validate", "uwmd_verify", "uwmd_explain_code"],
+  "capabilities": {"read_only": true, "network": false, "filesystem": false, "signature_authentication": false, "pro_forma_support": false},
+  "review_examples": ["examples/verification/deal.correct.uwx.md", "examples/verification/deal.wrong-cap-rate.uwx.md"],
+  "mcp_registry": {"manifest": "packages/uwmd-mcp/server.json", "namespace": "org.uwmd/uwmd", "gate": "owner namespace verification and package publication"},
+  "claude": {"route": "local desktop extension or plugin bundle; not a remote connector", "gate": "owner review, package format validation and directory submission"},
+  "chatgpt": {"route": "desktop-only local MCP plugin, subject to provider eligibility; skills-only alternative", "gate": "owner verifies local MCP submission eligibility; no remote endpoint exists"},
+  "remote_endpoint": null,
+  "privacy_policy_url": null,
+  "terms_url": null,
+  "support_url": null
+}
