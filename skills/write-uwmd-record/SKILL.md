@@ -62,7 +62,7 @@ faithfully and explain them, not to compute.
    A stage-readiness error (`DQ-04` and its siblings) names the facts the
    chosen `deal_stage` needs: supply them, or choose an earlier stage.
 7. **Verify** before handing the record over: `uwmd verify parkview.uwx.md` (or
-   `uwmd_verify`). Every stated metric must be `verified`; a `failed` one means a
+   `uwmd_verify`). Inspect every stated metric: an `unverifiable` one names missing inputs or unavailable precision and must be disclosed; a `failed` one means a
    stated figure disagrees with its own inputs.
 
 ## Block anatomy
@@ -92,7 +92,8 @@ object. `_meta.section` repeats the section id.
 
 - `uwmd validate` reports no error, and every remaining warning is explained in
   the narrative.
-- `uwmd verify` reports no `failed` statement.
+- `uwmd verify` reports no `failed` statement, and every `unverifiable` statement is disclosed; an exit0 alone does not establish complete assurance.
+- A stated LTV has an explicit `ltv_basis` and the matching source input (Format RFC0092 bounded wire contract); never guess a denominator or claim pro-forma support.
 - Every figure traces to a source document or is marked as an assumption.
 
 ## References

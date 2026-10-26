@@ -656,3 +656,5 @@ The Lite bridge emits bare Format 3.0 for all twelve classes (RFC 0081 D12) and 
 Capital-stack Excel sizing retains original tranche-array operation order even
 when display rows sort by position. Split preferred service reads its separate
 live cash-rate cell; weighted cost still reads the full rate (#549).
+
+Agent-discovery preparation includes `docs/launch/agent-discovery/listing-metadata.json` and `LAUNCH-CHECKLIST.md`; stdio transport does not imply remote-directory readiness. `node scripts/adoption-counts.mjs` reads public aggregate counters without tokens, authors or user lists and reports unknown values honestly.

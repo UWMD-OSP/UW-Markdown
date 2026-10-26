@@ -67,3 +67,10 @@ describe('version', () => {
     expect(server.packages.map((p) => p.version)).toEqual([pkg.version]);
   });
 });
+
+// The declared MCP registry schema caps this field at100 characters.
+it('keeps the staged registry description within its upstream schema limit', () => {
+  const manifest = JSON.parse(repo('packages/uwmd-mcp/server.json')) as { description: string };
+  expect(manifest.description.length).toBeGreaterThan(0);
+  expect(manifest.description.length).toBeLessThanOrEqual(100);
+});
