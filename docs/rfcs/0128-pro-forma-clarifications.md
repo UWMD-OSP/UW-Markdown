@@ -5,6 +5,7 @@ status: accepted
 author: UWMD maintainers
 created: 2026-10-25
 affects:
+  - format-spec
   - protocol-spec
   - conformance-corpus
   - tooling
@@ -23,7 +24,7 @@ This RFC states those decisions, synchronizes the current contract and changes
 reference admission where required. It introduces no financial convention,
 formula, operand, operation order, numeric quantum or registry member.
 
-RFC0092 section4b/6a and the Protocol bounded pro-forma contract are amended by
+RFC0092 section4b/6a and the Format/Protocol bounded pro-forma contracts are amended by
 this RFC. Registry `uwmd.pro-forma.l1.1` retains its fifteen entries. No optional
 profile support is claimed; independent #551 and actual-runtime #552 remain
 separate gates.
@@ -90,7 +91,7 @@ are unchanged.
 
 ## Synchronized implementation and controls
 
-The Protocol, claim/report schemas, executable selector types and reference
+The Format, Protocol, claim/report schemas, executable selector types and reference
 assessment change together. T4 checks the supplied effective basis against the
 bound loan. T6 uses event-level membership and required-sensitive role conflicts.
 T11 removes the redundant selector from types, schema and admission while
