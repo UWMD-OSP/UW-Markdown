@@ -93,7 +93,7 @@ object. `_meta.section` repeats the section id.
 - `uwmd validate` reports no error, and every remaining warning is explained in
   the narrative.
 - `uwmd verify` reports no `failed` statement, and every `unverifiable` statement is disclosed; an exit0 alone does not establish complete assurance.
-- A stated LTV has an explicit `ltv_basis` and the matching source input (Format §4.6); never guess a denominator or claim pro-forma support.
+- A stated LTV has an explicit `ltv_basis` and the matching source input (Format RFC0092 bounded wire contract); never guess a denominator or claim pro-forma support.
 - Every figure traces to a source document or is marked as an assumption.
 
 ## References
