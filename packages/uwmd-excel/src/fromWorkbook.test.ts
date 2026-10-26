@@ -177,6 +177,38 @@ describe('fromWorkbook — mixed_use per-component statements (#411)', () => {
     return { wb, components: block.content };
   }
 
+  const basisSource = (basis: string) => '---\nuw_version: "3.0"\nasset_class: mixed_use\ncurrency_code: USD\n---\n\n```json uw:section=debt_structure\n' + JSON.stringify({ ltv_basis: basis }) + '\n```\n';
+  const named = (wb: ExcelJS.Workbook, name: string) => {
+    const range = wb.definedNames.getRanges(name).ranges[0]!;
+    const [sheet, reference] = range.split('!');
+    return wb.getWorksheet(sheet!.replace(/^'|'$/g, ''))!.getCell(reference!.replace(/\$/g, ''));
+  };
+
+  it.each(['purchase-price', 'underwritten-value', 'total-project-cost'])('round-trips the authored LTV basis %s (#561)', async basis => {
+    const { wb } = await exportedFrom(basisSource(basis));
+    const imported = fromWorkbook(wb);
+    expect(imported.sections.debt_structure!.ltv_basis).toBe(basis);
+    expect(imported.sections.debt_structure!.ltv).toBeUndefined();
+  });
+
+  it.each([null, ''])('keeps a blank LTV basis as null: %s', async value => {
+    const { wb } = await exportedFrom(basisSource('purchase-price'));
+    named(wb, 'debt_structure_ltv_basis').value = value;
+    expect(fromWorkbook(wb).sections.debt_structure!.ltv_basis).toBeNull();
+  });
+
+  it.each([123, false, { formula: '"purchase-price"', result: 'purchase-price' }])('refuses a non-text LTV basis cell: %j', async value => {
+    const { wb } = await exportedFrom(basisSource('purchase-price'));
+    named(wb, 'debt_structure_ltv_basis').value = value;
+    expect(() => fromWorkbook(wb)).toThrow(expect.objectContaining({ code: 'WORKBOOK-IMPORT-NAMED-RANGE' }));
+  });
+
+  it('keeps numeric inputs strict beside the text basis', async () => {
+    const { wb } = await exportedFrom(basisSource('purchase-price'));
+    named(wb, 'debt_structure_loan_amount').value = '1000';
+    expect(() => fromWorkbook(wb)).toThrow(expect.objectContaining({ code: 'WORKBOOK-IMPORT-NAMED-RANGE' }));
+  });
+
   it('recovers each component\'s stated inputs, and never a formula-derived NOI', async () => {
     const { wb, components } = await exported();
     const imported = fromWorkbook(wb);

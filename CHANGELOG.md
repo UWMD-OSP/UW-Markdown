@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Fix #561: mixed-use Excel import preserves the declared LTV basis as text, matching the exporter and other layouts while retaining strict numeric cells and formula-output protection.
+
 - Fix #559: Python property cash-flow selection refusals identify the unavailable exact section/variant, preserving refusal order and original nested evidence instead of pointing at a valid plan.
 
 - Clarify RFC0092 admission and reports in accepted RFC0128: refuse contradictory LTV-basis conventions, use event-level ledger membership with required-sensitive role conflicts, and remove redundant selectors.loan. Pin currency, registry, summary-fallback and report rules without changing financial procedures or claiming profile support.
