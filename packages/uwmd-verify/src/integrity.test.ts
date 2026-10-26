@@ -161,6 +161,69 @@ describe('verifyChain', () => {
 });
 
 describe('verifyProvenance', () => {
+  it('classifies a manual source as human despite an agent-shaped principal', () => {
+    const file = parseUWFile(`---
+uw_version: "3.0"
+---
+\`\`\`json uw:section=valuation variant=base
+{"_meta":{"provenance":{"source":"manual","actor":"agent/synthetic"},"lifecycle":{"revision":1,"superseded":false}}}
+\`\`\`
+`);
+    const before = structuredClone(file);
+    expect(verifyProvenance(file, [
+      { source_pattern: 'manual', authority: 'human_only', supersede_on_edit: false },
+    ]).issues).toEqual([]);
+    expect(file).toEqual(before);
+  });
+
+  it.each([
+    ['manual', 'human_only', true],
+    ['agent/synthetic', 'agent_only', true],
+    ['system/synthetic', 'system_only', true],
+    ['institution/synthetic', 'system_only', true],
+    ['document/synthetic', 'agent_only', false],
+    ['agent:synthetic', 'agent_only', false],
+    ['unrecognized', 'human_only', false],
+  ] as const)('uses source %s for %s authority regardless of principal', (source, authority, allowed) => {
+    for (const actor of ['agent/synthetic', 'manual', 'arbitrary principal']) {
+      const file = makeFile({ valuation: makeBlock('valuation', {}, { provenance: { source, actor } }) });
+      const result = verifyProvenance(file, [{ source_pattern: '*', authority, supersede_on_edit: false }]);
+      expect(result.ok).toBe(allowed);
+      expect(result.issues.map((issue) => issue.code)).toEqual(allowed ? [] : ['POL-01']);
+    }
+  });
+
+  function variantFile(history: string[] = [], laterSource = 'agent/synthetic'): ParsedUWFile {
+    const block = (variant: string, revision: number, superseded = false, source = 'agent/synthetic') => {
+      const value = makeBlock('valuation', {}, {
+        provenance: { source, actor: 'agent/synthetic' }, lifecycle: { revision, superseded },
+      });
+      return `\`\`\`json uw:section=valuation variant=${variant}\n${JSON.stringify({ _meta: value.meta })}\n\`\`\`\n`;
+    };
+    const priors = history.map((variant) => block(variant, 1, true)).join('');
+    return parseUWFile(`---\nuw_version: "3.0"\n---\n${priors}${block('base', 1)}${block('downside', 2, false, laterSource)}`);
+  }
+
+  it('checks missing supersede history on a later current variant', () => {
+    const file = variantFile();
+    const before = structuredClone(file);
+    expect(verifyProvenance(file).issues.map((issue) => issue.code)).toEqual(['POL-02']);
+    expect(file).toEqual(before);
+  });
+
+  it('does not use another variant history to clear POL-02', () => {
+    expect(verifyProvenance(variantFile(['base'])).issues.map((issue) => issue.code)).toEqual(['POL-02']);
+    expect(verifyProvenance(variantFile(['downside'])).issues).toEqual([]);
+  });
+
+  it('checks restricted authority on a later current variant', () => {
+    const result = verifyProvenance(variantFile([], 'document/synthetic'), [
+      { source_pattern: 'agent/*', authority: 'agent_only', supersede_on_edit: false },
+      { source_pattern: 'document/*', authority: 'agent_only', supersede_on_edit: false },
+    ]);
+    expect(result.issues.map((issue) => issue.code)).toEqual(['POL-01']);
+  });
+
   it('skips a head with a flat or missing _meta (META-01 reports the shape) instead of throwing', () => {
     const md = (meta: string) => `---
 uw_version: "3.0"

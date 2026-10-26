@@ -497,8 +497,8 @@ function* everyBlock(parsed: ParsedUWFile): Generator<[string, UWBlock]> {
 // ─── Provenance verification ─────────────────────────────────────────────────
 
 /**
- * Cross-check `_meta.provenance.actor` and the operation that produced the block against
- * BUILTIN_EDIT_POLICIES.
+ * Cross-check each current block's source authority and visible supersede history
+ * against BUILTIN_EDIT_POLICIES (Protocol §V.3/§V.10).
  *
  * - POL-01: actor not authorized for the section per its EditPolicy.
  * - POL-02: section_replace used where the policy mandates section_supersede
@@ -511,9 +511,7 @@ export function verifyProvenance(
 ): IntegrityResult {
   const issues: IntegrityIssue[] = [];
 
-  for (const sectionId of Object.keys(parsed.sections)) {
-    const head = currentBlock(parsed, sectionId);
-    if (!head) continue;
+  for (const [sectionId, head] of currentHeads(parsed)) {
     // A head with no Format 3.0 provenance (a flat or missing `_meta`) has no
     // actor to check; the validator reports its shape as META-01.
     const source = head.meta?.provenance?.source;
@@ -522,13 +520,13 @@ export function verifyProvenance(
     if (!policy) continue;
 
     // POL-01: authority check
-    const actorClass = classifyActor(head.meta.provenance?.actor, head.meta.provenance?.source);
+    const actorClass = classifyActor(source);
     if (!authorityAllows(policy.authority, actorClass)) {
       issues.push({
         code: 'POL-01',
         severity: 'error',
         section: sectionId,
-        message: `Actor '${head.meta.provenance?.actor}' (class '${actorClass}') not authorized to write '${sectionId}' (policy authority '${policy.authority}').`,
+        message: `Source '${source}' (class '${actorClass}') not authorized to write '${sectionId}' (policy authority '${policy.authority}').`,
       });
     }
 
@@ -536,7 +534,7 @@ export function verifyProvenance(
     if (
       policy.supersede_on_edit &&
       head.meta.lifecycle?.revision > 1 &&
-      (parsed.superseded[sectionId]?.length ?? 0) === 0
+      !(parsed.superseded[sectionId] ?? []).some((prior) => prior.annotation.variant === head.annotation.variant)
     ) {
       issues.push({
         code: 'POL-02',
@@ -559,6 +557,18 @@ export function verifyProvenance(
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+/** Current section heads, including every variant; historical blocks are separate. */
+function* currentHeads(parsed: ParsedUWFile): Generator<[string, UWBlock]> {
+  for (const [sectionId, entry] of Object.entries(parsed.sections)) {
+    if (!entry) continue;
+    if (hasBlockShape(entry)) {
+      yield [sectionId, entry as UWBlock];
+    } else {
+      for (const head of Object.values(entry as Record<string, UWBlock>)) yield [sectionId, head];
+    }
+  }
+}
 
 function currentBlock(parsed: ParsedUWFile, sectionId: string): UWBlock | null {
   const entry = parsed.sections[sectionId];
@@ -594,29 +604,26 @@ function globMatch(pattern: string, value: string): boolean {
 type ActorClass = 'agent' | 'human' | 'system' | 'unknown';
 
 /**
- * Classify from the parsed actor namespace, not string prefixes (RFC 0031).
+ * Classify only the source namespace, never the descriptive principal (Protocol §V.3).
  * A source outside the actor grammar — a legacy colon form, a bare word, a
  * resolution tag — classifies as `unknown`, never as human by default.
  * `document/*` is likewise `unknown`: a document is evidence, not an
  * authority class.
  */
-function classifyActor(actor: string, source: string): ActorClass {
+function classifyActor(source: string): ActorClass {
   const s = parseActorSource(source);
   if (s.kind === 'namespaced') {
     if (s.namespace === 'system' || s.namespace === 'institution') return 'system';
     if (s.namespace === 'agent') return 'agent';
   }
-  const a = parseActorSource(actor);
-  if (a.kind === 'namespaced' && a.namespace === 'agent') return 'agent';
   if (s.kind === 'manual') return 'human';
   return 'unknown';
 }
 
 function authorityAllows(authority: EditPolicy['authority'], actor: ActorClass): boolean {
   switch (authority) {
-    // `unknown` passes `either`: refusing it would turn every legacy source in
-    // the wild into a POL-01, which is a migration, not a bug fix. It can
-    // never satisfy the three restricted classes below.
+    // An unknown source has no restricted authority class; §V.3 permits it
+    // only under `either`, alongside the other non-system classes.
     case 'either':
       return actor !== 'system';
     case 'agent_only':
