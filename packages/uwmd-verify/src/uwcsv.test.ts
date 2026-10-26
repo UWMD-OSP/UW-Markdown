@@ -194,7 +194,7 @@ describe('seeded CSV carrier adversarial properties', () => {
   it('retains quoted multiline Unicode values and number extremes through bundle and ZIP', async () => {
     await fc.assert(fc.asyncProperty(fc.fullUnicodeString({ maxLength: 24 }), fc.double({ noNaN: true, noDefaultInfinity: true }), async (text, number) => {
       const input = structuredClone(envelope);
-      input['x_synthetic_fuzz'] = { ['key/"~,' + text]: [text, number, '\r\n"quoted",\n', null] };
+      input['x_synthetic_fuzz'] = { [`key/"~,${text}`]: [text, number, '\r\n"quoted",\n', null] };
       const original = JSON.stringify(input);
       const bundle = await encodeUWCSVBundle(input);
       expect(areEnvelopesEquivalent(await decodeUWCSVBundle(bundle), input)).toBe(true);

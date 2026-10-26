@@ -367,7 +367,9 @@ describe('seeded source verification adversarial properties', () => {
       const make = (stated: number, reverse: boolean) => {
         const content = { _meta: { section: 'property' }, total_units: 1 };
         const body = JSON.stringify(reverse ? Object.fromEntries(Object.entries(content).reverse()) : content);
-        return front.replace('asset_class: multifamily', `asset_class: multifamily\nquick_metrics:\n  price_per_unit: ${stated}`) + '\n```json uw:section=property\n' + body + '\n```\n\n```json uw:section=valuation\n' + JSON.stringify({ _meta: { section: 'valuation' }, purchase_price: units }) + '\n```\n';
+        const header = front.replace('asset_class: multifamily', `asset_class: multifamily\nquick_metrics:\n  price_per_unit: ${stated}`);
+        const valuation = JSON.stringify({ _meta: { section: 'valuation' }, purchase_price: units });
+        return [header, '', '```json uw:section=property', body, '```', '', '```json uw:section=valuation', valuation, '```', ''].join('\n');
       };
       const first = verifyStatedMetrics(parseUWFile(make(units, false)));
       const reordered = verifyStatedMetrics(parseUWFile(make(units, true)));
