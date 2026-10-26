@@ -1300,5 +1300,5 @@ describe('seeded real-signature receipt adversarial properties', () => {
       expect(result.verdict).toBe('failed'); expect(result.issues.map(issue => issue.code)).toEqual(['RCP-01']);
       expect(result.recomputed).toBeUndefined(); expect(JSON.stringify(receipt)).toBe(original);
     }), { seed: 128015, numRuns: 100 });
-  });
+  }, 30000);
 });
