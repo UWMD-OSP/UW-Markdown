@@ -1,0 +1,25 @@
+{
+  "status": "completed",
+  "exit_code": 1,
+  "input_count": 1,
+  "coverage": {
+    "total": 1,
+    "by_verdict": {
+      "verified": 0,
+      "failed": 0,
+      "unverifiable": 1
+    }
+  },
+  "profile_claim_findings": [],
+  "gaps": [],
+  "exclusions": [],
+  "relationships": [
+    {
+      "identity": "ltv",
+      "state": "unverifiable",
+      "local_state": "unverifiable",
+      "computed": null,
+      "reason": "convention_contradiction"
+    }
+  ]
+}

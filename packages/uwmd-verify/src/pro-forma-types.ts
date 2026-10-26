@@ -31,6 +31,12 @@ export interface ProFormaRow {
   family?: string;
   kind?: 'computed' | 'input' | 'assumption';
 }
+/** RFC0128: the loan input is the sole authored loan selector. */
+export interface ProFormaSelectors {
+  over?: string;
+  through?: number;
+  period?: string;
+}
 export interface ProFormaRelationship {
   id?: string;
   identity: string;
@@ -40,7 +46,7 @@ export interface ProFormaRelationship {
   unit: string;
   currency?: string;
   conventions?: Record<string, unknown>;
-  selectors?: Record<string, unknown>;
+  selectors?: ProFormaSelectors;
   applicability?: { applicable: boolean; reason?: string };
 }
 export interface ProFormaLedger {

@@ -19,8 +19,8 @@ it('keeps the public support claim gated on independent implementation and CLI p
 });
 
 const regressions = new URL('../../../conformance/pro-forma/', import.meta.url);
-const defects = readdirSync(regressions).filter(name => name.startsWith('d1-') || name.startsWith('d2-'));
-it.each(defects)('reports the D1/D2 regression exit and JSON without rewriting %s', name => {
+const defects = readdirSync(regressions).filter(name => name.startsWith('d1-') || name.startsWith('d2-') || name.startsWith('rfc0128-'));
+it.each(defects)('reports the reference regression exit and JSON without rewriting %s', name => {
   const file = new URL(`${name}/deal.uwx.md`, regressions);
   const expected = JSON.parse(readFileSync(new URL(`${name}/expected.json`, regressions), 'utf8'));
   const before = readFileSync(file);

@@ -1,0 +1,38 @@
+{
+  "status": "completed",
+  "exit_code": 0,
+  "input_count": 1,
+  "coverage": {
+    "total": 4,
+    "by_verdict": {
+      "verified": 4,
+      "failed": 0,
+      "unverifiable": 0
+    }
+  },
+  "profile_claim_findings": [],
+  "gaps": [],
+  "exclusions": [],
+  "relationships": [
+    {
+      "identity": "total_net",
+      "state": "verified",
+      "local_state": "verified"
+    },
+    {
+      "identity": "moic",
+      "state": "verified",
+      "local_state": "verified"
+    },
+    {
+      "identity": "xirr",
+      "state": "verified",
+      "local_state": "verified"
+    },
+    {
+      "identity": "xnpv",
+      "state": "verified",
+      "local_state": "verified"
+    }
+  ]
+}

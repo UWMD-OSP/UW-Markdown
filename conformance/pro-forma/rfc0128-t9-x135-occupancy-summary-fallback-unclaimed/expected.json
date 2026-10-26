@@ -1,0 +1,24 @@
+{
+  "status": "completed",
+  "exit_code": 1,
+  "input_count": 1,
+  "coverage": {
+    "total": 2,
+    "by_verdict": {
+      "verified": 0,
+      "failed": 0,
+      "unverifiable": 2
+    }
+  },
+  "profile_claim_findings": [],
+  "gaps": [],
+  "exclusions": [],
+  "relationships": [
+    {
+      "identity": "final_occupancy_rate",
+      "state": "unverifiable",
+      "local_state": "verified",
+      "reason": "blocked_dependency"
+    }
+  ]
+}

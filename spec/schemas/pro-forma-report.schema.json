@@ -560,7 +560,8 @@
               "origins"
             ],
             "additionalProperties": false
-          }
+          },
+          "description": "RFC0128: role_conflict for an in-universe event bound under an undeclared role uses the declared member required flag and is not itself an out-of-universe profile error."
         },
         "exclusions": {
           "type": "array",
@@ -615,7 +616,8 @@
               "origins"
             ],
             "additionalProperties": false
-          }
+          },
+          "description": "Includes error-severity unsupported_registry even with zero rows; unknown claim members and unsupported global convention values complete as profile errors."
         },
         "validation": {
           "type": "array",

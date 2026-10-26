@@ -1,0 +1,24 @@
+{
+  "status": "completed",
+  "exit_code": 1,
+  "input_count": 0,
+  "coverage": {
+    "total": 1,
+    "by_verdict": {
+      "verified": 0,
+      "failed": 0,
+      "unverifiable": 1
+    }
+  },
+  "profile_claim_findings": [],
+  "gaps": [],
+  "exclusions": [],
+  "relationships": [
+    {
+      "identity": "declared_ledger_membership",
+      "state": "unverifiable",
+      "local_state": "unverifiable",
+      "reason": "identity_not_defined"
+    }
+  ]
+}
