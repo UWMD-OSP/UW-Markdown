@@ -7360,6 +7360,11 @@
       "suite": "document-facts",
       "scenario": "negative-source-area",
       "target": "document-facts"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "document-facts/target.uwx.md",
+      "target": "verifier"
     }
   ]
 }
