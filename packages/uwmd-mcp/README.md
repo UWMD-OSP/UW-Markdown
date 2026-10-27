@@ -33,10 +33,26 @@ with stored deals implements; they do not redefine them.
 
 ## Running it locally
 
+From a fresh public source checkout, run these commands at the repository root.
+Build the local verifier before its connector; an unbuilt workspace must not
+fall through to an older registry installation in a parent directory.
+
 ```bash
-npm run build -w packages/uwmd-mcp
+npm ci
+npm run build --workspace "@uwmd/verify"
+npm run build --workspace "@uwmd/mcp"
 node packages/uwmd-mcp/dist/bin.js
 ```
+
+The root `npm run build` also builds dependencies in order when the whole toolkit
+is needed. The server's stdout is the MCP protocol stream, not an interactive
+prompt; use an MCP client over stdio.
+
+For `uwmd_verify`, `ok: true` means no reported failure in its performed checks.
+It can coexist with an `unverifiable` stated metric whose input is missing.
+Inspect the counts, reasons and the particular assertion you need; an omitted
+or unavailable assertion is not verified. Signatures still need a separate
+verification route with keys, as described above.
 
 The server speaks MCP over stdio. A client configuration, after launch:
 

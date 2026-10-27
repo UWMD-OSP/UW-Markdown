@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Fix #583: clarify blank-scaffold identity, named assertion coverage and fresh MCP dependency build order after the public-only newcomer test. Source verification remains distinct from older registry artifacts.
+
 - Fix #581: include lake in anonymous aggregate coverage and align agent-kit docs with the 5 MiB limit and scoped CLI/library pro-forma support. No new connector binding or listing.
 
 - Explain the foundation and seven growth paths, add conformance/verification-profile playbooks, and align README/roadmap with current source and existing postlaunch commitments without new promises.
