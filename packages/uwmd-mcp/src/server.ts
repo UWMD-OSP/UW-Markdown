@@ -34,7 +34,7 @@ export function createServer(): McpServer {
   server.registerTool('uwmd_validate', {
     title: 'Validate a UW Markdown record',
     description: 'Check a .uwx.md underwriting record against the UW Markdown Format rules. Returns the overall status, stage readiness, every issue (code, severity, section, field, message) and, separately, deal flags: Format §5.2 financial-validity bands the deal crosses (code, band, section, field, message), which describe the deal, not a defect in the record. Use uwmd_explain_code for what a code means.',
-    inputSchema: { source: SOURCE },
+    inputSchema: z.strictObject({ source: SOURCE }),
     annotations: READ_ONLY,
   }, async ({ source }) => {
     try { return ok(validateSource(source)); } catch (error) { return refused(error); }
@@ -43,7 +43,7 @@ export function createServer(): McpServer {
   server.registerTool('uwmd_verify', {
     title: 'Verify a UW Markdown record',
     description: 'Verify a .uwx.md record: validation, every stated metric recomputed from the record\'s own inputs (failed and unverifiable statements are listed), the hash chain and provenance. The figures are computed by the standard\'s reference implementation; do not recompute them yourself.',
-    inputSchema: { source: SOURCE },
+    inputSchema: z.strictObject({ source: SOURCE }),
     annotations: READ_ONLY,
   }, async ({ source }) => {
     try { return ok(await verifySource(source)); } catch (error) { return refused(error); }
@@ -52,7 +52,7 @@ export function createServer(): McpServer {
   server.registerTool('uwmd_explain_code', {
     title: 'Explain a UW Markdown validation code',
     description: 'What a validation code (for example CC-03 or SIZE-01) means, its severity, how to fix it, and where the spec defines it.',
-    inputSchema: { code: z.string().describe('A validation code, for example CC-03.') },
+    inputSchema: z.strictObject({ code: z.string().describe('A validation code, for example CC-03.') }),
     annotations: READ_ONLY,
   }, async ({ code }) => {
     try { return ok(explainCode(code)); } catch (error) { return refused(error); }

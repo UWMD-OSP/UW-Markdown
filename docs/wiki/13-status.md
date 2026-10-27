@@ -1,5 +1,7 @@
 # 13 — Build status (living document)
 
+**MCP dependency.** The connector uses patched Zod4 within the existing SDK peer contract. Its three read-only tools, closed advertised argument schemas and source-size guard remain explicit; unknown arguments refuse before record processing. No profile or network binding is added.
+
 **Dependency maintenance.** Root and separately locked tools resolve compatible patched transitive dependencies within existing declared ranges. Package versions and financial contracts are unchanged; other advisory families are assessed separately.
 
 **Newcomer documentation.** Public-only authoring/signing/verification tests exposed missing MCP build prerequisites and property-identity/coverage guidance. Current recipes build local dependencies first, fill provided identity in both homes and require a named verified assertion; no repair of older registry artifacts or new capability claim.
