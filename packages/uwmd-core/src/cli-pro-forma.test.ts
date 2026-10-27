@@ -12,10 +12,10 @@ it.each([[], ['--unknown'], ['a', 'b'], ['a', '--json', '--json']])('refuses mal
   expect(() => parseProFormaArgs(args as string[])).toThrow(/CALC-PRO-FORMA/);
 });
 
-it('keeps the public support claim gated on independent implementation and CLI proof', async () => {
+it('declares the bounded profile after independent implementation and CLI proof', async () => {
   const { REFERENCE_IMPLEMENTATION_MANIFEST } = await import('./reference-implementation.js');
-  expect(REFERENCE_IMPLEMENTATION_MANIFEST.profiles).not.toContain('pro-forma');
-  expect(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities).not.toContain('pro-forma-verify');
+  expect(REFERENCE_IMPLEMENTATION_MANIFEST.profiles).toContain('pro-forma');
+  expect(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities).toContain('pro-forma-verify');
 });
 
 const regressions = new URL('../../../conformance/pro-forma/', import.meta.url);

@@ -82,6 +82,12 @@ CLI, `uwmd receipt issue <file>` and `uwmd receipt verify <file>
 <receipt.json>` check that a record still produces its stated results (exit
 0 verified, 1 failed, 3 unverifiable).
 
+The optional RFC 0092 pro-forma profile is supported by the reference CLI and
+public library, with independent proof frozen at source commit `e2bd0067`.
+Read [the scope and tested runtimes](docs/wiki/03-core-library.md#rfc-0092-support-scope)
+before using that claim; older npm code with the same package version is not
+that frozen source. Pro-forma has no MCP or HTTP binding yet.
+
 To open the reference web viewer, point any browser at
 [`tools/web-viewer/index.html`](tools/web-viewer/) and drop in a `.uwx.md` file.
 

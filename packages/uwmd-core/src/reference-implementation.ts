@@ -36,13 +36,14 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
   version: CORE_VERSION,
   protocol_version: PROTOCOL_VERSION,
   format_version: FORMAT_VERSION,
-  // RFC 0092: pro-forma support awaits independent profile and CLI proof.
+  // RFC 0092: #551/#552 prove the bounded profile at source e2bd0067.
+  // Claim scope is CLI/public library; no pro-forma MCP or HTTP binding.
   // RFC 0078: a Verifier with the established profiles. Editing and rendering
   // stay claimed as capabilities: they are starter-product claims now (§II.4),
   // still exercised by their fixtures. The toolkit hosts no agents, and RFC
   // 0112 removed the `agent-host` capability from the vocabulary.
   tier: 'verifier',
-  profiles: Object.freeze(CONFORMANCE_PROFILES.filter(p => p !== 'pro-forma')) as ConformanceProfile[],
+  profiles: Object.freeze([...CONFORMANCE_PROFILES]) as ConformanceProfile[],
   representations: Object.freeze(CORE_CODEC_REGISTRY.list()) as RepresentationDescriptor[],
   capabilities: Object.freeze([
     'parse',
@@ -84,6 +85,7 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
     'verify-receipts',
     'verify-reserve-accounts',
     'verify-reserve-draws',
+    'pro-forma-verify',
   ]) as ViewerCapability[],
   // RFC 0001: the reference implementation supports the full first wave, so
   // its own LOC-01 fires only on unregistered tags.

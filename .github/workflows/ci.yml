@@ -339,6 +339,12 @@ jobs:
         # added to the runner's default and never actually gate a pull request.
         run: npm run conformance
 
+      - name: Required RFC 0092 pro-forma conformance profile
+        # Inside the existing required Node 20 job: no new settings or bypass.
+        # An empty/unknown selection is an error, and every indexed case runs.
+        if: matrix.node == 20
+        run: node scripts/run-conformance.mjs --profile=pro-forma
+
       - name: Run the verification examples
         # examples/verification is what a new adopter runs first; each script
         # exits 0 only when the verifier reports its documented verdicts.

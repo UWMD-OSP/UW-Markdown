@@ -49,9 +49,11 @@ describe('REFERENCE_IMPLEMENTATION_MANIFEST', () => {
 
   it('claims the Protocol 3.0 Verifier tier with the proven profiles (RFCs 0078/0092)', () => {
     // The reference implements every stated-figure verifier and the proven optional
-    // profiles; pro-forma remains gated. Editing is a starter-product capability now, not a tier.
+    // profiles, including RFC 0092 after independent #551/#552 proof.
+    // Editing is a starter-product capability, not a tier.
     expect(REFERENCE_IMPLEMENTATION_MANIFEST.tier).toBe('verifier');
-    expect(REFERENCE_IMPLEMENTATION_MANIFEST.profiles).toEqual(CONFORMANCE_PROFILES.filter(p => p !== 'pro-forma'));
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.profiles).toEqual(CONFORMANCE_PROFILES);
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities).toContain('pro-forma-verify');
     expect(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities).toEqual(
       expect.arrayContaining(['edit-supersede', 'render-chat']),
     );
