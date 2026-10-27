@@ -92,7 +92,7 @@ To file a normative change:
 2. Fill in every section — Summary, Motivation, Proposed change, Compatibility
    analysis, Conformance impact, Reference implementation, Alternatives,
    Unresolved questions, Prior art. RFCs missing sections get bounced.
-   Apply the [prelaunch policy](AGENTS.md#prelaunch-policy): before 5.0,
+   Apply the [prelaunch policy](https://github.com/UWMD-OSP/UW-Markdown/blob/main/AGENTS.md#prelaunch-policy): before 5.0,
    the compatibility section states that there is no public compatibility
    baseline; it does not require migration, deprecation or artifact retention work.
 3. Open a PR titled `RFC NNNN: <short title>`.
@@ -143,7 +143,7 @@ Before opening a PR:
 - [ ] `npm test` passes (all tests green).
 - [ ] `npm run typecheck:tests` and `npm run conformance` pass after the build; expected refusals remain expected refusals.
 - [ ] If the change is normative (spec): RFC and synchronized contracts/conformance are included; apply the prelaunch policy above.
-- [ ] Affected guards, lint and the documentation build pass as listed in [AGENTS.md](AGENTS.md#changes-and-validation).
+- [ ] Affected guards, lint and the documentation build pass as listed in [AGENTS.md](https://github.com/UWMD-OSP/UW-Markdown/blob/main/AGENTS.md#changes-and-validation).
 - [ ] If the change adds a public API: a standard symbol is exported from `packages/uwmd-verify/src/index.ts` (core re-exports it), a starter symbol from `packages/uwmd-core/src/index.ts`.
 - [ ] CHANGELOG.md updated under `[Unreleased]`.
 

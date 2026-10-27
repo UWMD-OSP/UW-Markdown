@@ -45,7 +45,7 @@ For library changes:
 
 ## Compatibility analysis
 
-Apply the [prelaunch policy](../../AGENTS.md#prelaunch-policy): before the
+Apply the [prelaunch policy](https://github.com/UWMD-OSP/UW-Markdown/blob/main/AGENTS.md#prelaunch-policy): before the
 5.0 public launch there is no public compatibility baseline, migration path,
 deprecation period or historical-artifact retention requirement.
 
