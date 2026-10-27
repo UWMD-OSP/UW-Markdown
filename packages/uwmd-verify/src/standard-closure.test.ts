@@ -28,7 +28,7 @@ const SRC = dirname(fileURLToPath(import.meta.url));
 /** RFC 0083 §1, as source paths relative to `src/`. The two entries are listed separately. */
 const STANDARD_MODULES: readonly string[] = Object.freeze([
   // Reader
-  'parser.ts', 'yaml-scalar.ts', 'types.ts', 'scenario.ts', 'metadata.ts', 'version.ts', 'json-admission.ts',
+  'parser.ts', 'yaml-scalar.ts', 'types.ts', 'scenario.ts', 'metadata.ts', 'version.ts', 'build-info.ts', 'json-admission.ts',
   'block-roles.ts', 'block-kind.ts', 'section-resolution.ts', 'extension-entry.ts', 'portable-projection.ts',
   // Validation
   'validator.ts', 'gap-instant.ts', 'payload-admission.ts', 'builtin-class-content.ts', 'builtin-class-validation.ts', 'asset-class.ts',

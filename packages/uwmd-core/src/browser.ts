@@ -150,3 +150,5 @@ export { CORE_PACKAGE_NAME, CORE_VERSION } from './version.js';
 export { parseCalculationContext } from './calculation-context.js';
 
 export { DATA_CENTER_DEFAULTS, MANUFACTURED_HOUSING_DEFAULTS } from './defaults.js';
+
+export { BUILD_INFO, BUILD_VERSION } from './build-info.js';

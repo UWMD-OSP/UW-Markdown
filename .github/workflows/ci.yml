@@ -152,6 +152,8 @@ jobs:
         with:
           node-version: 20
       - run: npm run verify-indexes
+      - name: Verify supplemental source build identity
+        run: node --test scripts/build-source.test.mjs
 
   verify-codes:
     if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']

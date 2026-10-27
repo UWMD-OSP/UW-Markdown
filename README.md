@@ -160,3 +160,20 @@ This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md).
 ## License
 
 [MIT](./LICENSE) © UW Markdown contributors.
+
+### Identify a source build
+
+After installing dependencies, build a clean committed checkout with
+`node scripts/build-source.mjs`. `node packages/uwmd-cli/bin/uwmd.mjs --version`
+then prints each declared library version plus `+source.<full-commit>`.
+`node packages/uwmd-cli/bin/uwmd.mjs build-info` prints JSON containing both the
+full source commit and source tree. The same metadata is available as
+`BUILD_INFO`/`BUILD_VERSION` from core and
+`VERIFY_BUILD_INFO`/`VERIFY_BUILD_VERSION` from verify, including browser entries.
+
+Plain `npm run build` is still supported and deliberately prints
+`+source.unknown`; a Gitless source archive is also unidentified. The identified
+builder refuses uncommitted source or a source change during the build. No Git
+lookup occurs when a consumer runs the CLI or imports a package. This metadata
+does not change package manifests, dependency identities or receipt versions,
+and does not authenticate a compiler invocation or label an artifact a release.
