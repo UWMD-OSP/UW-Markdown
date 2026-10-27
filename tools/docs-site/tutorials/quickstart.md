@@ -109,17 +109,22 @@ A receipt says nothing about whether the rent roll or T-12 is accurate. It
 covers the arithmetic only. Receipts are issued when you ask for one; editing a
 record never creates one automatically.
 
-## 5. Convert it
+## 5. Convert a record
 
-The same record converts to the machine representations and to a compact
-[UW Lite](/guide/lite-and-uwx) summary:
+Use the fresh `deal.uwx.md` scaffold from step 1 to try the machine representations
+and the compact [UW Lite](/guide/lite-and-uwx) summary:
 
 ```bash
-npx @uwmd/cli convert Parkview-Apts-Glendale-AZ.uwx.md --to uw-json
-npx @uwmd/cli convert Parkview-Apts-Glendale-AZ.uwx.md --to lite --projection-report lite-omissions.json
+npx @uwmd/cli convert deal.uwx.md --to uw-json
+npx @uwmd/cli convert deal.uwx.md --to lite --projection-report lite-omissions.json
 ```
 
-The Lite conversion warns that it omitted advanced paths. That is deliberate:
+Full-model encodings require schema-admitted metadata as well as valid financial
+fields. The Parkview illustration contains abbreviated input-hash placeholders;
+use a fresh scaffold for this conversion exercise rather than treating those
+placeholders as full SHA-256 digests.
+
+The Lite conversion can warn that it omitted advanced paths. That is deliberate:
 UW Lite is a smaller summary profile, and `lite-omissions.json` lists every
 path it left out. Keep the `.uwx.md` file as the complete record. Other targets
 are `uw-xml` and `uw-csv-bundle`. Run `npx @uwmd/cli formats` to list them.

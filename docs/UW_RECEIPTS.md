@@ -185,8 +185,8 @@ to two of the eight outputs and other envelope members omitted:
     "representation": "uwx-markdown",
     "representation_version": "1.0",
     "canonicalization": "uw-envelope-semantic",
-    "canonicalization_version": "1.0",
-    "digest": "sha256:d6d385866e5ed70f78776974810adc2ae0c3348b728a0c92df75610ef6f14be0"
+    "canonicalization_version": "2.0",
+    "digest": "sha256:638c59abb25376f92991a23747f842aa2ff8d7f4db3ba2e15d7998f5da315b09"
   },
   "computation": {
     "pack": "org.uwmd.pack.multifamily",

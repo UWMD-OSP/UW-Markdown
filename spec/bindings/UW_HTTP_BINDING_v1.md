@@ -2,7 +2,7 @@
 
 **Status:** Stable companion profile
 **Binding version:** 1.0.0
-**Protocol:** UW Protocol 1.2.0
+**Protocol:** [UW Protocol](../UW_PROTOCOL.md); current versions are listed in [VERSIONS](../../VERSIONS.md)
 **Envelope:** UW Document Envelope 2.0
 
 ## 1. Scope
@@ -39,11 +39,11 @@ A representation query parameter is not used for model encodings; clients use
 
 | Codec | Media type | Body |
 |---|---|---|
-| UW JSON 1.0 | `application/vnd.uwmd.document+json` | UTF-8 text |
-| UW XML 1.0 | `application/vnd.uwmd.document+xml` | UTF-8 text |
-| UW CSV Bundle 1.0 | `application/vnd.uwmd.csv-bundle+zip` | ZIP bytes |
+| UW JSON | `application/vnd.uwmd.document+json` | UTF-8 text |
+| UW XML | `application/vnd.uwmd.document+xml` | UTF-8 text |
+| UW CSV Bundle | `application/vnd.uwmd.csv-bundle+zip` | ZIP bytes |
 
-A missing `Accept` defaults to UW JSON. Negotiation follows Protocol 1.2 exact,
+A missing `Accept` defaults to UW JSON. Negotiation follows Protocol §I.5 exact,
 `type/*`, and `*/*` rules. Preference ties resolve JSON, XML, then CSV bundle for
 the codecs implemented in this release. A model request MUST NOT receive a
 view.

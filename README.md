@@ -73,8 +73,11 @@ npm run build
 # Parse and validate the example file
 npm run cli -- parse examples/Parkview-Apts-Glendale-AZ.uwx.md
 npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uwx.md
-npm run cli -- convert examples/Parkview-Apts-Glendale-AZ.uwx.md --to uw-xml
-npm run cli -- convert examples/Parkview-Apts-Glendale-AZ.uw.xml --to uw-json
+
+# Exercise full-model conversion with schema-admitted scaffold metadata
+npm run cli -- init --output representation-demo.uwx.md
+npm run cli -- convert representation-demo.uwx.md --to uw-xml
+npm run cli -- convert representation-demo.uw.xml --to uw-json
 
 # The same deal as a UW Lite summary, and what compiling it costs you
 npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uw.md

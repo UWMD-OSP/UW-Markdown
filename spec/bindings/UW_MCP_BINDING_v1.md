@@ -2,7 +2,7 @@
 
 **Status:** Stable companion profile
 **Binding version:** 1.0.0
-**Protocol:** UW Protocol 1.2.0
+**Protocol:** [UW Protocol](../UW_PROTOCOL.md); current versions are listed in [VERSIONS](../../VERSIONS.md)
 **Envelope:** UW Document Envelope 2.0
 
 ## 1. Scope
