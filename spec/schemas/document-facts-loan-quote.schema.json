@@ -1,0 +1,475 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/document-facts-loan-quote.schema.json",
+  "title": "loan-quote-v1 logical payload (RFC0129)",
+  "description": "Closed source facts, not adopted underwriting inputs. Inventory resolution, unique unmapped labels, non-self supersedes and package history require the profile validator. Dates are real calendar dates. No financial conversion or selection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_id",
+    "artifact_kind",
+    "as_of",
+    "currency_code",
+    "governing_documents",
+    "facts"
+  ],
+  "properties": {
+    "document_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "artifact_kind": {
+      "enum": [
+        "quote",
+        "term_sheet",
+        "amendment"
+      ]
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "currency_code": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "governing_documents": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    },
+    "facts": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "debt_structure.loan_amount": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.loan_purpose": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "acquisition",
+                        "refinance",
+                        "cash_out_refi",
+                        "construction",
+                        "bridge",
+                        "supplement"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.loan_type": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "conventional",
+                        "agency_fannie",
+                        "agency_freddie",
+                        "cmbs",
+                        "sba_504",
+                        "sba_7a",
+                        "bridge",
+                        "construction",
+                        "life_co",
+                        "hud_221d4",
+                        "hud_223f",
+                        "mezzanine"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.rate_type": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "fixed",
+                        "floating",
+                        "hybrid"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.interest_rate": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.rate_index": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "sofr",
+                        "prime",
+                        "treasury_5yr",
+                        "treasury_10yr",
+                        "fixed"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.rate_spread_bps": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.rate_floor_pct": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.amortization_years": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.loan_term_years": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.io_period_months": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.recourse": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "full",
+                        "partial",
+                        "non_recourse",
+                        "carve_outs_only"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.prepayment_type": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "stepdown",
+                        "yield_maintenance",
+                        "defeasance",
+                        "open",
+                        "lockout",
+                        "none"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.origination_fee_pct": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.exit_fee_pct": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "debt_structure.lender_type": {
+          "allOf": [
+            {
+              "$ref": "document-fact-term.schema.json"
+            },
+            {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "bank",
+                        "credit_union",
+                        "cmbs_conduit",
+                        "agency",
+                        "life_co",
+                        "debt_fund",
+                        "private",
+                        "sba"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "unmapped_facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "term"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "term": {
+            "$ref": "document-fact-term.schema.json"
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "supersedes": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    }
+  }
+}

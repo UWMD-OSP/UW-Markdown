@@ -20,8 +20,11 @@ profiles: `loan-quote-v1`, `offering-memorandum-v1` and `appraisal-abstract-v1`.
 They carry source-located facts for existing record fields, not new calculations.
 Each exposes reviewed candidate edits with an omission/conflict report. This
 RFC is **accepted** by the owner on 2026-10-26: “yes to the codex list”.
-Implementation follows in a separate PR under that explicit direction. Acceptance
-alone does not register an implemented profile or claim support.
+The separate reference-source implementation provides the three profiles and
+`document-facts` conformance through the public library, package admission and
+complete Lite views. CLI/MCP/HTTP fact-operation bindings and Lite compilation
+remain unsupported. Status stays accepted until a release under the RFC index
+policy; no release is performed here.
 
 ## Motivation
 
@@ -32,7 +35,7 @@ keep a quote, a marketing statement and an appraisal opinion distinct from a
 producer's adopted inputs. The Format already holds the useful destination
 facts (§§4.1–4.7,4.13); no new valuation or loan-sizing formula is necessary.
 
-The companion `docs/document-types.md` catalog records12 available families,
+At proposal, the companion `docs/document-types.md` catalog recorded12 available families,
 5 draft families (including these three),11 planned and6 evidence-only
 categories. Those counts are catalog rows, not registered profiles. The proposed
 rule is: a document earns a profile if its facts feed underwriting figures or

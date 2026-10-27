@@ -43,6 +43,7 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
   // still exercised by their fixtures. The toolkit hosts no agents, and RFC
   // 0112 removed the `agent-host` capability from the vocabulary.
   tier: 'verifier',
+  // RFC0129 document-facts is a standalone library claim; no fact-operation CLI/MCP/HTTP binding.
   profiles: Object.freeze([...CONFORMANCE_PROFILES]) as ConformanceProfile[],
   representations: Object.freeze(CORE_CODEC_REGISTRY.list()) as RepresentationDescriptor[],
   capabilities: Object.freeze([

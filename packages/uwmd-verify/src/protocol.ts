@@ -99,6 +99,7 @@ export const CONFORMANCE_PROFILES = Object.freeze([
   'sensitivity',
   'stochastic',
   'pro-forma',
+  'document-facts',
 ] as const);
 
 export type ConformanceProfile = (typeof CONFORMANCE_PROFILES)[number];
@@ -1472,6 +1473,7 @@ export const DEAL_UNDERWRITING_PROFILE = 'deal-underwriting-v1' as const;
 export const LEASE_ABSTRACT_PROFILE = 'lease-abstract-v1' as const;
 export const SOURCE_NOTE_PROFILE = 'source-note-v1' as const;
 export const MARKET_DATA_PROFILE = 'market-data-v1' as const;
+export const DOCUMENT_FACTS_PROFILES = Object.freeze(['loan-quote-v1', 'offering-memorandum-v1', 'appraisal-abstract-v1'] as const);
 
 export const BUILTIN_DOCUMENT_PROFILES: readonly DocumentProfile[] = Object.freeze([
   Object.freeze({
@@ -1501,6 +1503,11 @@ export const BUILTIN_DOCUMENT_PROFILES: readonly DocumentProfile[] = Object.free
     required_identity: Object.freeze(['document_id', 'as_of', 'provider', 'geo']),
     financial_role: 'evidence',
   }),
+  ...DOCUMENT_FACTS_PROFILES.map(id => Object.freeze({
+    id, purpose: 'Attributable source facts with explicit read-only candidate projection (RFC0129).',
+    required_identity: Object.freeze([]), // identity belongs to the closed logical payload
+    financial_role: 'descriptive' as const,
+  })),
 ]) as readonly DocumentProfile[];
 
 const PROFILE_BY_ID = new Map(BUILTIN_DOCUMENT_PROFILES.map((p) => [p.id, p]));

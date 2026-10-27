@@ -8,6 +8,7 @@
 
 import {
   BUILTIN_REMEDIATIONS,
+  isDocumentFactsProfile,
   parseUWFile,
   validateUWFile,
   verifyChain,
@@ -90,7 +91,9 @@ function admit(source: unknown): string {
 
 function parse(source: string): ParsedUWFile {
   try {
-    return parseUWFile(source);
+    const parsed = parseUWFile(source);
+    if (isDocumentFactsProfile(parsed.frontmatter.document_profile)) throw new ConnectorError('UWMD-MCP-DOCUMENT-PROFILE-UNSUPPORTED', 'Document-facts operations are supported by the standalone public library only.');
+    return parsed;
   } catch (error) {
     const e = error as { code?: string; message?: string };
     throw new ConnectorError(e.code ?? 'UWMD-MCP-PARSE', e.message ?? 'The record could not be parsed.');

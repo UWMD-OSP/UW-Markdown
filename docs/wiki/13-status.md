@@ -14,7 +14,7 @@
 
 **Known limits.** The [plain-language limits](../KNOWN-LIMITS.md) separate representable source facts, structural checks and verified financial assertions. Current synthetic probes cover64 cases; gaps are tracked in issues572–578 without inventing a financial convention or silently repairing inputs.
 
-**Document types.** The [catalog](../document-types.md) distinguishes available contracts from draft/planned fact profiles and source evidence. The [playbook](../playbooks/ADD_DOCUMENT_TYPE.md) covers acceptance, sources, lifecycle, section projections and conformance. RFC0129 accepts the loan-quote, offering-memorandum and appraisal design; implementation follows separately. No new profile support is claimed.
+**Document types.** The [catalog](../document-types.md) distinguishes available contracts from draft/planned fact profiles and source evidence. The [playbook](../playbooks/ADD_DOCUMENT_TYPE.md) covers acceptance, sources, lifecycle, section projections and conformance. RFC0129 now has three source-fact implementations: loan quote, offering memorandum and appraisal. The optional `document-facts` profile covers standalone library validation, explicit candidate projection, package integrity/history and complete Lite views; CLI/MCP/HTTP fact bindings and Lite compilation remain unsupported. See [scope and examples](../document-facts.md).
 
 **Public identity.** Current tracked content uses UWMD maintainers wording; owner-name and handle checks are case-insensitive with no maintainer-file exemption. CODEOWNERS has no named account routing because the existing branch policy does not require code-owner review. Governance authority and required CI stay in place. Historical commit attribution remains part of the separate launch-day history cutover.
 

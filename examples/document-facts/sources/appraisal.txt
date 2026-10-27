@@ -1,0 +1,4 @@
+Synthetic QA source: source:qa-appraisal
+p1 report date:2026-10-02. p4 effective date:2026-09-30.
+p4 as-is conclusion:2100000 USD; income approach.
+p8 extraordinary assumption:synthetic condition requires independent review.

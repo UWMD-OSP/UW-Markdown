@@ -81,3 +81,10 @@ Exit 2 was shown only by fault injection. Read the
 [precise support scope](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/03-core-library.md#rfc-0092-support-scope)
 and use current source when a registry package with the same version contains
 older code. This page grants no new profile, formula or jurisdictional claim.
+
+
+RFC0129 source-fact profiles are supported through the current public library,
+package admission and complete Lite source views. Fact-operation CLI/MCP/HTTP
+bindings and Lite compilation remain unsupported. Attribution and byte integrity
+do not authenticate an institution or establish source truth or legal adequacy.
+See [the scope](document-facts.md).

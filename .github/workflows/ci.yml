@@ -345,6 +345,10 @@ jobs:
         if: matrix.node == 20
         run: node scripts/run-conformance.mjs --profile=pro-forma
 
+      - name: Required RFC0129 document-facts conformance profile
+        if: matrix.node == 20
+        run: node scripts/run-conformance.mjs --profile=document-facts
+
       - name: Run the verification examples
         # examples/verification is what a new adopter runs first; each script
         # exits 0 only when the verifier reports its documented verdicts.

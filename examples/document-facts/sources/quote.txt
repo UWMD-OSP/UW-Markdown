@@ -1,0 +1,3 @@
+Synthetic QA source: source:qa-quote
+p1 amount:1000000 USD. p1 rate:fixed0.06. Amortization30years.
+p1 maximum LTV:0.65. Unsigned; expiry2026-11-01. IO not stated.
