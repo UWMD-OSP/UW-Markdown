@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Consolidate coding-agent guidance into one contributor guide, with import-only root/tool entry points and matching index controls.
+
 ### Tooling
 
 - Add a tracked-content public-language scan to the required index gate. It initially reports editorial findings, with exact integration-label exceptions and regression controls.

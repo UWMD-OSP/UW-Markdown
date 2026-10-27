@@ -12,8 +12,7 @@
 //      docs-site copy plan. New Markdown files are copied automatically;
 //      unindexed RFCs are reported as orphan pages without failing.
 //
-//   3. Shared agent guidance has one source, except the explicit owner rule
-//      required in both entry points; that block must match exactly.
+//   3. Shared contributor guidance has one source and import-only entry points.
 //
 // Run: npm run verify-indexes
 
@@ -188,14 +187,14 @@ if (orphans.length > 0) {
   checks.push(`note: copied but not linked from the index table: ${orphans.join(', ')}`);
 }
 
-// ── 3. Shared guidance and the explicit owner-rule exception ────────────────
+// ── 3. Shared guidance entry points ────────────────────────────────────────
 if (!existsSync(resolve(root, 'AGENTS.md'))) {
   failures.push('AGENTS.md: missing — CLAUDE.md imports it.');
 } else {
-  failures.push(...agentGuidanceFailures(read('AGENTS.md'), read('CLAUDE.md')));
+  failures.push(...agentGuidanceFailures(read('AGENTS.md'), read('CLAUDE.md'), read('tools/CLAUDE.md')));
 }
 if (!failures.some(f => f.startsWith('CLAUDE.md') || f.startsWith('AGENTS.md'))) {
-  checks.push('Agent entry points repeat the same owner rule and otherwise share AGENTS.md');
+  checks.push('Root and tool entry points import the shared AGENTS.md guide');
 }
 
 // Public content policy is part of this already-required Main CI gate.

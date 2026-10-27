@@ -13,7 +13,7 @@ are added and how decisions get made.
 Contact the maintainers through [GitHub issues](https://github.com/UWMD-OSP/UW-Markdown/issues).
 
 UW Markdown is currently a solo project. Maintainer additions follow
-the promotion path documented in [`GOVERNANCE.md`](./GOVERNANCE.md#promotion-path).
+the appointment process documented in [`GOVERNANCE.md`](./GOVERNANCE.md#maintainers).
 
 ## Areas of ownership
 
@@ -23,7 +23,7 @@ owners (reflected in [`.github/CODEOWNERS`](./.github/CODEOWNERS)):
 - **Format spec** — `spec/UW_FORMAT_SPEC.md`
 - **Protocol spec** — `spec/UW_PROTOCOL.md`
 - **JSON Schemas** — `spec/schemas/**`
-- **Reference library** — `packages/uwmd-core/`
+- **Reference verifier and starter library** — `packages/uwmd-verify/`, `packages/uwmd-core/`
 - **Conformance corpus** — `conformance/`, `scripts/run-conformance.mjs`
 - **Web viewer** — `tools/web-viewer/`
 - **CI / release tooling** — `.github/workflows/`, `scripts/`

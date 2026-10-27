@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        UWMD considers new normative surface (fields, calcs, validation codes) only when a **demonstrated consumer** needs it, so a concrete case is the strongest evidence a request can carry. A request is evidence, not a decision. It does not by itself change the standard. Anything that changes what conforming implementations must do goes through an [RFC](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/rfcs/README.md), which can start from this issue. See the [feedback guide](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/FEEDBACK.md).
+        Describe the missing underwriting meaning or capability with a concrete synthetic example. Requests help set priority; a consumer count is not a condition for considering a capability. A request is evidence, not a decision. It does not by itself change the standard. Anything that changes what conforming implementations must do goes through an [RFC](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/rfcs/README.md), which can start from this issue. See the [feedback guide](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/FEEDBACK.md).
 
         > [!WARNING]
         > **This issue is public.** Use synthetic or de-identified examples only.
@@ -30,7 +30,7 @@ body:
     id: existing
     attributes:
       label: Existing surfaces checked
-      description: The sections, calcs, profiles, modules or RFCs that come closest, and why they fall short. The roadmap's "Reuse before extending" note and the RFC index are good starting points.
+      description: The sections, calcs, profiles, modules or RFCs that come closest, and why they fall short. The growth guide and the RFC index are good starting points.
 
   - type: dropdown
     id: layer
@@ -39,7 +39,7 @@ body:
       options:
         - "Format: a new or changed document field (needs an RFC)"
         - "Protocol: calc, validation, edit or conformance behavior (needs an RFC)"
-        - "A module: asset class, pack or manifest"
+        - "An official builtin asset class or a third-party module"
         - "@uwmd/core library API or the uwmd CLI"
         - "Another package (verify, excel, report, lake, signing, batch)"
         - "A tool (viewer, editor, VS Code extension, docs site)"

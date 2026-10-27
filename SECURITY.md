@@ -28,9 +28,10 @@ re-send the report — your message may have been lost.
 
 **In scope** — issues we will treat as security vulnerabilities:
 
-- `@uwmd/core` (parser, validator, renderer, calc engine, editor,
-  block writers, CLI). Anything in `packages/uwmd-core/`.
-- The reference web viewer in `tools/web-viewer/`.
+- `@uwmd/verify` (parser, validator, calc evaluator, packs, receipts,
+  integrity and modules) and `@uwmd/core` (starter library, renderer,
+  editor and block writers), plus the CLI and other published packages.
+- The reference web viewer and editor in `tools/web-viewer/` and `tools/web-editor/`.
 - The conformance runner (`scripts/run-conformance.mjs`) and the
   schema validator (`scripts/validate-schemas.mjs`).
 - Any future tool published from this monorepo.

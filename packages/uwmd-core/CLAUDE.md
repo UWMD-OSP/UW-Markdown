@@ -2,8 +2,8 @@
 
 The starter toolkit, built on [`@uwmd/verify`](../uwmd-verify/CLAUDE.md) (the
 reference implementation of the standard, RFC 0083). Core depends on verify at
-an exact version and re-exports its current surface. Follow the owner rule at
-the top of the root AGENTS.md/CLAUDE.md; there is no prelaunch API-retention gate. Deep reference:
+an exact version and re-exports its current surface. Follow the prelaunch policy
+in the root AGENTS.md; there is no prelaunch API-retention gate. Deep reference:
 [`docs/wiki/03-core-library.md`](../../docs/wiki/03-core-library.md). See also
 the root [`CLAUDE.md`](../../CLAUDE.md).
 
@@ -13,14 +13,14 @@ the root [`CLAUDE.md`](../../CLAUDE.md).
   the starter exports. Export new starter symbols here (and in `browser.ts` if
   browser-safe); new standard symbols go in verify's `index.ts`.
   `surface.test.ts` checks current verifier re-exports and intentional wrapper
-  bindings. The owner rule retires the frozen4.0.x export-superset gate.
+  bindings.
 - Three names shadow verify's on purpose: `evaluateCalc` and
   `evaluateModuleCalculations` (`calc-display.ts`, which adds `display`), and
   `issueReceipt` (`receipt-engine.ts`, which defaults the `issuer` to
   `@uwmd/core@<CORE_VERSION>`; the engine stays `@uwmd/verify`, the code that
   computes). Core code that issues receipts imports the wrapper.
-- `editor.ts` / `renderer.ts` / `report.ts` / `compactor.ts` / `init.ts` —
-  Tier 2 editing and rendering.
+- `editor.ts` / `renderer.ts` / `report.ts` / `init.ts` —
+  starter editing and rendering.
 - `runner.ts` — supersede-aware block writer (`writeAgentBlock`; re-exports
   `buildMeta`, which is verify's).
 - `starter-protocol.ts` — the starter protocol tables (number formats, badges,
