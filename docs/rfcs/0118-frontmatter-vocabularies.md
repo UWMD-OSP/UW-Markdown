@@ -13,12 +13,13 @@ affects:
 
 # RFC 0118: Refuse closed frontmatter values outside their vocabularies
 
-> **Accepted by the owner, 2026-10-22 (second set).** Extend the same checks to
-> `status` and `recommendation`, as expressly ruled. Origin: owner ruling of 2026-10-22 (5), taking
-> option 1 on bug bash finding #492: an out-of-vocabulary value is an error, as
-> other closed vocabularies are. `uwmd init` already refuses such values (#503).
-> This RFC adds the validation rule, which changes what validation reports, so
-> it is normative.
+## Resolution
+
+The UWMD maintainers accepted closed-vocabulary validation for frontmatter on
+2026-10-22, including `status` and `recommendation`. Out-of-vocabulary values
+are errors, consistent with other closed vocabularies and the existing
+initialization refusal (#503). This resolves the missing validation reported
+in #492.
 
 ## Summary
 
@@ -73,7 +74,7 @@ Python validator; the cases. `uwmd init` already refuses both (#503).
 
 ## Owner extension, 2026-10-22
 
-The owner accepted the RFC and directed the same vocabulary checks for
+The UWMD maintainers accepted the RFC and directed the same vocabulary checks for
 `status` and `recommendation`. `INVALID-STATUS-001` and
 `INVALID-RECOMMENDATION-001` are errors at their frontmatter fields. Status
 admits `draft`, `in_progress`, `complete`, `flagged`, `archived`; recommendation

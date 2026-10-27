@@ -162,7 +162,7 @@ cash_reference.py    fa53dd358bcbe35f65b11ee206cb6d0295f2a34e53ed1b286e405e586e9
 cash_candidates.mjs  8d78252349a7744f5c9d25ebc3343da1768de5aa903c003acaf6dbf16b41572c
 ```
 
-**Proposed integration checkpoint, not completed CI:** run the frozen first-wave
+**Proposed integration revision, not completed CI:** run the frozen first-wave
 and cash commands independently on the supported Node 20/22/24 runtime lines and
 Python across Linux, Windows and macOS; record exact versions, OS, architecture,
 input hashes and counts. Reuse these frozen expected bytes without regeneration.

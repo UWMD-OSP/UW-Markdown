@@ -13,7 +13,7 @@ affects:
 
 # RFC 0114: Record the area measurement standard behind per-area metrics
 
-> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0113 (#476) and RFC 0114 (#477) accepted as drafted.").
+> **Accepted by the UWMD maintainers, 2026-10-21, as drafted** (owner: "RFC 0113 (#476) and RFC 0114 (#477) accepted as drafted.").
 > Origin: issue #343 finding M10, left open by the
 > metric variants table in `spec/metrics/README.md` ("whether to record the area
 > measurement standard"). It adds an optional, validated member, so it is

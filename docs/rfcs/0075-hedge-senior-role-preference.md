@@ -222,7 +222,7 @@ Against the implementation before this RFC, every case fails except
 
 **Accepted 2026-10-06; implemented 2026-10-09; released in core/CLI 2.19.0
 with Protocol 2.23.0.** The RFC answers issue #266, an adopter report, and
-was implemented in the same pull request; the owner accepted it by merging
+was implemented in the same pull request; the maintainers accepted it by merging
 that pull request, PR #276, on 2026-10-06. The [Decisions](#decisions) D1-D4
 are the accepted contract. The unresolved question above is answered by
 [RFC 0076](0076-hedge-checks-under-refused-selection.md).

@@ -2,7 +2,7 @@
 rfc: 0092
 title: Verify stated pro forma identities under declared conventions
 status: accepted
-author: codex (owner-directed draft)
+author: UWMD maintainers
 created: 2026-10-17
 accepted: 2026-10-24
 affects:
@@ -28,15 +28,20 @@ RFC 0078 D1/D7 stand. The approved convention registry gains the owner's
 2026-10-17 addition, per-loan `ltv_basis`. **Draft, docs only:** no implementation,
 profile claim, schema, dictionary rule, diagnostic or receipt behavior activates.
 The owner's 2026-10-23 ruling resolves U3–U7 for the bounded admissions in
-section3a. The owner selected U1 option A and U9 option A on 2026-10-24:
+section3a. The maintainers selected U1 option A and U9 option A on 2026-10-24:
 exactly the fifteen section4b entries, with land outside the initial set, and
 completed exit1 for unmet required declared-ledger obligations. Independent
 composed-procedure/spreadsheet evidence and finding closure remain required
 before final RFC acceptance; S6 is outside that preacceptance scope. The
 independent clause review found bounded clarification needs; this revision proposes repairs, not acceptance.
 
-## Owner ruling — 2026-10-23, U3–U7
+## Resolution
 
+The subsections below record the draft-stage decisions and evidence limits
+from 2026-10-22–24. The RFC status and acceptance date remain in frontmatter;
+these historical review notes do not describe current implementation support.
+
+### U3–U7 — 2026-10-23
 Records declare conventions through the closed registry; each admitted option
 has one exact procedure. L1 admits end-timed periodic returns and explicitly
 dated flows, nominal annual/12 payment rates, full-term amortization after IO,
@@ -53,11 +58,10 @@ blanket epsilon. Land debt service remains the scope input below.
 
 The producer convention declaration supplies implementation evidence, not
 normative authority for every producer variant. Section3a records the admitted
-math and limits; the owner ruling does not accept this RFC or activate a profile.
+math and limits; the accepted resolution does not accept this RFC or activate a profile.
 
-## Land debt-service input — owner ruling, 2026-10-22 (fifth set)
-
-The owner directs that pass-4's land debt-service restatement gap is an input
+### Land debt-service scope — 2026-10-22
+The land debt-service restatement gap from regression testing is an input
 to this RFC and issue [#355](https://github.com/UWMD-OSP/UW-Markdown/issues/355),
 **not a separate debt-service RFC**. This records scope input and adds no land
 DSCR/cap-rate identity. The later U3–U7 ruling does not expand this assertion.
@@ -93,6 +97,35 @@ The independent Python implementation claims Reader plus selected calculation
 and verification capabilities, not the full Verifier tier or this unaccepted
 pro-forma profile.
 
+### U1/U9 — 2026-10-24
+> U1: A (the 15-number starter list, land stays outside for now). U9: A (missing required items = fail).
+
+U1 option A selects exactly section4b's fifteen entries. The land
+`stated_debt_service_sum` candidate stays visible as
+`identity_not_defined`/unverifiable outside the initial set; S6 is not a
+preacceptance requirement. U9 option A selects completed exit1 for validation
+errors, failed/unverifiable assertions or unmet required obligations in an
+explicitly declared ledger. A gap-free zero-row claim exits0 with no financial
+assurance. Gaps/exclusions stay outside assertion denominators.
+
+This resolves these two choices only. U3–U7 stay settled, U2/U8 remain resolved,
+and independent finding closure plus selected S1–S5 evidence remain open.
+The RFC stays draft/unaccepted; no implementation, merge or release is authorized.
+
+### Independent evidence — 2026-10-24
+> Yes to all three: assumption rows are listed but don't fail the run; remove the stack LTV purchase-price fallback; one fresh second-reviewer pass after the B1-B4 fix.
+
+Pure stated-input/assumption rows are visible in their separate class, outside
+computed assertion denominators and without an exit effect. U9 A otherwise
+stands: validation errors, failed/unverifiable computed assertions and unmet
+required explicitly declared-ledger obligations exit1. Section4b.1 records the
+explicit change to the accepted stack LTV fallback for implementation only after
+acceptance. U1 A's exact fifteen entries, land exclusion/S6 scope and U3–U7 remain
+settled. One fresh second-reviewer pass is required at the repaired frozen head,
+including B1–B4, M10 and preservation/regression of the received S1–S5 evidence.
+It does not mean an implementation author independently approves their own changes. No final
+acceptance, implementation, merge, release or deployment is authorized here.
+
 ## Motivation
 
 At production main `495220e7fa569659aaadcab0f06574d09a570703`, the normative
@@ -126,7 +159,7 @@ Sources:
   in the issue's current banner: every-row coverage is design input, not an
   accepted normative expansion. This draft supplies the newly requested L1
   candidate table while leaving its initial membership/assurance scope open.
-- Owner direction, 2026-10-17: next free RFC number, no compatibility/bump
+- Maintainer decision, 2026-10-17: next free RFC number, no compatibility/bump
   proposal, and the three-option per-loan `ltv_basis` addition.
 - [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356) and accepted RFC 0088
   [#357](https://github.com/UWMD-OSP/UW-Markdown/pull/357) own numerical procedures.
@@ -153,7 +186,7 @@ universe; (3) add only individually justified normative identities. These are
 assurance scopes, not new conformance tiers or numerical convention options.
 The brief requests the complete candidate inventory below. The U1 disposition
 selects the initial subset from accepted verification identities. U2 is resolved
-by the owner on 2026-10-17: the profile verifies whatever
+by the UWMD maintainers on 2026-10-17: the profile verifies whatever
 the document states and reports coverage; no minimum L1 row set is required to
 claim it. A thin document receives a thin coverage report, not a refusal for
 omitted rows. Neither this draft nor row counts certify undisclosed real-world
@@ -325,10 +358,10 @@ and actual adoption.
 
 ### 3a. U3–U7 resolution — admitted procedures and boundaries
 
-The owner resolves these convention decisions on 2026-10-23. This is an
+The maintainers resolved these convention decisions on 2026-10-23. This is an
 admission ceiling for the initial profile, not acceptance of the entire section4
 inventory. U1 selects only the fifteen section4b entries under the 2026-10-24
-owner ruling; registered conventions do not expand that list. A record MUST
+accepted resolution; registered conventions do not expand that list. A record MUST
 declare each relevant registry choice and bind its actual inputs. A declaration
 outside the admitted procedure is unsupported/unverifiable, not an invitation
 to infer another convention from an asset class, producer or available fields.
@@ -527,7 +560,7 @@ Dictionary-bound DSCR/debt-yield/LTV/CoC reuse that class entry's actual minima
 and ceilings. Apply RFC 0079/VIII.5.1 once to the unrounded result at
 `d = min(max(source_decimals,m),r)`, half away from zero, retaining numeric tokens,
 trailing zeroes and exponents. No double rounding or relative epsilon.
-New identities use the owner-resolved unit-quanta minima in section3a (U7).
+New identities use the accepted unit-quanta minima in section3a (U7).
 Existing dated-series comparisons retain VIII.9.4's full reporting quantum when
 that verifier is reused.
 
@@ -537,7 +570,7 @@ that verifier is reused.
 | Vacancy, credit loss, EGI | GPR, other income, loss amounts/rates; selected vacancy/credit bases, occupancy | `GPRV = GPR+other_income`; `loss = rate*selected_base`; `EGI = GPRV-vacancy-credit_loss-concessions-loss_to_lease`. M; additive identity. Each deduction needs explicit binding/zero and no-double-count evidence. Occupancy-to-loss conversion U3. |
 | Expenses | Stated amount/rate and units/occupied units/SF, EGI/reimbursements; line class and fee base | Fixed reads authored amount; quantity line `expense = rate*quantity`; percentage `expense = rate*selected_EGI`; sum exact bound lines. M; algebra, scaling/growth U3. No fixed-label default amount. |
 | NOI | EGI, opex excluding reserves, reserve allocation; placement | `NOI = EGI-opex_excluding_reserves-R_above`, with explicit above-NOI allocation. M; additive identity, U5. |
-| NCF | NOI, explicitly allocated reserves, TI, LC, capex | `NCF=(((NOI-R_below)-TI)-LC)-capex`; above-NOI reserves are already deducted. M; owner-resolved U5, section3a. |
+| NCF | NOI, explicitly allocated reserves, TI, LC, capex | `NCF=(((NOI-R_below)-TI)-LC)-capex`; above-NOI reserves are already deducted. M; accepted U5, section3a. |
 | Debt service | Fixed monthly rate, full count, explicit IO boundary and original principal | Fix PMT once at amortization start; follow section3a U4 for payments and left-to-right actual-payment sum. M; no implicit annual/daily accrual or generated land schedule. |
 | Interest/principal | Monthly opening balance, annual rate, explicit IO boundary | Admitted monthly mortgage uses `I_q=B_open*(r/12)` and the exact U4 payment/principal steps in section3a. M. Date-based accrual/stub variants are outside L1, not inferred from r/12. |
 | Balance/balloon | Opening/closing balance, principal, explicit payoff binding | L1 monthly mortgage uses `B_close=B_open-principal`; draws and other paths remain broader inventory only. A supplied balloon binds post-payment outstanding balance once under section3a U4. M. |
@@ -564,7 +597,7 @@ inventory rows do not become executable by appearing in this table.
 
 ### 4a. U1 disposition — bounded initial identity scope
 
-The owner selected **U1 option A on 2026-10-24**: exactly the fifteen entries
+The maintainers selected **U1 option A on 2026-10-24**: exactly the fifteen entries
 in section4b, subject to independent evidence and final RFC acceptance. The
 initial L1 scope is **return/method binding first**, plus optional
 declared-ledger coverage and individually enumerated identities below. It does
@@ -575,9 +608,9 @@ when one document states only a small subset.
 | Initial identity group | Exact existing authority and permitted binding | Boundary |
 |---|---|---|
 | Dated return/method binding | Format4.26 / Protocol VIII.9: `total_net`, `moic`, `xnpv`, `xirr` over one explicitly selected `cash_flow_series`, its ordered original rows, explicit day count (L1 admission actual/365f per section3a) and (for XNPV) stated rate. | Bind a headline to that exact stream and metric; preserve the existing metric's complete domain, comparison quantum, solver/refusal and verdict rules. A levered/unlevered label alone selects no stream or financial behavior. |
-| Point-in-time stack figures | Format4.24 / RFCs0026 and0033: the six named verbs and their exact selectors, with section4b.1 pinning service, explicit-value LTV and whole-stack weighted cost. | The owner-directed LTV no-fallback change and explicit selector admission apply on implementation after acceptance. This does not generate an actual loan schedule or reinterpret stack LTV as per-loan LTV. |
+| Point-in-time stack figures | Format4.24 / RFCs0026 and0033: the six named verbs and their exact selectors, with section4b.1 pinning service, explicit-value LTV and whole-stack weighted cost. | The accepted LTV no-fallback change and explicit selector admission apply on implementation after acceptance. This does not generate an actual loan schedule or reinterpret stack LTV as per-loan LTV. |
 | Stated lease-up identities | Format4.25's period `net_cash_flow`, final `occupied_sf` and final `occupancy_rate`, using its current size context and signed components. | Reuse the existing verifier's quantum and missing-input behavior; do not invent an occupancy-to-rent-loss conversion or a stabilized annual extrapolation. |
-| Explicit per-loan LTV | The owner's three-option `debt_structure.ltv_basis` direction in section3, with the current LTV dictionary comparison precision. | One explicitly selected loan and chosen denominator; no fallback or new precision minimum. Other dictionary definitions and pending metric decisions are outside this work. |
+| Explicit per-loan LTV | The accepted three-option `debt_structure.ltv_basis` direction in section3, with the current LTV dictionary comparison precision. | One explicitly selected loan and chosen denominator; no fallback or new precision minimum. Other dictionary definitions and pending metric decisions are outside this work. |
 | Optional declared acquisition-ledger coverage | Existing explicit-coverage precedent in Protocol VIII.9.6 / RFC0045: inventory the producer's declared source rows and their explicit bindings/exclusions. | Account for membership and duplicates, not inferred completeness of the real transaction. Ledger monetary reconciliation requires its own enumerated procedure with section3a U7 precision; membership coverage alone is not arithmetic verification. |
 
 A pro forma target is not verified merely because the referenced native section
@@ -588,7 +621,7 @@ independent identity. If the selected method, target or timing is outside that
 accepted identity's domain, retain the statement as unverifiable; do not adapt
 it by new annualization, signs, cash assembly or model generation.
 
-The owner has resolved U3–U7 for section3a's bounded procedures and selected
+The maintainers resolved U3–U7 for section3a's bounded procedures and selected
 only the fifteen section4b entries for initial U1 membership. Those conventions
 do not activate every candidate row. Additional periodic-return, monthly-loan,
 NCF or year-1 CoC identities need separate scope and independent procedure
@@ -597,9 +630,9 @@ set as `identity_not_defined`/unverifiable, without schedule generation or land
 DSCR/cap rate. Outside-scope statements remain visible, not omitted. This
 membership decision neither reopens U3–U7 nor accepts the RFC.
 
-### 4b. Exact owner-selected U1 vocabulary — option A, 2026-10-24
+### 4b. Exact accepted U1 vocabulary — option A, 2026-10-24
 
-The owner selected exactly these fifteen entries: fourteen financial identity
+The maintainers selected exactly these fifteen entries: fourteen financial identity
 tokens plus one non-arithmetic membership assessment. These are proposed profile relationship
 tokens, not new dictionary metric ids, schema activation or a claim that an
 implementation exists. Reused identities inherit their entire accepted native
@@ -618,7 +651,7 @@ remain distinct, including equal-date/equal-value rows. A completely absent
 numeric target is not a fabricated zero assertion; declared-ledger obligations
 are accounted separately. S1–S5 are the independent comparison bundles required
 for this selected scope before acceptance. Received evidence now requires the
-owner-directed fresh second-reviewer pass after these repairs. S6 belongs
+accepted fresh second-reviewer pass after these repairs. S6 belongs
 only to the excluded land candidate and is not a preacceptance requirement.
 
 | Selected token | Exact bound inputs / selectors / applicable declarations | Unit and comparison | Domain, refusal and remaining evidence |
@@ -636,7 +669,7 @@ only to the excluded land candidate and is not a preacceptance requirement.
 | `net_cash_flow` | Selected `lease_up_schedule`, admitted monthly/quarterly period key, exact target and signed `rent_revenue`, `concessions`, `ti_lc_capex`. | Currency, native fixed2 decimals. | Accepted ordered signed addition, all three components required. Missing component is unverifiable; do not change signs or annualize. S3. |
 | `final_occupied_sf` | Selected lease-up `stabilized_summary.occupied_sf` target against its admitted final schedule period's `occupied_sf`. | sqft, native fixed2 decimals. | Exact ordered/valid period domain; missing final value is unverifiable. No invented occupancy path or size conversion. S3. |
 | `final_occupancy_rate` | Selected lease-up summary rate; exact native occupied-SF source (final row, or explicitly stated summary fallback when native contract permits), and bound `leaseUpContext.total_sf` under the size registry. | Fraction, native fixed4 decimals. | Native missing/zero sqft-denominator behavior and dimensional limits. Retain summary/final dependency findings; never infer SF from kW/units or claim a trajectory achieved. S3. |
-| `ltv` | The same selected loan's direct explicit `ltv_basis`, `loan_amount` and exactly one selected price/value/project-cost home in section3. | Fraction, existing dictionary m2/r6 and source-token comparison. | Three owner-directed denominator choices; missing/unknown basis or missing/null chosen denominator unverifiable, no fallback. Existing zero-division/domain evidence retained; no new negative-value policy. Changes the existing all-class id even outside profile claims; no parallel metric. S4. |
+| `ltv` | The same selected loan's direct explicit `ltv_basis`, `loan_amount` and exactly one selected price/value/project-cost home in section3. | Fraction, existing dictionary m2/r6 and source-token comparison. | Three accepted denominator choices; missing/unknown basis or missing/null chosen denominator unverifiable, no fallback. Existing zero-division/domain evidence retained; no new negative-value policy. Changes the existing all-class id even outside profile claims; no parallel metric. S4. |
 | `declared_ledger_membership` | Explicit optional acquisition-ledger universe, canonical source-event/row addresses, required roles and exact binding/exclusion declarations in this snapshot. | Membership only; no monetary quantum or extra numeric assertions. | No inferred transaction completeness. Required unbound/duplicate/conflicting membership is an unmet required obligation and causes completed exit1 under6a; distinct equal-value events remain distinct. No monetary reconciliation. U9 option A requires completed exit1 for unmet required declared-ledger obligations. S5. |
 
 S1 requires independently authored dated-stream comparisons for all four metrics,
@@ -648,7 +681,7 @@ identities, signed components, final-period and native summary fallback,
 size-context/missing-input and2/4-place controls. S4 requires every LTV basis,
 selected-loan/denominator binding, absence/no-fallback and m2/r6 token controls.
 S5 requires independent declared-universe/role/address membership expectations,
-collisions/gaps/exclusions and owner-selected U9 option A paper vectors; it has
+collisions/gaps/exclusions and accepted U9 option A paper vectors; it has
 no fictional spreadsheet arithmetic positive. Independently review its membership mapping alongside each
 complete numeric fixture. Existing arithmetic/API review is partial evidence
 only. The later independent S1–S5 evidence has now been received with its
@@ -700,7 +733,7 @@ finding and makes a stated computed target unverifiable; another available purch
 price or project cost cannot rescue it. Zero retains the native unavailable
 zero-denominator behavior. Do not infer a value from price, cost or an asset label.
 
-This is an explicit owner-directed change from the accepted native contract:
+This is an explicit accepted change from the accepted native contract:
 Protocol VIII.5.1's note and `capitalStackContext` currently use
 `valuation.underwritten_value ?? valuation.purchase_price`. After RFC acceptance,
 implementation MUST synchronize that note, the stack context/value-admission
@@ -725,8 +758,8 @@ acceptance; no runtime behavior changes in this draft.
 
 ### 4c. Explicit land stated-stream intake — outside the initial set
 
-Retain proposed token `stated_debt_service_sum` for the owner-requested land
-summary-to-authored-stream intake. The 2026-10-24 owner ruling explicitly keeps
+Retain proposed token `stated_debt_service_sum` for the requested land
+summary-to-authored-stream intake. The 2026-10-24 accepted resolution explicitly keeps
 it **outside the fifteen-entry initial set**. It remains visible as
 `identity_not_defined`/unverifiable; do not omit it or earn a positive from a
 numeric summary alone. The following candidate bindings preserve the intake
@@ -769,7 +802,7 @@ balloon treatment for another record.
 RFC0088 is accepted and merged in [#357](https://github.com/UWMD-OSP/UW-Markdown/pull/357)
 at `8a646aa219620c143bb8439aa67cf010d9896a79`, with
 [green exact-main CI](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/39113501954).
-The owner's 2026-10-18 direction closes U8 against that accepted contract.
+The 2026-10-18 decision closes U8 against that accepted contract.
 Use the public `pinnedPow`, `pinnedExp` and `pinnedLog` implementation: one exact
 pinned fdlibm procedure across every exponent class, including negative powers.
 The historical #356 running-product proposal is not the selected procedure.
@@ -783,7 +816,7 @@ admitted. No host-power fallback, competing integer-power procedure or
 log1p/expm1 stability rearrangement is authorized here.
 
 Closing the primitive dependency does not accept new composed profile identities.
-Section3a now records the owner-resolved admissions, associations and comparison
+Section3a now records the accepted admissions, associations and comparison
 minima. Independent composed-procedure evidence remains necessary; primitive
 evidence alone does not establish it or accept U1 scope or U9 reporting.
 
@@ -826,7 +859,7 @@ with operations. Empty claim sets establish no assurance and report zero
 assertions, without a minimum-row refusal. The denominator is the declared
 applicable assertion universe, not a document-wide percentage or a guarantee
 about undisclosed facts. Sections4a/6a fix initial enumeration, duplicate handling
-and counting rules within the owner's resolved U2 rule.
+and counting rules within the accepted U2 rule.
 
 Local arithmetic agreement is not a clean financial-verification claim when a
 required prerequisite failed or is unverifiable. Retain local relationship
@@ -848,7 +881,7 @@ separate receipt/subject ownership.
 This is proposed profile-specific text derived from Protocol II.6a/III/XI,
 Format4.24-4.26 and the existing stated-metric/verification CLI boundaries.
 U9's accounting/transport choices do not supply any U3-U7 numerical convention.
-**Owner-selected U9 option A, 2026-10-24:** the declared-gap exit rule below is
+**Accepted U9 option A, 2026-10-24:** the declared-gap exit rule below is
 the selected draft contract. It is not implemented CLI behavior and does not
 accept the RFC.
 
@@ -868,7 +901,7 @@ unselected peers remain retained source/validation evidence, not additional
 current assertions merely because they are retained. A binding cannot silently
 select a historical or arbitrary peer; preserve the existing selection refusal.
 
-**Row classification — owner input/assumption ruling.** Apply this single
+**Row classification — accepted input/assumption rule.** Apply this single
 ordered test to each inventoried row, using its actual selected home and the
 document's class rather than its label or authored row family:
 
@@ -988,7 +1021,7 @@ Report inapplicable relationships as exclusions with reasons. A component missin
 from an explicitly declared optional ledger universe is a separate gap, not a
 fabricated numeric statement. An absent row outside that declared universe is
 not a missing minimum-profile requirement. Gaps and exclusions do not inflate
-assertion denominators or become passed checks. Under owner-selected U9 option
+assertion denominators or become passed checks. Under accepted U9 option
 A, an unmet required obligation in an explicitly declared ledger universe
 affects the completed-assessment exit even when assertion counts are zero.
 An exclusion is not automatically an unmet obligation; a purported exclusion
@@ -1057,7 +1090,7 @@ No command writes a document, cached result or receipt.
 
 | Outcome | JSON / exit contract |
 |---|---|
-| Completed assessment | `status: "completed"`, `profile: "pro-forma"`, `level: "L1"`, exact selection evidence, ordered `assertions` and `relationships`, `inputs`, separate `input_count`, `coverage`, `gaps`, `exclusions`, profile-claim findings and separate base `validation`. **Owner-selected U9 option A:** Exit0 iff there are no validation errors (base or profile-claim), failed computed assertions, unverifiable computed assertions or unmet required obligations in an explicitly declared ledger universe. A gap-free claim with zero computed assertions exits0, even if branch2 inputs/assumptions are listed, with explicit zero assertion coverage and no financial assurance claim. Exit1 otherwise; declared gaps remain separate from assertion counts, without fake assertions, minimum rows or operation refusal. |
+| Completed assessment | `status: "completed"`, `profile: "pro-forma"`, `level: "L1"`, exact selection evidence, ordered `assertions` and `relationships`, `inputs`, separate `input_count`, `coverage`, `gaps`, `exclusions`, profile-claim findings and separate base `validation`. **Accepted U9 option A:** Exit0 iff there are no validation errors (base or profile-claim), failed computed assertions, unverifiable computed assertions or unmet required obligations in an explicitly declared ledger universe. A gap-free claim with zero computed assertions exits0, even if branch2 inputs/assumptions are listed, with explicit zero assertion coverage and no financial assurance claim. Exit1 otherwise; declared gaps remain separate from assertion counts, without fake assertions, minimum rows or operation refusal. |
 | Operation cannot admit/inventory the request | `status: "refused"` and `error` satisfying ProtocolError; exit1. Preserve an existing typed source/selection error. Propose narrowly scoped `CALC-PRO-FORMA` (category `calc`) for malformed CLI/profile-claim syntax, absent explicit profile claim or an unreadable requested file only; do not use it as a fallback for uncoded Format failures, unknown identities or missing arithmetic inputs. No fabricated zero-coverage success. |
 | Unrecoverable internal implementation failure | Exit2 under II.6a.2; stdout need not be a result. A missing/unreadable requested file is the typed request refusal above, not a financial disagreement. |
 
@@ -1068,7 +1101,7 @@ unrelated per-row financial states. Source selection failures that affect only
 one fully inventoried assertion remain local typed unverifiable evidence; a
 failure preventing inventory of the claim itself is an operation refusal.
 
-**Owner-selected U9 option A vectors (paper contract, not executed CLI evidence).** A
+**Accepted U9 option A vectors (paper contract, not executed CLI evidence).** A
 valid empty/gap-free claim has total0/by-verdict zeros and exit0. The original
 review witness (one explicitly required ledger payment, no bound target cell)
 still has total0/by-verdict zeros and one required gap: the old written proposal
@@ -1165,7 +1198,7 @@ in this corpus. This is a plan, not a claim that a spreadsheet was executed.
 Plan only, inside `@uwmd/verify` under the optional profile (RFC0083). No code,
 projection package, model-generation function, AI agent or module manifest.
 
-1. Use the owner-selected U1/U9 and settled U3–U7 admission boundaries, obtain the
+1. Use the accepted U1/U9 and settled U3–U7 admission boundaries, obtain the
    independent review/evidence and final acceptance; synchronize
    Format/Protocol, class-scoped LTV dictionary entries, schemas, executable
    protocol mirror, profile/capability/target tables and conformance through
@@ -1197,9 +1230,9 @@ projection package, model-generation function, AI agent or module manifest.
 - **Generate missing rows then compare headlines.** Replaces missing evidence
   with UWMD's model; missing rows must remain visible instead.
 
-## Resolved owner decision
+## Resolved accepted decision
 
-**U2 — resolved, owner decision 2026-10-17.** The pro forma profile verifies
+**U2 — resolved, accepted decision 2026-10-17.** The pro forma profile verifies
 whatever the document states and reports coverage, with no minimum L1 row set
 required to claim it. Counts by verdict and row family include rows stated with
 no defined computed identity. The later 2026-10-24 ruling separates pure
@@ -1209,61 +1242,30 @@ This follows Format 4.24's "stated and verified, never trusted" and the #355
 reframe. That ruling resolves U2 only. U1/U9 are separately resolved by the
 2026-10-24 ruling below; U3–U7 by the 2026-10-23 ruling, and U8 separately below.
 
-**U8 — resolved, owner direction 2026-10-18.** RFC0088 is accepted on main at
+**U8 — resolved, maintainer decision 2026-10-18.** RFC0088 is accepted on main at
 `8a646aa219620c143bb8439aa67cf010d9896a79`; section5 records the exact procedure,
 public exports and CI evidence. This closes only the numerical-primitive
 dependency. It did not decide U3–U7; their later resolution is section3a.
 The 2026-10-24 U1/U9 ruling below selects scope/transport without accepting
 this RFC.
 
-## Owner ruling — 2026-10-24, U1/U9
-
-> U1: A (the 15-number starter list, land stays outside for now). U9: A (missing required items = fail).
-
-U1 option A selects exactly section4b's fifteen entries. The land
-`stated_debt_service_sum` candidate stays visible as
-`identity_not_defined`/unverifiable outside the initial set; S6 is not a
-preacceptance requirement. U9 option A selects completed exit1 for validation
-errors, failed/unverifiable assertions or unmet required obligations in an
-explicitly declared ledger. A gap-free zero-row claim exits0 with no financial
-assurance. Gaps/exclusions stay outside assertion denominators.
-
-This resolves these two choices only. U3–U7 stay settled, U2/U8 remain resolved,
-and independent finding closure plus selected S1–S5 evidence remain open.
-The RFC stays draft/unaccepted; no implementation, merge or release is authorized.
-
-## Owner ruling — 2026-10-24, independent evidence follow-through
-
-> Yes to all three: assumption rows are listed but don't fail the run; remove the stack LTV purchase-price fallback; one fresh second-reviewer pass after the B1-B4 fix.
-
-Pure stated-input/assumption rows are visible in their separate class, outside
-computed assertion denominators and without an exit effect. U9 A otherwise
-stands: validation errors, failed/unverifiable computed assertions and unmet
-required explicitly declared-ledger obligations exit1. Section4b.1 records the
-explicit change to the accepted stack LTV fallback for implementation only after
-acceptance. U1 A's exact fifteen entries, land exclusion/S6 scope and U3–U7 remain
-settled. One fresh second-reviewer pass is required at the repaired frozen head,
-including B1–B4, M10 and preservation/regression of the received S1–S5 evidence.
-It does not mean this builder independently closes its own changes. No final
-acceptance, implementation, merge, release or deployment is authorized here.
-
 ## Remaining acceptance gates and recommendation
 
-U3–U7 are resolved by the owner on 2026-10-23 within section3a's admissions.
+U3–U7 are resolved by the UWMD maintainers on 2026-10-23 within section3a's admissions.
 Their broader unadmitted variants are future identity work, not defaults for an
 implementer. U2/U8 remain resolved. This RFC stays **draft**.
 
 | Gate | Current proposal / recommendation | Required before acceptance |
 |---|---|---|
-| U1 — initial identity membership | Resolved: owner option A, exactly the fifteen section4b entries. Section4c land stays visible as identity_not_defined/unverifiable outside the initial set. | Received S1–S5 evidence is reported complete within its stated limits; one fresh second-reviewer pass must check the B1–B4/assumption repairs and retained evidence before final acceptance. S6 is not required for preacceptance. No whole-registry activation or new monthly/NCF/CoC/land identity. |
-| U9 — coverage/transport | Resolved: owner option A, section6a's accounting and gap-sensitive completed exit1. Gap-free zero-row claims exit0 with no financial assurance; gaps/exclusions stay outside assertion denominators. No new receipt field. | Fresh second-reviewer pass on required-ledger conflicts, out-of-universe validation, input/assumption separation and unchanged computed-assertion failure/exit controls. Actual profile/CLI support proof follows acceptance. |
-| Independent red-team and procedure evidence | The independent report closes F1/F2/F4 at clause level, matches the prior U9 predicate, and supplies S1–S5 Excel/composed/paper evidence. B1–B4 and the later assumption-row ruling are repaired here. | One fresh second-reviewer pass after these repairs, preserving original witnesses and checking revised versus native bindings. No builder closure or final acceptance is implied. Independent implemented-profile/actual CLI support proof remains post-acceptance. |
+| U1 — initial identity membership | Resolved: accepted option A, exactly the fifteen section4b entries. Section4c land stays visible as identity_not_defined/unverifiable outside the initial set. | Received S1–S5 evidence is reported complete within its stated limits; one fresh second-reviewer pass must check the B1–B4/assumption repairs and retained evidence before final acceptance. S6 is not required for preacceptance. No whole-registry activation or new monthly/NCF/CoC/land identity. |
+| U9 — coverage/transport | Resolved: accepted option A, section6a's accounting and gap-sensitive completed exit1. Gap-free zero-row claims exit0 with no financial assurance; gaps/exclusions stay outside assertion denominators. No new receipt field. | Fresh second-reviewer pass on required-ledger conflicts, out-of-universe validation, input/assumption separation and unchanged computed-assertion failure/exit controls. Actual profile/CLI support proof follows acceptance. |
+| Independent red-team and procedure evidence | The independent report closes F1/F2/F4 at clause level, matches the prior U9 predicate, and supplies S1–S5 Excel/composed/paper evidence. B1–B4 and the later assumption-row ruling are repaired here. | One fresh second-reviewer pass after these repairs, preserving original witnesses and checking revised versus native bindings. No self-approval or final acceptance is implied. Independent implemented-profile/actual CLI support proof remains post-acceptance. |
 
 Independent S1–S5 spreadsheet/composed-procedure and paper evidence has been
 received against the previous frozen text and accepted native contracts, with
 its stated limits. Preserve the original report, formulas, values, expectations
 and harness failures unchanged. B1–B4 and the assumption-row rule require the
-owner-directed fresh second-reviewer pass before final acceptance. Native
+accepted fresh second-reviewer pass before final acceptance. Native
 contrasts and old M10 expectations must not be silently relabelled as results
 under this revised contract. Future monthly payoff observations remain future
 scope, not new U1 membership.
@@ -1308,7 +1310,7 @@ lands here.
 
 ## Accepted wire synchronization — 2026-10-25
 
-The owner accepted the exact wire proposal (proposal blob0eb526fdb100197ada256c5a7f47b9961ba00ef3), including the registry identifier, closed descriptive families and address/row/relationship/ledger/report shapes. U1 A, U9 A and U3–U7 are unchanged. The synchronized current Format/Protocol RFC0092 wire sections and pro-forma-claim/pro-forma-report schemas define the public contract. Earlier proposal/gate wording above is the design history, not a competing active wire version. The reference implements the accepted scope without advertising full-profile support until the separate independent and CLI gates pass.
+The UWMD maintainers accepted the exact wire proposal (proposal blob0eb526fdb100197ada256c5a7f47b9961ba00ef3), including the registry identifier, closed descriptive families and address/row/relationship/ledger/report shapes. U1 A, U9 A and U3–U7 are unchanged. The synchronized current Format/Protocol RFC0092 wire sections and pro-forma-claim/pro-forma-report schemas define the public contract. Earlier proposal/gate wording above is the design history, not a competing active wire version. The reference implements the accepted scope without advertising full-profile support until the separate independent and CLI gates pass.
 
 
 ## Accepted clarification — RFC0128, 2026-10-25

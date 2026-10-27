@@ -15,7 +15,7 @@ affects:
 
 ## Resolution
 
-Accepted as drafted by the owner on 2026-10-22 (fourth set), including the
+Accepted as drafted by the UWMD maintainers on 2026-10-22 (fourth set), including the
 explicit grammar details and typed refusal of an invalid supplied clock.
 
 ## Contract
@@ -48,8 +48,8 @@ this RFC changes neither threshold nor financial math.
 
 | Question | Recommendation | Precedent |
 |---|---|---|
-| Date only? | Calendar-valid YYYY-MM-DD at UTC midnight | Owner ruling and existing strict calendar-date contracts |
-| Date-time zones? | Explicit Z or numeric offset; no local-time interpretation | Owner ruling; deterministic results across implementations |
+| Date only? | Calendar-valid YYYY-MM-DD at UTC midnight | Accepted resolution and existing strict calendar-date contracts |
+| Date-time zones? | Explicit Z or numeric offset; no local-time interpretation | Accepted resolution; deterministic results across implementations |
 | Precision and shortened time? | HH:mm with optional seconds and 1-3 fractional digits; exact milliseconds | Existing millisecond validation-clock comparison, without submillisecond rounding |
 | Invalid last_checked? | No DQ-05; retain structural owners | DQ-05 is a staleness test, not a new schema error |
 | Invalid explicit clock? | Typed refusal | An invalid clock cannot establish a verification claim |

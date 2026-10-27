@@ -14,7 +14,7 @@ affects:
 
 # RFC 0086: One purchase-price authority for data-center metrics, with the summary cross-checked
 
-> **Accepted by the owner, 2026-10-22, as drafted** (owner: "RFC 0086 (#500)
+> **Accepted by the UWMD maintainers, 2026-10-22, as drafted** (owner: "RFC 0086 (#500)
 > accepted as drafted."). Rewritten 2026-10-21 with a recommendation and its
 > StackUW impact on the owner's request. Origin: issue #343
 > finding M04 and bug bash finding #493. It changes a dictionary formula and adds

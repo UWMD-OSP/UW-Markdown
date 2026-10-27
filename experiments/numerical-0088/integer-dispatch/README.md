@@ -1,9 +1,9 @@
 # Actual procedure alternatives for RFC 0088
 
-**UNACCEPTED research and owner direction proposal.** This comparison specifies
+**Historical procedure comparison, not an accepted contract.** This comparison specifies
 three implementable designs and their missing evidence. No production evaluator,
 financial convention, conformance answer, dependency, version or receipt changes.
-The owner may choose an architecture without accepting RFC 0088. Algorithms A/B
+Architecture comparison is separate from RFC acceptance. Algorithms A/B
 and the fractional part of C are **not implemented or executed in this lab**.
 
 ## Recommendation and smallest decision
@@ -350,7 +350,7 @@ remain separate; 5.0 launch reservation and release authority are unchanged.
    against every affected current conformance case without rebaselining it.
 5. Independently execute TS/Python ports across supported runtime/OS/architecture
    rows, with versions/input/source hashes and retained failure logs. Current
-   Node18.0/20/22/24, three-OS focused CI is an integrator checkpoint; its results
+   Node18.0/20/22/24, three-OS focused CI is an integrator revision; its results
    must be recorded by the integrator, not inferred here. It cannot certify the
    still-unimplemented A/B/fractional parts. Measure browser/runtime cost and
    actual supported spreadsheet recalculation, not retained caches.
@@ -372,7 +372,7 @@ its `--test` CLI. It emits one success line after every frozen classification an
 result/trace agrees; nonzero exit retains failure. Freeze checks never overwrite
 existing expectations. Six new Python methods include the exact subnormal adapter
 hazard and hand-proved huge-exponent parity/operation bounds. Local observations
-are recorded with the commit checkpoint; proposed CI rows are not claimed here.
+are recorded with the commit revision; proposed CI rows are not claimed here.
 No prior numerical audit, old lab or full workspace suite is repeated.
 
 Actual local observation: Python **3.12.3**, Node **24.14.1**, Windows 11 build

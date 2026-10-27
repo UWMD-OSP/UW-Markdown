@@ -12,7 +12,7 @@ affects:
 
 # RFC 0115: Portable conformance subcommands for every Verifier obligation
 
-> **Accepted by the owner, 2026-10-22, as drafted** (owner: "RFC 0115 (#483) accepted as drafted, including D2 and D4.").
+> **Accepted by the UWMD maintainers, 2026-10-22, as drafted** (owner: "RFC 0115 (#483) accepted as drafted, including D2 and D4.").
 > Origin: the issue #354 inventory of what an
 > independent implementation needs for the Verifier tier. It adds subcommands
 > and capability flags to the conformance CLI protocol (Protocol §II.6a), so it

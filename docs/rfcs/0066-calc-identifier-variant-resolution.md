@@ -29,7 +29,7 @@ affects:
 Every other rule in the accepted contract follows from D1 and D2 under existing
 precedent. Those rules are listed under
 [Consequences of D1 and D2](#independent-verification-and-owner-decision-set-2026-10-02);
-none is a separate owner decision.
+none is a separate accepted decision.
 
 Drafted with AI assistance; reviewed by maintainers. An adopter's
 engine-exported documents and its issue report are requirements evidence, not
@@ -64,7 +64,7 @@ manifest or on each calculation is unresolved. Any implementation must change
 Excel workbook input extraction in the same change, so the workbook and the
 evaluator never select different blocks.
 
-## Independent verification and owner decision set (2026-10-02)
+## Independent verification and accepted decision set (2026-10-02)
 
 An independent review re-checked this diagnosis on `main` at `6ad146a`, the
 2.14.0 candidate. Everything was checked against built code, not prose.
@@ -126,7 +126,7 @@ choices:
 5. **One resolver.** `resolveRoleBlock` stays the only selection
    implementation.
 
-**Genuine owner decisions (the smallest set):**
+**Genuine accepted decisions (the smallest set):**
 
 | # | Decision | Recommendation | Why |
 |---|---|---|---|
@@ -386,7 +386,7 @@ Repository evidence:
   calculations whose author never considered it.
 
 On this evidence the draft recommends option B, the narrower and more
-composable layer. That is a recommendation only. No owner decision selects
+composable layer. That is a recommendation only. No accepted decision selects
 either layer, and the choice must be made before acceptance.
 
 Under either layer:
@@ -607,12 +607,12 @@ field is added on the layer chosen, with an optional
 ## Resolved questions
 
 Each question below was resolved on 2026-10-02. The original wording is kept.
-Each resolution says whether it is an owner decision (D1, D2) or a consequence
+Each resolution says whether it is an accepted decision (D1, D2) or a consequence
 of one under precedent.
 
 - **The layer for a declared role preference.** Manifest level (A) or per
   calculation (B). The evidence above leans toward B; the owner has not
-  decided. *Resolved by owner decision D2: per calculation.*
+  decided. *Resolved by accepted decision D2: per calculation.*
 - **Precedence between two preferences.** If both a calculation's declared
   role and a caller-supplied `sectionRoles` exist, which one wins.
   *Resolved as a consequence of D1 and D2: there is no caller `sectionRoles`,
@@ -629,7 +629,7 @@ of one under precedent.
 - **One code or two.** Whether `CALC-PERIOD-003`'s selection failure should be
   folded into `CALC-RESOLVE-002`, so one code covers "could not choose a
   block" everywhere. This draft leaves the period code alone to keep RFC 0041
-  fixtures frozen. *Resolved by owner decision D1: two codes.*
+  fixtures frozen. *Resolved by accepted decision D1: two codes.*
 - **How the workbook represents a refused input:** refusing the export, or an
   explicit error cell. *Resolved as a consequence of D1 under §VIII.2c and the
   parity invariant: an explicit `#VALUE!` cell for a refused input or metric.

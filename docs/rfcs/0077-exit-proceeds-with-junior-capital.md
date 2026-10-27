@@ -210,7 +210,7 @@ Out of scope, recorded so it is not mistaken for decided: which equity the
 ## Resolution
 
 **Accepted 2026-10-07; implemented 2026-10-09; released in core/CLI 2.19.0
-with Format 2.0; no Protocol change.** On 2026-10-07 the owner accepted D1-D6
+with Format 2.0; no Protocol change.** On 2026-10-07 the maintainers accepted D1-D6
 as recommended, with no decision changed, and directed implementation. PR #279
 carries the implementation and recorded the acceptance when it merged. The
 [Decisions](#decisions) table D1-D6 is the accepted contract.

@@ -14,17 +14,16 @@ affects:
 
 # RFC 0125: Verify data-center purchase price per stated rentable square foot
 
-## Owner ruling — 2026-10-22 (sixth set)
+## Resolution
 
-Accepted as drafted by the owner, D1–D5 stand as written.
-This PR records the ruling and implements the synchronized current contract.
+The UWMD maintainers accepted this contract on 2026-10-22. D1–D5 stand as
+written; the synchronized current contract is implemented.
 
 ## Summary
 
 Extend the existing `price_per_sqft` dictionary definition to `data_center`,
 using only explicit `property.rentable_square_feet`. Keep commissioned critical
-IT kW as primary size. **Accepted by the owner; implemented by this PR.** The sixth-set ruling accepts this contract.
-Recommendation: accept D1–D5 as written.
+IT kW as primary size. D1–D5 define the accepted contract.
 
 ## Motivation
 
@@ -93,7 +92,7 @@ changes. No land or other-class entry changes.
 | D2 | Binding | Existing price_per_sqft id and closed aliases | RFC 0099, no label inference |
 | D3 | Precision/null | $; round_to 2; minimum 2; positive_size_denominator | RFCs 0079/0100; same SF definition |
 | D4 | Size registry | Keep commissioned critical IT kW primary; add rentable_square_feet as an explicit secondary | RFC 0080 primary identity; RFC 0100 denominator lookup needs a registered size |
-| D5 | Example | Describe stated rentable SF as secondary; builtin commissioned kW remains primary; no numeric edits | Owner wording correction; RFC 0114 |
+| D5 | Example | Describe stated rentable SF as secondary; builtin commissioned kW remains primary; no numeric edits | Accepted wording correction; RFC 0114 |
 
 ## Current contract and versions
 

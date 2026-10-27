@@ -126,7 +126,7 @@ version treatment must be settled before adoption. Absent cash-flow sections
 and legacy unique-date sections behave unchanged. No migrations, inferred
 dates, new financial formulas, defaults or tolerance changes are introduced.
 
-### Version treatment selected by the owner
+### Version treatment selected by the UWMD maintainers
 
 Protocol §0.3 requires a bump for any normative required-behavior change.
 `conformance/README.md`, “Regenerating expected outputs,” requires a protocol
@@ -139,10 +139,10 @@ RFC 0061 was editorial (labels only); core 2.6.1 restored an existing required
 behavior without changing the protocol; RFC 0036 introduced normative behavior
 with a protocol minor. None determined this released contradiction. The
 CHANGELOG's older “Versioning” anchor referenced by VERSIONS does not currently
-exist. The version treatment was therefore an owner decision rather than an
+exist. The version treatment was therefore an accepted decision rather than an
 inferred policy.
 
-**The owner chose Protocol 2.17.1 as normative errata**, rather than 2.18.0 as a
+**The maintainers chose Protocol 2.17.1 as normative errata**, rather than 2.18.0 as a
 normative feature change. This explicitly acknowledges both the changed PS-02
 verdict and unique-date resolver behavior; it does not claim byte-identical
 results or automatic compatibility with both contradictory old requirements.
@@ -238,7 +238,7 @@ not change.
 
 ## Unresolved questions
 
-None for this reconciliation. The owner accepted the normative resolution, and
+None for this reconciliation. The UWMD maintainers accepted the normative resolution, and
 the 2.17.1 errata version is settled. Terminal settlement, reserve
 rollforward, levered assembly and any other protocol feature are excluded.
 
@@ -246,7 +246,7 @@ rollforward, levered assembly and any other protocol feature are excluded.
 
 - **Status.** Accepted 2026-09-24; implemented and released 2026-10-02 in
   core/CLI 2.14.0. The errata are Protocol 2.17.1 (see
-  [Version treatment selected by the owner](#version-treatment-selected-by-the-owner)),
+  [Version treatment selected by the UWMD maintainers](#version-treatment-selected-by-the-owner)),
   shipped within Protocol 2.18.0 together with RFC 0063. Format remains 2.0.
   No schema or public type changed.
 - **Decided.** The contract under [Proposed change](#proposed-change), as

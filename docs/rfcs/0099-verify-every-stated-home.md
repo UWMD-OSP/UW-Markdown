@@ -14,7 +14,7 @@ affects:
 
 # RFC 0099: Verify each dictionary metric wherever the document states it
 
-> **Accepted by the owner, 2026-10-20, as drafted** (owner: "RFC 0099 (#417) is
+> **Accepted by the UWMD maintainers, 2026-10-20, as drafted** (owner: "RFC 0099 (#417) is
 > accepted as drafted; implement it"). The Decisions table D1–D6 stands as
 > written. It changes what a Verifier owes, so it opened alone as a draft, and
 > the synchronized implementation follows in its own PR. Origin:
@@ -163,7 +163,7 @@ public symbol is added or removed.
 ## Alternatives considered
 
 - **One home** (retire the section copies or `quick_metrics`, refusing the
-  duplicate). The other consistent shape #416 offered. The owner chose "verify
+  duplicate). The other consistent shape #416 offered. The maintainers chose "verify
   every home". One home would also break every producer that writes the familiar
   section fields.
 - **Infer bindings from field names** (`*cap_rate*` → `cap_rate`). Rejected:

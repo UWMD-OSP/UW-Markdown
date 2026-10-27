@@ -24,16 +24,19 @@ Assess every retained physical block, followed by model-only additions, using
 RFC0090/0091's operation boundaries. Place a separate bounded shape pass after
 existing wrapper/nested-shape findings and before actors and required booleans.
 
-**Accepted by the owner, 2026-10-18,** in
+**Accepted by the UWMD maintainers, 2026-10-18,** in
 [#384](https://github.com/UWMD-OSP/UW-Markdown/pull/384). The synchronized
 Issue354 implementation ([#385](https://github.com/UWMD-OSP/UW-Markdown/pull/385))
 applies this accepted contract in TypeScript/Python, Format/Protocol and
 registry/schema annotations. It adds no capability claim. The predicates and
 operation boundaries below are unchanged from the reviewed text.
 
-> Owner, 2026-10-18: RFC 0093 (#384) is accepted as drafted at 0306d126: the three META-01 predicates exactly as listed, no generic fallback, META-02/03 unchanged.
+## Resolution
 
-> Owner decision (2026-10-18), #354 metadata shape: yes, allocate it. Open a bounded, docs-only RFC that amends the META-01 closed list with exactly three predicates: a late or misplaced _meta, a present but invalid or mismatched canonical _meta.section, and a required _meta.quality that is absent or not an object.
+The UWMD maintainers accepted the three `META-01` predicates at `0306d126`
+on 2026-10-18: late/misplaced `_meta`, present invalid/mismatched canonical
+`_meta.section`, and absent/non-object required `_meta.quality`. The bounded
+allocation preserves `META-02`/`META-03` and introduces no generic fallback.
 
 ## Motivation
 
@@ -45,10 +48,10 @@ retains the requirement as uncoded local evidence and returns a partial refusal;
 the current reference validator supplies only the existing missing-confidence
 warning. Neither result establishes complete validation of that requirement.
 
-The [latest Python checkpoint](https://github.com/UWMD-OSP/UW-Markdown/issues/354#issuecomment-6248041372)
+The [latest Python revision](https://github.com/UWMD-OSP/UW-Markdown/issues/354#issuecomment-6248041372)
 passes111 actual portable validation cases with parse-only discovery. This
 portable result does not allocate missing diagnostics or prove full admission.
-The packet and checkpoint are existing evidence, not new runs for this RFC.
+The packet and revision are existing evidence, not new runs for this RFC.
 Baseline: main `8a646aa219620c143bb8439aa67cf010d9896a79`;
 Python WIP `a3993a82e5259e3bf8af6fccf9c1c695d5189e5c`.
 
@@ -69,9 +72,9 @@ Joint authority:
 
 | Call | Accepted decision | Accepted precedent |
 |---|---|---|
-| D1: allocation | Extend META-01/error by only P1/P2/P3 below; category `validate` only when transported as a ProtocolError | Owner direction; existing ProtocolIII.6a/XI diagnostic and DTO boundary |
+| D1: allocation | Extend META-01/error by only P1/P2/P3 below; category `validate` only when transported as a ProtocolError | Maintainer decision; existing ProtocolIII.6a/XI diagnostic and DTO boundary |
 | D2: population | All retained physical blocks, including history and unselected peers; then exact-identity model-only union | Format2.4–2.5 say every block; RFC0090 D3 and RFC0091 applicability |
-| D3: placement | Complete existing wrapper/nested-shape checkpoint, then this new pass, then the complete actor pass, then META-02/03 | RFC0090 keeps shape before actors; RFC0091 puts flags after shape/actors |
+| D3: placement | Complete existing wrapper/nested-shape validation pass, then this new pass, then the complete actor pass, then META-02/03 | RFC0090 keeps shape before actors; RFC0091 puts flags after shape/actors |
 | D4: descendants | Existing whole-container refusal wins; P1/P2 do not reject admitted descendants; P3 suppresses only its quality-dependent boolean check | RFC0090 actor independence; RFC0091 per-parent suppression |
 | D5: authority | Exact operation input, canonical content and annotation, current model references; no stale-raw reparse or convenience-meta substitution | RFC0090 source/model contract |
 | D6: already allocated absences | Whole missing metadata and absent section retain their existing warning rules and populations | ProtocolIII.6a; RFC0091 expressly preserves completeness |
@@ -205,7 +208,7 @@ lexical evidence that their accepted representation never carries. This RFC adds
 no representation admission rule, and does not change Lite financial canonical
 form or its exclusion of authored field order (UW Lite Spec6/8).
 
-Keep every existing wrapper/nested-shape finding at its current checkpoint and
+Keep every existing wrapper/nested-shape finding at its current validation pass and
 in its existing relative order. Then emit the complete P1/P2/P3 pass in the union
 order above, per block P1 before P2 before P3. Only after the whole new pass emit
 the complete RFC0090 actor pass, then the complete RFC0091 META-02/03 pass, then
@@ -308,7 +311,7 @@ remains parse-only until the independent complete-validation gate is met.
   retained-physical metadata applicability; silently exempts unselected peers.
 - **One generic schema error:** expands far beyond the owner's three predicates,
   conflates allocated warnings with errors and erases requirement-specific bounds.
-- **New META codes or broader META-02/03:** contrary to the owner-directed closed
+- **New META codes or broader META-02/03:** contrary to the accepted closed
   META-01 amendment; a missing parent is distinct from a malformed boolean child.
 - **Treat every META-01 as a whole-container refusal:** suppresses independent
   actor/boolean findings when the only failure is placement or section identity.
@@ -318,7 +321,7 @@ remains parse-only until the independent complete-validation gate is met.
 ## Unresolved questions
 
 No additional owner selection is requested for applicability or pass placement:
-D2/D3 follow the accepted precedent above and the owner accepted the complete
+D2/D3 follow the accepted precedent above and the maintainers accepted the complete
 text on2026-10-18. Implementation must establish complete affected-case counts and
 independent member-order/source-model evidence before activation. Other typed
 metadata allocations and complete Python capability proof remain separate work.
@@ -327,7 +330,7 @@ RFC0085's retained-history authority and RFC0089's representation remain separat
 ## Prior art
 
 - [RFC0090](0090-provenance-actor-admission.md), especially D2/D3: closed actor
-  allocation, complete shape checkpoint and operation-local reference authority.
+  allocation, complete shape validation pass and operation-local reference authority.
 - [RFC0091](0091-required-metadata-booleans.md): all-physical applicability,
   admitted-parent suppression, physical order and exact diagnostic ownership.
 - [Format2.4–2.5](../../spec/UW_FORMAT_SPEC.md#24-data-block-annotation-syntax)

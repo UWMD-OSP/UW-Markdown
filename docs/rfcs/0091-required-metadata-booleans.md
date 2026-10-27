@@ -16,7 +16,7 @@ affects:
 
 ## Scope
 
-**Accepted by the owner, 2026-10-17.** See [Resolution](#resolution).
+**Accepted by the UWMD maintainers, 2026-10-17.** See [Resolution](#resolution).
 
 Issue #354's nine native partial refusals do not establish nine missing
 allocations. Six cases have accepted owning errors or fail an existing
@@ -34,9 +34,9 @@ schema/fallback diagnostic.
 
 | Decision | Accepted contract | Basis |
 |---|---|---|
-| D1 | META-02/error and META-03/error for the two already-required canonical boolean members; literal true/false only | Owner decision; existing Format/schema types |
+| D1 | META-02/error and META-03/error for the two already-required canonical boolean members; literal true/false only | Accepted decision; existing Format/schema types |
 | D2 | Existing container/actor precedence, independent findings and exact field attribution; flags pass follows shape/actor and precedes role/period/source | Independently reviewed bounded implementation |
-| D3 | All retained physical blocks, including history, plus explicit mutable-model identity union | Owner-approved operation boundaries; no history-authority decision for RFC0085 |
+| D3 | All retained physical blocks, including history, plus explicit mutable-model identity union | Accepted operation boundaries; no history-authority decision for RFC0085 |
 | D4 | Governed diagnostic expectations and authored positives; no ongoing prelaunch artifact freeze | Six declarations accepted; later2026-10-17 owner rule retires retention work |
 | D5 | Activation can change validation exits and newly issued receipt policy counts; no source or historical-subject repair | Explicit owner activation decision; existing receipt rules |
 | D6 | No prelaunch version recommendation;4.x.x development and coordinated npm5.0.0 launch | Later2026-10-17 explicit owner rule |
@@ -116,7 +116,7 @@ completeness warnings, low-confidence informational findings, actor errors and
 unrelated source/role/financial findings. An actor-only META-01 does not suppress
 META-02/03. Missing revision still receives its existing warning, not META-03.
 
-After the complete existing shape checkpoint and actor pass, add this pass
+After the complete existing shape validation pass and actor pass, add this pass
 before role/period/source checks. Traverse assessed block references in physical
 source order, then model-only order; within each block emit META-02 before
 META-03. Preserve relative order of every prior registered issue. One finding
@@ -183,7 +183,7 @@ six META-02 errors. All original auxiliary fidelity/composition assertions remai
 
 The original revisions have no authored values for their six absent review
 flags. Neither narrative review_status/flags nor buildMeta defaults for NEW
-blocks establish those historical declarations. The owner accepted the six new
+blocks establish those historical declarations. The UWMD maintainers accepted the six new
 explicit declarations on2026-10-17; their disposition is below. RFC0048's
 positive-validation promise is unchanged. No original source, package, signature
 or receipt subject is rewritten. The historical research hook used placeholder
@@ -201,7 +201,7 @@ validation counts and signing payloads; current receipt verification/preference
 rules remain authoritative. Actually editing example metadata may change signed
 subjects and must not be described as a harmless expectation change. No old
 artifact is rewritten, reissued or authenticated under a new rule. No legacy
-verification shim is required by the owner's first-public-baseline policy.
+verification shim is required by the UWMD maintainers's first-public-baseline policy.
 
 Python discovery stays `capabilities: ["parse"]` until its whole validation gate
 and applicable nonportable obligations are proven. Dictionary/calculation,
@@ -217,9 +217,9 @@ This does not invent annotation authority for an inconsistent hand-built model.
 Source-origin findings use the physical block's annotation. Exact field paths
 remain canonical in both operations.
 
-## Owner RFC0048 disposition — 2026-10-17
+## RFC0048 example disposition
 
-The owner selected option (a): genuinely author new positive examples and retain
+The maintainers selected option (a): genuinely author new positive examples and retain
 the originals as metadata-incomplete history. The acceptance quoted in
 [Resolution](#resolution) accepts RFC0091 and the six authored declarations.
 RFC0048's promise and all zero-error positive-validation assertions remain
@@ -263,17 +263,18 @@ certification; no adopter code is modified by this RFC.
 
 ## Resolution
 
-Accepted by the owner, 2026-10-17, after review of the bounded implementation
+Accepted by the UWMD maintainers, 2026-10-17, after review of the bounded implementation
 and the six new-kit declarations:
 
-> Owner decision (2026-10-17): RFC 0091 goes to acceptance. I've reviewed the six review declarations in the authored-2026-10-17 kit and accept them as written.
+The maintainers reviewed and accepted all six declarations in the
+authored-2026-10-17 kit as written.
 
 The decisions are D1–D6 above. The implementation applies exactly these
 predicates in TypeScript and Python
 ([#378](https://github.com/UWMD-OSP/UW-Markdown/pull/378)); no release version
 is allocated by this RFC.
 
-**Subsequent owner release rule, 2026-10-17.** The owner's later rule
+**Prelaunch release policy, 2026-10-17.** The later policy
 supersedes this RFC's prelaunch compatibility, artifact-retention,
 migration-note and version-recommendation obligations.
 Every @uwmd npm package launches together at5.0.0; prelaunch releases use4.x.x

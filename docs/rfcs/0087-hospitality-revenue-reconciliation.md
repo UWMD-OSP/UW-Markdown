@@ -19,7 +19,7 @@ affects:
 This draft compares ways to assert comparability and reconcile reported versus
 ADR-derived room revenue in Issue #343 M09. It does not alter canonical RevPAR,
 select an external accounting convention or add any validation requirement.
-Owner decisions are required before a complete normative proposal can be
+Accepted decisions are required before a complete normative proposal can be
 accepted. Status remains `draft`; the accompanying audit tests implement none
 of these alternatives.
 
@@ -51,7 +51,7 @@ occupancy versus occupied/available nights, stated ADR versus eligible reported
 revenue/occupied nights, and reconstructed versus reported revenue. Agreement
 of one product alone cannot prove compatible populations. A candidate obligation
 could require reconciliation only after those assertions establish the same
-basis. Its basis and numeric procedure must be owner-approved before this draft
+basis. Its basis and numeric procedure must be accepted before this draft
 can supply normative MUST language or implementation-ready schema text.
 
 Rounding needs its own explicit choice. Reported revenue 1,000,000 over 6,000
@@ -101,7 +101,7 @@ equality is simpler but risks false failures across legitimate bases. Optional
 comparability assertions narrow the check but add representation and lifecycle
 cost. Authority-specific bridges address adopter needs while requiring evidence
 that the current public accounting schedules do not fully supply. None is
-selected or represented as an owner-approved convention.
+selected or represented as an accepted convention.
 
 ## Recommended direction for owner review — 2026-10-15
 

@@ -14,8 +14,8 @@ affects:
 
 # RFC 0112: Remove the retired agent host layer vocabulary from the standard
 
-> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0112 (#474) accepted as drafted, including D2: keep the generic `agent/<id>` source with `agent_id` and `agent_version`.").
-> Origin: owner decision D1 of 2026-10-12
+> **Accepted by the UWMD maintainers, 2026-10-21, as drafted** (owner: "RFC 0112 (#474) accepted as drafted, including D2: keep the generic `agent/<id>` source with `agent_id` and `agent_version`.").
+> Origin: accepted decision D1 of 2026-10-12
 > ("Remove retired agent host entirely. Don't move it."), carried out as phase C of the
 > public cleanup brief on the owner's instruction of 2026-10-21. The starter
 > half, the agent runtime, providers and `uwmd run`, is removed separately

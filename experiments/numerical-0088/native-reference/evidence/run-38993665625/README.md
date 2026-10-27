@@ -15,7 +15,7 @@ merge** `a6d05240e80325019a87bac6a5426a6b61fccc8d`, tree
 `3eee0fbab3f5682dc345804782994dc22d321fae` and that head. Every Node report records
 this merge checkout, and source/input hashes were checked against the published
 head. Do not describe this as exact-head execution. A later exact-head workflow
-checkpoint and enhanced collector fields do not alter this historical evidence.
+source revision and enhanced collector fields do not alter this historical evidence.
 
 ## What actually matched
 

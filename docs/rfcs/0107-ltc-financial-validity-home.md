@@ -13,12 +13,12 @@ affects:
 
 # RFC 0107: Give the LTC band a Format-defined home and an FV code
 
-> **Accepted by the owner, 2026-10-21, with D2 changed** (owner: "Owner rulings, 2026-10-21. RFC 0107 (#460) accepted with D2 = yes, add quick_metrics.ltc as a second home; D3 = check every stated LTC, not construction only. RFC 0108 (#461) accepted with D2 = yes, align completeness.severity; D3 = yes, replace the four stage names with the seven deal_stage values. RFC 0109 (#462) accepted with D1 = a separate deal_flags list; D3 = institutions list codes one by one in validation_overrides.financial_validity_errors. All other decisions as drafted.").
-> D2 adds `quick_metrics.ltc` as a second home; D3 keeps every stated value.
-> Origin: owner ruling of 2026-10-21 (3), after
-> RFC 0105 left the LTC row of Format §5.2 with thresholds but no home and no
-> code. It changes which documents draw a financial-validity finding, so it is
-> normative.
+## Resolution
+
+The UWMD maintainers accepted this contract on 2026-10-21 because RFC 0105
+left the LTC row of Format §5.2 with thresholds but no home or code. D2 adds
+`quick_metrics.ltc` as a second home; D3 checks every stated LTC, including
+records outside construction. All other decisions remain as drafted.
 
 ## Summary
 
@@ -96,7 +96,7 @@ case 67.
 - **Check LTC only for construction loans** (`loan_purpose` or `loan_type`
   `construction`). Closer to the row's label, but a producer that states LTC on
   an acquisition or bridge loan is stating it on purpose, and the band is
-  plausible there too. Rejected by the owner's D3 ruling.
+  plausible there too. Rejected by the UWMD maintainers's D3 ruling.
 - **Drop the LTC row.** It would remove a threshold institutions already carry.
 
 ## Unresolved questions

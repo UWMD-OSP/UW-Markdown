@@ -562,7 +562,7 @@ The owner-selected direction permits an old tool to refuse new-feature files;
 it does not promise that every new file validates under every prior protocol.
 The missing-section coverage correction enforces existing normative behavior.
 
-The owner accepted this versioning direction. The release used Format 2.0,
+The UWMD maintainers accepted this versioning direction. The release used Format 2.0,
 Protocol 2.21.0 and core/CLI 2.17.0 (see [Resolution](#resolution)).
 
 ### Static/Excel and representation fidelity
@@ -698,7 +698,7 @@ strictly after initial effective date with no expiration constraint, repair of t
 released ESC-04 coverage defect, byte-valid legacy escrow funding and optional
 authored currency with canonical null.
 
-The owner accepted the final wire shape, canonical scope, exact API/result
+The UWMD maintainers accepted the final wire shape, canonical scope, exact API/result
 contract, matrices and versioning analysis (see [Resolution](#resolution)).
 
 Mixed funding, multiple replacements, successor coverage, post-sale financing
@@ -709,7 +709,7 @@ introduced.
 ## Resolution
 
 **Accepted 2026-10-02; implemented 2026-10-03; released in core/CLI 2.17.0
-with Protocol 2.21.0 and Format 2.0.** The owner accepted the RFC as a whole
+with Protocol 2.21.0 and Format 2.0.** The UWMD maintainers accepted the RFC as a whole
 under the owner-led process in [GOVERNANCE.md](../../GOVERNANCE.md), with the
 wire shape, binding scope, validation/verification contract, economic semantics
 and fixture matrix in sections 1-7 and [Conformance impact](#conformance-impact)

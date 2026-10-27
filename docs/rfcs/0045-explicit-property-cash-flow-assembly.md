@@ -22,7 +22,7 @@ cash flows. Its first scope is one property, one declared currency, unlevered
 and pre-tax. Coverage declarations expose omissions and overlapping inputs;
 existing RFC 0034 procedures remain responsible for dated metrics.
 
-**Accepted for implementation on 2026-09-12.** The owner selected a clearly
+**Accepted for implementation on 2026-09-12.** The maintainers selected a clearly
 labeled synthetic engineering ledger; real-deal validation remains separate.
 Released in core/CLI 2.9.0 with Protocol 2.12.0. This contract defines assembly
 of stated economics, not a lease forecast or an exit-value calculator.
@@ -475,7 +475,7 @@ Real-deal validation, Excel metric formulas and document writes remain separate.
 The owner authorized implementation with these first-scope choices: unlevered
 pre-tax basis; one declared currency; complete lease-up hold anchored by a real
 purchase payment; stated gross exit; external reserve-transfer boundary; and a
-supplemental series with exhaustive coverage assertions. The owner selected a complete synthetic test ledger to exercise these choices.
+supplemental series with exhaustive coverage assertions. The maintainers selected a complete synthetic test ledger to exercise these choices.
 Real adopter review of reserve-funded work and sale settlements remains pending;
 the earlier partial stream alone is insufficient.
 

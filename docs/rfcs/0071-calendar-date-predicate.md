@@ -219,7 +219,7 @@ Nor is `MOD-RULE-ERROR` the intended signal for bad document data:
 - RFC 0006 note 4 and the `module-runtime.ts` doc comment define it as the
   trace of a rule that "fails to *evaluate*". That is an authoring defect in
   the module, and its remediation tells the reader to fix the module.
-- RFC 0068 lists using it for bad document values as an open owner question
+- RFC 0068 lists using it for bad document values as an open maintainer question
   (its Unresolved question 2), not as an existing contract.
 
 ## Proposed change
@@ -598,7 +598,7 @@ date". The other consequences for RFC 0068:
 
 **Sequence.** This RFC must be accepted, implemented and released before RFC
 0068 can rely on it. This PR does not edit RFC 0068, change its rules, or
-change manufactured-housing semantics. The owner directed on 2026-10-03 that
+change manufactured-housing semantics. The maintainers decided on 2026-10-03 that
 RFC 0068 adopt `is_calendar_date` in its own revision.
 
 ## Existing implementation drift (non-scope)
@@ -696,7 +696,7 @@ this RFC does not change it.
 ## Unresolved questions
 
 These are the recommended answers. Each follows repository precedent, and the
-owner can overturn any of them in review.
+maintainers can revise any of them in review.
 
 | Question | Recommendation | Basis |
 |---|---|---|
@@ -704,21 +704,21 @@ owner can overturn any of them in review.
 | `null` and absent | `false`, never `null` | A type question, as with `==` and `!=` |
 | Non-string | `false`, no coercion, no error | The RFC's purpose; the array-coercion hazard |
 | Year range | `0000`–`9999`, with `0000` a leap year | Same as `parseISODate`, §VIII.2a and §VIII.9.1. See [the drift note](#existing-implementation-drift-non-scope) for `actualDays` |
-| Module compatibility | **MUST** set a `requires_protocol` floor | Owner revision, 2026-10-03; §VII.2 step 3 |
+| Module compatibility | **MUST** set a `requires_protocol` floor | Accepted revision, 2026-10-03; §VII.2 step 3 |
 | Whitespace and date-times | Rejected, no trimming | One strict form protocol-wide |
 | Wrong arity | `CALC-TYPE-001` | Existing builtin arity errors |
 | Excel | Refuse emission (`EXCEL-EMIT-FN`) | Same as `avg` and `coalesce`; Excel's 1900 leap bug |
 | Version | Protocol minor, core minor | Additive builtin; RFC 0070 precedent |
 
-### Owner direction (2026-10-03)
+### Accepted revisions
 
-The owner approved the draft's direction, subject to two revisions. Both are
+The maintainers approved the draft's direction, subject to two revisions. Both are
 now incorporated:
 
 - the §X protocol floor is a MUST;
 - the early-year `actualDays` drift is recorded as non-scope.
 
-The owner also directed:
+The maintainers also decided:
 
 | Item | Direction | State |
 |---|---|---|
@@ -758,7 +758,7 @@ not committed. No repository code was changed.
 **Accepted 2026-10-04; implemented 2026-10-08; released in core/CLI 2.18.0
 with Protocol 2.22.0 and Format 2.0.**
 
-- **Acceptance.** The owner accepted the RFC on 2026-10-04 under the owner-led
+- **Acceptance.** The UWMD maintainers accepted the RFC on 2026-10-04 under the owner-led
   process in [GOVERNANCE.md](../../GOVERNANCE.md), in the form proposed in PR
   #249. The accepted contract is [Proposed change](#proposed-change) sections
   1-6 with the [case matrix](#deterministic-semantics-the-case-matrix) and

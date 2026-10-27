@@ -12,7 +12,7 @@ affects:
 
 # RFC 0101: Refuse every present source value outside the actor grammar
 
-> **Accepted by the owner, 2026-10-19** (owner on #413: "accept your proposed
+> **Accepted by the UWMD maintainers, 2026-10-19** (owner on #413: "accept your proposed
 > disposition (any present value outside the §2.6 grammar is SRC-01; null is
 > SRC-01 plus the retained warning)"). The RFC, its decisions and the
 > implementation land together.
@@ -73,7 +73,7 @@ absence unchanged).
 
 ## Alternatives considered
 
-- **Null as absence only** (the reference's old reading). Rejected by the owner:
+- **Null as absence only** (the reference's old reading). Rejected by the UWMD maintainers:
   a stated `null` is a present value outside the grammar.
 - **Drop the warning for null.** Rejected: RFC 0094's rule keeps an existing
   finding when a new allocation also applies.
@@ -86,8 +86,8 @@ None.
 
 | # | Question | Decision | Why |
 |---|---|---|---|
-| D1 | Non-string / empty | `SRC-01` | §2.6 grammar; owner ruling |
-| D2 | `null` | `SRC-01` plus the retained `META_FIELD_MISSING_SOURCE` | Owner ruling; RFC 0094 retention |
+| D1 | Non-string / empty | `SRC-01` | §2.6 grammar; accepted resolution |
+| D2 | `null` | `SRC-01` plus the retained `META_FIELD_MISSING_SOURCE` | Accepted resolution; RFC 0094 retention |
 | D3 | Absent | Unchanged (warning only) | Absence is completeness, not grammar |
 
 ## Prior art

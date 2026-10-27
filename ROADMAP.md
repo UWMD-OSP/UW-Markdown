@@ -1,583 +1,115 @@
 # Roadmap
 
-Current source direction, updated 2026-10-26. UWMD is a usable verification
-standard with documented limits and clear growth paths. It does not need an
-adoption target to be useful. After launch, maintenance follows filed issues;
-planned capabilities are directions, not promised delivery dates.
-
-Read the [foundation](docs/FOUNDATION.md),
-[growth paths](docs/HOW-UWMD-GROWS.md),
-[document catalog](docs/document-types.md) and
-[known limits](docs/KNOWN-LIMITS.md) before the historical milestones below.
-They distinguish current source, published artifacts and unaccepted proposals.
-
-## The separately approved 5.0 launch
-
-The [public launch rule](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
-reserves 5.0.0 for the official launch, when every `@uwmd` package moves together.
-Current prelaunch work stays 4.x with no backward compatibility obligation.
-Format and Protocol remain separately declared contracts, mapped in VERSIONS.
-No launch date, release, tag, publication, deployment or directory listing is
-authorized by this roadmap. Normative changes still need acceptance and
-synchronized specification, implementation and conformance.
-
-## What is built and what can grow
-
-| Area | Current boundary | Growth route |
-|---|---|---|
-| Standard and reference | Format 3.0, Protocol 4.1.0, complete tagged Envelope 2.0 and coordinated JSON/XML/CSV mappings; Reader/Verifier tiers | Accepted RFCs and conformance; starter products remain separate from the standard |
-| Official property classes | Twelve full builtins, including hospitality; each has standard and starter support | New official types follow the full-kit asset-class playbook; third-party modules remain separate |
-| Independent Python | Base Verifier complete in #354/PR555, with required portable conformance on three platforms | Optional profiles need their own implementation and capability proof |
-| Bounded pro-forma | RFC0092 plus accepted clarifications; CLI/public-library support proved at source e2bd0067 by closed #551/#552 | Required Main CI profile gate protects subsequent source; MCP/HTTP are not yet bindings for this profile |
-| Integrity and provenance | Current accepted visible-history, source-authority and coordinated-subject contracts | A new assurance claim needs its own justified scope; descriptive names do not authenticate identity |
-| Document types | Existing families cataloged; loan quote, OM and appraisal are proposed in draft RFC0129 | Owner acceptance before implementation; remaining families stay planned |
-| Usability | Authoring tools, local connector/skill and synthetic examples exist; limits are stated | Newcomer findings and reproducible issues guide corrections; listings and launch wiring remain held |
-
-The published npm 4.3.0 generation is pinned to its original release commit
-`80c68c3d0950948c85a1d3a90c02cd05f3a650a4` (2026-10-15). Main contains later
-unpublished work while package numbers remain unchanged. Do not use a shared
-version string as proof that a registry artifact contains current source. Use
-the documented source workflow and record its commit when checking current
-contracts. The [version matrix](VERSIONS.md) records actual publication state.
-
-A comprehensive model-generation engine is not a launch prerequisite. Producers
-construct underwriting; UWMD verifies declared facts and relationships. Lender
-crosswalk/acceptance-kit research is only pursued if requested, not a scheduled
-postlaunch milestone. Non-property borrowing (RFC0082), ground-lease tenure
-(RFC0067) and the new document profiles remain drafts until accepted.
-
-## Historical milestones and capability backlog
-
-The material below records earlier publications and candidate work. It does not
-supersede current capability manifests, accepted contracts or the catalog's
-status. It creates no adoption threshold or automatic release prerequisite.
-
-## Historical publication: 4.2.0
-
-Core/CLI **4.2.0** pair with Protocol **4.1.0** and Format **3.0**. The
-generation carries one RFC:
-- **RFC 0084:** an optional detached document snapshot signature over the
-  `uw-envelope-semantic` digest (Protocol §V.13). It binds variant labels,
-  current/superseded state, frontmatter and the membership of every
-  collection, which block signatures never did (issue #321), and needs no
-  calculation pack. Block signatures keep their six-field input. `@uwmd/signing`
-  signs; `@uwmd/verify` verifies through an injected backend; the CLI adds
-  `sign-document` and `verify --document-signature`.
-
-It also carries the #322 canonical-encoding refusal in `@uwmd/signing`,
-`uwmd init`'s overwrite refusal and a browser-loadable `@uwmd/signing`.
-`@uwmd/verify` 0.2.0 is the receipt engine. Signing 0.5.0 pins verify 0.2.0
-and core 4.2.0, batch 0.9.1 and lake 0.3.1 pin verify 0.2.0, and Excel 0.9.18
-and report 0.8.30 pin core 4.2.0. The workflow published eight packages,
-`@uwmd/verify` first, all from the release workflow with provenance. RFC 0084
-is `implemented` after shipment and independently verified publication.
-Release run 38663508062 and independent registry/provenance/published-file/
-CLI/consumer checks pass, including the document-signature fixtures through
-the registry-installed CLI. See
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.2.0).
-
-## Historical publication: 4.1.0
-
-Core/CLI **4.1.0** pair with Protocol **4.0.0** and Format **3.0**, the same
-contract as 4.0.x. The generation carries one RFC, which moves nothing
-normative:
-- **RFC 0083:** `@uwmd/verify` 0.1.0, the reference implementation of the
-  standard, is its own package: everything a party needs to read and verify a
-  `.uw.md`, with no `@uwmd/*` dependency. `@uwmd/core` is the starter toolkit
-  on top of it and re-exports its whole surface, so no 4.0.x import breaks.
-  Receipts name `@uwmd/verify` as their engine; a pre-4.1.0 receipt whose
-  results disagree reports `RCP-07` `unverifiable` rather than `failed`.
-
-Signing 0.4.0 pins verify 0.1.0 and core 4.1.0, batch 0.9.0 and lake 0.3.0
-pin verify 0.1.0, and Excel 0.9.17 and report 0.8.29 pin core 4.1.0. The
-workflow published eight packages, `@uwmd/verify` first, all of them from the
-release workflow with provenance; neither module package published again.
-RFC 0083 is `implemented` after shipment and independently verified
-publication. Release run 38509776606 and independent
-registry/provenance/published-file/CLI/consumer checks pass, including
-`@uwmd/verify` installed on its own. See
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.1.0).
-
-## Historical publication: 4.0.1
-
-Core/CLI **4.0.1** pair with Protocol **4.0.0** and Format **3.0**, the same
-contract as 4.0.0. The patch carries no RFC and moves nothing normative: the
-starter sources & uses footing counts a typed `uses.renovation` as budget
-plus contingency (RFC 0081 §7), `@uwmd/signing` reports its own manifest
-version, and the private web editor reads its own name and version. Signing
-0.3.1, batch 0.8.23, Excel 0.9.16, report 0.8.28 and lake 0.2.12 pin core
-4.0.1. The workflow published the same seven packages, all of them from the
-release workflow with provenance; neither module package published again. Release
-run 38429239833 and independent registry/provenance/published-file/CLI/consumer
-checks pass. See
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.0.1).
-
-## Historical publication: 4.0.0
-
-Core/CLI **4.0.0** pair with Protocol **4.0.0** and Format **3.0**. The
-generation carries one RFC:
-- **RFC 0081:** one format and one protocol. Format 3.0 (bare blocks with a
-  nested `_meta`, one home for each fact, builtin class identifiers only) and
-  Protocol 4.0.0 are the only versions the reference implementation reads;
-  every backward-compatibility path, both migrators and both module packages
-  are deleted. 3.0.0 is the last release that reads older formats.
-
-Signing 0.3.0, batch 0.8.22, Excel 0.9.15, report 0.8.27 and lake 0.2.11 pin
-core 4.0.0. The workflow published seven packages, all of them from the
-release workflow with provenance; neither module package published again. No
-financial value changes. RFC 0081 is `implemented` after shipment and
-independently verified publication. Release run 38339991109 and independent
-registry/provenance/published-file/CLI/consumer checks pass. See
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.0.0).
-
-## Historical publication: 3.0.0
-
-Core/CLI **3.0.0** pair with Protocol **3.0.0** and Format **2.1**. The
-generation carries three RFCs:
-- **RFC 0078:** the Protocol is verification. Conformance is a **Reader** or
-  **Verifier** tier plus six optional profiles; the editor, agent host, calc
-  engine, defaults, Excel and viewer are non-normative starter products; the
-  metric dictionary (`spec/metrics/`) is normative.
-- **RFC 0079:** stated metrics compare at their stated precision with a
-  per-metric minimum (§VIII.5.1), and every class uses one LTV and one
-  cash-on-cash definition.
-- **RFC 0080:** data center and manufactured housing are full builtins under
-  Format 2.1, and hospitality's module content is builtin.
-
-Signing 0.2.26, batch 0.8.21, Excel 0.9.14, report 0.8.26, lake 0.2.10 and
-both module packages 0.2.0 pin core 3.0.0. The workflow grows to nine
-packages: Excel, report and lake join it, and all three are now on npm from
-the release workflow. The module packages shipped 0.2.0 as declaration-free
-compatibility shells, their final version, and the owner deprecated both names
-on npm on 2026-10-11. No new §X floor applies. RFCs 0078–0080 are
-`implemented` after shipment and independently verified publication. Release
-run 38163964522 and independent registry/provenance/published-file/CLI/
-consumer checks pass. See
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v3.0.0).
-
-## Historical publication: 2.21.0
-
-Core/CLI **2.21.0** pair with Protocol **2.25.0** and Format **2.0**. The
-generation carries one RFC:
-- **RFC 0065:** an optional external, digested plan binds selected RFC 0064
-  internal reserve draws to already-stated gross expenditures, checked by a
-  separately invoked verifier (§VIII.12) with `RDB-01`–`RDB-09` findings and
-  the read-only `verify-reserve-draws` CLI. Gross expenditure, ordinary
-  validation and RFC 0045's reserve refusal are unchanged.
-
-Format stays 2.0. Signing 0.2.25, batch 0.8.20 and both module packages
-0.1.13 join core and CLI in the six-package workflow. No new §X floor applies.
-RFC 0065 is `implemented` after shipment and independently verified
-publication. Release run 38088657045 and independent registry/provenance/
-published-file/CLI/module-consumer checks pass. See
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.21.0).
-
-## Historical publication: 2.20.0
-
-Core/CLI **2.20.0** pair with Protocol **2.24.0** and Format **2.0**. The
-generation carries two RFCs and one change outside the contract:
-- **RFC 0072:** frontmatter `scenario` names one of eight business plans or a
-  reverse-DNS extension, and single-site build-to-rent is
-  `asset_subtype: build_to_rent` on `multifamily` (#255). `DQ-07`–`DQ-09`
-  are warnings only.
-- **RFC 0064:** optional `reserve_accounts` (§4.28) with `RSV-NN` structure
-  codes and a separately invoked reserve-account balance verifier (§VIII.11).
-  RFC 0045's reserve refusal is unchanged.
-- **Also included:** the §VIII.5 quantizer returns the half-away-from-zero
-  value when the decimal shift is integral, a defect present since RFC 0023.
-
-Format stays 2.0. Signing 0.2.24, batch 0.8.19 and both module packages
-0.1.12 join core and CLI in the six-package workflow. No new §X floor applies.
-RFCs 0064 and 0072 are `implemented` after shipment and independently verified
-publication. Release run 38064763014 and independent registry/provenance/
-published-file/CLI/module-consumer checks pass. See
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.20.0).
-
-## Historical publication: 2.19.0
-
-Core/CLI **2.19.0** pair with Protocol **2.23.0** and Format **2.0**. The
-generation carries three RFCs and one change outside the contract:
-- **RFC 0075:** the hedge and escrow rules prefer the `senior`
-  `debt_structure` (#266).
-- **RFC 0076:** a stated hedge whose loan or cash lines cannot be selected
-  reports one `HDG-08`.
-- **RFC 0077:** `net_proceeds_to_equity` is defined as whole-stack proceeds,
-  with optional `preferred_equity_redemption_at_exit` and
-  `net_proceeds_to_common_equity` (#278). Format stays 2.0.
-- **Also included:** strict TypeScript consumers compile without the optional
-  Anthropic SDK.
-
-Signing 0.2.23, batch 0.8.18 and both module packages 0.1.11 join core and
-CLI in the six-package workflow. No new §X floor applies. RFCs 0075–0077 are
-`implemented` after shipment and independently verified publication. Release
-run 37950962666 and independent registry/provenance/published-file/CLI/
-module-consumer checks pass. See
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.19.0).
-
-## Historical publication: 2.18.0
-
-Core/CLI **2.18.0** pair with Protocol **2.22.0** and Format **2.0**. The
-generation carries two RFCs and four changes outside the contract:
-- **RFC 0071:** the `is_calendar_date` predicate.
-- **RFC 0074:** §VII.3 dependent declaration overrides. Each RFC brings a
-  `>=2.22.0` §X floor.
-- **Also included:**
-  - the refusal of unrelated §VII.3 declaration conflicts;
-  - CLI validation and receipt reporting clarity;
-  - the `uwmd init` and `--version` fixes;
-  - the early-year actual-days correction.
-
-It is the first six-package generation. `@uwmd/module-hospitality` and
-`@uwmd/module-data-center` 0.1.10 join core, CLI, signing 0.2.22 and batch
-0.8.17. RFCs 0071 and 0074 are `implemented` after shipment and
-independently verified publication. Release run 37795279528 and independent
-registry/provenance/published-file/CLI/module-consumer checks pass. See
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.18.0) and
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.18.0).
-
-## Historical publication: 2.17.0
-
-Core/CLI **2.17.0** pair with Protocol **2.21.0** and Format **2.0**. The
-complete generation includes RFC 0070 (merged via PR #245 at
-`d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`) and the later multifamily
-pack 1.0.1 deal-level cash-on-cash correction. RFC 0070 is `implemented` after
-shipment and independently verified publication. Signing 0.2.21 and batch
-0.8.16 are also published; all other package generations remain source-only.
-Release run 37172975077 and independent registry/provenance/published-file/CLI
-checks pass. The frozen funding semantics and synchronous/async verification
-boundary are unchanged. See [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.17.0) and
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.17.0).
-
-## Historical publication: 2.16.0
-
-Published core/CLI **2.16.0** pair with stable Protocol **2.20.0** and Format
-**2.0**. Published signing **0.2.20** and batch **0.8.15** pin core 2.16.0
-exactly. The generation carries RFC 0069's student bed-count contract, RFC 0066 fence-order evidence
-hardening and the final publication-neutral tagged-tree checks. RFC 0069
-is `implemented`. Release run 37075007121 and independent registry/provenance/
-published-CLI checks verify the publication. Preparation and publication
-evidence are recorded separately in
-[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.16.0).
-
-## Historical publication: 2.15.0
-
-Core/CLI **2.15.0**, signing **0.2.19** and batch **0.8.14** are published on
-npm from the `v2.15.0` tag with SLSA provenance. Format is **2.0** and Protocol
-is **2.19.0**; the version streams are independent.
-The [version matrix](VERSIONS.md) records exact compatibility and unpublished
-packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
-
-## Status legend
-
-- **Released** — implemented and included in a published package release.
-- **Implemented** — code and verification exist; a standalone package may remain unpublished.
-- **Sprint verification** — evidence or tooling added by the current maintenance sprint.
-- **Next candidate** — scoped for consideration; requires acceptance before implementation.
-- **Demand-gated / deferred** — no committed implementation or release date.
-
-## Completed capabilities
-
-| Area | State | Scope |
-|---|---|---|
-| Format, reader, editor and calc host | Released | UW Lite / UWX, Format 2.0 authoring with legacy readers, byte-preserving edits, deterministic evaluation, validation and stage readiness. |
-| Integrity and authorization | Released | Provenance, verification receipts, signed blocks/modules, capability tokens and conformance profiles. |
-| Interchange and composition | Released | JSON/XML/CSV codecs, HTTP/MCP profiles, document packages/composites, mixed-use aggregation, market data and portfolio relationship data. |
-| Financial structures | Released | Asset-class packs, typed capital stacks, calendar cash flows and xirr/xnpv, lease-up schedules, distribution waterfalls and LP IRR hurdles. |
-| Signed block roles — RFC 0040 | Released in 2.7.0 | Role-aware cross-check selection, component exclusion, trusted edits and coverage evidence; introduced Protocol 2.7.0. |
-| Explicit period addressing — RFC 0041 | Released in 2.7.0 | Named holding years and absolute month/quarter/date selectors on five standard series; Protocol 2.8.0. |
-| Period consumers — RFCs 0042/0043 | Core APIs released in 2.8.0 | Fixed stated refinement inputs, explicit variants/overrides and contextual workbook binding APIs. Native Excel verified; the standalone `@uwmd/excel` package is published since 3.0.0. |
-| Explicit lease-up projection — RFC 0044 | Released in 2.8.0 | Complete explicit cash-date mapping of verified stated amounts, semantic source digest and binding evidence; read-only API and CLI. |
-| Explicit property cash-flow assembly — RFC 0045 | Released in 2.9.0 | Read-only unlevered/pre-tax, single-currency candidate assembly with explicit coverage, acquisition/disposition and reserve assertions; synthetic engineering fixtures. |
-| Supporting tools and modules | Implemented | Web editor/viewer, docs site, VS Code extension, Excel/report packages and hospitality/data-center reference modules. Publication varies; see the matrix. |
-
-### CLI reporting clarity (core/CLI 2.18.0)
-
-Validation now separates validity, Stage Readiness (workflow completeness),
-skipped cross-checks and unchecked receipt readiness. Issuance reports partial
-metric coverage explicitly, canonicalization and document/results hashes;
-refusals retain available calc diagnostics. Verification labels the independent
-receipt verdict. Missing structured inputs can be recorded as uncomputed and
-later verify; absent calc packs still refuse. No financial, validation,
-receipt, canonicalization or conformance contract changes. Regression coverage
-uses public synthetic fixtures; external audit evidence supplied requirements
-only. See [CLI guidance](docs/UW_RECEIPTS.md#validation-completeness-and-hashes).
-
-See the [RFC index](docs/rfcs/README.md) and [changelog](CHANGELOG.md) for the
-individual contracts and releases. A module implementation landing in the repo
-does not mean its standalone npm package is published.
-
-## Maintenance sprint after 2.7.0
-
-| Work | State | Evidence / completion |
-|---|---|---|
-| Current roadmap and status reconciliation | Merged in PR #181 | Historical launch plans archived; implemented/published/proposed states separated; RFC 0040/0041 marked implemented. |
-| Independent PCG64 verification | Sprint verification complete | 11 seeds, 11,264 raw draws and 176 doubles match NumPy 1.26.4's compiled PCG64 under the upstream default stream and srandom sequence. Existing outputs are unchanged. [Evidence and reproduction](conformance/stochastic/pcg64-reference.md). |
-| Period consumers and lease-up projection | Released in 2.8.0 | RFCs 0042–0044, validated CLI context and the explicit projection workflow. Publication and installation evidence. |
-
-## Released in 2.10.0
-
-Seven accepted RFCs that had accumulated on `main` shipped together, with
-Protocol **2.13.0**:
-
-| RFC | Scope |
-|---|---|
-| 0046 | Optional document-level currency identity (`CUR-01`) for honest display across locales. No FX, no mixed-currency arithmetic. |
-| 0047 | Read-only property cash-flow input inventory, making the RFC 0045 handoff inspectable without inferring economics. |
-| 0048 | Standalone document kit — lease abstracts, source notes, fragments, composition twins, a packaged example and the `standalone` suite. |
-| 0050 | Preferred-equity split coupons (`CS-02b`): cash enters coverage, accrued does not, full rate drives weighted cost. |
-| 0051 | Waterfall dual-hurdle `any` mode (`WF-01`): the smaller capacity governs; default `both` keeps the larger. |
-| 0052 | Named exit sale deductions and a `net_sale_proceeds` verifier; levered names reserved and refused. |
-| 0053 | Typed reassessment basis and abatement schedule (`TAX-NN`), naming the trailing, going-in and terminal taxes. |
-
-The source CLI also gained `verify-cash-flows`, which checks stated cash-flow
-metrics without a custom script and distinguishes no claims from verified ones.
-See the [workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli).
-
-## Released in 2.12.0
-
-Two RFCs and one CI guard, with Protocol **2.17.0**. Both contracts are
-additive: every member is optional, so a document stating none of them validates
-exactly as it did at 2.11.0.
-
-| RFC | Scope |
-|---|---|
-| 0058 | Expense recoveries and the CAM true-up on the commercial tenant record (§4.3), registering the `REC-NN` family. `REC-09` requires the settled amount to resolve to a §4.26 cash-flow row, so assembly and receipt coverage verify it rather than trusting it. Nothing is projected, grossed up or allocated across tenants. |
-| 0059 | Distribution-waterfall clawback as the terminal true-up protocol §XVI predicted (§4.27, protocol §VIII.10 step 5), registering `WF-10`–`WF-13` and the `WF-15` warning. Every basis is closed-form — the IRR floor reuses RFC 0036's hurdle balance rather than iterating. The `cap` must be `"promote_received"`: a GP cannot owe back more promote than it received. Nothing is escrowed, crystallized per period or projected. |
-
-RFC 0058 leaves two figures **stated, not recomputed**, and says why: a
-cumulative or compounding cap depends on base-year history no single document
-carries, and allocating the pool across tenants needs a vacant-space policy,
-which is a modeling decision rather than a verification.
-
-`verify-codes` joined CI in the same cut. RFC 0058 first shipped nine of its ten
-codes — `REC-09` was in the RFC, the format spec and the schema, and nowhere in
-the validator, and no gate went red, because a missing refusal looks exactly
-like a document with nothing to refuse. The guard cross-checks every code an
-implemented RFC or a format-spec bullet promises against what `@uwmd/core`
-actually emits. Gate totals at the cut: **1,994 core tests**, **589 default
-conformance checks**, **46 JSON schemas**, **221 emitted codes**.
-
-## Released in 2.11.0
-
-Five RFCs, with Protocol **2.15.0**. All additive: every member of every new
-structure is optional, and a document stating none of them validates exactly as
-it did at 2.10.0. RFC 0013 (embedding-based corpus retrieval) is now the one
-open draft, and it is owner-gated.
-
-| RFC | Scope |
-|---|---|
-| 0049 | `@uwmd/lake` (unpublished): an optional PostgreSQL/JSONB adapter preserving canonical envelopes and facts beside typed query projections, without putting a warehouse schema in the protocol or a database driver in any package. |
-| 0054 | **Decision, half deliberately unbuilt.** Per-lease economics split by shape: clauses typed in place (0055), the periodic series deferred until a consumer exists and the calc grammar can reach it. |
-| 0055 | Typed commercial lease clauses — escalation steps, break options, co-tenancy, LC balances beside TI (`LSE-01`–`LSE-09`). |
-| 0056 | Typed rate hedges and escrows (`HDG-NN`, `ESC-NN`), including the `ESC-04` tie from a `"replace"` assumption to a funded replacement line. |
-| 0057 | Renovation draw and expense-targeted capex (`CAPX-NN`), including the `CAPX-07` `in_noi_model` disclosure. |
-
-**RFCs 0055, 0056 and 0057 type structures nothing yet consumes.** No rent
-escalates, no break is exercised, no balance amortizes, nothing is priced, no
-strike crossing is projected and no stated saving is applied. Typed-but-inert is
-the intended state: the format learns to *say* these things before anything acts
-on them, and each consumer arrives with its own contract.
-
-For the lake adapter, a real load against a live PostgreSQL server ran on
-2026-09-16 and is recorded here;
-a managed-service run and the publication decision are still open. See the
-adoption notes and
-the [data-lake guide](docs/DATA_LAKE.md).
-
-## Released in 2.15.0
-
-Released from the reviewed `v2.15.0` tag. The living detail is in the developer
-wiki's build-status page (`ROADMAP.md`); this section records only
-what changes a roadmap or status claim.
-
-| Change | Effect on this roadmap |
-|---|---|
-| **Calc identifiers over variant-map sections (RFC 0066, Protocol 2.19.0)** | An identifier rooted at a variant map reads exactly one block: explicit variant, then the calculation's declared `section_roles`, then RFC 0040's generic order. Otherwise it refuses with `CALC-RESOLVE-002` instead of a silent `null`. Built-in lender-side metrics declare `senior`. `cash_on_cash` refuses on multi-tranche maps until a total-debt-service input is contracted, which is a new forward item. The calc engine still has no collection iteration. |
-| **One selection for the cascade, refinement and Excel** | Excel writes `#VALUE!` where the engine refuses, so Excel ↔ calc parity stays exact. Refinement reports excluded targets in `diagnostics.section_inputs`. |
-| **Format 2.0 payload reading** | The cascade, refinement and Excel read a block's `content` envelope the way the evaluator does. Correction only. |
-| **RFC 0062 portable coverage** | The RFC 0004 driver now carries the same-day selection rule (`period-09` … `period-12`). Tests only. |
-
-No other forward candidate moved.
-
-## Released in 2.14.0
-
-Released from the reviewed `v2.14.0` tag. The living detail is in the developer
-wiki's build-status page (`ROADMAP.md`); this section records only
-what changes a roadmap or status claim.
-
-| Change | Effect on this roadmap |
-|---|---|
-| **Same-day cash-flow rows (RFC 0062, Protocol 2.17.1 errata)** | `cash_flow_series.series` rows sharing a date stay distinct without PS-02. A unique date resolves; a repeated date refuses `CALC-PERIOD-002`. Other registered series keep whole-series refusal. Priority 1's DCF validation item no longer waits on this. |
-| **Final-period exclusive boundary (RFC 0063, Protocol 2.18.0)** | Explicit opt-in `disposition_period_rule: allow_exclusive_end` admits disposition at the final monthly/quarterly period's exclusive end. No settlement horizon, proration or new period. Reserve-account and financing assembly remain separate. |
-| **Decimal quantization for stated-value checks** | Cash-flow, net-sale, tax, escrow, hedge and capex comparisons share calc reporting's half-away-from-zero decimal algorithm. Correction only. |
-| **§4.5 `noi_model` read paths** | Student-housing and self-storage pack formulas, the office Excel layout, the chat renderer and the `noi_model` view model read the §4.5 object shape. Correction only; Excel ↔ calc parity is unchanged. |
-
-No forward candidate below moved.
-
-## Released in 2.13.0
-
-Released from the reviewed `v2.13.0` tag. The living detail is in the developer
-wiki's build-status page
-(`ROADMAP.md`); this section records only what changes a roadmap or
-status claim.
-
-| Change | Effect on this roadmap |
-|---|---|
-| **Period-indexed path navigation** (§VIII.2a) | Additive. A registered series resolves by stated period identity (`dcf.annual_cash_flows@Y3`), never row position. No roadmap item opens or closes. |
-| **RFC 0024 bisection restored** | A regression had replaced `irr`'s bisection with the Newton pass §VIII.3 step 5 forbids, giving up the cross-engine bit-identical root the RFC exists to guarantee. Reverted. No roadmap item changes; determinism claims elsewhere in this file remain true. |
-| **Tier-3 collection surface: added, then withdrawn** | Sixteen builtins and numeric bracket indexing landed and were removed. They were outside §VIII.3's enumerated set and §VIII.1's grammar, and RFC 0019 had already rejected the primitive. **The calc engine still has no collection iteration**, so every roadmap statement resting on that constraint — RFC 0054's deferral above, and the speculative-leasing note below — stands unchanged. |
-| **SQL export surface: added, then withdrawn** | An unreleased `exportSql` in `@uwmd/core` emitted PostgreSQL and Snowflake DDL and a second `uw_documents` table that collided with `@uwmd/lake`'s. RFC 0049 names warehouse-specific SQL a non-goal and gives `@uwmd/lake` the relational boundary, so it was withdrawn rather than re-homed. **This is not planned work.** A second BI-oriented projection would need an adopter requirement and its own RFC; none exists. |
-| **`@uwmd/lake` 0.2.1, lake schema 0.2** | The live-PostgreSQL fixes below. The package remains unpublished. |
-| **Release readiness check** | `npm run release:check` verifies npm Trusted Publishers OIDC before a `v*` tag triggers a publish. Tooling only. |
-| **Golden-deal release comparison** | Eight runnable cases pass in the release evidence: 532 Artifact B assertions accounted for, 526 passing, six documented baseline defects, and 20 refusal assertions passing. De-identified evidence. This does not close RFC 0045-specific real-deal assembly evidence. |
-
-Nothing here adds a protocol capability, and no forward candidate below moved.
-
-## Adopter alignment queue
-
-**Source:** owner-supplied *StackUW protocol brief* from the engine team,
-2026-09-13. StackUW, built by the UWMD maintainers, produces `.uwx.md` records
-through `export_uwmd`.
-
-This is adopter input, not an accepted contract or an instruction to change the
-spec immediately. Each normative item below still needs its own accepted RFC,
-an absent-case fixture, and an engine-produced fixture. The queue preserves the
-project's existing rules: additive and opt-in fields, stated figures verified
-where practical, explicit "stated, not recomputed" notes where not, custom
-asset classes as namespaced modules, and fund mechanics as document profiles.
-
-New findings from StackUW or any other adopter enter through the issue forms in
-[Reporting problems and feedback](docs/FEEDBACK.md), with the adopter's own
-tracker ID (StackUW's `UPSTREAM-NNN`) under *Related links*.
-
-### Reuse before extending
-
-The brief explicitly asks us not to duplicate capabilities already present:
-catch-up and LP IRR hurdles are in §4.27; the capital-stack and preferred-equity
-surfaces are in §4.24 (with split coupon in RFC 0050); dated cash flows are
-in §4.26; student housing, senior housing, land, mixed-use, portfolios and data
-centers already have class/profile or module homes. The remaining work is to
-type the documented stubs, add missing verification paths, or make the existing
-surfaces usable for the next producer wave.
-
-### Proposed sequence
-
-| Wave | Candidate | State / acceptance gate |
-|---|---|---|
-| 1 | Preferred-equity split coupon | **RFC 0050, implemented.** Split coupons with cash/accrued decomposition and `CS-02b` validation; cash enters coverage, accrued does not. |
-| 1 | Waterfall dual-hurdle `any` mode | **RFC 0051, implemented.** Lifted `hurdle_mode: "any" | "both"` into normative contract with closed-form capacity, `WF-01` validation, and conformance fixtures. |
-| 1 | Named exit sale deductions | **RFC 0052, implemented.** Closed `sale_deductions` vocabulary with a label-bearing `other`, reserved-and-refused levered names, complete-naming rule, and a `net_sale_proceeds` verifier at the currency quantum. Each deduction remains its own dated §4.26 row. |
-| 1 | Tax abatements and reassessment basis | **RFC 0053, implemented.** Types the reassessment basis (`TAX-01`–`TAX-04`), adds an RFC 0041-addressed abatement schedule (`TAX-05`–`TAX-07`), and names the trailing, going-in and terminal taxes with a `TAX-08` tie to exit value. Stated-and-verified only: the exit-value circularity stays the author's to converge. |
-| 1/2 | Lease clauses and TI/LC amortization | **RFC 0055, implemented.** Break options, co-tenancy triggers/remedies and escalation steps are typed on the commercial tenant record, with LC balances beside TI (`LSE-01`–`LSE-09`). Straight-line amortization stays deferred: RFC 0054 placed it with the periodic series. |
-| 2 | Per-lease monthly ledger | **RFC 0054, `decided` (terminal); the series half is deliberately unbuilt.** Splits by shape: type the lease clauses in place on the commercial rent roll (the stubs already exist), and defer the periodic series until a consumer exists. The calc grammar addresses neither collections nor two period dimensions, so a ledger is unreachable from pack formulas. |
-| 2 | Rate caps, escrow and replacement | **RFC 0056, implemented.** Types `debt_structure.rate_hedge` (strike, notional, term, premium and a required `post_expiration_assumption`) and `sources_uses.uses.escrows` under a closed vocabulary with a label-bearing `other` (`HDG-01`–`HDG-06`, `ESC-01`–`ESC-04`). `ESC-04` ties a `"replace"` assumption to a funded `rate_cap_replacement` line. `rate_swap` and `rate_collar` are reserved and refused pending an MTM contract; nothing is priced. |
-| 2 | Construction contingency used share | **RFC 0057, implemented.** `uses.renovation` carries budget, contingency, used, a verified remaining and total drawn as of a stated date (`CAPX-01`–`CAPX-05`). Milestone releases and draw projection stay out of scope. |
-| 2 | Nearest asset-class extensions | **Student bed counts: [RFC 0069](docs/rfcs/0069-student-rent-roll-bed-counts.md), implemented and released in core/CLI 2.16.0 (stable Protocol 2.20.0, Format 2.0; accepted 2026-10-02).** The top-level student-housing roll may state `occupied_beds` and `preleased_beds` with their measurement dates; the `BED-NN` errors refuse a stated count that is malformed, undated or above `property.total_beds`. Per-floor-plan bed columns, senior-housing beds, mixed-use component beds and future-phase capacity stay out of scope. **RFC 0080 (implemented; released in 3.0.0 with Format 2.1 and Stable Protocol 3.0.0):** data center and manufactured housing are full official builtins, superseding RFC 0068's module packaging while preserving its owner decisions. Their starter defaults are owner-approved (2026-10-10). Parcel-array versus RFC 0021 composition for SFR/BTR remains separate future work. **Single-site build-to-rent identity** (#255, `adopter report 022`): [RFC 0072](docs/rfcs/0072-frontmatter-scenario-semantics.md) (PR #285) shipped in 2.20.0 with Stable Protocol 2.24.0 and is **implemented**. `scenario` is the business plan, from a closed vocabulary with warnings (`DQ-07`–`DQ-09`) for unlisted or retired values, and single-site BTR is a product/subtype on `multifamily`, not a scenario. |
-| 2 | CAM, redevelopment and OpEx compression | **Resolved. RFC 0057 shipped expense-targeted capex; RFC 0058 shipped the CAM true-up in 2.12.0.** Expense-targeted capex is implemented (`CAPX-06`–`CAPX-08`), with `in_noi_model` required so a stated saving cannot be double-counted; nothing applies the saving. Redevelopment downtime needs **no new field**: §4.25 `natural_turnover` already expresses suppressed occupancy carrying its own `ti_lc_capex`. On CAM, RFC 0058 disputes the earlier "it is periodic, so RFC 0054 defers it" reading: it proposes an **annual reconciliation of a closed period**, which needs neither collection iteration nor a second period dimension — the two things RFC 0054 actually found unreachable. Settled amounts land in §4.26. That distinction was the RFC's load-bearing claim, and it was accepted: RFC 0058 shipped in 2.12.0 with the `REC-NN` family and its own conformance suite. |
-| 2 | Ground lease / leasehold tenure | **Not a tranche class ([RFC 0060](docs/rfcs/0060-tranche-class-candidates.md)); the tenure contract remains demand-gated.** The earlier "reserve `ground_lease` as a tranche concept" framing conflated the leasehold estate and its ground-rent obligation with financing merely secured by a leasehold, which is already `senior_debt`. A `Tranche` has no field for tenure, and no honest `amount` exists for one. **The format does not model ground leases today:** §4.4 has no `ground_rent` key (only the generic `other_expenses`), §4.5 `noi_model.expenses` has no ground-rent line *and no generic bucket at all*, and no section types the leasehold as an object — term, resets, extension options, fee relationship and subordination are all untyped. Where the underwriting does include ground rent in OpEx, adding it again as a debt tranche would double-count it. The open work is a property/tenure contract against its own section, gated on a demonstrated consumer. |
-| 3 | Operating-business modules and executions | **Demand-gated.** Senior-housing refinements, cold storage, life science, marina/outdoor storage, affordable housing, parking, phased delivery, condo sell-off, adaptive reuse, swaps and collars each require a concrete engine scope and module/RFC pair. **PACE-specific mechanics** stay on this demand-gated list: RFC 0060 closed the *enum* question — it is stated as `other_debt` where the existing fields suffice — but assessment servicing above or below NOI, jurisdictional lien behaviour and transferability are unmodelled and would need their own contract. |
-| 4 | Fund and land-development profiles | **Later / profile boundary first.** Subscription facilities, clawback/lookback, co-invest fees and lot takedowns belong in fund or land-development profiles that reference deal documents; they do not widen ordinary deal sections. |
-
-### Cross-cutting requirements
-
-- Extend the RFC 0027 size-intensive registry once per demonstrated need (`$/bed`,
-  `$/pad`, `$/acre`, `$/slip`, `$/space`); do not create class-specific aliases
-  outside the registry.
-- **Tranche-enum question settled by [RFC 0060](docs/rfcs/0060-tranche-class-candidates.md) (`decided`); do not reopen it.**
-  The four candidates were taken up in one bounded RFC, as this requirement
-  asked, and **none opened the enum**. `TrancheClass` is unchanged. `pace` and
-  `soft_debt` are stated as `other_debt` **for the subset the existing fields
-  express**; `tax_credit_equity` defers with its mechanics
-  (`sources_uses.sources.tax_credit_equity` already records the amount);
-  `ground_lease` was a layer error. RFC 0060 closed the **enum-opening question
-  only** — it did not declare these domains modelled. The genuine needs survive
-  as demand-gated mechanics, profile and tenure work, each requiring its own RFC
-  and a demonstrated consumer: the ground-lease/leasehold tenure contract (row
-  above), PACE-specific mechanics (row above), soft-debt contingent and
-  forgiveness mechanics, and a tax-credit-equity profile.
-- Treat §4.26 as the addressable sink for new dated cash lines so assembly and
-  receipt coverage can verify them instead of trusting engine output.
-- Require one engine-produced conformance fixture per accepted RFC, plus one
-  fixture proving that an absent optional field remains byte-identical and
-  verifies as before.
-
-## Forward backlog
-
-The bounded period-consumer and lease-up projection stages are complete. The
-next modeling work needs explicit economic inputs and a concrete adopter case;
-no additional financial assumptions are supplied by the released adapter.
-
-| Priority | Work | State | Definition of done / prerequisite |
-|---|---|---|---|
-| 1 | Real-deal DCF validation and extensions | RFCs 0062 and 0063 released in 2.14.0 | The completed-corpus review records 640/640 registered comparisons, 20/20 existing refusals and a separate stale-workbook integrity refusal; stated-source checks do not establish complete assembly parity. RFC 0062's same-day errata is integrated at `e49eb43`. The [terminal-boundary owner brief](docs/rfcs/0063-final-period-exclusive-boundary.md) places final monthly cash on disposition at the final period's exclusive boundary. The owner accepted [RFC 0063](docs/rfcs/0063-final-period-exclusive-boundary.md) at `f04b34a`; its implementation is on `main` at `413a645`, preparing Protocol **2.18.0** for explicit monthly/quarterly boundary admission. Both RFCs shipped in 2.14.0 and are **implemented**. The [verification record](docs/rfcs/0063-final-period-exclusive-boundary.md) covers conformance and review corpus probes: the timing-only case assembles with opt-in, while reserve-dependent spending still refuses. Reserve-account and financing assembly remain separate. |
-| 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
-| 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
-| 4 | Waterfall extensions | RFC 0051 implemented; **RFC 0059 released in 2.12.0** | Combined-hurdle "any" mode implemented under RFC 0051. RFC 0059 takes up clawback as the terminal true-up protocol §XVI predicted, closed-form via the RFC 0036 hurdle balance so no iteration is introduced. GP-side hurdles (`until_gp_irr`) remain deliberately out. |
-| 5 | Property reserve-account state | **RFC 0064 released in 2.20.0** and implemented | Optional `reserve_accounts` §4.28; separately invoked balance identity/claimed-continuity verification at the existing currency quantum. Gross expenditure and RFC 0045 refusal unchanged; draw binding is row 6 (RFC 0065). |
-| 6 | Reserve draw-to-gross-expenditure binding | **RFC 0065 released in 2.21.0** and implemented (PR #293) | Optional digested plan and §VIII.12 verifier, exact source identities, full selected-draw allocation, explicit funded shares and RDB-01–09 findings. No netting or RFC 0045 admission change; external transfers and owner-cash/financing assembly remain separate. |
-| 7 | Currency-code disambiguation | RFC 0046 released in 2.10.0 | Document-level identity is explicit and display-safe. Per-value identity, FX, and mixed-currency arithmetic remain deferred. |
-
-[RFC 0064](docs/rfcs/0064-property-reserve-account-roll-forward.md) (PR #290)
-shipped in 2.20.0 with Stable Protocol 2.24.0 and is **implemented**. Its
-property-custody verifier leaves RFC 0045's reserve refusal intact.
-[RFC 0065](docs/rfcs/0065-reserve-draw-gross-expenditure-binding.md) (PR #293)
-draw-to-expenditure binding shipped separately in 2.21.0 with Stable Protocol
-2.25.0 and is **implemented**. Owner-cash assembly remains a separate contract.
-
-### Adoption and integration candidates
-
-| Work | State | Next evidence |
-|---|---|---|
-| Standalone document and package example kit | RFC 0048 implemented (2.10.0) | Adopter authoring against the kit. |
-| Element/package validation and deterministic stitching | Future RFC/design candidate; no new implementation | Extend existing RFCs 0018/0021/0048 for standalone rent rolls, T-12s, debt schedules and property files; pin ZIP/folder manifests, assembly conflicts, package canonicalization/hashing, provenance and document-versus-package receipt scope. See candidate brief. |
-| PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0; **live load run 2026-09-16**; `@uwmd/lake` published since 3.0.0 (0.3.0 today) | The corpus load against PostgreSQL 18 is done and found three defects, all fixed — see the load record. Remaining: a run against a managed service with roles and concurrency. |
-| Additional niche asset classes | Demand-gated | Bring a concrete deal/operator workflow before adding another class or module. |
-
-### Mixed-use and speculative leasing
-
-[RFC 0019](docs/rfcs/0019-mixed-use-composition.md) implements multi-component
-container aggregation. [RFC 0008](docs/rfcs/0008-lease-up-modeling.md) implements
-stated lease-up schedules. [RFC 0041](docs/rfcs/0041-period-indexed-addressing.md)
-selects periods in existing series. None alone implements speculative lease
-rollover or establishes Argus parity. Array iteration is not the remaining
-product specification; lease economics and cash timing are.
-
-### Demand-gated work
-
-- **Semantic corpus retrieval (RFC 0013):** remains draft until an adopter needs
-  find-similar-deals or risk-pattern recall. Portfolio analytics already use the
-  corpus fact table and SQL; an embedding pipeline is not required for that.
-- **Renamed asset-class identifiers (draft RFC 0073, #263):** a module that
-  moves its namespace can already keep old documents resolvable by continuing
-  to declare each retired class id. RFC 0073 would declare the old and new ids
-  one class. It waits on StackUW's answers in the
-  [review](docs/rfcs/0073-previous-asset-class-identifiers.md) and owner acceptance.
-- **Investor profiles and portfolio/relationship consumers:** the data
-  surfaces exist, but reference consumers need concrete adoption requirements.
-- **Official module publication:** hospitality and data-center are approved together
-  as public npm packages. Both first published at 0.1.10 with core 2.18.0, through
-  the ordinary release workflow after the account bootstrap and trusted-publisher
-  setup; 0.1.11 followed with core 2.19.0, 0.1.12 with core 2.20.0 and 0.1.13 with core 2.21.0. Package semver is separate from the manifest contracts; exact core
-  pins and explicit host loading remain. RFC 0080 retires both: 0.2.0, a
-  declaration-free compatibility shell pinning core 3.0.0, published with
-  3.0.0 as their final version, and the owner deprecated both names on npm on
-  2026-10-11. RFC 0081 deleted both from the repository; 4.0.0 is the first
-  release without them.
-- **Excel, report and lake publication:** all three joined the release
-  workflow and first published from it with 3.0.0 (Excel 0.9.14, report
-  0.8.26, lake 0.2.10), so every package is on npm each release.
-- **DOCX output:** scoped out by the owner; reconsider on an actual adopter ask.
-- **Native bps units:** deferred until a pack demonstrates the required unit
-  and precision contract. This is not an unresolved Excel ROUND-parity defect.
-- **Relative periods, module-defined period series and stochastic VOI:** require
-  separate contracts; they are not implied by the released first implementations.
-
-## History and maintenance
-
-Release history is recorded in [CHANGELOG.md](CHANGELOG.md).
-
-For each future item, record its user need, acceptance state, implementation
-scope, proof of completion and publication state. Update the RFC frontmatter
-and index together after a release; keep detailed implementation notes in the
-maintainer working records. New normative behavior requires an RFC under
-[governance](GOVERNANCE.md); editorial status corrections do not change contracts.
+UWMD grows through explicit, testable contracts for commercial real-estate
+underwriting records. The [foundation](docs/FOUNDATION.md) describes what exists;
+[How UWMD grows](docs/HOW-UWMD-GROWS.md) explains how to extend it. This page
+describes directions rather than delivery dates or release prerequisites.
+
+## Current foundation
+
+The standard has Format 3.0, Protocol 4.1.0, a metric dictionary, complete
+tagged Envelope 2.0 representations and Reader/Verifier conformance tiers.
+Twelve official property classes have full builtin support. The independent
+Python implementation covers the base Verifier; optional profiles need their
+own implementation and evidence.
+
+The reference toolkit supplies authoring, verification, representations,
+receipts, signing, workbooks, reporting and collection projections. Bounded
+pro-forma verification is available through the CLI and public library.
+Loan-quote, offering-memorandum and appraisal fact profiles expose attributable
+facts and read-only candidates through the library and complete Lite views;
+their fact-operation CLI/MCP/HTTP bindings and Lite compilation are unsupported.
+Read the [document catalog](docs/document-types.md),
+[source-fact scope](docs/document-facts.md) and [known limits](docs/KNOWN-LIMITS.md).
+
+Current source can contain changes absent from an older npm artifact sharing
+its package version. Pin the actual source/artifact and inspect build identity.
+[VERSIONS](VERSIONS.md) records publication state and package pairings.
+
+## Growth paths
+
+### Official property types
+
+Add complete asset classes when the standard needs their meaning. Each official
+class gets sections, dictionary metrics, a pack, size registry, defaults,
+an example and Excel parity. Modules remain the extension path for third parties.
+Follow [ADD_ASSET_CLASS](docs/playbooks/ADD_ASSET_CLASS.md).
+
+Property interests, redevelopment transitions and other class boundaries should
+be described explicitly rather than inferred from marketing names or subtypes.
+Known-limit issues provide concrete inputs for those future contracts.
+
+### Dictionary metrics
+
+Extend the dictionary with exact inputs, formulas, units, null behavior and
+comparison precision. Keep ids stable in meaning and distinguish two financial
+definitions with different ids. A numerical convention needs an accepted
+decision and deterministic vectors before implementation.
+Follow [ADD_METRIC](docs/playbooks/ADD_METRIC.md).
+
+### Source documents and attributable facts
+
+Expand the [document catalog](docs/document-types.md) where an independently
+relied-on document purpose needs its own admitted facts, locators and lifecycle.
+Keep source statements, marketing claims, appraised opinions and adopted deal
+inputs distinct. Missing evidence stays missing; candidate edits remain reviewable.
+Follow [ADD_DOCUMENT_TYPE](docs/playbooks/ADD_DOCUMENT_TYPE.md).
+
+Bindings for existing fact profiles and additional document families can follow
+with their own complete admission, conflict, projection and conformance work.
+A listed planned family is not an implemented capability.
+
+### Non-property subjects
+
+Develop explicit subject identity and applicable sections for records whose
+subject is not a property. Borrower underwriting (RFC 0082) remains a draft;
+do not invent a property address to satisfy property validation.
+Follow [NON_PROPERTY_SUBJECT](docs/playbooks/NON_PROPERTY_SUBJECT.md).
+
+### Third-party extensions
+
+Use namespaced modules or `x_` extensions for meaning outside the builtin
+contract. Preserve base semantics and make unresolved capability visible.
+Official adoption remains a separate standards decision.
+Follow [THIRD_PARTY_MODULE](docs/playbooks/THIRD_PARTY_MODULE.md).
+
+### Conformance profiles and independent implementations
+
+Add finite, testable claims with explicit required and optional obligations.
+Keep the base Reader/Verifier requirements intact. Independent implementations
+can add optional profiles once their own cases and capability claims are proved.
+Follow [ADD_CONFORMANCE_PROFILE](docs/playbooks/ADD_CONFORMANCE_PROFILE.md).
+
+### Verification procedures
+
+Extend bounded verification for explicitly stated relationships, financing and
+returns as the necessary conventions are accepted. Levered and after-tax
+assertions need their own financial conventions; their names alone define none.
+Lease projections, payoffs, draw interest and holdback releases remain explicit
+growth boundaries in the known-limits list.
+Follow [ADD_VERIFICATION_PROFILE](docs/playbooks/ADD_VERIFICATION_PROFILE.md).
+
+Representations and transport bindings carry existing models or operations.
+They need their own fidelity, refusal and conformance contracts. Starter-product
+usability improvements follow reproducible authoring and verification findings.
+
+## How work lands
+
+Start with a small synthetic example and identify the missing meaning or
+incorrect check. Reuse an existing field, section, profile or representation
+where it already expresses the need. Normative work follows the RFC process
+with synchronized specification, schema, implementation and conformance changes.
+Update the catalog, playbooks and capability claims to match tested support.
+
+Scope follows completeness; adopter needs help prioritize it. Maintenance follows
+filed issues. Growth does not require an adoption count, a particular producer,
+a hosted service or use of the starter toolkit.
+
+## Release boundary
+
+5.0.0 remains the separately approved official launch, with every `@uwmd`
+package moving together. Prelaunch releases use 4.x with no backward-compatibility
+obligation. Format and Protocol remain separate contract streams.
+Postlaunch commitments are the existing
+[release rules](docs/playbooks/RELEASE_RULES.md). This roadmap authorizes no
+release, publication, deployment, listing or repository/account setting change.

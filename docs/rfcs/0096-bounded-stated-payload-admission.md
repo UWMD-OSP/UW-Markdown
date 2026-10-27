@@ -21,10 +21,10 @@ lease-up payloads (`LU-05`), recovery leaves (`REC-11`), capital-stack sizing
 claims (`CS-03`) and waterfall claims (`WF-16`). They validate stated structure,
 types and already specified bounds; they do not generate a model, recompute
 financial results, fetch unavailable sources or replace a financial verifier.
-**Accepted by the owner, 2026-10-19.** See [Resolution](#resolution).
+**Accepted by the UWMD maintainers, 2026-10-19.** See [Resolution](#resolution).
 
 This is governed preparation toward Issue354's complete `validate` capability.
-The independent Python checkpoint remains parse-only. Accepted RFC0095 is
+The independent Python revision remains parse-only. Accepted RFC0095 is
 implemented separately in merged PR392; its metadata population does not determine the
 payload population accepted here. RFCs0085/0089/0092 remain separate.
 
@@ -69,7 +69,7 @@ WIP tests include `test_validation_lease_up.py`,
 and `test_validation_refusal_reconciliation.py`.
 
 The nine TypeScript observations
-were executed against built TS checkpoint4b0e1ae1, whose RFC0095 changes do not
+were executed against built TS revision4b0e1ae1, whose RFC0095 changes do not
 change these four payload validators. They distinguish actual existing owners
 from the Python WIP's sometimes coarser field attribution. They are not future
 expectations. Main TS `lease-up-structure.ts`, validator
@@ -398,7 +398,7 @@ separately from the new allocations:
    present method:null => existing REC-02; absent method with only nullable
    null companions => admitted. Pin this precise qualification in synchronized
    text and controls before claiming the null discrepancy resolved. It is not
-   a new REC-11 condition; the owner accepted the precise qualification below.
+   a new REC-11 condition; the maintainers accepted the precise qualification below.
 4. LU stabilization_target allocation is accepted above, not retroactive
    acceptance of WIP LU-01 target errors. Existing registered target inversion
    stays LU-03; no new financial/period convention is inferred.
@@ -482,7 +482,7 @@ reviewable. Financial procedures and their existing result states stay separate.
 | Waterfall date | Allocate only the existing exact lexical date shape; do not import as_of/T1B or silently tighten calendar admission |
 | Financial selector/result meaning | Leave accepted fn/selector, calendar comparison, result/refusal and arithmetic rules unchanged |
 
-The owner accepted all six dispositions above exactly as written.
+The UWMD maintainers accepted all six dispositions above exactly as written.
 Target allocation, nullable recovery qualification and lexical waterfall dates
 are settled within this bounded scope. Any further normative conflict discovered
 during implementation must be surfaced rather than resolved through an
@@ -490,7 +490,7 @@ implementation convenience. No new numerical convention is introduced.
 
 ## Resolution
 
-Accepted by the owner, 2026-10-19, in
+Accepted by the UWMD maintainers, 2026-10-19, in
 [#394](https://github.com/UWMD-OSP/UW-Markdown/pull/394), with the six
 dispositions in [Accepted decisions from owner review](#accepted-decisions-from-owner-review):
 

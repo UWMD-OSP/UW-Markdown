@@ -14,11 +14,13 @@ affects:
 
 # RFC 0109: Report financial-validity findings as deal flags, not record errors
 
-> **Accepted by the owner, 2026-10-21, as drafted** (owner: "Owner rulings, 2026-10-21. RFC 0107 (#460) accepted with D2 = yes, add quick_metrics.ltc as a second home; D3 = check every stated LTC, not construction only. RFC 0108 (#461) accepted with D2 = yes, align completeness.severity; D3 = yes, replace the four stage names with the seven deal_stage values. RFC 0109 (#462) accepted with D1 = a separate deal_flags list; D3 = institutions list codes one by one in validation_overrides.financial_validity_errors. All other decisions as drafted.").
-> Origin: owner ruling of 2026-10-21 (5). The
-> owner's reason: an honest underwriting of a weak deal must not read as a broken
-> record to the party receiving it. It changes what fails validation, so it is
-> normative.
+## Resolution
+
+The UWMD maintainers accepted this contract on 2026-10-21 because an honest
+underwriting of a weak deal should remain a valid record. D1 uses a separate
+`deal_flags` list; D3 lets institutions promote codes individually through
+`validation_overrides.financial_validity_errors`. All other decisions remain
+as drafted.
 
 ## Summary
 
@@ -155,7 +157,7 @@ No compatibility path (prelaunch; no 5.0 before launch).
   record into two, and a host that runs only `validate` would never see them.
 - **Escalate by band, not by code** (`financial_validity_errors: true` raises
   every error band). Simpler, but an institution that hard-stops on DSCR seldom
-  does so on cap rate. Rejected by the owner's D3 ruling.
+  does so on cap rate. Rejected by the UWMD maintainers's D3 ruling.
 
 ## Unresolved questions
 

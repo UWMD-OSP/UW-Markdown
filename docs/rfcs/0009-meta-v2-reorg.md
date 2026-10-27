@@ -548,7 +548,7 @@ frontmatter version.
 
 ## Resolved questions
 
-Decided 2026-09-01 by the owner at the Phase 4 gate:
+Decided 2026-09-01 by the UWMD maintainers at the Phase 4 gate:
 
 1. **`lifecycle.version` is renamed `revision`.** Self-describing,
    no collision with frontmatter `uw_version`. (`seq` rejected as

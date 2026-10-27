@@ -41,7 +41,7 @@ An accepted RFC states:
   claimed, with exact source/artifact/runtime identities and raw streams. Declare
   fault injection and incomplete machine-write boundaries plainly.
 - [ ] Require selected profile coverage in Main CI before advertising it. Update
-  the manifest/docs only after proof and any independent/owner gate required by
+  the manifest/docs only after proof and any independent review or project owner approval required by
   that profile; source evidence is not proof for older registry code.
 
 ## 3. Review and completion

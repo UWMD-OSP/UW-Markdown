@@ -13,13 +13,14 @@ affects:
 
 # RFC 0111: Verify each record under the rule set of the version it declares
 
-> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0111 (#473) accepted as drafted, including D4: stricter security and soundness fixes apply to every kept rule set.").
-> Origin: owner ruling of 2026-10-21 on the
-> release rules after launch, rule (1): "a record is always verified under the
-> rule set of the version it declares, and every 5.x verifier keeps every
-> earlier 5.x rule set; a fix applies to new records only." It binds every
-> Verifier, so it is normative. It takes effect at the 5.0.0 launch; nothing
-> changes for prelaunch 4.x, which has one rule set.
+## Resolution
+
+The UWMD maintainers accepted verification under each record's declared rule
+set on 2026-10-21, including retention of earlier 5.x rule sets. D4 applies
+stricter security and soundness fixes to every retained rule set. The policy
+takes effect at the separately approved 5.0.0 launch; prelaunch 4.x has one
+rule set. These decisions make verification outcomes depend on the declared
+contract rather than whichever implementation release happens to run.
 
 ## Summary
 

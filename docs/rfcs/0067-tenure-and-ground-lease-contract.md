@@ -19,7 +19,7 @@ affects:
 
 **Draft proposal.** Drafted with AI assistance; reviewed by maintainers. An
 adopter's leasehold-acquisition plan is requirements evidence, not UWMD
-authority. No owner decision selects any of the semantics proposed here. The
+authority. No accepted decision selects any of the semantics proposed here. The
 owner has not accepted the RFC, and implementation is not authorized. Open
 decisions are listed in [Decision status](#decision-status).
 
@@ -415,11 +415,11 @@ RFC 0067 remains `draft`.
 | Ground-lease contract fields (stated lease facts only) | This draft | Proposal. |
 | Named §4.5 `ground_rent` line inside `total_operating_expenses` | This draft, following RFC 0060 and §4.5 structure | Proposal. |
 | `GL-NN` family, every code an error | This draft | Proposal. |
-| Home of the contract (A preferred; B, C, D) | — | **Owner decision required.** |
-| Leasehold without a named line: N1 (MUST state the line) or N2 (disclosure flag) | — | **Owner decision required.** |
-| Candidate line-to-schedule check: whether to have one, and its reference, tolerance and family | — | **Owner decision required.** Not emitted. |
-| Whether `leasehold` requires a contract object, and which contract fields are required | — | **Owner decision required.** The draft requires neither. |
-| Percentage rent in the first scope | — | **Owner decision required.** The draft defers it. |
+| Home of the contract (A preferred; B, C, D) | — | **Accepted decision required.** |
+| Leasehold without a named line: N1 (MUST state the line) or N2 (disclosure flag) | — | **Accepted decision required.** |
+| Candidate line-to-schedule check: whether to have one, and its reference, tolerance and family | — | **Accepted decision required.** Not emitted. |
+| Whether `leasehold` requires a contract object, and which contract fields are required | — | **Accepted decision required.** The draft requires neither. |
+| Percentage rent in the first scope | — | **Accepted decision required.** The draft defers it. |
 | `leased_fee`, exit adjustment, option and reset assumptions, §4.4 line, bifurcation, financing, lender reserves, projected resets | — | Deferred to separate contracts. |
 | Acceptance of RFC 0067 and implementation | — | Not decided. Not authorized. |
 

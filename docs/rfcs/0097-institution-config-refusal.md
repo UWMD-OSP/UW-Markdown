@@ -22,7 +22,7 @@ automatic sidecar still leaves validation defaults in force. A selected invalid
 file never becomes successful validation under defaults or partially applied
 overrides. Define two typed errors, deterministic preflight/transport and an
 atomic three-key adapter. No new financial threshold, formula or comparison
-rule is introduced. **Accepted by the owner, 2026-10-19.** See
+rule is introduced. **Accepted by the UWMD maintainers, 2026-10-19.** See
 [Resolution](#resolution).
 
 This RFC is separate from accepted payload admission RFC0096 and the Python
@@ -44,7 +44,7 @@ automatic adjacency. Read/JSON errors warn and fall back. Its exported
 `InstitutionConfig` type in `packages/uwmd-verify/src/types.ts` also describes
 that nested shape rather than the documented wire carrier.
 
-Two bounded, unintegrated checkpoints implement the three documented valid
+Two bounded, unintegrated validation passes implement the three documented valid
 keys: TS247d843458ccb4d34e94c551ffe5cc4db8614da5 and
 Python593c562d378464350bf20fccaee52befca96d920. Independent review passed13
 actual cross-runtime CLI controls: default behavior, nine strict below/equal/
@@ -75,7 +75,7 @@ conformance requirements, not claims of already executed refusals.
 
 ## Accepted contract
 
-The owner accepted all requirements in this section. This is a selected-config operation failure,
+The UWMD maintainers accepted all requirements in this section. This is a selected-config operation failure,
 not an additional document validation finding or generic schema-error code.
 
 ### Selection and operation boundary
@@ -139,7 +139,7 @@ profile choices, not inherited JSON MUSTs or reuse of document JCS admission.
 [RFC8259 section4](https://www.rfc-editor.org/rfc/rfc8259.html#section-4)
 recommends unique names; [section8.1](https://www.rfc-editor.org/rfc/rfc8259.html#section-8.1)
 permits parsers to ignore a BOM. They do not themselves select this stricter
-configuration profile. The owner accepted these stated choices.
+configuration profile. The UWMD maintainers accepted these stated choices.
 The root MUST be an object, not null or an array.
 
 The recognized carrier is an own `validation_overrides` member. Absence means
@@ -359,13 +359,13 @@ No model-generation, workflow, display or metric implementation work is included
 | Application and order | Atomic whole-config admission; explicit fixed primary-error precedence |
 | APIs/receipts | Pure caller maps remain separate; no receipt config loading or identity/count changes |
 
-The owner accepted all six dispositions above. No numerical convention is
+The UWMD maintainers accepted all six dispositions above. No numerical convention is
 unresolved or selected here. RFC0096 and RFCs0085/0089/0092 retain their own
 ownership and acceptance states.
 
 ## Resolution
 
-Accepted by the owner, 2026-10-19, in
+Accepted by the UWMD maintainers, 2026-10-19, in
 [#396](https://github.com/UWMD-OSP/UW-Markdown/pull/396), with the six
 dispositions in [Accepted decisions from owner review](#accepted-decisions-from-owner-review):
 

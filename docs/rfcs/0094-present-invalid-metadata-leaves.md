@@ -24,7 +24,7 @@ model-reference operation already established by RFCs0090/0091/0093. Add a
 separate ordered pass after the required booleans and before role/period/source
 checks. Conditional provenance references remain separate.
 
-**Accepted by the owner, 2026-10-18.** See [Resolution](#resolution).
+**Accepted by the UWMD maintainers, 2026-10-18.** See [Resolution](#resolution).
 
 ## Motivation
 
@@ -48,12 +48,12 @@ date parser nor one schema library's extra accepted spellings defines it.
 
 | Call | Decision | Basis |
 |---|---|---|
-| D1: code | One new `META-04`, error, with exactly the three field predicates below | Owner-directed bounded allocation; ProtocolIII.6a/XI registered errors |
+| D1: code | One new `META-04`, error, with exactly the three field predicates below | Accepted bounded allocation; ProtocolIII.6a/XI registered errors |
 | D2: applicability | All retained physical references, then current model-only references; exact identity deduplication | RFC0090 D3, RFC0091 applicability, RFC0093 D2/D5/D7 |
-| D3: placement | Complete old shape, RFC0093 P1/P2/P3, actor, META-02/03, then the complete META-04 pass; role/period/source remain later | Existing checkpoint order; no global issue sort |
+| D3: placement | Complete old shape, RFC0093 P1/P2/P3, actor, META-02/03, then the complete META-04 pass; role/period/source remain later | Existing validation pass order; no global issue sort |
 | D4: parent precedence | Existing rejected whole metadata shape suppresses META-04; nonobject/missing quality suppresses confidence only | RFC0090/0091 parent admission and RFC0093 D4 |
 | D5: presence | Own canonical leaf member, including null; no inherited member, convenience alias or inferred value | RFC0093 presence/authority; preserve existing absence allocations |
-| D6: timestamp | Owner-selected T1B exact UTC-Z profile below; no implementation-defined date parser | Owner2026-10-18 acceptance; reconcile Format2.5b/schema/ProtocolV.4 |
+| D6: timestamp | Accepted T1B exact UTC-Z profile below; no implementation-defined date parser | Accepted 2026-10-18; reconcile Format2.5b/schema/ProtocolV.4 |
 
 ## Accepted change
 
@@ -145,10 +145,10 @@ parser inventory assesses only supplied collections. Other representations,
 including Lite's compiled-model path, retain their accepted operation boundaries.
 This does not promote historical financial values or decide RFC0085.
 
-Keep every existing checkpoint and unrelated finding in its current relative
+Keep every existing validation pass and unrelated finding in its current relative
 order. After completing all META-02/03 findings, emit the complete META-04 pass in
 the union order above, per block confidence, revision, timestamp. Only then run
-the existing role/period/source checkpoints. Do not interleave another block's
+the existing role/period/source validation passes. Do not interleave another block's
 META-04 with actor or boolean passes or globally sort by code.
 
 ### Results and transport
@@ -164,16 +164,13 @@ New receipt policy counts follow the actual validation result. This allocation
 changes no source digest, signed subject, receipt wire contract, issuance rule,
 authentication order or verifier verdict precedence. Validation remains read-only.
 
-## Owner-selected timestamp profile — T1B
+## Timestamp profile — T1B
 
-Owner2026-10-18 selected T1B in response to this exact question:
-
-> Draft RFC0094 is now concrete in PR #387: https://github.com/UWMD-OSP/UW-Markdown/pull/387. Which timestamp reader profile should it specify? I recommend T1B: exact Gregorian YYYY-MM-DDTHH:mm:ss[.digits]Z, year0000–9999, uppercase T/Z, seconds00–59, no offsets or normalization. T1A instead admits RFC3339 offsets/lowercase and also needs a deterministic leap-second policy. Format’s ISO8601 wording, schema date-time and the UTC writer rule do not select one reader domain. This selects draft direction only; final RFC acceptance and activation remain separate.
-
-> T1B: exact UTC-Z (Recommended)
-
-That selection resolved the earlier T1 direction. The owner's acceptance recorded
-in [Resolution](#resolution) covers the complete RFC.
+The UWMD maintainers selected T1B on 2026-10-18 because the earlier ISO8601,
+schema date-time and UTC writer wording did not select one reader domain.
+The exact Gregorian UTC-Z predicate below admits no offsets or normalization;
+the alternative T1A profile was not selected. The acceptance recorded in
+[Resolution](#resolution) covers the complete RFC.
 
 ### Exact accepted UTC-Z predicate
 
@@ -208,11 +205,11 @@ Format2.5b says ISO8601; the schema assertion is string/date-time while descript
 and ProtocolV.4 specify UTC writes. These facts alone did not establish the exact
 reader domain. T1B explicitly chooses the narrower profile and therefore requires
 synchronized Format/Protocol prose and schema assertions at implementation time.
-It is an owner-accepted profile, not an inferred existing restriction.
+It is an accepted profile, not an inferred existing restriction.
 
 The alternative T1A would follow RFC3339 section5.6 grammar and section5.7
 restrictions, admitting coloned numeric offsets and lowercase t/z with a frozen
-deterministic leap-second policy. The owner did not select it. There is no
+deterministic leap-second policy. The maintainers did not select it. There is no
 implementation-defined choice between the two profiles.
 
 Repository tooling observations remain evidence only: ajv-formats3.0.1 accepts
@@ -298,7 +295,7 @@ remain the authority for reproduction, not a local mutable worktree.
 
 ### Selected T1B evidence — bounded preimplementation evidence
 
-After the owner selected T1B, a narrow timestamp-only Git-0450 capture retained
+After the maintainers selected T1B, a narrow timestamp-only Git-0450 capture retained
 all1509 present timestamp values and their source identities. Independent exact
 UTC-Z classification admits1501 and rejects exactly the same8 `<volatile>`
 comparison-template markers: no additional candidate delta. Combined with the
@@ -355,7 +352,7 @@ function, generic fallback, manifest capability or complete Verifier claim.
 ## Alternatives considered
 
 - Expand META-01: confuses admitted leaf values with its accepted closed
-  wrapper/actor/P1/P2/P3 list; the owner directed a separate META-04.
+  wrapper/actor/P1/P2/P3 list; the maintainers decided a separate META-04.
 - Broaden META-02/03: confuses confidence, revision and timestamp with their
   two exact boolean predicates.
 - One generic schema refusal: captures unrelated conditional/optional/payload
@@ -367,12 +364,12 @@ function, generic fallback, manifest capability or complete Verifier claim.
 
 ## Resolution
 
-Accepted by the owner, 2026-10-18, in
+Accepted by the UWMD maintainers, 2026-10-18, in
 [#387](https://github.com/UWMD-OSP/UW-Markdown/pull/387):
 
 > RFC 0094 (#387) is accepted as drafted at 47e6a547: META-04/error only for present-invalid confidence, revision and timestamp (T1B), absence warnings and META-01/02/03 unchanged; mark it ready, merge on green, then implement it in TS and Python on the #354 lane.
 
-The timestamp profile is the owner-selected T1B above. Implemented in
+The timestamp profile is the accepted T1B above. Implemented in
 TypeScript and Python in [#388](https://github.com/UWMD-OSP/UW-Markdown/pull/388).
 The exact lexical/calendar boundaries are required implementation controls; no
 installed format library defines additional accepted spellings.
@@ -391,7 +388,7 @@ separate. RFC0085/0089/0092 and numerical semantics are untouched.
 - [JSON Schema2020-12 date/time formats](https://json-schema.org/draft/2020-12/json-schema-validation#section-7.3.1)
   references [RFC3339 section5.6](https://www.rfc-editor.org/rfc/rfc3339#section-5.6).
   Their specified domain must be distinguished from a particular library's
-  measured extensions. No quoted external text establishes an owner decision.
+  measured extensions. No quoted external text establishes an accepted decision.
 
 ## AppendixA: Exact source candidates
 

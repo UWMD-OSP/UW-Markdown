@@ -62,7 +62,7 @@ records finite/signed-zero/infinity words separately from NaN classes, and keeps
 mathematical disagreements visible. A new optional --output path is opened
 exclusively: existing files cannot be overwritten. No baseline generation mode.
 
-## Observed bounded checkpoint
+## Observed bounded revision
 
 Eleven focused unittest methods pass on **CPython 3.12.3, Windows 11 build
 26200, AMD64**. The final observation was generated from checkout

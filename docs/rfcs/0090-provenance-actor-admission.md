@@ -49,9 +49,9 @@ actual consuming operations and governed expectation changes.
 
 | Decision | Accepted contract | Basis |
 |---|---|---|
-| D1 | Narrow META-01/error actor admission; arbitrary nonempty strings, no inferred attribution | Owner decision; already-required schema/type |
-| D2 | Existing shape and whole-missing-meta precedence; shape then actor then later families | RFC0081 and explicit owner-approved ordering |
-| D3 | Retained physical references plus mutable-model identity union; no silent raw reparse | Owner-approved source/model authority and historical scope |
+| D1 | Narrow META-01/error actor admission; arbitrary nonempty strings, no inferred attribution | Accepted decision; already-required schema/type |
+| D2 | Existing shape and whole-missing-meta precedence; shape then actor then later families | RFC0081 and explicit accepted ordering |
+| D3 | Retained physical references plus mutable-model identity union; no silent raw reparse | Accepted source/model authority and historical scope |
 | D4 | Synchronized prose/validators/governed expectations; unchanged existing schema and versions | Joint contract and independent material review |
 
 ## Accepted contract
@@ -100,10 +100,10 @@ and MUST NOT suppress actor admission. This RFC assigns neither condition a new
 report an uncovered requirement honestly rather than invent that allocation.
 
 Keep every preexisting visible-model metadata-shape finding at its original
-checkpoint and in its original order. Append newly exposed retained-physical
+validation pass and in its original order. Append newly exposed retained-physical
 shape findings there in physical source order, deduplicating block references
 already shape-checked through the visible model. All shape findings precede the
-new actor findings. Insert the actor pass after that shape checkpoint and before role, period-series
+new actor findings. Insert the actor pass after that shape validation pass and before role, period-series
 and source-vocabulary checks. Retain the relative order of all old TypeScript ValidationResult findings.
 The partial Python inspector is not that DTO: its explicit registered/local
 shape separation below is a governed correction, not a claim to preserve its
@@ -193,7 +193,7 @@ new receipt's policy error count0-to1 and signing preimage only by that count;
 unsigned own/cross verification remains verified. This supplies no real signature
 backend proof and asserts neither universal receipt invariance nor a new refusal.
 
-Apply the [owner's prelaunch compatibility policy](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16):
+Apply the [owner's prelaunch compatibility policy](../../VERSIONS.md#public-launch-policy):
 all pre5 releases are historical, with no old-reader, grandfathering or migration
 shim requirement. Format/Protocol/package versions remain independent decisions
 for their actual changes. This RFC selects none.
@@ -206,7 +206,7 @@ portable document stems below are under `conformance/documents/fixtures/`
 (`.uwx.md`) and `conformance/documents/expected/` (`.validation.json`); the
 original pair for each is pinned by the exact main commit above and the linked
 packet. The candidate independently reproduces these actor counts and CLI exits.
-The expectations below are the owner-approved governed disposition; the original
+The expectations below are the accepted governed disposition; the original
 commit remains the historical baseline.
 
 | Stem | Executed additional actor errors | Original status/CLI exit |
@@ -298,7 +298,7 @@ capability.
 ## Alternatives considered
 
 - A dedicated actor error adds vocabulary but requires a new registered code;
-  the narrow `META-01` extension reuses the structural-admission checkpoint.
+  the narrow `META-01` extension reuses the structural-admission validation pass.
 - `META_FIELD_MISSING_ACTOR`/warning changes the closed five-name completeness
   family, misses malformed present values and does not provide this refusal.
 - Inferring actor from `source`, email, agent id or a local user fabricates
@@ -313,7 +313,7 @@ capability.
 
 ## Resolution
 
-Accepted by the owner: the diagnostic allocation, operation boundary,
+Accepted by the UWMD maintainers: the diagnostic allocation, operation boundary,
 ordering, historical applicability and governed expectations, as recorded in
 decisions D1–D4 above. Implemented in
 [#376](https://github.com/UWMD-OSP/UW-Markdown/pull/376), which updates all 37

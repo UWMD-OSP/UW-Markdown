@@ -246,7 +246,7 @@ jobs:
           fi
 
       # @uwmd/excel, @uwmd/report and @uwmd/lake join every release after
-      # 2.21.x (owner direction: every package is on npm every release). Each
+      # 2.21.x (publication policy: every package is on npm every release). Each
       # package existed on npm before its trusted publisher was configured:
       # Excel and report have a deprecated stray 0.3.0, and lake 0.2.9 was
       # published by hand from the v2.21.0 tag. Their versions are above those,

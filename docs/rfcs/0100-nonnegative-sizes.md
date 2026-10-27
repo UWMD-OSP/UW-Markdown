@@ -14,7 +14,7 @@ affects:
 
 # RFC 0100: Refuse negative sizes, counts, areas and rents
 
-> **Accepted by the owner, 2026-10-20, with D2 decided** (owner: "RFC 0100
+> **Accepted by the UWMD maintainers, 2026-10-20, with D2 decided** (owner: "RFC 0100
 > (#418) is accepted with D2 = a new SIZE-01 code (not CLS-04), and D3 as drafted
 > (zero stays admissible); implement it"). The text below is amended to the
 > chosen code; every other decision stands as drafted. Origin: issue
@@ -133,7 +133,7 @@ owes `SIZE-01` at the field. One clean control states zero for a secondary size
 
 - **Reuse `CLS-04`** (the draft's proposal). `CLS-04` already means "a stated
   official field violates its fixed field contract" for the class contracts.
-  The owner chose a new `SIZE-01` instead (D2), so the generic contract is
+  The maintainers chose a new `SIZE-01` instead (D2), so the generic contract is
   distinct in a code list from the class-specific ones.
 - **Bound every numeric field ≥ 0.** Wrong: concessions, credits, losses and net
   cash flows are signed by design.

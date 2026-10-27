@@ -12,7 +12,7 @@ affects:
 
 # RFC 0039: Data-center module — the first product module on a module-declared asset class
 
-**Packaging superseded by [RFC 0080](0080-official-classes-are-builtins.md).** Official class content now ships as a full builtin. The recorded field, calculation and owner decisions remain its design history.
+**Packaging superseded by [RFC 0080](0080-official-classes-are-builtins.md).** Official class content now ships as a full builtin. The recorded field, calculation and accepted decisions remain its design history.
 
 
 > RFC 0003 opened the asset-class enum to modules and RFC 0006 shipped

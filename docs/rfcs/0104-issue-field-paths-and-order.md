@@ -12,16 +12,15 @@ affects:
 
 # RFC 0104: Validation issue field paths and issue order
 
-> **Accepted by the owner, 2026-10-20, as drafted** (owner: "RFC 0104 accepted as drafted (D1 dotted paths from the payload/frontmatter root, D2 issue order not normative, D3 array elements by index, D4 no version allocated)").
-> Origin:
-> [#424](https://github.com/UWMD-OSP/UW-Markdown/issues/424), found while
-> certifying the independent Python implementation (#354). It changes what a
-> validation result says, so it is normative. Implementation follows acceptance.
+## Resolution
 
-> **Owner rulings, 2026-10-21.** D2 has one normative exception: the
-> RFC 0093–0096 metadata and payload passes keep their fixed order (Protocol
-> §III.6a). A frontmatter-scoped issue carries `section` `"frontmatter"` in
-> every implementation.
+The UWMD maintainers accepted D1–D4 on 2026-10-20 to resolve the independent
+Python comparison in [#424](https://github.com/UWMD-OSP/UW-Markdown/issues/424)
+and #354: dotted paths from the payload/frontmatter root, array indices for
+array elements, generally non-normative issue order, and no new version allocation.
+The 2026-10-21 clarification retains the fixed RFC 0093–0096 metadata/payload
+pass order under Protocol §III.6a. Every implementation gives a
+frontmatter-scoped issue `section` `"frontmatter"`.
 
 ## Summary
 
