@@ -9,12 +9,11 @@ New profiles require an accepted RFC and working conformance cases.
 
 **Available** means a current contract and reference implementation exist;
 it does not mean every binding implements it. **Draft** names a proposal awaiting
-acceptance. **Planned** describes a bounded future contract, with no registered
-profile id or implementation claim. **Evidence only** has no independent fact
+acceptance. **Planned** describes a bounded future contract, with no implementation claim (an accepted RFC may reserve its proposed id). **Evidence only** has no independent fact
 profile in this catalog. Availability here describes current source, not the
 older code that may share its npm version; see [build status](wiki/13-status.md).
 
-Count by catalog row: **12 available, 5 draft, 11 planned, 6 evidence only**.
+Count by catalog row: **12 available, 2 draft, 14 planned, 6 evidence only**.
 These are logical families, including supporting artifacts; they are not 34
 registered document profiles. A profile describes purpose and permitted content
 ([RFC0018](rfcs/0018-document-profiles-and-deal-packages.md)). JSON, XML and CSV
@@ -51,21 +50,25 @@ not an executed lease eligible for the rent-roll projection.
 |---|---|---|---|
 | Borrower underwriting | Non-property borrower facts and a corporate term loan | Proposed `corporate_financials`, `borrower_term_loan` | `borrower-underwriting-v1`, [RFC0082](rfcs/0082-borrower-underwriting-profile.md) |
 | Ground-lease/tenure contract | Ownership interest and ground-lease terms | Proposed tenure/ground-lease fields | [RFC0067](rfcs/0067-tenure-and-ground-lease-contract.md); no implemented standalone profile |
-| Loan quote/term-sheet abstract | Quoted terms, conditions, expiry and source locators | Explicit proposals into `debt_structure`; no loan selection | Proposed `loan-quote-v1`; combined release-profile RFC pending |
-| Offering-memorandum abstract | The offering's stated facts, periods and assumptions | Existing `property`, `rent_roll`, `operating_statement`, `valuation` fields when meanings match | Proposed `offering-memorandum-v1`; combined release-profile RFC pending |
-| Appraisal abstract | Stated opinion, effective/report dates, approach and conditions | Existing `valuation.appraised_value` and appraisal fields; `due_diligence.appraisal` | Proposed `appraisal-abstract-v1`; combined release-profile RFC pending |
 
-The last three are the recommended release candidates. They reuse existing fact
-homes and introduce no financial procedure. A quoted LTV ceiling is not a
-computed LTV. An offering price is not an agreed purchase price. An appraisal
-opinion is not an underwritten value or an instruction to select an LTV basis.
 Drafts are not accepted input contracts and generic preservation of their
 profile ids does not establish validation or verification support.
 
 ## Planned
 
-Each row is the bounded specification for a possible future profile. All ids
-are **unassigned**. No source value is promoted without an explicit reviewed
+The first three designs are accepted by [RFC0129](rfcs/0129-document-fact-profiles.md)
+and await implementation; they are not available yet. A quoted LTV ceiling is
+not computed LTV, asking price is not purchase price, and appraised value is not
+underwritten value.
+
+| Accepted design | Intended contribution | Reserved profile id |
+|---|---|---|
+| Loan quote/term-sheet abstract | Existing stated `debt_structure` facts only; no loan selection or sizing results | `loan-quote-v1` |
+| Offering-memorandum abstract | The six explicitly allowed property/appraisal facts; price, NOI and schedules remain unmapped | `offering-memorandum-v1` |
+| Appraisal abstract | Existing five `valuation` appraisal facts; no underwritten value or opinion selection | `appraisal-abstract-v1` |
+
+Each remaining row is the bounded specification for a possible future profile.
+Their ids are **unassigned**. No source value is promoted without an explicit reviewed
 edit, and no legal finding is inferred from an absent term.
 
 | Type | Bounded future contract and record contribution |

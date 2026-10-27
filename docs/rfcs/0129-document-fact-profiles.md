@@ -1,7 +1,7 @@
 ---
 rfc: 0129
 title: Catalog document families and add three attributable fact profiles
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-26
 affects:
@@ -19,8 +19,9 @@ Adopt a document-type selection rule and catalog, then implement three bounded
 profiles: `loan-quote-v1`, `offering-memorandum-v1` and `appraisal-abstract-v1`.
 They carry source-located facts for existing record fields, not new calculations.
 Each exposes reviewed candidate edits with an omission/conflict report. This
-RFC is a **draft**: no id is registered, schema accepted or support claimed by
-publication of this proposal. Acceptance and implementation are still required.
+RFC is **accepted** by the owner on 2026-10-26: “yes to the codex list”.
+Implementation follows in a separate PR under that explicit direction. Acceptance
+alone does not register an implemented profile or claim support.
 
 ## Motivation
 
@@ -274,7 +275,8 @@ source-period and variant choices have an explicit contract.
 
 ## Unresolved questions
 
-Owner acceptance of this combined scope is required.
+The owner accepted this combined scope on 2026-10-26: “yes to the codex list”.
+No normative decision changed from the approved draft.
 No new financial convention is requested: any later discovery of one returns
 as a concrete acceptance question rather than an implementation assumption.
 The remaining11 planned catalog families have paragraph specifications only;
