@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Accept RFC0129’s three source-fact profile designs; implementation and support claims follow separately.
+
 - Fix #587: use the patched Vitest4.1.12 development toolchain while retaining the existing test assertions and coverage requirements.
 
 - Fix #588: use the SDK-supported patched Zod4 dependency and preserve the MCP connector's advertised closed argument schemas.
