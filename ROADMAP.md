@@ -1,68 +1,56 @@
 # Roadmap
 
-Reconciled **2026-10-16** (America/Phoenix) for published and independently
-verified **4.3.0**, pairing core/CLI 4.3.0 and verifier 0.2.1 with Protocol 4.1.0
-and Format 3.0. The forward priorities are complete independent verification,
-deterministic procedures and lossless exchange. Model generation, agents and
-workflows belong to producing products, not the standard. This roadmap is
-directional, not release approval.
-Reference coverage alone does not establish independent interoperability or
-complete financial reproducibility. Draft RFCs are not accepted contracts.
+Current source direction, updated 2026-10-26. UWMD is a usable verification
+standard with documented limits and clear growth paths. It does not need an
+adoption target to be useful. After launch, maintenance follows filed issues;
+planned capabilities are directions, not promised delivery dates.
 
-## Reserved milestone: 5.0, the coordinated public launch
+Read the [foundation](docs/FOUNDATION.md),
+[growth paths](docs/HOW-UWMD-GROWS.md),
+[document catalog](docs/document-types.md) and
+[known limits](docs/KNOWN-LIMITS.md) before the historical milestones below.
+They distinguish current source, published artifacts and unaccepted proposals.
 
-The [owner launch rule, 2026-10-17](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
-reserves 5.0.0 for the official public launch. Every `@uwmd` npm package moves
-to 5.0.0 together then. Before launch, releases use 4.x.x from main as needed.
-Format, Protocol and other documents remain independently versioned surfaces.
+## The separately approved 5.0 launch
 
-The launch still requires separate explicit owner approval. This roadmap
-allocates no version, release, tag or publication. Normative changes continue
-through their applicable RFC, synchronized contract/conformance and independent
-verification gates; the public refresh does not accept any draft RFC.
+The [public launch rule](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+reserves 5.0.0 for the official launch, when every `@uwmd` package moves together.
+Current prelaunch work stays 4.x with no backward compatibility obligation.
+Format and Protocol remain separately declared contracts, mapped in VERSIONS.
+No launch date, release, tag, publication, deployment or directory listing is
+authorized by this roadmap. Normative changes still need acceptance and
+synchronized specification, implementation and conformance.
 
-**Interim 4.3.0 published and independently checked (2026-10-15):** #351
-merged preparation as `80c68c3d`; annotated `v4.3.0` targets that exact commit.
-The established Release 38821844153 published all 8 independent versions with
-provenance. Verification 38822782450 checks registry identities, tarball hashes,
-signatures/provenance, fresh consumers and the published CLI 350/350. See the
-[publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
-The #346 documented CLI behavior and #347/#348 financial correctness repairs ship;
-#350's audit/regressions remain the basis for further work. Format 3.0 and
-Protocol 4.1.0 are unchanged. No 5.0 action or production deployment is included.
+## What is built and what can grow
 
-The [post-publication decision packet](https://github.com/UWMD-OSP/UW-Markdown/pull/353)
-records RFC 0085–0087 alternatives. They remain drafts. #349's exact paired renderer
-and starter-golden correction is now owner-approved and merged at `a18ed8ee`;
-source order/years, amounts, CC-06, validation and financial calculations remain
-unchanged. Its prior baseline-review hold is resolved.
-
-### Foundational verification sequence — proposed launch criteria
-
-Owner direction preserves RFC 0078 and RFC 0083: UWMD defines financial meanings
-and verifies declared assertions; StackUW and other adopters construct models.
-A comprehensive generation engine is **not** a 5.0 prerequisite. No launch date or
-release preparation is authorized by this plan.
-A lender acceptance kit (a lender requirements crosswalk, lender-side worked
-deals, mappings to the formats lenders ingest and a credit-memo view) is a
-post-launch 5.x milestone, not a launch criterion (owner, 2026-10-21).
-
-| Order / workstream | Deliverable / decision | Actual dependency and evidence |
+| Area | Current boundary | Growth route |
 |---|---|---|
-| Accepted: [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356), [RFC 0088](docs/rfcs/0088-pin-financial-numerical-procedures.md) | One pinned pow/exp/log procedure and authenticate-first receipt precedence are accepted and implemented on main | Independent numerical and spreadsheet evidence is recorded in the accepted RFC; spreadsheet recalculation findings are export-contract limits. This row proposes no new numerical convention |
-| Active: [#354](https://github.com/UWMD-OSP/UW-Markdown/issues/354) | Independent Python Reader/Verifier: parse/calc foundation is on main; complete validation and remaining verification obligations continue | Accepted RFC 0088 is available. Discovery remains parse-only until complete capability requirements and independent conformance certification pass; dictionary, stated results and receipts remain separate obligations |
-| Bounded optional assurance: [#355](https://github.com/UWMD-OSP/UW-Markdown/issues/355) | First bind headline returns to exact streams/methods/periods/variants/source identities; optional declared acquisition-ledger coverage; additional named identities require their own justified contracts | Define applicability and assertion-counting before coverage reports. Verify scoped claims, not the entire producer model. Financially verified/stated-only/failed/unverifiable remain distinct. Numerical methods depend on #356; profile-specific evidence follows acceptance |
-| Provenance: [draft 0085](https://github.com/UWMD-OSP/UW-Markdown/pull/335) | Complete retained source as authority; distinct history projections; scoped authentication/continuity evidence | Owner architectural preference is design direction, not RFC acceptance. Resolve launch-Reader projection safety, missing predecessors and archive/authentication contracts before implementation; prelaunch support is not required |
-| Financial reconciliation: draft 0086 / draft 0087 | Data-center purchase-price authority and hospitality comparable revenue bases | Separate owner decisions on source/variant/scenario/period/scope/precision; no universal equality or revised metric formulas inferred |
-| Cross-implementation / spreadsheet assurance | Independently verified scoped results and actual recalculation for supported spreadsheet claims | Accepted contracts and explicit source/method scope. Emitted literals/caches and the Node-backed portable driver are not independent recalculation/implementation evidence |
+| Standard and reference | Format 3.0, Protocol 4.1.0, complete tagged Envelope 2.0 and coordinated JSON/XML/CSV mappings; Reader/Verifier tiers | Accepted RFCs and conformance; starter products remain separate from the standard |
+| Official property classes | Twelve full builtins, including hospitality; each has standard and starter support | New official types follow the full-kit asset-class playbook; third-party modules remain separate |
+| Independent Python | Base Verifier complete in #354/PR555, with required portable conformance on three platforms | Optional profiles need their own implementation and capability proof |
+| Bounded pro-forma | RFC0092 plus accepted clarifications; CLI/public-library support proved at source e2bd0067 by closed #551/#552 | Required Main CI profile gate protects subsequent source; MCP/HTTP are not yet bindings for this profile |
+| Integrity and provenance | Current accepted visible-history, source-authority and coordinated-subject contracts | A new assurance claim needs its own justified scope; descriptive names do not authenticate identity |
+| Document types | Existing families cataloged; loan quote, OM and appraisal are proposed in draft RFC0129 | Owner acceptance before implementation; remaining families stay planned |
+| Usability | Authoring tools, local connector/skill and synthetic examples exist; limits are stated | Newcomer findings and reproducible issues guide corrections; listings and launch wiring remain held |
 
-A full pro forma row-checking expansion, revenue/expense forecasting, debt-model
-construction, scenarios, arbitrary custom-model mechanics, L2/L3, every lender
-program or every optional Python profile is not automatically required for launch.
-Each extra relationship needs a concrete assurance claim and normative justification.
-The earlier engine-first planning proposal is superseded as the working scope.
-Issue 343 stays open with its remaining durable dispositions. RFC 0085–0087 remain
-separate proposed foundational launch components, not automatically deferred.
+The published npm 4.3.0 generation is pinned to its original release commit
+`80c68c3d0950948c85a1d3a90c02cd05f3a650a4` (2026-10-15). Main contains later
+unpublished work while package numbers remain unchanged. Do not use a shared
+version string as proof that a registry artifact contains current source. Use
+the documented source workflow and record its commit when checking current
+contracts. The [version matrix](VERSIONS.md) records actual publication state.
+
+A comprehensive model-generation engine is not a launch prerequisite. Producers
+construct underwriting; UWMD verifies declared facts and relationships. Lender
+crosswalk/acceptance-kit research is only pursued if requested, not a scheduled
+postlaunch milestone. Non-property borrowing (RFC0082), ground-lease tenure
+(RFC0067) and the new document profiles remain drafts until accepted.
+
+## Historical milestones and capability backlog
+
+The material below records earlier publications and candidate work. It does not
+supersede current capability manifests, accepted contracts or the catalog's
+status. It creates no adoption threshold or automatic release prerequisite.
 
 ## Historical publication: 4.2.0
 

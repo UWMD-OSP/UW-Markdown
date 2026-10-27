@@ -18,9 +18,13 @@ This repository is the home of the standard:
 - [`packages/uwmd-verify/`](packages/uwmd-verify/) — `@uwmd/verify`, the reference TypeScript implementation of the standard: read and verify a `.uw.md` with nothing else installed.
 - [`packages/uwmd-core/`](packages/uwmd-core/) — `@uwmd/core`, the reference TypeScript library and CLI: the starter toolkit on top of `@uwmd/verify`, whose whole API it re-exports.
 - [`conformance/`](conformance/) — fixtures and expected outputs implementers self-certify against.
-- [`tools/`](tools/) — starter tools (single-file web viewer, VS Code extension, VitePress documentation site; more planned). The calc engine, editor, viewer, Excel exporter, defaults and AI agents are non-normative starter products ([`docs/starter/`](docs/starter/README.md)).
+- [`tools/`](tools/) — starter tools (single-file web viewer, VS Code extension, VitePress documentation site; more planned). The calc engine, editor, viewer, Excel exporter, defaults and host integration guidance are non-normative starter products ([`docs/starter/`](docs/starter/README.md)).
 - [`examples/`](examples/) — sample deal files covering all twelve builtin asset classes in `.uwx.md` plus a UW Lite `.uw.md` summary. `Parkview-Apts-Glendale-AZ`
   exists in **both** representations, so the two can be read side by side.
+
+Read the [foundation](docs/FOUNDATION.md), [growth paths](docs/HOW-UWMD-GROWS.md),
+[document types](docs/document-types.md) and [known limits](docs/KNOWN-LIMITS.md)
+for the current boundary and how to extend it.
 
 ## Why a standard?
 
@@ -37,6 +41,11 @@ losing fidelity. Its text form is a portability property, not the product
 constraint.
 
 ## Quick start
+
+The npm quickstart exercises the published package. Main contains newer
+unpublished work with the same prelaunch package numbers. For current source
+contracts, use the source workflow below and record `git rev-parse HEAD`; a
+version string alone does not identify that code.
 
 **No clone needed** — install the scoped CLI package and scaffold or validate a deal file with:
 
@@ -91,9 +100,9 @@ that frozen source. Pro-forma has no MCP or HTTP binding yet.
 To open the reference web viewer, point any browser at
 [`tools/web-viewer/index.html`](tools/web-viewer/) and drop in a `.uwx.md` file.
 
-## What ships in v1
+## What is built
 
-- The format spec (`UW_FORMAT_SPEC.md`) — 21 standard sections, validation rules, supersede semantics.
+- The format spec (`UW_FORMAT_SPEC.md`) — registered sections, validation rules and supersede semantics.
 - The protocol spec (`UW_PROTOCOL.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 4.1.0; RFCs 0078, 0081 and 0084). Display, editing, defaults, the agent writer conventions, the CLI and the renderers are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
 - `@uwmd/core` - parser, validator, renderer, the generic block writers and the context profiles. It runs no agent; a host runs its own and writes through the writers or the edit API.
 - A conformance corpus per tier so third parties can self-certify.
@@ -101,16 +110,14 @@ To open the reference web viewer, point any browser at
 
 ## Roadmap
 
-The full, status-tracked roadmap lives in [ROADMAP.md](./ROADMAP.md). Highlights:
-
-- **Shipped in v1** — Tier-1/2/3 implementation, the conformance runner, the JSON
-  Schemas, and the tool set (VS Code extension, docs site, web editor, Excel
-  converter, PDF report pipeline, standalone CLI).
-- **Shipped in v1.1** — machine interchange: a shared document envelope with
-  lossless JSON, XML, and normalized CSV-bundle codecs, plus HTTP/MCP companion
-  bindings, under accepted [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
-- **Next** — additional asset-class calc packs, starting with hospitality.
-- **v2 spec exploration** — locale negotiation, lease-up modeling, `_meta` v2, portfolio relationships. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/). The signing chain shipped 2026-08-27: signed blocks ([RFC 0010](./docs/rfcs/0010-signed-blocks.md), protocol §V.11) and module signatures ([RFC 0002](./docs/rfcs/0002-module-signing.md), protocol §X.1), both on the optional [`@uwmd/signing`](./packages/uwmd-signing/) package; core stays crypto-free. A language-agnostic conformance driver ([RFC 0004](./docs/rfcs/0004-conformance-runner-v2.md), protocol §II.6a) shipped alongside, so an implementation in any language can self-certify against the same corpus — see [`conformance/runner/`](./conformance/runner/README.md). And [RFC 0006](./docs/rfcs/0006-hospitality-module.md) gave the module system its first real consumer, a hospitality module, plus the runtime that actually executes what a module declares; RFC 0080 later folded hospitality into core as a builtin. [RFC 0003](./docs/rfcs/0003-module-asset-classes.md) then let a module declare its own **asset class** — third-party classes have a namespaced space. [RFC 0080](./docs/rfcs/0080-official-classes-are-builtins.md) makes all official classes full builtins: twelve equal standard and starter surfaces, with future official additions by RFC.
+The [roadmap](ROADMAP.md) separates published artifacts, current source and
+future proposals. All twelve official asset classes already have full builtin
+support, including hospitality. The base Python Verifier is complete; bounded
+pro-forma support is scoped to the CLI/public library at the documented source.
+New document families and optional procedures follow the
+[growth playbooks](docs/HOW-UWMD-GROWS.md), with acceptance and conformance before
+support is claimed. Planned types are not delivery promises. There is no
+adoption target; maintenance after launch follows filed issues.
 
 ## Who's building on it
 
@@ -135,7 +142,7 @@ This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md).
 - [MAINTAINERS.md](./MAINTAINERS.md) — current maintainers and areas of ownership.
 - [SECURITY.md](./SECURITY.md) — how to report a vulnerability.
 - [CHANGELOG.md](./CHANGELOG.md) — release-by-release history.
-- [UW XML Mapping 1.0](./spec/UW_XML_MAPPING.md) — deterministic, lossless XML representation and secure decoding rules.
+- [UW XML Mapping 2.0](./spec/UW_XML_MAPPING.md) — deterministic, lossless XML representation and secure decoding rules.
 - [UW Document Envelope 2.0](./spec/UW_ENVELOPE.md) — complete model, tagged extensions and coordinated subject identities.
 - [UW CSV Bundle 2.0](./spec/UW_CSV_BUNDLE.md) — normalized CSV tables, deterministic ZIP, safe extraction, and named views.
 - [HTTP Binding 1.0](./spec/bindings/UW_HTTP_BINDING_v1.md) and [MCP Binding 1.0](./spec/bindings/UW_MCP_BINDING_v1.md) — API negotiation, semantic ETags, stable resources, and AI-friendly tool results.

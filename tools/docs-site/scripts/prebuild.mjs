@@ -47,7 +47,17 @@ const STARTER_PAGES = [
   ['rendering.md', 'Starter products: renderer reference'],
 ];
 
+const FOUNDATION_GUIDES = [
+  ['FOUNDATION.md', 'foundation', 'The UWMD foundation'],
+  ['HOW-UWMD-GROWS.md', 'how-uwmd-grows', 'How UWMD grows'],
+  ['document-types.md', 'document-types', 'Document types'],
+  ['KNOWN-LIMITS.md', 'known-limits', 'Known limits'],
+];
+
 const COPIES = [
+  ...FOUNDATION_GUIDES.map(([file, slug, title]) => ({
+    from: `docs/${file}`, to: `guide/${slug}.md`, title,
+  })),
   // Spec
   { from: 'spec/UW_FORMAT_SPEC.md',   to: 'spec/format.md',   title: `UW Format Specification (${SITE_VERSIONS.specFormat})` },
   { from: 'spec/UW_PROTOCOL.md',      to: 'spec/protocol.md', title: `UW Protocol — verification (${SITE_VERSIONS.specProtocol})` },
@@ -311,6 +321,22 @@ function normalize(path) {
 }
 
 const GITHUB_BLOB = 'https://github.com/UWMD-OSP/UW-Markdown/blob/main';
+
+for (const [file, slug] of FOUNDATION_GUIDES) {
+  NORMALIZED_LINK_MAP.set(`docs/${file}`, `/guide/${slug}`);
+  NORMALIZED_LINK_MAP.set(file, `/guide/${slug}`);
+}
+// Playbooks remain public source documents; copied guide/RFC pages link to
+// their canonical source instead of a nonexistent relative site directory.
+for (const file of await readdir(join(REPO_ROOT, 'docs/playbooks'))) {
+  if (!file.endsWith('.md')) continue;
+  const url = `${GITHUB_BLOB}/docs/playbooks/${file}`;
+  NORMALIZED_LINK_MAP.set(`docs/playbooks/${file}`, url);
+  NORMALIZED_LINK_MAP.set(`playbooks/${file}`, url);
+  if (file !== 'README.md') NORMALIZED_LINK_MAP.set(file, url);
+}
+NORMALIZED_LINK_MAP.set('wiki/13-status.md', `${GITHUB_BLOB}/docs/wiki/13-status.md`);
+
 
 function rewriteLinks(md) {
   // Markdown link: [text](url) and [text](url#frag)

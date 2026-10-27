@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Explain the foundation and seven growth paths, add conformance/verification-profile playbooks, and align README/roadmap with current source and existing postlaunch commitments without new promises.
+
 - Document bounded edge-case coverage and known limits, including standalone duplicate rent-roll identifiers and unsupported financial projection conventions.
 
 - Catalog current and proposed document families, distinguish evidence from fact profiles, and add the document-type growth playbook. New profiles remain subject to RFC acceptance.
