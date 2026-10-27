@@ -46,7 +46,7 @@ the corpus against `@uwmd/core`. CI runs all indexed checks on every PR.
 The required **Build and test (Node 20)** Main CI job also runs
 `node scripts/run-conformance.mjs --profile=pro-forma` explicitly. The54
 pro-forma checks are native reference cases; they are not silently counted as
-portable driver cases. The [support scope](../docs/wiki/03-core-library.md#rfc-0092-support-scope)
+portable driver cases. The [support scope](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/03-core-library.md#rfc-0092-support-scope)
 records the independent frozen implementation and actual-CLI evidence.
 
 ```bash

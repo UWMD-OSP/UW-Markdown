@@ -9,12 +9,13 @@ RFC0128 pins the bounded pro-forma admission/report contract: effective LTV
 conventions must agree with the bound loan, universe membership is by event and
 undeclared roles produce required-sensitive gaps, and the exact loan input is the
 sole loan selector. Report loan_ref remains derived; authored selectors.loan is
-unsupported. Profile support is still gated by #551/#552.
+unsupported. Independent #551/#552 proof now supports the bounded CLI/public-library
+claim described in the support scope below.
 
 The pro-forma assessor preserves unresolved declared inputs as inputs with null
 targets (RFC0092 §6a). Final occupancy uses stated final-row SF before the
 summary fallback; only a selected fallback adds the existing summary prerequisite
-(§4b). These reference regressions add no profile support claim.
+(§4b). The support claim is established separately by the independent proof.
 
 The validator follows the Format's null-is-unstated rule for tax stabilization
 and optional hedge terms. CC-15 selects base, default, then a sole lease-up
@@ -792,7 +793,9 @@ This bounded profile checks declared relationships, stated figures and optional
 declared ledger obligations. It does not generate a forecast or certify every
 row of a deal. A completed exit 0 can contain zero computed assertions; inspect
 coverage and the separate visible-input list before claiming assurance. Typed
-request refusals and completed failed/unavailable assessments exit 1. Internal
+request refusals exit 1. Completed assessments exit 1 for base/profile errors,
+failed or unverifiable assertions, or an unmet required ledger obligation
+(RFC0092 §6a); otherwise they exit 0. Internal
 exit 2 was demonstrated only through declared fault injection, with empty
 stdout and the original coded diagnostic on stderr; no exit 3 is introduced.
 The evidence is finite and covers captured source/artifact state and consumer
