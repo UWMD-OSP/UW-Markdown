@@ -2,6 +2,12 @@
 
 ## Monorepo & tooling
 
+The required index gate also scans every tracked file for internal process
+narration using `scripts/public-voice.mjs`. It currently reports findings while
+the editorial cleanup is in progress. Its allow-list contains exact file/line
+pairs with a technical reason; it has no directory or historical baseline
+exemptions. Regression controls run through `npm run verify-indexes`.
+
 - **Package manager:** npm **workspaces** (`packages/*`). No turbo, no pnpm, no
   lerna. Lockfile: `package-lock.json`. Node `>=18`, except
   `@uwmd/signing` and `@uwmd/report`, which declare Node `>=20` (global Web

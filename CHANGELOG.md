@@ -8,6 +8,10 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Tooling
+
+- Add a tracked-content public-language scan to the required index gate. It initially reports editorial findings, with exact integration-label exceptions and regression controls.
+
 - Implement RFC0129’s loan quote, offering memorandum and appraisal source-fact profiles: closed schemas, attribution validation, explicit read-only candidates, package history/integrity, complete Lite views and required conformance. No formula or automatic underwriting input is added; fact-operation CLI/MCP/HTTP bindings and Lite compilation remain unsupported.
 
 - Accept RFC0129’s three source-fact profile designs; implementation and support claims follow separately.
