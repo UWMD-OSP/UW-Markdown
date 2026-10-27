@@ -9,21 +9,22 @@ test corpus — analogous to the
 The corpus is **tagged by case**, rather than by directory. Its authoritative
 runtime [ownership index](corpus-index.json) gives each reference check exactly
 one target: `reader`, `verifier`, one of `module`, `integrity`, `representations`,
-`portfolio`, `sensitivity`, `stochastic`, or `starter-products`. Fixture directories
+`portfolio`, `sensitivity`, `stochastic`, `pro-forma`, or `starter-products`. Fixture directories
 describe content; they do not confer a tier claim.
 
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
-| Reader | 42 | 27 |
+| Reader | 59 | 44 |
 | Verifier | 881 | 568 |
 | Module | 76 | 1 |
 | Integrity | 34 | 16 |
-| Representations | 154 | 0 |
+| Representations | 158 | 0 |
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
+| Pro-forma | 54 | 0 |
 | Starter products | 142 | 57 |
-| **Total** | **1,355** | **669** |
+| **Total** | **1,430** | **686** |
 
 ## How to self-certify
 
@@ -42,6 +43,11 @@ Starter-product results are separate compatibility claims, not conformance.
 The reference implementation ships a runner at
 [`scripts/run-conformance.mjs`](../scripts/run-conformance.mjs) that exercises
 the corpus against `@uwmd/core`. CI runs all indexed checks on every PR.
+The required **Build and test (Node 20)** Main CI job also runs
+`node scripts/run-conformance.mjs --profile=pro-forma` explicitly. The54
+pro-forma checks are native reference cases; they are not silently counted as
+portable driver cases. The [support scope](../docs/wiki/03-core-library.md#rfc-0092-support-scope)
+records the independent frozen implementation and actual-CLI evidence.
 
 ```bash
 # Default: every indexed standard and starter check

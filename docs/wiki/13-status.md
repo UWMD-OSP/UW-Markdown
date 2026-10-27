@@ -1,5 +1,7 @@
 # 13 — Build status (living document)
 
+**RFC 0092 scoped support.** The reference manifest now claims pro-forma/pro-forma-verify for the CLI and public library after #551 and the independently reviewed #552. Evidence is tied to source e2bd0067a83376d19c58a87e40a9e7526c28dece, not older registry code sharing a package version. No MCP/HTTP binding is claimed; exit2 was shown only by fault injection. Exact runtime combinations, assurance limits and the required Main CI profile gate are documented in [the support scope](03-core-library.md#rfc-0092-support-scope). No release or package-version change.
+
 **Independent Python base Verifier — #354.** The standard-library implementation
 now supplies every base obligation, including POL-01/02 and the seven previously
 unclaimed verifier commands. The manifest claims Verifier with no optional

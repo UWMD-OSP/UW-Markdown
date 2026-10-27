@@ -2052,7 +2052,7 @@ Commands:
   verify-reserve-draws <file> [plan.json] [--json]  Verify stated gross-expenditure draw bindings (read-only)
   verify-reserve-accounts <file> [--json]  Verify stated property reserve balances (read-only)
   verify-metrics <file> [--json]  Verify stated dictionary metrics only (read-only; a failed statement exits 1)
-  verify-pro-forma <file> [--json]  Assess an explicit bounded L1 claim (read-only; support unclaimed)
+  verify-pro-forma <file> [--json]  Assess an explicit bounded L1 claim (read-only)
   verify-cash-flows <file> [--variant <name>] [--json]  Verify stated dated-cash-flow metrics (read-only)
   verify-property-cash-flows <file> <plan.json>  Assemble declared unlevered pre-tax property cash flows (JSON candidate only)
   verify-waterfall <file> [--variant <name>] [--json]  Verify stated distribution waterfall outcomes (read-only)

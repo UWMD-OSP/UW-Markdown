@@ -771,5 +771,38 @@ RFC0092 exports verifyProForma(sourceOrCurrentModel, options) and the closed
 registry/wire types. Source operations retain physical order and source tokens;
 model operations use current values and require caller tokens for LTV precision.
 Inputs, relationships, assertions, base validation and ledger gaps stay separate.
-The CLI verify-pro-forma is read-only. Reference support stays unclaimed pending
-#551/#552; registry/schema availability is not certification.
+The CLI verify-pro-forma is read-only. The reference claims the optional
+`pro-forma` profile and `pro-forma-verify` capability for the **CLI and public
+library** after [#551](https://github.com/UWMD-OSP/UW-Markdown/issues/551)
+(independent implementation) and
+[#552](https://github.com/UWMD-OSP/UW-Markdown/issues/552) (actual built and
+packaged CLI, independently reviewed CLEAR WITH NOTES).
+
+### RFC 0092 support scope
+
+The proof is frozen at source commit
+[`e2bd0067a83376d19c58a87e40a9e7526c28dece`](https://github.com/UWMD-OSP/UW-Markdown/commit/e2bd0067a83376d19c58a87e40a9e7526c28dece).
+It does not identify older npm code by a shared package version. Actual runtime
+combinations were Windows 11 / Node 24.14.1; Ubuntu 24 / Node 20.20.2 and
+22.23.3; Windows Server 2025 and macOS 26 / Node 20.20.2. The public library's
+source/model selection controls are supplemental to the actual CLI proof.
+**There is no pro-forma MCP or HTTP binding yet.**
+
+This bounded profile checks declared relationships, stated figures and optional
+declared ledger obligations. It does not generate a forecast or certify every
+row of a deal. A completed exit 0 can contain zero computed assertions; inspect
+coverage and the separate visible-input list before claiming assurance. Typed
+request refusals and completed failed/unavailable assessments exit 1. Internal
+exit 2 was demonstrated only through declared fault injection, with empty
+stdout and the original coded diagnostic on stderr; no exit 3 is introduced.
+The evidence is finite and covers captured source/artifact state and consumer
+sentinels, rather than every home/temp or untracked filesystem location.
+
+```bash
+npm run build
+node packages/uwmd-cli/bin/uwmd.mjs verify-pro-forma conformance/pro-forma/verified-moic/deal.uwx.md --json
+```
+
+Every later change runs the indexed pro-forma cases in Main CI. The existing
+required **Build and test (Node 20)** job also selects this profile explicitly;
+its failure blocks that required check. No package version or release is implied.
