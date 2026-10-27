@@ -51,14 +51,14 @@ body:
       multiple: true
       options:
         - "@uwmd/verify (parser, validator, calc evaluator, packs, receipts, integrity)"
-        - "@uwmd/core (defaults, cascade, editor, renderer, agents)"
+        - "@uwmd/core (defaults, cascade, editor, renderer, generic writers)"
         - "uwmd CLI (@uwmd/cli)"
         - "@uwmd/excel"
         - "@uwmd/report"
         - "@uwmd/lake"
         - "@uwmd/signing"
         - "@uwmd/batch"
-        - "Reference module (hospitality, data center)"
+        - "Official builtin asset class (including hospitality and data center)"
         - "Conformance corpus or runner"
         - "Format spec or JSON Schemas"
         - "Protocol spec"

@@ -78,8 +78,8 @@ body:
   - type: textarea
     id: compatibility
     attributes:
-      label: Compatibility impact
-      description: Which conforming implementations or existing documents would behave differently under your proposal?
+      label: Behavior impact
+      description: Which required behavior or conformance outcomes would change? Before the 5.0 public launch there is no compatibility baseline or migration requirement.
 
   - type: input
     id: related

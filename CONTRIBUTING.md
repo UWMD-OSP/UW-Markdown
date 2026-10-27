@@ -18,7 +18,7 @@ spec proposals, conformance fixtures, and tools are all welcome.
   `packages/<tool-name>/` directories.
 - **Add a conformance fixture**: see "Adding a conformance fixture."
 - **Implement against the spec**: third-party implementers self-certify against
-  the conformance corpus and are listed in the README.
+  the conformance corpus and describe the tiers and profiles they implement.
 
 Security vulnerabilities go to security@uwmd.org ([SECURITY.md](./SECURITY.md)),
 never to a public issue.
@@ -36,9 +36,9 @@ fix, a release or an RFC.
 ```
 spec/                         Normative documents (format spec, protocol spec, JSON schemas)
 packages/                     npm workspaces — reference library and starter packages
-examples/                     Sample .uw.md deal files
+examples/                     Synthetic .uwx.md records and UW Lite .uw.md summaries
 conformance/                  Per-tier fixtures + expected outputs
-tools/                        Starter tools (web-viewer, future: excel converter, etc.)
+tools/                        Web viewer/editor, VS Code extension and docs site
 .github/                      CI, issue forms, issue labels (labels.json), PR template
 ```
 
@@ -47,18 +47,18 @@ tools/                        Starter tools (web-viewer, future: excel converter
 ```bash
 git clone https://github.com/UWMD-OSP/UW-Markdown.git
 cd UW-Markdown
-npm install
+npm ci
 npm run build
 npm test
 ```
 
-Run `npm install` from the repo root for workspace packages
-(`packages/*` — `@uwmd/core`, `@uwmd/excel`, `uwmd`). The root
+Run `npm ci` from the repo root for workspace packages
+(`packages/*`, including `@uwmd/verify`, `@uwmd/core` and `@uwmd/cli`). The root
 `package-lock.json` is the single source of truth for those.
 
 The starter tools under `tools/*` are intentionally *not* npm workspace
 members (different toolchains: VitePress, Vite, vsce). Each commits its
-own `package-lock.json` and you install them with `npm install` inside
+own `package-lock.json` and you install them with `npm ci` inside
 their directory.
 
 The reference library lives at `packages/uwmd-verify/` (the standard) and
@@ -92,6 +92,9 @@ To file a normative change:
 2. Fill in every section — Summary, Motivation, Proposed change, Compatibility
    analysis, Conformance impact, Reference implementation, Alternatives,
    Unresolved questions, Prior art. RFCs missing sections get bounced.
+   Apply the [prelaunch policy](AGENTS.md#prelaunch-policy): before 5.0,
+   the compatibility section states that there is no public compatibility
+   baseline; it does not require migration, deprecation or artifact retention work.
 3. Open a PR titled `RFC NNNN: <short title>`.
 4. The project owner accepts, requests changes, or rejects the proposal. In
    owner-led mode there is no mandatory waiting period; after collaborative mode
@@ -138,8 +141,9 @@ Before opening a PR:
 
 - [ ] `npm run build` is clean (no TS errors).
 - [ ] `npm test` passes (all tests green).
-- [ ] Conformance fixtures still parse without warnings (run the corpus regen script if format/parser changes).
-- [ ] If the change is normative (spec): compatibility analysis and conformance impact documented in the PR body.
+- [ ] `npm run typecheck:tests` and `npm run conformance` pass after the build; expected refusals remain expected refusals.
+- [ ] If the change is normative (spec): RFC and synchronized contracts/conformance are included; apply the prelaunch policy above.
+- [ ] Affected guards, lint and the documentation build pass as listed in [AGENTS.md](AGENTS.md#changes-and-validation).
 - [ ] If the change adds a public API: a standard symbol is exported from `packages/uwmd-verify/src/index.ts` (core re-exports it), a starter symbol from `packages/uwmd-core/src/index.ts`.
 - [ ] CHANGELOG.md updated under `[Unreleased]`.
 

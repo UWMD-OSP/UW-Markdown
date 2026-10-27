@@ -2,7 +2,7 @@
 rfc: 0000
 title: <Short, imperative title>
 status: draft
-author: <your handle>
+author: UWMD maintainers
 created: <YYYY-MM-DD>
 affects:
   - <format-spec | protocol-spec | core-library | conformance-corpus | tooling>
@@ -26,8 +26,7 @@ RFC is relevant to them.
 What is broken, missing, or unclear in the current state? Be specific
 — cite spec sections, file paths, or issue numbers. Generic complaints
 ("the format is hard to use") are not motivation; concrete pain points
-("modules cannot declare new asset classes, so the hospitality module
-must reuse `mixed_use`") are.
+("a stated section field has no schema definition or validation rule") are.
 
 ## Proposed change
 
@@ -41,24 +40,18 @@ For spec changes:
 - Show the new normative language using RFC 2119 terms.
 
 For library changes:
-- List the new / changed exports from `@uwmd/core`.
-- Indicate whether the change is additive, breaking, or deprecation.
+- List the new / changed exports from `@uwmd/verify` or the starter packages.
+- Describe the resulting behavior and required conformance outcomes.
 
 ## Compatibility analysis
 
-Who breaks if this lands?
+Apply the [prelaunch policy](../../AGENTS.md#prelaunch-policy): before the
+5.0 public launch there is no public compatibility baseline, migration path,
+deprecation period or historical-artifact retention requirement.
 
-- **Existing `.uw.md` files** — do any become invalid? Can old files
-  still be parsed by tools that adopt this RFC?
-- **Existing implementers** — Tier-1 Reader, Tier-2 Editor, Tier-3
-  Calc Host, Tier-4 Agent Host — for each tier, does this change
-  invalidate previously-conforming implementations?
-- **Modules** — does this change the manifest schema or the
-  expectations on declared sections / calculations / validations?
-
-If the answer to any of these is "yes, things break," propose a
-deprecation path: when does the warning fire, when does the hard
-break happen, what is the migration path?
+Describe the current contract being changed, its Reader/Verifier tiers and
+optional profiles, and the synchronized implementation/conformance work.
+After launch, apply the published release rules to compatibility obligations.
 
 ## Conformance impact
 
@@ -70,7 +63,7 @@ need to see that the new behavior is testable.
 
 ## Reference implementation
 
-How will `@uwmd/core` change to support this RFC?
+How will the reference verifier or starter packages support this RFC?
 
 - **Files affected:** list the source files.
 - **API surface:** new types, new functions, new exports.
