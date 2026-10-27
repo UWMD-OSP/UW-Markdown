@@ -13,7 +13,7 @@ A full `.uwx.md` record combines readable narrative with structured sections,
 identity, provenance and visible revision history. The
 [Format](../spec/UW_FORMAT_SPEC.md) defines their meaning. A record declares its
 Format version; it does not declare the npm package version that wrote it.
-Current source reads Format3.0 and Protocol4.1.0; [VERSIONS](../VERSIONS.md)
+Current source reads Format 3.0 and Protocol 4.1.0; [VERSIONS](../VERSIONS.md)
 maps those contracts to package releases.
 
 UW Lite (`.uw.md`) is a constrained human-readable summary. Its projections are
@@ -91,34 +91,34 @@ There is no required hosted service or vendor runtime. A skill helps an agent
 write attributable records; it does not let the agent invent financial math.
 
 RFC0092 pro-forma support is scoped to the reference CLI and public library,
-with independent proof frozen at sourcee2bd0067 through issues551/552. No
+with independent proof frozen at source e2bd0067 through issues #551/#552. No
 pro-forma MCP/HTTP binding is claimed. The required Main CI profile gate guards
 subsequent source. See [the precise binding/runtime limits](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/03-core-library.md#rfc-0092-support-scope).
 Current source can contain functionality absent from older npm code sharing its
 package version; pin the actual source/artifact when relying on source evidence.
 
-## What the5.0 policy commits to
+## What the 5.0 policy commits to
 
 The official5.0 launch is still separately gated. The following restates the
 existing [release rules](playbooks/RELEASE_RULES.md) and
 [version policy](../VERSIONS.md); it does not launch or change a version:
 
-- Every `@uwmd` package launches at5.0.0 and then shares the public UWMD number.
+- Every `@uwmd` package launches at 5.0.0 and then shares the public UWMD number.
   Format and Protocol remain separate contract streams; VERSIONS maps releases.
 - Public API/CLI/normative breaking changes use a major. Additions and fixes
   changing computed results use a minor; patches change neither contract nor
   computed result. Result-changing fixes identify affected metrics.
 - A metric id keeps its meaning; a different meaning gets a different id.
   Validation codes are not renumbered or reused.
-- Each record's declared Format selects its rule set. Every5.x Verifier retains
-  earlier5.x rule sets. Outcome-changing fixes receive a new Format minor;
+- Each record's declared Format selects its rule set. Every 5.x Verifier retains
+  earlier 5.x rule sets. Outcome-changing fixes receive a new Format minor;
   stricter security/soundness fixes are the stated exception across retained
   rule sets (accepted RFC0111, Protocol§XII.5).
-- After launch, the published deprecation minimum is one minor and90 days before
+- After launch, the published deprecation minimum is one minor and 90 days before
   a breaking removal, with the documented security exception. Governance and
   release approval still apply.
 
-These are postlaunch commitments. Before5.0 there is no backward compatibility
+These are postlaunch commitments. Before 5.0 there is no backward compatibility
 obligation, migration plan or artifact-repair promise. No release, publication,
 hosting or registry listing is authorized by this page.
 

@@ -59,4 +59,4 @@ UWMD is maintained through filed issues. Growth does not depend on reaching an
 adoption count and does not require every adopter to use the starter products.
 The postlaunch stability commitments are the existing
 [release rules](playbooks/RELEASE_RULES.md), not an open-ended roadmap guarantee.
-Until the separately approved5.0 launch, the current prelaunch4.x rule applies.
+Until the separately approved 5.0 launch, the current prelaunch 4.x rule applies.
