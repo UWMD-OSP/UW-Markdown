@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Document bounded edge-case coverage and known limits, including standalone duplicate rent-roll identifiers and unsupported financial projection conventions.
+
 - Catalog current and proposed document families, distinguish evidence from fact profiles, and add the document-type growth playbook. New profiles remain subject to RFC acceptance.
 
 - Remove personal identity labels from current public reviewer routing and examples; enforce case-insensitive owner checks in every tracked file, including maintainer files. No financial or authority-selection rule changes.
