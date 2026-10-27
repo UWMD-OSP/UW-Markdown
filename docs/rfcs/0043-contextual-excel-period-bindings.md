@@ -15,7 +15,7 @@ affects:
 Implemented and published in core/CLI **2.8.0** on 2026-09-12, with
 Protocol **2.11.0** and Format **2.0**. The core binding API is published;
 standalone Excel **0.9.0** remains unpublished and available from source. See
-[release verification](../reviews/2026-09-12-release-2.8.0.md).
+release verification.
 
 ## Outcome
 
@@ -81,7 +81,7 @@ newer lookup requirements. Exact-match behavior follows Microsoft's
 Compatibility with that function set is distinct from tested application versions.
 Native tests ran in Excel 16.0 build 20326; other engines/versions were not run.
 
-The [native verification record](../../docs/reviews/2026-09-12-excel-period-bindings.md)
+The [native verification record](0043-contextual-excel-period-bindings.md)
 documents 14 scenarios and 48 cell checks: all series, row sorting, editable
 values, zero versus blank, nonnumeric values, duplicate/changed/case-changed keys,
 ordinary-input absence, zero/null overrides, monthly lookup, rounding, a $100M

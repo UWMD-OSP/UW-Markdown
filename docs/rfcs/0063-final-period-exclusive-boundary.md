@@ -36,7 +36,7 @@ following a complete final calendar period, even when every selected cash item
 settles on or before the economic sale date.
 
 A private validation corpus and the subsequent
-[design review](../reviews/2026-09-24-terminal-boundary-design.md) document
+[design review](0063-final-period-exclusive-boundary.md) document
 multiple private monthly workflows with
 this boundary convention. No reviewed investment stream demonstrates cash after
 economic disposition. Their successful stated-series metrics and projections

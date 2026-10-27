@@ -703,7 +703,7 @@ source lookup. Role/variant resolution, expression evaluation,
 PS-03 and financial verification remain separate missing work. CI retains exact-head portable
 Reader manifests on three operating systems. See the
 [Python README](../../implementations/python/README.md) and
-[requirement inventory](../reviews/2026-10-15-python-reader-354.md).
+requirement inventory.
 
 ### Independent Python reserve-account milestone
 

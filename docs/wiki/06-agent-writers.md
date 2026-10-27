@@ -22,8 +22,8 @@ narrate; they never compute financial metrics** (invariant 1).
 - **Starter contract:** [agent writers guide](../starter/ai-host.md) §IX,
   non-normative since RFC 0078.
 - **Ownership:** StackUW owns modeling, agents and workflows. See the
-  [inventory](../reviews/2026-10-15-architecture-boundary.md) and
-  [removal plan](../reviews/2026-10-15-agent-removal-5.0.md).
+  [inventory](../../ARCHITECTURE.md) and
+  [removal plan](../../ARCHITECTURE.md).
 - **Public API:** `writeAgentBlock`, `writeErrorEntry`, `buildMeta` (root and
   browser entries) and `buildContext` (root entry only), with the types
   `AgentOutput`, `RunOptions`, `RunResult`, `ContextProfile`,

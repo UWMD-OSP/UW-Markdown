@@ -154,8 +154,6 @@ This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md).
 - [UW Document Envelope 2.0](./spec/UW_ENVELOPE.md) — complete model, tagged extensions and coordinated subject identities.
 - [UW CSV Bundle 2.0](./spec/UW_CSV_BUNDLE.md) — normalized CSV tables, deterministic ZIP, safe extraction, and named views.
 - [HTTP Binding 1.0](./spec/bindings/UW_HTTP_BINDING_v1.md) and [MCP Binding 1.0](./spec/bindings/UW_MCP_BINDING_v1.md) — API negotiation, semantic ETags, stable resources, and AI-friendly tool results.
-- [1.1+ interchange release plan](./docs/releases/1.1-plus-interchange-plan.md) —
-  governance gates and phased delivery for JSON, XML, CSV, API, and MCP.
 
 ## License
 

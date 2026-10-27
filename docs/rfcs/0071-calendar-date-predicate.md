@@ -541,7 +541,7 @@ PR #250 implemented this plan (see [Implementation notes](#implementation-notes)
   - `docs/wiki/04-calc-engine.md` and `tools/docs-site/guide/calc-conventions.md`
     list the builtin and the emitter refusal;
   - the tier-3 conformance README;
-  - CHANGELOG, `VERSIONS.md` and `docs/wiki/13-status.md` at release.
+  - CHANGELOG, `VERSIONS.md` and `ROADMAP.md` at release.
 - **Tests:**
   - every case-matrix row in `calc.test.ts`;
   - a property test checking the predicate against an independent oracle over
@@ -637,7 +637,7 @@ this RFC does not change it.
 - **Repair.** Fix it separately, as an ordinary calc bug (wiki/11: "Fix a
   parser/validator/calc bug — No RFC"), against the existing §VIII.9.1 text.
   Add early-year unit and conformance cases at the same time. The fix is
-  recorded in `docs/wiki/13-status.md` under Remaining work, and is not made
+  recorded in `ROADMAP.md` under Remaining work, and is not made
   in this PR.
 
 ## Alternatives considered
@@ -727,7 +727,7 @@ The owner also directed:
 | RFC 0068 | Adopt `is_calendar_date` in RFC 0068's own revision | Directed. RFC 0068 is not edited here |
 | Numeric type predicate | No RFC at this time | Decided: none |
 | Protocol and core numbers | A release-preparation decision; 2.22.0 and 2.18.0 are provisional only | Deferred to release |
-| `actualDays` early-year drift | Repair separately against §VIII.9.1, with no RFC | Recorded in `13-status.md` |
+| `actualDays` early-year drift | Repair separately against §VIII.9.1, with no RFC | Recorded in the current roadmap |
 
 The State column records the position at acceptance; the final status of each
 item is in [Resolution](#resolution).

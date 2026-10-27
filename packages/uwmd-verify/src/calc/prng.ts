@@ -18,7 +18,7 @@
 // the upstream pcg-c default stream and pcg_oneseq_128_srandom_r seeding.
 // Eleven boundary seeds pin 11,264 raw outputs plus exact double conversion.
 // Normal tests consume the independent oracle fixture; maintainers reproduce
-// it with scripts/verify-pcg64-reference.py. See docs/reviews/2026-09-12-pcg64-reference.md
+// it with scripts/verify-pcg64-reference.py. See conformance/stochastic/pcg64-reference.md
 // for upstream provenance, stream selection and the scope of this verification.
 
 import { pinnedLog } from './pinned-numerics.js';

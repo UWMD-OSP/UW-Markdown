@@ -41,11 +41,11 @@ with their independently versioned packages. Core's optional signing peer is
 0.6.0. No metric formula, Format/Protocol/receipt schema version, pack version or
 draft RFC status changes. Receipt disagreements across engine identities retain
 the existing RCP-07 `unverifiable` behavior. See the
-[preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-preparation.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.3.0).
 All 8 versions are published and independently checked from annotated `v4.3.0`
 on `80c68c3d0950948c85a1d3a90c02cd05f3a650a4` (2026-10-15). Registry
 integrity/provenance and fresh consumers pass; see the
-[publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.3.0).
 
 ## Why three streams?
 
@@ -113,7 +113,7 @@ delivered-CLI portable cases and isolated consumers of all eight packages, of
 `@uwmd/verify` alone and of batch and lake without core were independently
 verified; RFC 0084 is `implemented`. Neither module package published again.
 No other package generation shipped. Preparation and
-[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.2.0-publication.md)
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.2.0)
 remain separate records.
 
 Release 4.1.0 pairs core/CLI 4.1.0 with Protocol 4.0.0 and Format 3.0, the
@@ -144,7 +144,7 @@ files, 336 delivered-CLI portable cases and isolated consumers of all eight
 packages, of `@uwmd/verify` alone and of batch and lake without core were
 independently verified; RFC 0083 is `implemented`. Neither module package
 published again. No other package generation shipped. Preparation and
-[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.1.0-publication.md)
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.1.0)
 remain separate records.
 
 Release 4.0.1 pairs core/CLI 4.0.1 with Protocol 4.0.0 and Format 3.0, the
@@ -166,7 +166,7 @@ files, 336 delivered-CLI portable cases and an isolated consumer of all seven
 packages were independently verified; the published signing 0.3.1 exports
 `SIGNING_VERSION` `'0.3.1'`. Neither module package published again. No other
 package generation shipped. Preparation and
-[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.1-publication.md)
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.0.1)
 remain separate records.
 
 Release 4.0.0 pairs core/CLI 4.0.0 with Protocol 4.0.0 and Format 3.0.
@@ -196,7 +196,7 @@ attestations, Rekor checks, 614 published files, 336 delivered-CLI portable
 cases and an isolated consumer of all seven packages were independently
 verified. Neither module package published again; both stay at their final,
 deprecated 0.2.0. No other package generation shipped. Preparation and
-[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.0-publication.md)
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.0.0)
 remain separate records.
 
 Release 3.0.0 pairs core/CLI 3.0.0 with Protocol 3.0.0 and Format 2.1.
@@ -230,7 +230,7 @@ delivered-CLI portable cases and an isolated consumer of all nine packages
 were independently verified. The owner deprecated both module package names
 on npm on 2026-10-11, every version. No other package generation shipped.
 Preparation and
-[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/3.0.0-publication.md)
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v3.0.0)
 remain separate records.
 
 Release 2.21.0 pairs core/CLI 2.21.0 with Protocol 2.25.0 and Format 2.0.
@@ -253,7 +253,7 @@ files, 325 delivered-CLI portable cases (46 of them RFC 0065 binding cases),
 the published `verify-reserve-draws` command and an isolated consumer of both
 modules were independently verified. No other package generation shipped.
 Preparation and
-[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.21.0-publication.md)
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.21.0)
 remain separate records.
 
 Release 2.20.0 pairs core/CLI 2.20.0 with Protocol 2.24.0 and Format 2.0.
@@ -278,7 +278,7 @@ registry versions, `latest`, `gitHead`, signatures, attestations, Rekor
 checks, 494 published files, 279 delivered-CLI portable cases, the published
 core's cent quantization and an isolated consumer of both modules were
 independently verified. No other package generation shipped. Preparation and
-[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.20.0-publication.md)
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.20.0)
 remain separate records.
 
 Release 2.19.0 pairs core/CLI 2.19.0 with Protocol 2.23.0 and Format 2.0.
@@ -302,7 +302,7 @@ versions, `latest`, `gitHead`, signatures, attestations, Rekor checks, 482
 published files, 228 delivered-CLI portable cases and an isolated consumer of
 both modules were independently verified. No other package generation
 shipped. Preparation and
-[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.19.0-publication.md)
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.19.0)
 remain separate records.
 
 Release 2.18.0 pairs core/CLI 2.18.0 with Protocol 2.22.0 and Format 2.0.
@@ -324,7 +324,7 @@ provenance. Release run 37795279528 succeeded; all registry versions, `latest`,
 `gitHead`, signatures, attestations, Rekor checks, 482 published files, 210
 delivered-CLI portable cases and an isolated consumer of both modules were
 independently verified. No other package generation shipped. Preparation and
-[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-publication.md)
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.18.0)
 remain separate records.
 
 Release 2.17.0 pairs core/CLI 2.17.0 with Protocol 2.21.0 and Format 2.0.
@@ -344,7 +344,7 @@ published from immutable annotated `v2.17.0` on
 Release run 37172975077 succeeded; all registry versions, `latest`, `gitHead`,
 signatures, attestations, Rekor checks, 462 published files and 158 delivered-CLI
 portable cases were independently verified. No other package generation shipped.
-Preparation and [publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-publication.md)
+Preparation and [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.17.0)
 remain separate records.
 
 Release 2.16.0 pairs core/CLI 2.16.0 with Protocol 2.20.0 and Format 2.0.
@@ -430,8 +430,8 @@ above and the changelog for shipped versions.
 | HTTP binding | 1.0.0 | Optional companion profile, OpenAPI 3.1 contract, and core adapters implemented; release pending. |
 | MCP binding | 1.0.0 | Optional companion profile, resources/tool shapes, and reference adapters implemented; release pending. |
 
-These were candidate versions when the plan was written. See the
-[1.1+ interchange release plan](docs/releases/1.1-plus-interchange-plan.md).
+These were candidate versions when the interchange plan was written.
+The current version matrix above records the implemented release state.
 
 ## Development and release policy
 

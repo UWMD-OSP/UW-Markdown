@@ -250,4 +250,4 @@ manifest, validation results with registered codes, `ProtocolError`, receipts
 with input and result digests, and the conformance runner's report. The forms
 ask for exactly those outputs. The evaluation behind this decision, and the
 evidence that would reopen it, is recorded in the
-[adopter feedback review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-04-adopter-feedback-loop.md).
+adopter feedback review.

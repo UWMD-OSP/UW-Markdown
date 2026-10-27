@@ -75,7 +75,7 @@ candidate surface versions are:
 
 HTTP and MCP remain optional companion binding profiles. No existing conformance
 tier is required to implement a network transport. The coordinated release plan
-is [`docs/releases/1.1-plus-interchange-plan.md`](../releases/1.1-plus-interchange-plan.md).
+is prior review.
 
 ## Proposed change
 
@@ -378,7 +378,7 @@ envelope value and passes the cross-format equivalence corpus.
 
 Each phase can ship independently after the RFC is accepted. No phase is a v1.0
 release blocker. Version coordination and governance gates are tracked in the
-[1.1+ release plan](../releases/1.1-plus-interchange-plan.md).
+1.1+ release plan.
 
 ## Compatibility analysis
 

@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { BUILTIN_REMEDIATIONS } from './protocol.js';
 
 const schema = JSON.parse(readFileSync(new URL('../../../spec/schemas/uwmd-block.schema.json', import.meta.url), 'utf8'));
-const vectors = JSON.parse(readFileSync(new URL('../../../docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.vectors.json', import.meta.url), 'utf8'));
+const vectors = JSON.parse(readFileSync(new URL('../../../conformance/metadata-dates/2026-10-17-validation-diagnostic-gap-354.0095-date-only.vectors.json', import.meta.url), 'utf8'));
 const ajv = new Ajv2020({ strict: false, validateFormats: false, allErrors: true });
 const validate = ajv.compile(schema);
 const validateDate = ajv.compile(schema.$defs.MarketReferenceDate);

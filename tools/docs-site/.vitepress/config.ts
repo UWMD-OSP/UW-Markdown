@@ -124,7 +124,6 @@ export default defineConfig({
             text: 'AI agents',
             items: [
               { text: 'Building with AI', link: '/ai/' },
-              { text: 'Bounded agent skills', link: '/ai/skills' },
               { text: 'Agent writers and context profiles', link: '/starter/ai-host' },
             ],
           },
@@ -216,7 +215,6 @@ export default defineConfig({
           text: 'AI agents (starter products)',
           items: [
             { text: 'Building with AI', link: '/ai/' },
-            { text: 'Bounded agent skills', link: '/ai/skills' },
             { text: 'MCP binding', link: '/spec/mcp' },
             { text: 'HTTP binding', link: '/spec/http' },
             { text: 'Agent writers and context profiles', link: '/starter/ai-host' },

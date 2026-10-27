@@ -39,7 +39,7 @@ adopter-only alias table.
 
 ### Current behavior
 
-The [renamed-identifier review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-04-renamed-identifiers.md)
+The [renamed-identifier review](0073-previous-asset-class-identifiers.md)
 reproduces each point on `main` at `83248a6`.
 
 - **Module ids do not decide resolution.** Protocol §X.2.2 resolves a document's

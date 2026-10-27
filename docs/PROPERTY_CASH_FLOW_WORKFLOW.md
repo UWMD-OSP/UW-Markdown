@@ -154,7 +154,7 @@ and eligible reserve return assigned to disposition occur exactly on that
 date. No settlement horizon, delayed cash or inferred reserve release is added.
 Reserve, financing and investor-tax exclusions and RFC 0062 same-day rules
 remain unchanged. See the [accepted RFC](rfcs/0063-final-period-exclusive-boundary.md)
-and [verification record](reviews/2026-09-24-rfc-0063-implementation.md).
+and [verification record](rfcs/0063-final-period-exclusive-boundary.md).
 
 ## Read the result without losing its meaning
 

@@ -35,7 +35,7 @@ RFCs0008/0026/0035/0058/0059/0081 and their named schemas. The drafting base is
 main `64c34f3a33685338f9626eada2eb56a49dbd2297` after PR392. Python development evidence is
 `df7831e6d3675881d3f7714da42230c7163da256`; it is not shipped capability evidence.
 A reproducible, bounded observation set is frozen in the existing
-[Issue354 review family](https://github.com/UWMD-OSP/UW-Markdown/blob/d8b3601ba7b0d951450503c974a6ce7181893098/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.observations.json).
+Issue354 review family.
 Its30 observations are29 synthetic cases plus one unchanged native fixture,
 not a population census,30 newly allocated defects or30 conformance changes.
 The source hashes, exact observed issues, local fields and transport states
@@ -53,13 +53,11 @@ registered issues, but refused to claim a complete validation result:
 | valid equity cash vector and split waterfall, stated_outcomes=false | stated_outcomes | same |
 
 All four returned empty stderr and `partial_validation_result.issues=[]`, and
-left source bytes unchanged. The [read-only reproducer](https://github.com/UWMD-OSP/UW-Markdown/blob/d8b3601ba7b0d951450503c974a6ce7181893098/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.repro.py)
+left source bytes unchanged. The read-only reproducer
 extracts the exact WIP from Git into a temporary directory, reuses its authored
 source factories and runs `python -B implementations/python/uwmd.py validate <source> --json`. Run it from a checkout containing that commit:
 
-```powershell
-python -B docs/reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.repro.py
-```
+Current conformance fixtures reproduce the accepted behavior.
 
 This is actual execution, not an imagined future code path. Reproduction
 requires Python with tarfile's data extraction filter and the WIP Git object.
@@ -70,7 +68,7 @@ WIP tests include `test_validation_lease_up.py`,
 `test_validation_lease_up_ownership.py`, `test_validation_optional_shapes.py`
 and `test_validation_refusal_reconciliation.py`.
 
-The [nine TypeScript observations](https://github.com/UWMD-OSP/UW-Markdown/blob/d8b3601ba7b0d951450503c974a6ce7181893098/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.ts-observations.json)
+The nine TypeScript observations
 were executed against built TS checkpoint4b0e1ae1, whose RFC0095 changes do not
 change these four payload validators. They distinguish actual existing owners
 from the Python WIP's sometimes coarser field attribution. They are not future
@@ -79,7 +77,7 @@ expectations. Main TS `lease-up-structure.ts`, validator
 and the five schemas named below are the reproducible authority comparison.
 
 The wider27-schema audit remains
-[separate evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/64c34f3a33685338f9626eada2eb56a49dbd2297/docs/reviews/2026-10-17-validation-diagnostic-gap-354.formal-audit.json.gz).
+separate evidence.
 A schema rejection is not automatically a new validator error. Descriptions,
 defaults and examples are annotations; JSON Schema2020-12's default format
 vocabulary does not automatically assert calendar validity. See

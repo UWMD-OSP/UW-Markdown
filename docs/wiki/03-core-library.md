@@ -712,7 +712,7 @@ verified. Complete outright success requires structural success plus verified.
 The digest protects consistency, not payment purpose or executed-trade evidence.
 RFC 0070 is implemented after shipment and independent publication verification.
 Published core/CLI 2.17.0 pair with Stable Protocol 2.21.0 and Format 2.0;
-see [the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-publication.md).
+see [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.17.0).
 
 ## RFC 0064 property reserve accounts
 

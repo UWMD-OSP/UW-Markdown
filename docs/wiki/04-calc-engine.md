@@ -274,7 +274,7 @@ and impossible dates.
 - **Validity only.** The predicate does no date arithmetic. Day counts are a
   separate path (§VIII.9.1): `actualDays()` uses an integer proleptic-Gregorian
   `dayOrdinal` from `calc/day-count.ts`, not `Date`, so years `0000`–`0099`
-  count correctly. The early-year fix is recorded in `13-status.md`.
+  count correctly. The early-year fix is recorded in the current roadmap.
 
 > Argument counts are validated; type mismatches raise `CALC-TYPE-001`. See
 > `calc/builtins.ts` for exact per-function rules.
@@ -410,7 +410,7 @@ The PCG64 stream now matches NumPy 1.26.4's compiled implementation under the
 upstream default stream and srandom initialization: 11 seeds, 11,264 raw draws
 and 176 doubles. Existing outputs are unchanged. The ordinary tests consume a
 pinned independent oracle; `scripts/verify-pcg64-reference.py` reproduces it.
-See the [verification record](../reviews/2026-09-12-pcg64-reference.md) for seed
+See the [verification record](../../conformance/stochastic/pcg64-reference.md) for seed
 mapping, upstream provenance and the scope of the comparison.
 
 ## Explicit period references (RFC 0041, Protocol 2.8.0)
@@ -505,7 +505,7 @@ core/CLI 2.9.0 publish the implementation. Real-deal validation remains separate
 
 ## Draft numerical procedure feasibility (#356, RFC 0088)
 
-The [candidate-source closure study](../reviews/2026-10-15-fdlibm-closure-356.md)
+The candidate-source closure study
 freezes public fdlibm source hashes, inventories the power/square-root/scaling
 helpers and identifies finite-work and bit-adapter obligations for a possible
 portable kernel. Its audit downloads or reads source bytes only; it executes no

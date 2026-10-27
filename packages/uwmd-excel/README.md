@@ -175,7 +175,7 @@ and full-path overrides, including null, apply only to the additional calculatio
 
 These additional inputs are export-only: reverse import explicitly refuses a
 marked extended workbook. This protects against silently discarding their edits.
-See RFC 0043 and scripts/verify-excel-periods.ps1 for native Excel verification.
+See RFC 0043 for the workbook period-binding contract and public regression controls.
 This source implementation does not imply a new standalone package publication.
 
 ### Context files
