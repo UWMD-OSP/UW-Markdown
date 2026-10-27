@@ -218,5 +218,5 @@ in the private maintainer workspace. Public release proof is CHANGELOG, VERSIONS
 GitHub Releases and npm provenance. No release gate requires a public release
 record file. Existing paperwork is moved by the separately scheduled launch
 cleanup; do not add more of it. CI scans all tracked file contents for the public
-identity policy; only the public handle in the maintainer and code-owner files
-is exempt. No baseline or path-wide content exemptions apply.
+identity policy. No baseline, maintainer-file or path-wide content exemptions
+apply.
