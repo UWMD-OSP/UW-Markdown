@@ -5,7 +5,6 @@ import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { VERIFY_VERSION, VERIFY_BUILD_VERSION, VERIFY_BUILD_INFO } from '@uwmd/verify';
 import { BUILD_INFO, BUILD_VERSION } from '../dist/build-info.js';
-import { tmpdir } from 'node:os';
 import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js';
 
 // These tests exercise built executables, stdout/stderr and exit codes.
