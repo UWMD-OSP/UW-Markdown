@@ -46,9 +46,9 @@ available profiles, drafts, planned contracts and source evidence.
 | Universal freshness | Preserve vintage and review findings. Market-data lookup has an explicit staleness policy; there is no age cutoff that makes every document current. [Issue577](https://github.com/UWMD-OSP/UW-Markdown/issues/577). |
 | Standalone duplicate unit ids | The probe retained two identical unit ids without a uniqueness diagnostic. Verified aggregates do not certify unique rows. Do not silently deduplicate or repair ids. A future standalone scope/rule needs acceptance. [Issue578](https://github.com/UWMD-OSP/UW-Markdown/issues/578). |
 
-The refusal controls reported invalid termination timing (`LSE-01`), unsupported
+The refusal controls reported invalid termination timing (`LSE-04`), unsupported
 lender-reserve/bank-interest treatment (`RSV-04`) and a reserve identity mismatch
-(`RSV-05`). These are finite examples; inspect the actual code/message and
+(`RSV-06`). These are finite examples; inspect the actual code/message and
 assertion state instead of treating a warning, unavailable result or unrelated
 successful assertion as coverage of a missing procedure.
 
