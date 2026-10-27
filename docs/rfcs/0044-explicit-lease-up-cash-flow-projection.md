@@ -22,7 +22,7 @@ and binding evidence. It represents rent receipts, concessions and TI/LC only.
 
 Implemented and published in core/CLI **2.8.0** on 2026-09-12, with
 Protocol **2.11.0** and Format **2.0**. See
-[release verification](../reviews/2026-09-12-release-2.8.0.md).
+release verification.
 
 ## Motivation
 

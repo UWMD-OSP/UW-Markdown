@@ -129,7 +129,7 @@ test('a prepared-but-unpublished core version is kept apart from publication sta
 
 test('page classification separates normative, starter, guide and project routes', () => {
   for (const path of ['spec/format.md', '/spec/', '/conformance/index.md', '/spec/protocol#vii-module-system']) assert.equal(pageStatus(path), 'normative');
-  for (const path of ['/conformance/starter-editor', 'starter/index.md', '/guide/calc-conventions', '/ai/skills']) assert.equal(pageStatus(path), 'starter');
+  for (const path of ['/conformance/starter-editor', 'starter/index.md', '/guide/calc-conventions', '/ai/']) assert.equal(pageStatus(path), 'starter');
   for (const path of ['/tutorials/quickstart', 'downloads/index.md', '/viewer/']) assert.equal(pageStatus(path), 'guide');
   for (const path of ['/about/governance', '/about/rfcs/0094-present-invalid-metadata-leaves', '/specimen/example']) assert.equal(pageStatus(path), 'project');
 });

@@ -207,7 +207,7 @@ No unrelated frozen expectation is changed to obtain a pass. The implementation
 is [#357](https://github.com/UWMD-OSP/UW-Markdown/pull/357).
 
 Research inputs and reproducible commands remain in
-[the numerical review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-numerical-determinism-356.md) and
+the numerical review and
 [experiment directory](https://github.com/UWMD-OSP/UW-Markdown/tree/86a20fe5f95f56bad5766f559817b6f7ef102b2c/experiments/numerical-0088).
 Earlier draft alternatives and pending-gate notes at that checkpoint do not
 supersede this accepted contract.

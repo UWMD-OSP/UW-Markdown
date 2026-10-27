@@ -1,3 +1,0 @@
-interface:
-  display_name: "UWMD Batch Exceptions,short_description=Triage collection-index exceptions.,default_prompt=Triage batch exceptions and emit structured UWMD edits only."
-  short_description: "UWMD Batch Exceptions,short_description=Triage collection helper"

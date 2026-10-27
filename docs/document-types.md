@@ -11,7 +11,7 @@ New profiles require an accepted RFC and working conformance cases.
 it does not mean every binding implements it. **Draft** names a proposal awaiting
 acceptance. **Planned** describes a bounded future contract, with no implementation claim (an accepted RFC may reserve its proposed id). **Evidence only** has no independent fact
 profile in this catalog. Availability here describes current source, not the
-older code that may share its npm version; see [build status](wiki/13-status.md).
+older code that may share its npm version; see [version matrix](../VERSIONS.md).
 
 Count by catalog row: **15 available, 2 draft, 11 planned, 6 evidence only**.
 These are logical families, including supporting artifacts; they are not 34

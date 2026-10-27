@@ -203,7 +203,7 @@ container by its flattened children rather than by a repeated blob. Filter on
 
 The whole conformance corpus has been loaded against PostgreSQL 18 — 382
 documents, 24,380 facts — twice, for the same row counts. See the
-[load record](reviews/2026-09-16-lake-live-postgres.md).
+load record.
 
 What the standard will **not** grow: a storage contract, warehouse-specific
 loaders, or aggregate-math semantics in the lake layer. Aggregates that need

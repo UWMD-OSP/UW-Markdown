@@ -70,9 +70,7 @@ launch together at 5.0.0, prelaunch releases use4.x.x, and no prelaunch
 compatibility or artifact-retention work is required. Specific normative
 changes and product removals still follow their reviewed scope and applicable
 RFC discipline; no release is authorized by this guidance.
-See the
-[architecture inventory](docs/reviews/2026-10-15-architecture-boundary.md) and
-[separate 5.0 removal plan](docs/reviews/2026-10-15-agent-removal-5.0.md).
+See the [architecture overview](ARCHITECTURE.md).
 
 Keep provenance (including agent identities), integrity, receipts, module
 declarations, HTTP/MCP interoperability, generic edit APIs and repository
@@ -112,7 +110,7 @@ standard's reference implementation is `packages/uwmd-verify` (its own
 `spec/UW_RECEIPT.md` and
 `spec/metrics/`; `packages/uwmd-verify/src/protocol.ts` is the executable mirror
 of the protocol.
-Current state: [`docs/wiki/13-status.md`](docs/wiki/13-status.md) and
+Current state: [Roadmap](ROADMAP.md) and
 [`VERSIONS.md`](VERSIONS.md).
 
 Some directories carry their own `CLAUDE.md` with package-specific notes

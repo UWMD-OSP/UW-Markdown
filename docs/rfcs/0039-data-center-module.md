@@ -314,7 +314,7 @@ New in `conformance/modules/runtime/` (beside the hospitality suite):
 | `07-data-center-fallback` | Module not loaded → `degraded`, `MOD-FALLBACK-001`, display name absent. This is the RFC 0003 resolution path on a *product* module, not the fixture one. |
 
 Existing fixtures unchanged, including `conformance/modules/asset-classes/`.
-`docs/wiki/13-status.md` gains a module row; `ROADMAP.md` gains the
+`ROADMAP.md` gains a module row; `ROADMAP.md` gains the
 0039 row.
 
 ## Reference implementation
@@ -323,7 +323,7 @@ Existing fixtures unchanged, including `conformance/modules/asset-classes/`.
   hospitality package's `package.json`, `tsconfig*.json` and
   `scripts/emit-manifest.mjs` verbatim, then change names), the example
   document, the six runtime fixtures, `conformance/modules/README.md`
-  table, `docs/wiki/13-status.md`, `ROADMAP.md`, the RFC index,
+  table, `ROADMAP.md`, `ROADMAP.md`, the RFC index,
   `CHANGELOG.md`, `VERSIONS.md` (new package row), the release
   workflow's publish matrix (`.github/workflows/release.yml`) and
   `verify-versions` if it enumerates packages.

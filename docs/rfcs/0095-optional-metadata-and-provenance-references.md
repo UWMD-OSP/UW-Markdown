@@ -433,7 +433,7 @@ authorized merely to make Python pass.
 
 Exact source/implementation authority is main
 `fa9a9ea37d31b918f5993eae4276b159f31719f3`. The independently authored
-[population review and all49 newly assessed source paths](https://github.com/UWMD-OSP/UW-Markdown/blob/1580d3357c0ab1b958b8fcdd89d1ad49ba6be738/docs/reviews/2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.md)
+population review and all49 newly assessed source paths
 and its linked JSON/compressed trace identify every input hash, block origin,
 parent gate, canonical/override assertion and rejection. The observer compiles
 exact Git runtime sources and executes the actual old checkDataQuality function;
@@ -502,20 +502,20 @@ delta before activation. No current source/fixture/expected result is changed.
 ### Executed independent date-only evidence (isolated research)
 
 The isolated review files use the existing
-`docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only` stem.
+`conformance/metadata-dates/2026-10-17-validation-diagnostic-gap-354.0095-date-only` stem.
 They are not imported by a production parser, validator or schema registry.
-The independently authored [Python reference](https://github.com/UWMD-OSP/UW-Markdown/blob/5667d100be1eebdcb1fe494a9086cd4361518934/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.py)
-and [TypeScript reference](https://github.com/UWMD-OSP/UW-Markdown/blob/5667d100be1eebdcb1fe494a9086cd4361518934/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.ts)
+The independently authored [Python reference](../../conformance/metadata-dates/2026-10-17-validation-diagnostic-gap-354.0095-date-only.py)
+and [TypeScript reference](../../conformance/metadata-dates/2026-10-17-validation-diagnostic-gap-354.0095-date-only.ts)
 share manually authored frozen inputs, not implementation logic. The Python
 procedure uses ASCII character arithmetic; TS independently uses an exact-width
 ASCII grammar and calendar arithmetic. Neither uses a string-date parser,
 current clock or RFC0094's T1B predicate.
 
-- [106 date vectors and6 admitted-carrier contexts](https://github.com/UWMD-OSP/UW-Markdown/blob/5667d100be1eebdcb1fe494a9086cd4361518934/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.vectors.json):
+- [106 date vectors and6 admitted-carrier contexts](../../conformance/metadata-dates/2026-10-17-validation-diagnostic-gap-354.0095-date-only.vectors.json):
   both procedures pass all112 expectations (25 date admits,81 refusals).
   The six contexts distinguish a required absent as_of from present null,
   wrong-type and invalid-calendar values; unknown carrier siblings remain intact.
-- [Complete400-year cycle](https://github.com/UWMD-OSP/UW-Markdown/blob/5667d100be1eebdcb1fe494a9086cd4361518934/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.cycle.json):
+- [Complete400-year cycle](../../conformance/metadata-dates/2026-10-17-validation-diagnostic-gap-354.0095-date-only.cycle.json):
  158,400 ordered inputs (years1–400, months1–12, days0–32),146,097 admits and
  12,303 refusals. Both references, the proposed JSON Schema with format plugins
  disabled, and the independent Python `datetime.date(year, month, day)` integer
@@ -525,7 +525,7 @@ current clock or RFC0094's T1B predicate.
  `140e5faf25833eca88eae2bd7a3d35d787f90ab2a06952f87a79dbac894d1b7f`.
  The frozen vectors have SHA256
  `f8d3ebc4aef8b0992edf2a333cc53fa2325b869c680ba990158225f18c6e7400`.
- [Observed local report](https://github.com/UWMD-OSP/UW-Markdown/blob/5667d100be1eebdcb1fe494a9086cd4361518934/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.observations.json)
+ Observed local report
  records source hashes, Node24.14.1/Windows and TypeScript5.9.3. The independent
  Python files identify the author authority main separately from the unmodified
  Python WIP checkpoint. Fresh final-head CI re-executes the research; archived
@@ -534,7 +534,7 @@ current clock or RFC0094's T1B predicate.
 Reproduce from the repository root with existing locked dependencies and Python:
 
 ```bash
-node docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.check.mjs
+node conformance/metadata-dates/2026-10-17-validation-diagnostic-gap-354.0095-date-only.check.mjs
 ```
 
 On Windows, set `PYTHON` to the desired Python executable when `python` is not

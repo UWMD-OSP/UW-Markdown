@@ -637,7 +637,7 @@ they do not establish replacement-payment binding verification. Producers and
 other clients claiming this capability must call the async verifier and require
 verified. Published core/CLI 2.17.0 carry Stable Protocol 2.21.0;
 RFC 0070 is implemented after shipment and independent publication verification.
-See [the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-publication.md).
+See [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.17.0).
 
 ## RFC 0064 property reserve accounts
 

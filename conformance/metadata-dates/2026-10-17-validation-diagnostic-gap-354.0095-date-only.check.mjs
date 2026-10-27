@@ -18,7 +18,7 @@ const vectorBytes = readFileSync(source('.vectors.json'));
 assert.equal(sha(vectorBytes), 'f8d3ebc4aef8b0992edf2a333cc53fa2325b869c680ba990158225f18c6e7400');
 const vectors = JSON.parse(vectorBytes);
 const proposed = JSON.parse(readFileSync(source('.schema.proposed.json'), 'utf8'));
-const rfc = readFileSync(new URL('../rfcs/0095-optional-metadata-and-provenance-references.md', import.meta.url), 'utf8');
+const rfc = readFileSync(new URL('../../docs/rfcs/0095-optional-metadata-and-provenance-references.md', import.meta.url), 'utf8');
 const embedded = rfc.match(/(?:Proposed|Accepted) `\$defs\/MarketReferenceDate`[^\n]*\n\n```json\n([\s\S]*?)\n```/)[1];
 assert.deepEqual(JSON.parse(embedded), proposed, 'RFC and proposed schema must match');
 const schema = new Ajv2020({ strict: true, validateFormats: false }).compile(proposed);

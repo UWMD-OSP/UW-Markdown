@@ -12,6 +12,10 @@ protocol, and each package each carry an independent semver).
 
 - Add a tracked-content public-language scan to the required index gate. It initially reports editorial findings, with exact integration-label exceptions and regression controls.
 
+### Documentation
+
+- Remove internal release, review and status paperwork from the public tree; retain independent calendar and stochastic conformance references and repair documentation routes and links.
+
 - Implement RFC0129’s loan quote, offering memorandum and appraisal source-fact profiles: closed schemas, attribution validation, explicit read-only candidates, package history/integrity, complete Lite views and required conformance. No formula or automatic underwriting input is added; fact-operation CLI/MCP/HTTP bindings and Lite compilation remain unsupported.
 
 - Accept RFC0129’s three source-fact profile designs; implementation and support claims follow separately.
@@ -79,6 +83,8 @@ protocol, and each package each carry an independent semver).
   land cap rate or DSCR. Packs/workbooks mirror the dictionary identity.
 
 - Implement accepted RFC 0085 C+D: full-record exports retain supplied history; remove record compaction and history-stripping model options. Missing declared predecessors fail INT-01; permitted manual replacements start null-parent roots.
+
+- Remove release preparation, review logs and obsolete workflow pages from the public tree; retain contributor and numerical conformance references.
 
 - Implement accepted RFC 0120: preserve applicable existing CF findings from the exact selected replacement-funding source.
 - Implement accepted RFC 0121: bound CS-01 to required tranche members and identities, preserving independent code owners.
@@ -991,13 +997,13 @@ Annotated `v4.3.0` targets `80c68c3d0950948c85a1d3a90c02cd05f3a650a4`.
 The established release workflow published all8 packages with provenance.
 Independent registry, integrity, signature/provenance and fresh downstream
 consumer checks pass, including the published CLI350/350 portable cases. See
-[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.3.0).
 
 Core/CLI 4.3.0 pair with Format 3.0 and Protocol 4.1.0. Verifier0.2.1,
 signing0.6.0, batch0.9.2, Excel0.9.19, report0.9.0 and lake0.3.2
 carry exact dependency pins for this generation. Receipts use verifier 0.2.1
 as engine identity; receipt schemas, metric/pack definitions and Protocol rules
-are unchanged. See the [release preparation](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-preparation.md).
+are unchanged. See the [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.3.0).
 
 ### Fixed
 
@@ -1078,13 +1084,13 @@ are unchanged. See the [release preparation](https://github.com/UWMD-OSP/UW-Mark
 - Phase 2 financial verification following [#343](https://github.com/UWMD-OSP/UW-Markdown/issues/343):
   connected acquisition and asset-class workflow regressions, deterministic
   cash-ledger oracles, cross-package findings and release-impact evidence in
-  [the review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-financial-verification-phase-2.md).
+  the review.
   Draft RFCs 0086/0087 compare purchase-price authority and hospitality revenue
   reconciliation alternatives; neither selects new financial semantics.
 - Financial audit intake for [#343](https://github.com/UWMD-OSP/UW-Markdown/issues/343)
   (`UWMD-METRICS-2026-10-14`, M01–M12): independent classifications,
   synthetic reproductions, authority evidence and owner decisions in
-  [the review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-financial-audit-343.md).
+  the review.
   No metric definition, validation obligation or conformance expectation changes.
 - CLI regression checks for D-10. They now assert `package verify --json`'s
   structured result: `verified` for the demo package, and `failed` with a
@@ -1113,7 +1119,7 @@ are unchanged. See the [release preparation](https://github.com/UWMD-OSP/UW-Mark
   `playwright-core ^1.49.0` resolves to releases that require Node 20 and
   exits 1 before any output, `--format html` included. The other packages
   keep `>=18.0.0`, which was re-run on Node 18.0.0 and 18.20.8
-  ([readiness assessment](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-14-next-release-readiness.md)
+  (readiness assessment
   §4). Dropping a declared runtime is a breaking change for these two 0.x
   packages.
 - The `uwmd` CLI refuses unknown flags. Every command, and every subcommand
@@ -1206,8 +1212,8 @@ published 4.1.0, whose tampered copy reports `RCP-07` `unverifiable` across
 the engine step as specified. RFC 0084 is `implemented`; Protocol **4.1.0**
 is Stable, paired with Format **3.0**. PR #328 merged to `main` after the
 preparation and is not in this release. Exact evidence is in
-`docs/releases/4.2.0-publication-evidence.json` and the verification method
-in `docs/releases/4.2.0-publication.md`.
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.2.0) and the verification method
+in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.2.0).
 
 ### Prepared package pairing
 
@@ -1304,8 +1310,8 @@ all eight packages with `skipLibCheck: false` and no Anthropic SDK. RFC 0083
 is `implemented`; Protocol **4.0.0** stays Stable, paired with Format
 **3.0**. The `@uwmd/verify` name bootstrap is recorded in the publication
 record. The immutable tagged tree keeps its neutral preparation records.
-Exact evidence is in `docs/releases/4.1.0-publication-evidence.json` and the
-verification method in `docs/releases/4.1.0-publication.md`.
+Exact evidence is in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.1.0) and the
+verification method in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.1.0).
 
 ### Prepared package pairing
 
@@ -1496,8 +1502,8 @@ through as merely unverifiable; reissue legacy receipts with 4.1.0, or treat
 
 ### Fixed
 
-- `docs/reviews/2026-09-12-pcg64-reference.md` and
-  `docs/reviews/2026-09-24-terminal-boundary-design.md` link the PCG64 oracle,
+- `conformance/stochastic/pcg64-reference.md` and
+  `docs/rfcs/0063-final-period-exclusive-boundary.md` link the PCG64 oracle,
   its tests and the property cash-flow verifier at their `@uwmd/verify`
   paths.
 - The docs-site home page no longer calls the Excel exporter and the lake
@@ -1527,8 +1533,8 @@ Every dependent pins core 4.0.1 exactly, signing 0.3.1 stamps and verifies
 with `skipLibCheck: false` and no Anthropic SDK. Protocol **4.0.0** stays
 Stable, paired with Format **3.0**. The immutable tagged tree keeps its
 neutral preparation records. Exact evidence is in
-`docs/releases/4.0.1-publication-evidence.json` and the verification method
-in `docs/releases/4.0.1-publication.md`.
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.0.1) and the verification method
+in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.0.1).
 
 ### Prepared package pairing
 
@@ -1600,8 +1606,8 @@ all seven packages with `skipLibCheck: false` and no Anthropic SDK. RFC 0081
 is `implemented`; Protocol **4.0.0** is Stable, paired with Format **3.0**.
 Both module package names stay at their final, deprecated 0.2.0, and nothing
 else was published. The immutable tagged tree keeps its neutral preparation
-records. Exact evidence is in `docs/releases/4.0.0-publication-evidence.json`
-and the verification method in `docs/releases/4.0.0-publication.md`.
+records. Exact evidence is in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.0.0)
+and the verification method in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.0.0).
 
 ### Prepared package pairing
 
@@ -1783,8 +1789,8 @@ Format **2.1**. The owner deprecated both module package names on npm on
 by hand from `v2.21.0` on 2026-10-11 so lake's trusted publisher could be
 created, is not part of this release. No other package generation was
 published. The immutable tagged tree keeps its neutral preparation records.
-Exact evidence is in `docs/releases/3.0.0-publication-evidence.json` and the
-verification method in `docs/releases/3.0.0-publication.md`.
+Exact evidence is in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v3.0.0) and the
+verification method in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v3.0.0).
 
 ### Prepared package pairing
 
@@ -1985,8 +1991,8 @@ modules' 11 runtime fixtures and compiles strict TypeScript with
 Protocol **2.25.0** is Stable, paired with Format **2.0**. No other package
 generation was published. The immutable tagged tree keeps its neutral
 preparation records. Exact evidence is in
-`docs/releases/2.21.0-publication-evidence.json` and the verification method
-in `docs/releases/2.21.0-publication.md`.
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.21.0) and the verification method
+in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.21.0).
 
 ### Prepared package pairing
 
@@ -2041,8 +2047,8 @@ runtime fixtures and compiles strict TypeScript with `skipLibCheck: false` and
 no Anthropic SDK. RFCs 0064 and 0072 are `implemented`; Protocol **2.24.0** is
 Stable, paired with Format **2.0**. No other package generation was published.
 The immutable tagged tree keeps its neutral preparation records. Exact
-evidence is in `docs/releases/2.20.0-publication-evidence.json` and the
-verification method in `docs/releases/2.20.0-publication.md`.
+evidence is in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.20.0) and the
+verification method in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.20.0).
 
 ### Prepared package pairing
 
@@ -2131,8 +2137,8 @@ compiles strict TypeScript with `skipLibCheck: false` and no Anthropic SDK.
 RFCs 0075, 0076 and 0077 are `implemented`; Protocol **2.23.0** is Stable,
 paired with Format **2.0**. No other package generation was published. The
 immutable tagged tree keeps its neutral preparation records. Exact evidence
-is in `docs/releases/2.19.0-publication-evidence.json` and the verification
-method in `docs/releases/2.19.0-publication.md`.
+is in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.19.0) and the verification
+method in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.19.0).
 
 ### Prepared package pairing
 
@@ -2285,8 +2291,8 @@ skips, and an isolated consumer runs both modules' 11 runtime fixtures. RFCs
 0071 and 0074 are `implemented`; Protocol **2.22.0** is Stable, paired with
 Format **2.0**. No other package generation was published. The immutable
 tagged tree keeps its neutral preparation records. Exact evidence is in
-`docs/releases/2.18.0-publication-evidence.json` and the verification method
-in `docs/releases/2.18.0-publication.md`.
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.18.0) and the verification method
+in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.18.0).
 
 ### Prepared package pairing
 
@@ -2300,7 +2306,7 @@ core, CLI, signing, batch, `@uwmd/module-hospitality` and
 public generation. Excel, report and lake remain source-only. Module manifest
 contracts stay **0.1.0**. RFCs 0071 and 0074 stayed `accepted` in the
 tagged preparation state; the Released evidence above records their verified
-lifecycle transition. See `docs/releases/2.18.0-preparation.md`.
+lifecycle transition. See [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.18.0).
 
 ### Released contract — Protocol 2.22.0 (RFCs 0071 and 0074)
 
@@ -2451,7 +2457,7 @@ The sections below give each change in full.
 
 - **Issue #263 is triaged against the current contract** (StackUW
   `adopter report 023`). The
-  [renamed-identifier review](docs/reviews/2026-10-04-renamed-identifiers.md)
+  [renamed-identifier review](docs/rfcs/0073-previous-asset-class-identifiers.md)
   and its reproduction script show three things:
   - Renaming only a module id leaves old documents resolved. Protocol §X.2.2
     resolves `asset_class` by the declared class id and never compares a
@@ -2678,8 +2684,8 @@ verify. The registry-installed CLI passes **158/158** portable cases, no skips.
 RFC 0070 is `implemented`; Protocol **2.21.0** is Stable, paired with Format
 **2.0**. No other package generation was published. The immutable tagged tree
 retains its neutral preparation records. Exact evidence is in
-`docs/releases/2.17.0-publication-evidence.json` and the verification method in
-`docs/releases/2.17.0-publication.md`.
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.17.0) and the verification method in
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.17.0).
 
 ### Prepared package pairing
 
@@ -2691,7 +2697,7 @@ patch-version step for the exact repin. The workflow scope remains core, CLI,
 signing and batch; the other package generations remain source-only. Module
 manifest contracts stay **0.1.0**. RFC 0070 stayed `accepted` in the tagged
 preparation state; the Released evidence above records its verified lifecycle
-transition. See `docs/releases/2.17.0-preparation.md`.
+transition. See [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.17.0).
 
 ### Released contract — Protocol 2.21.0 (RFC 0070)
 
@@ -2765,7 +2771,7 @@ registry/DSSE signatures, Fulcio trust, Rekor timestamps/inclusion proofs and
 published file comparisons verify; the delivered CLI passes **101/101**
 portable cases. RFC 0069 is `implemented`; Protocol **2.20.0** is Stable.
 The immutable tag retains its publication-neutral preparation records. Exact
-evidence is in `docs/releases/2.16.0-publication-evidence.json`.
+evidence is in [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.16.0).
 
 ### Prepared package pairing
 
@@ -2777,7 +2783,7 @@ core, CLI, signing and batch; the other packages remain source-only.
 RFC 0069 stayed `accepted` in the tagged preparation state; the Released
 record above adds its verified lifecycle transition. Package pairings and
 preparation evidence are recorded in
-`docs/releases/2.16.0-candidate.md`.
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.16.0).
 
 ### Implemented contract — Protocol 2.20.0 (RFC 0069)
 
@@ -3081,7 +3087,7 @@ The `v2.14.0` tag published core/CLI **2.14.0**, signing **0.2.18** and batch
   derives no ratio the document does not state. The `02-full-multifamily` chat
   baseline is regenerated: six NOI lines change from `n/a` to the stated
   figures. Example drift and the open owner decisions are recorded in
-  `docs/reviews/2026-10-01-noi-model-read-paths.md`.
+  the prior review.
 
 ### Accepted additive contract — Protocol 2.18.0 (RFC 0063)
 
@@ -3132,7 +3138,7 @@ The `v2.13.0` tag published core/CLI **2.13.0**, signing **0.2.17** and batch
   reparsed as `null` and changed the semantic digest on seven private
   golden-deal/control cases under published 2.12.0; the corrected serializer
   preserves `[]` and all model-fidelity round-trips pass. See the
-  [de-identified acceptance record](docs/reviews/2026-09-21-golden-deal-release-comparison.md).
+  de-identified acceptance record.
 - **Protocol version-label integrity (RFC 0061).** Corrected the protocol
   document's stale `2.15.0` status line and `2.8.0` §0.3 label to the
   authoritative `2.17.0`, and extended `verify-versions` to fail if either
@@ -3344,7 +3350,7 @@ The `v2.13.0` tag published core/CLI **2.13.0**, signing **0.2.17** and batch
   Also documented, not changed: `uw_packages` is keyed by the manifest's
   declared `package_id`, the one table not keyed by a digest, so two packages
   claiming one id collapse. See the
-  [load record](docs/reviews/2026-09-16-lake-live-postgres.md) for the evidence,
+  load record for the evidence,
   the row counts, and what the run does **not** prove — no network, no
   concurrency, no managed service, and a GIN index the planner did not choose at
   corpus scale.
@@ -4707,7 +4713,7 @@ the same day. Protocol §VIII.8.
 ### Known gap at this release — the PCG test vector was self-generated
 
 > Resolved in the 2026-09-12 maintenance sprint through an independent NumPy
-> comparison; see [verification evidence](docs/reviews/2026-09-12-pcg64-reference.md).
+> comparison; see [verification evidence](conformance/stochastic/pcg64-reference.md).
 > The original release-time finding below is preserved as history.
 
 `prng.ts` implements PCG-XSL-RR-128/64 from the published algorithm, but the
@@ -5126,7 +5132,7 @@ per-stage required sections, yet 28 in-scope corpus documents omitted
   exclusions, and the `operating_statement` requirement through its `t12`
   variant.
 
-Follow-up tracked in `docs/wiki/13-status.md`: all twelve worked examples
+Follow-up tracked in `ROADMAP.md`: all twelve worked examples
 declare `full_underwrite` but miss 4–5 of its required sections — bring the
 examples to stage-honesty (add the sections or restage them), then a future
 RFC may revisit `DQ-06`'s severity.
@@ -5202,7 +5208,7 @@ RFC 0027 flipped to `implemented`):
   design (§XIII.2).
 
 Also: the conformance README corpus tree gains the group, and
-`docs/wiki/13-status.md` records the arc (including the §XI → §XIII errata).
+`ROADMAP.md` records the arc (including the §XI → §XIII errata).
 
 ### Changed — Excel layouts and the web-editor grid read the registry (RFC 0027, part 3)
 
@@ -5318,7 +5324,7 @@ from the packs. Written up as **RFC 0027** (since accepted), which declares
 the fields in §4.1 plus a normative per-class selection table in the protocol.
 Drafting it found three further consumers that never re-derived the mapping and
 are wrong today — the one-row `csv` read model, the §7.1 report cover, and the
-UW Lite bridge — all recorded in the RFC and in `docs/wiki/13-status.md`.
+UW Lite bridge — all recorded in the RFC and in `ROADMAP.md`.
 
 ## [1.6.0] - 2026-08-22
 

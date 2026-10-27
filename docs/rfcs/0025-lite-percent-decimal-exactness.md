@@ -259,7 +259,7 @@ Concretely, for the whole 1.x line a verifier **MUST** continue to recognize
 `canonicalization_version: "1.0"` and report `RCP-10` per `UW_RECEIPT_v1.md`
 §5.5 rather than `failed`. At Protocol 2.0 that recognition may be dropped; a
 2.0 verifier is not obliged to distinguish a `1.0` receipt from a corrupted one.
-This also retires the standing note in `docs/wiki/13-status.md` that legacy
+This also retires the standing note in `ROADMAP.md` that legacy
 sniffing has no expiry — it now has one, and it is shared.
 
 ## Prior art

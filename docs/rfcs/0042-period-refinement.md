@@ -13,7 +13,7 @@ affects:
 
 Implemented and published in core/CLI **2.8.0** on 2026-09-12, with
 Protocol **2.11.0** and Format **2.0**. See
-[release verification](../reviews/2026-09-12-release-2.8.0.md).
+release verification.
 
 ## Outcome
 
@@ -23,7 +23,7 @@ Reordering rows cannot change the ranking. A missing year-three NOI must be
 reported, rather than replaced by zero or an assumption from a different year.
 
 This implements the refinement stage of the
-[period-consumer brief](../../docs/roadmap/period-consumers.md). Excel needs its own
+period-consumer brief. Excel needs its own
 workbook-binding contract and continues to refuse selector formulas.
 
 ## Contract
