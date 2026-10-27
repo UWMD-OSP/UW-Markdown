@@ -1,7 +1,7 @@
 # Versions
 
 Format and Protocol are separate normative surfaces. npm packages follow the
-owner release rule below: prelaunch 4.x.x, then a coordinated 5.0.0 public launch.
+release policy below: prelaunch 4.x.x, then a coordinated 5.0.0 public launch.
 From launch, people see one public number, **UWMD 5.x**, for the packages and the
 standard; each record keeps declaring its Format version, and this file maps
 every UWMD release to the Format and Protocol versions it carries
@@ -58,10 +58,9 @@ together would force every adopter to track every library release.
 The same logic applies to the protocol: an editor and a verifier can be
 released independently as long as both honor the same protocol version.
 
-<a id="public-launch-compatibility-policy-owner-decision-2026-10-16"></a>
-## Public launch rule (owner decision, 2026-10-17)
+## Public launch policy
 
-The owner rule at the top of AGENTS.md and CLAUDE.md
+The prelaunch policy in AGENTS.md
 supersedes earlier compatibility and artifact-preservation directions.
 5.0.0 is exclusively the official public launch: **every @uwmd npm package
 moves to 5.0.0 together then**. All prelaunch releases use 4.x.x and may ship
@@ -70,7 +69,7 @@ from main as needed, including incompatible changes.
 Before launch there is zero backward compatibility. Do not prepare migration
 notes, deprecation paths, consumer-breakage analyses, version-bump recommendations
 or preservation/repair of prelaunch documents, signatures, receipts or artifacts.
-The project owner is the sole prelaunch consumer; prelaunch documents are not public inputs.
+The prelaunch period establishes no public compatibility baseline.
 Drop compatibility-only and artifact-preservation-only work. Current numerical,
 verification, read-only source-integrity and conformance requirements remain;
 those are current contracts, not legacy support obligations.
@@ -435,7 +434,7 @@ The current version matrix above records the implemented release state.
 
 ## Development and release policy
 
-Apply the 2026-10-17 owner rule above. Earlier release descriptions are not
+Apply the prelaunch policy above. Earlier release descriptions are not
 compatibility obligations. Use the current source, accepted RFCs and conformance
 for development; do not maintain old readers, receipts, APIs or document repair
 paths for prelaunch consumers. Current source/digest correctness remains part of

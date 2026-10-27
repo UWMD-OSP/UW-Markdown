@@ -304,7 +304,7 @@ for today's identical-`id` case also lands, closing the gap the review found.
    (F3) and is the right interim path. It can't state equivalence, can't
    report it, and lets the two declarations drift. If no consumer needs
    equivalence, this alternative wins and the RFC is withdrawn; see the
-   owner decision below.
+   accepted decision below.
 3. **Rewrite documents to the current id on resolution or re-export.**
    Rejected. It breaks byte preservation, changes receipt digests behind the
    producer's back, and destroys the record of what the document stated.
@@ -323,7 +323,7 @@ for today's identical-`id` case also lands, closing the gap the review found.
 
 ## Unresolved questions
 
-### Owner decision
+### Accepted decision
 
 - **Acceptance gate.** Dual declaration already keeps old documents
   resolvable on every host (review F3) and needs no release. The choice is

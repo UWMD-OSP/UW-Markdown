@@ -17,7 +17,7 @@ playbook. State:
 - A lowercase opaque profile id, following `lease-abstract-v1` and
   `market-data-v1` (RFC0018/0022), and its independent version contract. Explain
   which later edits need a new profile version; do not silently change an id's
-  meaning. Prelaunch work follows the current owner rule; postlaunch versioning
+  meaning. Prelaunch work follows the prelaunch policy; postlaunch versioning
   follows [release rules](RELEASE_RULES.md).
 - Exact identity, payload schema and carrier mapping. A profile marker in
   frontmatter or a package descriptor is not automatically a property inside a

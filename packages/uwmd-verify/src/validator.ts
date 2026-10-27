@@ -557,7 +557,7 @@ function checkCrossSectionConsistency(
         }
       }
       // Same rate (§4.24): the tranche's rate equals the interest_rate of the
-      // senior at the stack's point, exactly, with no tolerance (owner ruling on
+      // senior at the stack's point, exactly, with no tolerance (resolution of
       // #406). sources_uses states no rate, so a closing stack has no fallback.
       const seniorRate = num(senior.tranche['rate']);
       const atPoint = debt[senior.point].block;

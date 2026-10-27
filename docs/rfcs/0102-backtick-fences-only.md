@@ -12,7 +12,7 @@ affects:
 
 # RFC 0102: A structured block opens only on a three-backtick json line
 
-> **Accepted by the owner, 2026-10-19** (owner on #405: "backtick fences only;
+> **Accepted by the UWMD maintainers, 2026-10-19** (owner on #405: "backtick fences only;
 > Python aligns"). The RFC, its decisions and the alignment land together.
 
 ## Summary
@@ -75,7 +75,7 @@ None.
 
 | # | Question | Decision | Why |
 |---|---|---|---|
-| D1 | Fence characters | Exactly three backticks + `json` at column 0 | Owner ruling; reference behavior |
+| D1 | Fence characters | Exactly three backticks + `json` at column 0 | Accepted resolution; reference behavior |
 | D2 | Closing line | Exactly three backticks, optional trailing spaces/tabs | Reference `FENCE_CLOSE_RE` |
 | D3 | Nesting | Line-based; no Markdown fence nesting | Reference behavior; one deterministic rule |
 

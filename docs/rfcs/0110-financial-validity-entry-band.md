@@ -11,11 +11,11 @@ affects:
 
 # RFC 0110: Name the §4.17 financial_validity entry's band "band"
 
-> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0110 (#466)
-> accepted, including both proposals: add ltc to the metric list, and drop stored
-> entries marked info."). Origin: owner ruling of 2026-10-21 evening (1): rename
-> §4.17 `financial_validity[].severity` to `band`, matching RFC 0109. It changes a
-> section's member name, so it is normative.
+## Resolution
+
+The UWMD maintainers accepted the member name `band` on 2026-10-21 to align
+§4.17 `financial_validity[]` with RFC 0109. The accepted scope also adds `ltc`
+to the metric list and removes stored entries marked `info`.
 
 ## Summary
 

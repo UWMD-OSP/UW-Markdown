@@ -14,24 +14,21 @@ affects:
 
 # RFC 0103: Four metric dictionary corrections
 
-> **Accepted by the owner, 2026-10-20.** The owner decided the four metric
-> questions the 2026-10-15 financial audit left open (M01–M04,
-> prior review),
-> which are owner-gated. The owner's words: "(1) fb_gross_margin becomes USALI gross
-> margin, (revenue − cost of sales) ÷ revenue, with no labor; (2) replace
-> rent_index with mark_to_market = (market − in-place) ÷ in-place, positive =
-> upside; (3) data-center power cost never assumes full draw: use metered or
-> measured figures when stated, otherwise require an explicit draw factor (null
-> when absent, never invented), and treat power billed through to tenants
-> (billing.metered_pass_through) as net to the landlord; (4) total_room_revenue
-> and room_revenue_per_key use stated booked rooms revenue, with ADR × occupancy
-> × nights only as a cross-check within a tolerance". In answer to follow-up
-> questions the same day the owner chose: the cross-check is a new `CC-HOSP-05`
-> (existing `CC-HOSP-04` unchanged), its tolerance is 1% of stated revenue, and
-> `CC-DC-07` keeps its trigger re-expressed in mark-to-market terms. A
-> labor-inclusive margin, if ever wanted, gets its own id (owner's decision
-> note). This RFC records the rulings and the synchronized implementation. The choices made inside
-> them during implementation are listed separately (§ "Implementation choices") for the owner's review.
+## Resolution
+
+The UWMD maintainers accepted the four corrections below on 2026-10-20 to
+resolve financial-audit findings M01–M04. `fb_gross_margin` uses USALI gross
+margin, (revenue − cost of sales) ÷ revenue, excluding labor. `mark_to_market`
+replaces `rent_index` with (market − in-place) ÷ in-place, positive for upside.
+Power cost uses stated metered/measured consumption or an explicit draw factor;
+an absent factor remains null, and metered tenant pass-through is net to the
+landlord. Rooms revenue uses stated booked revenue, with ADR × occupancy ×
+nights as a cross-check.
+
+The rooms cross-check is `CC-HOSP-05`, with tolerance of 1% of stated revenue;
+`CC-HOSP-04` is unchanged. `CC-DC-07` retains its trigger in mark-to-market
+terms. A labor-inclusive margin would require a separate id. The implementation
+choices below record how these accepted decisions were applied.
 
 ## Summary
 

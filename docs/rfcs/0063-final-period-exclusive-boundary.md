@@ -418,7 +418,7 @@ series containing the same rows.
 
 ## Unresolved questions
 
-No unresolved semantic decision remains for this scope. The owner accepted the
+No unresolved semantic decision remains for this scope. The UWMD maintainers accepted the
 public enum, both cadences, exact boundary, representability limit, unchanged
 cash horizon and compatibility rules on 2026-09-24.
 

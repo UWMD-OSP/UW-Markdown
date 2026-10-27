@@ -11,6 +11,8 @@ test('process narration is caught in prose, source comments and data with line n
     ['own', 'er ruling'].join(''), ['own', 'er direction'].join(''),
     ['check', 'point'].join(''), ['Co', 'dex'].join(''),
     ['paste', 'back'].join('-'), ['NO', 'W.md'].join(''), ['launch', 'held'].join('-'),
+    ['own', "er's 2026-10-23 ruling"].join(''), ['own', 'er release rule'].join(''),
+    ['As', 'tra review'].join(''),
   ];
   for (const path of ['docs/rfcs/example.md', 'packages/example.ts', 'conformance/example.json']) {
     for (const probe of probes) {
@@ -23,7 +25,7 @@ test('process narration is caught in prose, source comments and data with line n
   }
 });
 
-test('allowance is limited to the exact integration label at its exact path', () => {
+test('allowance is limited to the exact technical line at its exact path', () => {
   for (const entry of voiceAllowlist) {
     assert.deepEqual(publicVoiceFindings(entry.path, entry.text), []);
     assert.ok(publicVoiceFindings('other.md', entry.text).length > 0);

@@ -17,7 +17,7 @@ affects:
 
 Implement RFC 0115 D4 literally: lack of a starter pack must not prevent a
 Verifier from recomputing dictionary-defined results. Retain honest inability
-to verify pack-only outputs and pack-output coverage. Accepted as drafted by the owner on 2026-10-22 (fourth set); this PR implements
+to verify pack-only outputs and pack-output coverage. Accepted as drafted by the UWMD maintainers on 2026-10-22 (fourth set); this PR implements
 the receipt-spec follow-up.
 
 ## Contract
@@ -60,7 +60,7 @@ RCP-02 and evaluates the remaining pack-only outputs as today.
 | Question | Recommendation | Precedent |
 |---|---|---|
 | How to bind a result to standard meaning? | Applicable builtin calc_id is the dictionary assertion; alternate formulas use another id | Dictionary metric identities and RFC 0078's standard/starter boundary |
-| Unknown pack blocks all math? | No; authenticate first, then recompute independently defined dictionary claims | Owner direction and RFC 0115 D4 |
+| Unknown pack blocks all math? | No; authenticate first, then recompute independently defined dictionary claims | Accepted resolution and RFC 0115 D4 |
 | All visible dictionary values agree but pack coverage is unknown? | Still unverifiable overall, with the recomputed subset exposed | Receipt 3.2 promises complete named-pack outputs; agreement does not prove omitted outputs |
 | New wire field or tolerance? | Neither; existing calc_id, recomputed and RCP codes suffice | Existing receipt result/verification structure |
 

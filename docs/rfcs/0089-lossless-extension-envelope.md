@@ -18,7 +18,7 @@ affects:
 
 Use a tagged `single`/`variants` extension entry, exact nullable identities,
 complete XML/CSV carriers and a separately identified whole-Envelope commitment.
-The owner accepted D1–D6 on 2026-10-23 at RFC revision
+The UWMD maintainers accepted D1–D6 on 2026-10-23 at RFC revision
 `a8a33a96eb352cf316c8d22e23c0c5315362babb`, supported by independently reviewed
 candidate `2f23cd2705c06a8763d9f27af192da17c2aa3b0a` against main
 `6682bfd29967d8b16287333e31912b9a0e4b59d9`. All five candidate findings closed
@@ -397,7 +397,7 @@ separate explicit approval. Modules/financial definitions are unchanged.
 
 | Decision | Recommendation | Authority / acceptance evidence |
 |---|---|---|
-| D1/D2 tagged exact identities | Retain owner-selected single/variants and null != default | Direction selected 2026-10-17; current peer loss reproduced; exact source/order/history fixtures required |
+| D1/D2 tagged exact identities | Retain accepted single/variants and null != default | Direction selected 2026-10-17; current peer loss reproduced; exact source/order/history fixtures required |
 | D3 minimum/full subject | Tagged portable minimum; full authored Envelope for commitments | Selected direction; independently frozen absent/null/notes/prose controls required |
 | D4 total mapping | ASCII lexical XML; CSV block-extra + empty carrier; strict raw duplicate admission | Selected direction; complete lawful-domain independent codecs and actual ZIP refusals required |
 | D5 commitments | New complete subject, unchanged V.13 admission and current receipt precedence | Selected direction plus accepted RFCs 0088/0111/0123/0124; real signing/receipt state-machine controls required |
@@ -431,7 +431,7 @@ Do not infer those results from schema success, raw crypto or previous-head CI.
 | D4 actual ZIP | Actual STORE and DEFLATE positives; original-byte BOM/inventory, CRC, header agreement, malformed structure, aliases/gaps and security/resource refusals independently of semantic digest checks. | Real CLI/bindings/archive integration repeats those controls; directory-only tests do not count. |
 | D5 signatures/receipts | Supported new-subject creation/signing/verification using real crypto and exact malformed/unsupported/source/digest/backend/ref-input/rule-set precedence, equal-digest/different-version and decisive pack-less dictionary checks. | Supported labels and production state machines match and pass the same single-mutation cases. |
 | Subject consumers | Complete inventory; once-bound candidate plans fail after an omitted-peer/whole-source mutation, including a freshly stamped changed Envelope. No automatic rebinding; distinguish results/block/selected-vector commitments. | Coordinated adoption and explicit reviewed rebinding; no blanket expectation refresh. |
-| Independent review/owner ruling | Findings closed or explicitly ruled on, truthful exact-head/platform/authorship evidence, and final owner acceptance only after all gates pass. | Production integration/conformance/required CI and capability claims match the accepted contract; launch separately authorized. |
+| Independent review/accepted resolution | Findings closed or explicitly ruled on, truthful exact-head/platform/authorship evidence, and final owner acceptance only after all gates pass. | Production integration/conformance/required CI and capability claims match the accepted contract; launch separately authorized. |
 
 ## Conformance impact
 
@@ -463,7 +463,7 @@ admission separate from representation reconstruction.
 
 Variant-key maps collide null/default and payload-shaped labels. Selecting one
 peer, aggregating payloads or moving active peers to history loses meaning.
-Partial XML would narrow the full-fidelity promise; the owner selected a total
+Partial XML would narrow the full-fidelity promise; the maintainers selected a total
 lexical carrier. Base64 is reversible but is not the selected lexical contract.
 A portable parse minimum or raw signature success cannot stand in for complete
 source/model admission. Historical dual-regime support is not required.

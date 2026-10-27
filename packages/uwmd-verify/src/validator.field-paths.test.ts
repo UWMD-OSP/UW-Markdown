@@ -75,7 +75,7 @@ describe('validateUWFile — issue field paths (RFC 0104)', () => {
     expect(stale[0]!.message).toContain('noi_model.expense_ratio');
   });
 
-  it('gives every frontmatter-scoped issue section "frontmatter" (owner ruling 2026-10-21)', () => {
+  it('gives every frontmatter-scoped issue section "frontmatter" (RFC 0104)', () => {
     const frontmatter = (lines: string) =>
       validateUWFile(parseUWFile(`---\nuw_version: "3.0"\ndeal_id: "rfc0104"\n${lines}---\n\n`)).issues;
     const pairs = (list: ValidationMessage[], codes: string[]) =>

@@ -14,11 +14,11 @@ affects:
 
 # RFC 0088: Pinned numerical procedures and authenticate-first receipts
 
-## Owner acceptance — 2026-10-18
+## Resolution
 
 > RFC 0088 accepted: architecture A, one exact pinned fdlibm procedure for pow, exp and log across every exponent class, with authenticate-first receipt precedence, as drafted at 86a20fe5.
 
-The owner also accepts the measured spreadsheet-parity findings as export-contract
+The UWMD maintainers also accepted the measured spreadsheet-parity findings as export-contract
 limits. The accepted contract is active in the standard, reference
 implementation and conformance. Issue #356 is resolved by the exact
 procedure, rather than a host-libm name, runtime selector or separate integer
@@ -137,7 +137,7 @@ optional fv/pv defaults remain zero only at their existing builtin boundary.
 | XNPV | Existing integer day count divided last into binary64 `t`; `b=B(1+r)`, `term=B(amount*P(b,-t))`, left-to-right binary64 sum. Do not replace multiplication by division, even at integer-looking `t`. |
 | XIRR | Existing VIII.9.3 solver, using this XNPV graph; no native Excel solver substitution. |
 
-Annuity number/type/arity checks remain as implemented at the accepted checkpoint:
+Annuity number/type/arity checks remain as implemented at the accepted revision:
 PMT rejects exactly zero periods, without introducing a positive-integer period
 restriction. FV/PV retain negative/fractional numeric periods and their existing
 zero-rate branches. NPER keeps its zero-rate/payment, zero-denominator and quotient
@@ -190,7 +190,7 @@ refusal and a spreadsheet error remain distinct outcomes.
 
 ## Evidence and conformance
 
-The accepted draft checkpoint is commit
+The accepted draft revision is commit
 86a20fe5f95f56bad5766f559817b6f7ef102b2c. Its independent native/Python/TypeScript raw procedures, word/constants/resource
 proofs, mathematical controls, composed financial/refusal/quantizer trajectories,
 current1106-case impact, real-signature precedence matrix, browser and named-engine
@@ -209,5 +209,5 @@ is [#357](https://github.com/UWMD-OSP/UW-Markdown/pull/357).
 Research inputs and reproducible commands remain in
 the numerical review and
 [experiment directory](https://github.com/UWMD-OSP/UW-Markdown/tree/86a20fe5f95f56bad5766f559817b6f7ef102b2c/experiments/numerical-0088).
-Earlier draft alternatives and pending-gate notes at that checkpoint do not
+Earlier draft alternatives and pending-gate notes at that revision do not
 supersede this accepted contract.

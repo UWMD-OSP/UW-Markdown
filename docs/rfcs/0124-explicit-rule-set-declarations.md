@@ -15,7 +15,7 @@ affects:
 
 ## Resolution
 
-Accepted as drafted by the owner on 2026-10-22 (fourth set). Require UW Lite to
+Accepted as drafted by the UWMD maintainers on 2026-10-22 (fourth set). Require UW Lite to
 declare uw_version. Retain the owner-confirmed RFC 0111
 implementation decisions: RCP-13 for receipt/record rule-set disagreement and
 refusal of a model naming no kept rule set. This implementation closes Lite's implicit
@@ -49,7 +49,7 @@ RFC 0111's already accepted post-launch rule-set retention remains separate.
 
 | Question | Recommendation | Precedent |
 |---|---|---|
-| Undeclared Lite pins old rules or drifts to current? | Neither; require uw_version | Owner ruling; RFC 0111 selects rules from the record |
+| Undeclared Lite pins old rules or drifts to current? | Neither; require uw_version | Accepted resolution; RFC 0111 selects rules from the record |
 | Keep RCP-13? | Yes, including existing precedence | Owner confirmed the subject-identity comparison |
 | Model without a kept rule set? | Typed refusal | Owner confirmation; no implicit financial behavior |
 | Representation version selects rules? | No | Format/representation versions are distinct contracts |

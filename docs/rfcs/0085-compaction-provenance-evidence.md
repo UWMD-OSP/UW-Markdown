@@ -14,10 +14,10 @@ affects:
 
 # RFC 0085: Keep full records as verification subjects and remove destructive compaction
 
-## Owner ruling — 2026-10-22 (sixth set)
+## Resolution
 
-Accepted as drafted by the owner, including option C+D for RFC 0085.
-This PR records the ruling and implements the synchronized current contract.
+The UWMD maintainers accepted option C+D on 2026-10-22. The synchronized
+current contract is implemented.
 
 ## Summary and recommendation
 
@@ -26,11 +26,11 @@ history-stripped display is a projection, never a substitute record. Remove the
 record-producing `compact` API/command and history-omitting model export options.
 Use existing analytical/render products for views. Define missing declared
 predecessors as failed links and permitted manual replacement as a new root.
-**Accepted by the owner, D1–D7 together; implemented in this PR.** This
+**D1–D7 define the accepted contract.** This
 2026-10-22 revision replaces the earlier menu of unresolved alternatives with
 one bounded proposal against main `9138f75b`.
 
-The owner previously preferred complete records as authority and stripped
+The earlier design preferred complete records as authority and stripped
 outputs as projections. The fifth-set instruction requests decision-ready
 recommendations; the sixth-set ruling accepts the bounded contract below.
 
@@ -144,7 +144,7 @@ support, reissuance, migration, deprecation or artifact preservation work.
 RFC 0089 remains an independent complete-model representation proposal; no need
 to wait for it to remove destructive compaction or define root/link behavior.
 
-## Decisions for owner acceptance
+## Decisions
 
 | # | Decision requested | Recommendation / reason |
 |---|---|---|

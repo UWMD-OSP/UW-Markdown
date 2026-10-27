@@ -15,7 +15,7 @@ affects:
 
 ## Resolution
 
-Accepted as drafted by the owner on 2026-10-22 (fourth set). This PR implements
+Accepted as drafted by the UWMD maintainers on 2026-10-22 (fourth set). This PR implements
 the bounded selected-source clarification of Protocol V.12.
 
 ## Contract

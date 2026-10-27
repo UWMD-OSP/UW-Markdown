@@ -10,9 +10,8 @@ identity. It does not forecast leases, calculate an exit price, or infer expense
 ## Run the synthetic example
 
 All inputs below are **synthetic engineering data**. They describe no actual
-property or investment; the owner selected synthetic fixtures for implementation
-and will validate a real deal separately. They demonstrate cash coverage and
-refusal behavior, not an underwriting recommendation.
+property or investment. They demonstrate cash coverage and refusal behavior,
+not an underwriting recommendation.
 
 Install the CLI for your own explicitly covered source and plan:
 

@@ -4,7 +4,7 @@ import json
 import unittest
 from pathlib import Path
 from python_graph import evaluate, reporting
-from capture import normalized
+from comparison import normalized
 HERE = Path(__file__).resolve().parent
 INPUTS = json.loads((HERE / 'inputs.json').read_bytes())
 

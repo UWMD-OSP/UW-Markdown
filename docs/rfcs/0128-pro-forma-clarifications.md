@@ -18,7 +18,7 @@ affects:
 ## Problem and scope
 
 The independent #551 comparison found different readings of RFC0092's declared
-context, ledger membership and report presentation. The owner accepted the six
+context, ledger membership and report presentation. The UWMD maintainers accepted the six
 T1/T4/T5/T6/T9/T11 dispositions and report-only clarifications as a 4.x change.
 This RFC states those decisions, synchronizes the current contract and changes
 reference admission where required. It introduces no financial convention,

@@ -14,8 +14,8 @@ affects:
 
 # RFC 0112: Remove the retired agent host layer vocabulary from the standard
 
-> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0112 (#474) accepted as drafted, including D2: keep the generic `agent/<id>` source with `agent_id` and `agent_version`.").
-> Origin: owner decision D1 of 2026-10-12
+> **Accepted by the UWMD maintainers, 2026-10-21, as drafted** (owner: "RFC 0112 (#474) accepted as drafted, including D2: keep the generic `agent/<id>` source with `agent_id` and `agent_version`.").
+> Origin: accepted decision D1 of 2026-10-12
 > ("Remove retired agent host entirely. Don't move it."), carried out as phase C of the
 > public cleanup brief on the owner's instruction of 2026-10-21. The starter
 > half, the agent runtime, providers and `uwmd run`, is removed separately
@@ -93,7 +93,7 @@ block, but no longer *which layer of which product* did.
 
 ## Compatibility analysis
 
-No compatibility path (prelaunch; the owner rule). Records that carry
+No compatibility path (prelaunch; the prelaunch policy). Records that carry
 `pipeline_state` keep reading (D4). Module manifests that declare
 `agent_layers` are refused. Examples, fixtures and baselines are rewritten.
 

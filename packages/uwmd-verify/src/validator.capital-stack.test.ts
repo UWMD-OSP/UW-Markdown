@@ -429,7 +429,7 @@ describe('validateUWFile — capital point in time (RFC 0098)', () => {
   });
 });
 
-// #406: "same amount, same rate" (§4.24). The rate leg is exact (owner ruling).
+// #406: "same amount, same rate" (§4.24). The rate leg is exact.
 describe('validateUWFile — CC-03 senior rate (#406)', () => {
   const withRate = (trancheRate: number, loanRate: number | undefined) => file({
     capital_stack: block('capital_stack', {

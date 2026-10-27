@@ -149,13 +149,13 @@ into normative arithmetic or authorize the 5.0 launch.
 
 ## Style-only source identity update
 
-After checkpoint `cf5277fc8d6738d4e8f30566c385b13654d1451f`, cached Biome1.9.4
+After revision `cf5277fc8d6738d4e8f30566c385b13654d1451f`, cached Biome1.9.4
 applied only useSingleVarDeclarator/useNumberNamespace/useTemplate style rules.
 Declarations were split in evaluation order and global Infinity/NaN constants
 qualified; no floating operation, association, branch, constant word or wrapper
 policy changed. The accuracy record refreshed **only kernel.mjs/run.mjs source
 hash metadata**. All178 candidate/result/reference/distance records and following
-summary bytes are byte-identical to that checkpoint; the mathematics and input
+summary bytes are byte-identical to that revision; the mathematics and input
 files are unchanged. Re-execution matches that unchanged record including all five
 discrepancies. This is a style identity update, not rebaselining numerical answers.
 

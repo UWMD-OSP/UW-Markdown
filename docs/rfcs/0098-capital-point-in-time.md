@@ -14,7 +14,7 @@ affects:
 
 # RFC 0098: Declare the point in time of the capital stack and senior loans, and reconcile CC-03 per point
 
-> **Accepted by the owner, 2026-10-19, as drafted** (owner: "RFC 0098 (#402) is
+> **Accepted by the UWMD maintainers, 2026-10-19, as drafted** (owner: "RFC 0098 (#402) is
 > accepted as drafted; implement it"). The Decisions table D1–D9 stands as
 > written. This is a breaking format change (a newly required field); it opened
 > alone as a draft, and the synchronized implementation follows in

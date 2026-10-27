@@ -15,7 +15,7 @@ affects:
 
 ## Resolution
 
-Accepted as drafted by the owner on 2026-10-22 (fourth set). CS-01 owns the four
+Accepted as drafted by the UWMD maintainers on 2026-10-22 (fourth set). CS-01 owns the four
 required tranche members and their identity constraints, not whole-schema validation.
 
 ## Contract

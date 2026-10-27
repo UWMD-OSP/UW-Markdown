@@ -13,9 +13,11 @@ affects:
 
 # RFC 0119: Compare NOI by absolute difference when it is zero or negative (CC-05, CC-06)
 
-> **Accepted by the owner, 2026-10-22 (second set), as drafted.** The owner
-> expressly accepted D1: **$500 absolute**, and D2: **model NOI <= 0, zero
-> included**. Origin: owner ruling of 2026-10-22 (6) on #491.
+## Resolution
+
+The UWMD maintainers accepted D1's **$500 absolute** comparison and D2's
+**model NOI <= 0, including zero** applicability on 2026-10-22. These decisions
+resolve the CC-05/CC-06 comparison gap reported in #491.
 
 ## Summary
 

@@ -208,7 +208,7 @@ describe('RFC 0090 actor admission', () => {
   });
 });
 
-// RFC0093: the three accepted predicates have their own checkpoint and authority.
+// RFC0093: the three accepted predicates have their own validation pass and authority.
 const admittedIssues = (input: ParsedUWFile | string) => validateUWFile(input).issues.filter(i =>
   i.code === 'META-01' && ['_meta', '_meta.section', '_meta.quality'].includes(i.field ?? ''));
 const shapeSource = (json: string, id = 'property') => `${header}\`\`\`json uw:section=${id}\n${json}\n\`\`\`\n`;
@@ -439,7 +439,7 @@ describe('RFC0093 composed SOURCE and derived MODEL accounting', () => {
     ]);
   });
 
-  it('keeps complete shape, actor and boolean checkpoints on root then part population', () => {
+  it('keeps complete shape, actor and boolean passes on root then part population', () => {
     const actorMissing = { ...canonicalMeta(), provenance: { ...meta.provenance, actor: '' } };
     const root = externalSource('property', ['whole']);
     const part = partSource('whole', 'property', JSON.stringify({ _meta: actorMissing, total_units: 17 }),

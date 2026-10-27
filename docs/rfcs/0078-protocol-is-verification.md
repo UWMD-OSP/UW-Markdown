@@ -18,9 +18,8 @@ affects:
 
 **Legacy tier readings superseded by [RFC 0081](0081-one-format-one-protocol.md).** The "during 3.x" readability of the Protocol 2.x tier names, D12's file-name deferral and the Phase 3 legacy-id bookkeeping are removed in Protocol 4.0.0. The two-layer design stands.
 
-**Implemented; released in 3.0.0** (Protocol 3.0.0). Written from the
-owner's direction of 2026-10-10 (D1–D13). Drafted with AI assistance;
-reviewed by maintainers. See [Resolution](#resolution).
+**Implemented; released in 3.0.0** (Protocol 3.0.0). The UWMD maintainers
+accepted D1–D13 on 2026-10-10. See [Resolution](#resolution).
 
 ## Summary
 
@@ -77,16 +76,14 @@ complete in its definitions.
 - **Churn.** Calc-engine details live in the Protocol, so the Protocol version
   moved three times in two days (2.23.0, 2.24.0, 2.25.0, 2026-10-08 to
   2026-10-10) for changes that did not alter what any document *means*.
-- **It was never chosen.** The 2026-10-10 product-decision audit found no
-  owner record selecting this shape. The owner's stated intent is that the
-  calc engine and the web/report viewer are simple starter products given away
-  on top of the standard, not requirements of verification.
+- **Separate implementation from verification.** The calc engine and the
+  web/report viewer are starter products provided on top of the standard,
+  rather than requirements imposed on every verifier.
 
-## Owner direction (2026-10-10)
+## Resolution
 
-The owner agreed with each proposal below (session of 2026-10-10). D1–D8 were
-agreed first; D9–D13 resolved the draft's open questions the same day, each as
-recommended. They bind this RFC.
+The UWMD maintainers accepted D1–D13 on 2026-10-10 to separate the verification
+contract from the reference tools. The decisions below bind this RFC.
 
 | # | Question | Direction |
 |---|---|---|
@@ -278,14 +275,14 @@ In phases, each its own PR once this RFC is accepted:
 
 None. The five questions the first draft left open (sensitivity and
 stochastic results, capability tokens, display conventions, spec file naming,
-starter-product versioning) were resolved by the owner on 2026-10-10 as
+starter-product versioning) were resolved by the maintainers on 2026-10-10 as
 recommended; see D9–D13.
 
-## Resolution
+## Implementation record
 
 **Accepted 2026-10-10 (PR #298); implemented 2026-10-11; released in 3.0.0**
 with Protocol 3.0.0 (Stable), Format 2.1 and core/CLI 3.0.0. The decisions
-are D1–D13 under [Owner direction](#owner-direction-2026-10-10). Implementing
+are D1–D13 under [Resolution](#resolution). Implementing
 PRs: #300 (spec restructure), #299 (metric dictionary), #304 (corpus
 re-tiering), #303 (project docs) and #305 (release preparation). The
 follow-up RFCs in item 6 were left to their own RFCs. RFC 0081 later removed
@@ -335,7 +332,7 @@ checks, for 1,061 reference checks and 332 portable cases:
 The lender-only fixture reported 187 verified / 0 failed / 0 unverifiable.
 The ownership rules:
 
-- **Spec text wins** over reviewer intuition (owner ruling, 2026-10-11): a
+- **Spec text wins** over reviewer intuition (accepted resolution, 2026-10-11): a
   case testing something §II.2 lists as a Verifier requirement is
   Verifier-owned. Cases that need expression evaluation keep
   `requires_capabilities: ["calc-evaluate"]`, so a Verifier that does not

@@ -14,14 +14,16 @@ affects:
 
 # RFC 0116: Stage readiness by class section, a scope minimum in Format fields, and present meaning stated
 
-> **Accepted by the owner, 2026-10-22 (second set), as drafted.** Origin: owner ruling of 2026-10-22 (5), taking
-> option 1 on bug bash findings #485, #486 and #495. All three change how Format
-> §5.1 and Protocol `STAGE_REQUIREMENTS` decide readiness, so they are batched
-> here. It changes what validation reports, so it is normative.
+## Resolution
+
+The UWMD maintainers accepted the combined corrections for #485, #486 and #495
+on 2026-10-22. The decisions below align class sections, the scope minimum in
+Format fields and present meaning with the readiness contract in Format §5.1
+and Protocol `STAGE_REQUIREMENTS`.
 
 ## Summary
 
-Bug bash pass 3 found three ways the stage-readiness machinery disagrees with
+Regression testing found three ways the stage-readiness machinery disagrees with
 itself.
 
 - **#485.** `uwmd init` writes data-center and manufactured-housing records

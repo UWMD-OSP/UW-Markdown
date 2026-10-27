@@ -18,14 +18,14 @@ affects:
 
 > **Superseded by [RFC 0080](0080-official-classes-are-builtins.md).** Manufactured housing ships as a full builtin class; this module design is kept as design history.
 
-**Packaging superseded by [RFC 0080](0080-official-classes-are-builtins.md).** Official class content now ships as a full builtin. The recorded field, calculation and owner decisions remain its design history.
+**Packaging superseded by [RFC 0080](0080-official-classes-are-builtins.md).** Official class content now ships as a full builtin. The recorded field, calculation and accepted decisions remain its design history.
 
 
 **Draft proposal.** Drafted with AI assistance; reviewed by maintainers. An
 adopter's manufactured-housing plan is requirements evidence, not UWMD
 authority, and it is not verifiable in this repository.
 
-On 2026-10-01 the owner gave directions that narrow the first scope (see
+On 2026-10-01 the maintainers selected decisions that narrow the first scope (see
 [Decision status](#decision-status)). Those directions do not accept the RFC or
 authorize implementation.
 
@@ -366,11 +366,11 @@ Adoption is the adopter's own follow-up.
   iteration.
 - **Both `site_types[]` and the scalar.** Two truths that no rule can reconcile.
 - **Stating `annual_pad_rent_potential` instead of the monthly average.**
-  Superseded: the owner selected `weighted_pad_rent_monthly`.
+  Superseded: the maintainers selected `weighted_pad_rent_monthly`.
 - **Copying the builtin debt metrics and expense ratio.** A true zero would
   become an error, and no guard is expressible (see [Deferred](#deferred)).
 - **Requiring positive pad rent so that `poh_rent_share` always evaluates.**
-  Rejected by the owner: a valid input is not restricted only to keep a derived
+  Rejected in review: a valid input is not restricted only to keep a derived
   ratio defined. `poh_rent_share` is deferred instead.
 - **Telling all-cash documents to omit zero debt values.** It conflates absence
   with zero; rejected.
@@ -391,7 +391,7 @@ Adoption is the adopter's own follow-up.
 2. **Type errors.** Non-numeric values surface as `MOD-RULE-ERROR` naming the
    rule, not under the rule's own code. A type predicate would need the same
    kind of core change. Whether `MOD-RULE-ERROR` is acceptable as the
-   first-scope signal is the owner's call.
+   first-scope signal is a maintainer decision.
 3. **Generic metrics for custom classes:** how a module-declared class should
    obtain debt metrics and the expense ratio without cloning formulas or
    refusing true zeros. This is a shared design question, outside this RFC.
@@ -411,15 +411,15 @@ RFC 0068 remains `draft`.
 | No collection iteration; no string literals; `if()` is eager | Protocol §VIII.1, §VIII.3; evaluator | Existing behaviour. |
 | Module rules fire on `false` and are silent on `null`; failures report `MOD-RULE-ERROR` / `MOD-CALC-ERROR`; section schemas are not enforced at runtime | `module-runtime.ts`, `modules.ts` | Existing behaviour. |
 | Sites as the underwriting unit, with POH rent as a second stream | Adopter planning, 2026-09-29 | Adopter evidence. Not verified here. Not authority. |
-| `weighted_pad_rent_monthly` (site-weighted, all sites, vacant at stated asking rent; stated, not derived) is the first-scope pad-rent representation | Owner direction, 2026-10-01 | Selected for first scope. |
-| `age_restricted` removed from first scope | Owner direction, 2026-10-01 | Deferred. |
-| Generic debt calculations (`loan_per_site`, `ltv`, `ltc`, `dscr`, `debt_yield`) deferred; no recommendation to omit true zero values | Owner direction, 2026-10-01 | Deferred. |
-| First-scope requiredness enforced by runtime rules, not the manifest schema | Owner direction, 2026-10-01 | Adopted in `CC-MOD-MH-01..07`. |
-| `expense_ratio` deferred from first scope with the generic debt metrics | Owner decision, 2026-10-01 | Deferred. |
-| `poh_home_rent_monthly` required (≥ 0) when `park_owned_homes > 0`, and absent or `null` when it is `0` | Owner decision, 2026-10-01 | Decided for first scope (`CC-MOD-MH-06`, `CC-MOD-MH-07`). |
-| `weighted_pad_rent_monthly` is finite and nonnegative (≥ 0), not strictly positive | Owner decision, 2026-10-01 | Decided for first scope (`CC-MOD-MH-04`). |
-| `poh_rent_share` deferred from first scope; `poh_share` is the POH-exposure metric | Owner decision, 2026-10-01 | Deferred. |
-| The class, fallback, section, six calculations and seven rules | This draft, within the owner directions above | Proposal. |
+| `weighted_pad_rent_monthly` (site-weighted, all sites, vacant at stated asking rent; stated, not derived) is the first-scope pad-rent representation | Maintainer resolution, 2026-10-01 | Selected for first scope. |
+| `age_restricted` removed from first scope | Maintainer resolution, 2026-10-01 | Deferred. |
+| Generic debt calculations (`loan_per_site`, `ltv`, `ltc`, `dscr`, `debt_yield`) deferred; no recommendation to omit true zero values | Maintainer resolution, 2026-10-01 | Deferred. |
+| First-scope requiredness enforced by runtime rules, not the manifest schema | Maintainer resolution, 2026-10-01 | Adopted in `CC-MOD-MH-01..07`. |
+| `expense_ratio` deferred from first scope with the generic debt metrics | Maintainer resolution, 2026-10-01 | Deferred. |
+| `poh_home_rent_monthly` required (≥ 0) when `park_owned_homes > 0`, and absent or `null` when it is `0` | Maintainer resolution, 2026-10-01 | Decided for first scope (`CC-MOD-MH-06`, `CC-MOD-MH-07`). |
+| `weighted_pad_rent_monthly` is finite and nonnegative (≥ 0), not strictly positive | Maintainer resolution, 2026-10-01 | Decided for first scope (`CC-MOD-MH-04`). |
+| `poh_rent_share` deferred from first scope; `poh_share` is the POH-exposure metric | Maintainer resolution, 2026-10-01 | Deferred. |
+| The class, fallback, section, six calculations and seven rules | This draft, within the accepted decisions above | Proposal. |
 | `as_of_date` validity; type errors under `MOD-RULE-ERROR` | — | **Unresolved.** A module-runtime capability gap. |
 | `site_types[]`, utilities, POH operating detail, RV sites, thresholds, defaults, generic metrics for custom classes, `poh_rent_share` | — | Deferred. |
 | Acceptance of RFC 0068 and implementation | — | Not decided. Not authorized. |

@@ -34,17 +34,14 @@ affects:
 
 # RFC 0081: One format, one protocol: remove backward compatibility (pre-release cleanup)
 
-**Implemented; released in 4.0.0** (Format 3.0, Protocol 4.0.0). Written
-from the owner's direction of 2026-10-11 (Product principle 5, D1–D14); the
-owner decided its three open gates and the other open questions the same day
-([Owner decisions at acceptance](#owner-decisions-at-acceptance-2026-10-11)).
-Drafted with AI assistance; reviewed by maintainers. See
-[Resolution](#resolution).
+**Implemented; released in 4.0.0** (Format 3.0, Protocol 4.0.0). The UWMD
+maintainers accepted P5, D1–D14 and the [acceptance choices](#acceptance-choices)
+on 2026-10-11. See [Resolution](#resolution).
 
 ## Summary
 
-The project is live but pre-release: the owner is its only user. It still
-carries the compatibility machinery of a mature standard:
+At acceptance, the standard had no public compatibility baseline but still
+carried the compatibility machinery of a mature standard:
 
 - four readable format versions (1.0, 1.1, 2.0, 2.1);
 - six honored protocol contracts (1.14.0 through 3.0.0);
@@ -70,10 +67,8 @@ This RFC removes all of it:
 
 ## Motivation
 
-- **Owner direction.** Product principle 5 (2026-10-11): *"we dont need back
-  compatability yet, there are no users other than me and this is
-  essentially pre-release despite being live. we can and should clean things
-  up better and do not need legacy support for old modules basically."*
+- **Prelaunch scope.** The maintainers selected one current contract because
+  the standard had no public compatibility baseline.
 - **Compatibility is most of the surface.** A reader today has to implement
   all of the following, and none of it changes what a document *means*:
   - two `_meta` shapes and two block body shapes;
@@ -99,9 +94,11 @@ This RFC removes all of it:
   release; v1.2 drops `legacy_code` entirely" (`validator.ts:68-70`). Core
   3.0.0 still emits it.
 
-## Owner direction (binding)
+## Resolution
 
-| # | Direction (owner, 2026-10-11) | Inventory facts (verified on `main` at `5b94c9f`) |
+The UWMD maintainers accepted these decisions on 2026-10-11.
+
+| # | Accepted decision | Inventory facts (verified on `main` at `5b94c9f`) |
 |---|---|---|
 | P5 | Clean breaks beat compatibility layers. No grandfathering, deprecation periods, aliases, shims, migration tools or old-version readers. A breaking normative change gets an RFC and a version bump but no transition plan. | Product principle 5. |
 | D1 | Ship as **Format 3.0, Protocol 4.0.0, `@uwmd/core` 4.0.0**. Format 3.0 is the 2.1 shape minus every alternate spelling, and it is the only supported format. Readers refuse every other `uw_version` with one clear error. `SUPPORTED_FORMAT_VERSIONS = ['3.0']` and `SUPPORTED_PROTOCOL_VERSIONS = ['4.0.0']`. The major supersedes Protocol 3.0's "during 3.x" promises. | `protocol.ts:54` reads `['1.0','1.1','2.0','2.1']`, and no corpus file declares 1.0. `protocol.ts:65` honors `1.14.0, 2.0.0, 2.1.0, 2.2.0, 2.25.0, 3.0.0`. No reader refuses an unknown `uw_version` today; Protocol §XII.3 only says to refuse *editing* a newer major. |
@@ -119,12 +116,12 @@ This RFC removes all of it:
 | D13 | **Keep, because these are not compatibility:** `RCP-06/07/10` (a version or engine mismatch is unverifiable), the `INT-08` deprecated algorithms, the generic `canonicalize`/`sha256Hex` digest, the public release evidence in GitHub Releases, the `releasePackagesForGeneration` history (edited to drop the module packages going forward), Excel's no-MCP-sheet path, and the web viewer (fixed to read the nested shape). | `tools/web-viewer/index.html:161-165` reads only the flat `_meta.section`/`_meta.superseded`. |
 | D14 | **Supersession.** List each compatibility clause this RFC supersedes, and note the partial supersession in each affected RFC's status line. | See [Superseded clauses](#superseded-clauses). |
 
-## Owner decisions at acceptance (2026-10-11)
+### Acceptance choices
 
-The draft raised three gates and several open questions. The owner decided
+The draft raised three gates and several open questions. The maintainers decided
 all of them:
 
-| # | Question | Owner decision |
+| # | Question | Accepted decision |
 |---|---|---|
 | G1 | Legacy scalars whose structured replacement could not state the lone fact | Option (a): each replacement gains the ability to state the lone fact, and no fixture invents a value. `rate_cap_cost` vs `premium` (`HDG-05`) gets the same treatment. Footing rule: the moved amounts count in the derived uses total exactly as the scalars did, so no derived total changes. |
 | G2 | One block body shape | **Bare.** A block is the section payload with one inline `_meta` key; the `{section_id, _meta, content}` wrapper is not allowed in documents. The envelope representation keeps its own structure, and the conversion is mechanical because the fence carries the section id. The schemas change to match the spec text. The block hash is the canonical JSON of the payload minus `_meta`. |
@@ -546,7 +543,7 @@ baseline:
 
 ## Decisions
 
-The calls this RFC makes where D1–D14 and the owner's acceptance answers leave
+The calls this RFC makes where D1–D14 and the accepted answers leave
 a detail open:
 
 | Question | Decision | Why (precedent) |
@@ -676,7 +673,7 @@ packages stay deprecated and are never published again.
 Each phase is its own PR, in order. `[Unreleased]` carries the CHANGELOG
 entries, and nothing ships until Phase 6.
 
-1. **RFC acceptance** (this PR, #307). Record the owner's decisions and add the
+1. **RFC acceptance** (this PR, #307). Record the accepted decisions and add the
    status-line notes listed under [Superseded clauses](#superseded-clauses).
 2. **Spec, schemas and `protocol.ts`.**
    - Write `UW_FORMAT_SPEC.md`.
@@ -740,11 +737,11 @@ dominate any diff they share.
 3. **Keep the migrators as an unsupported script.** Rejected (D4): a tool
    nobody tests rots, and git history keeps the one use.
 4. **Deprecate first and remove in 5.0.** Rejected (P5).
-5. **The wrapped block shape (G2).** Rejected by the owner. It contradicts the
+5. **The wrapped block shape (G2).** Rejected by the UWMD maintainers. It contradicts the
    spec text, adds a third copy of the section id, and 635 of 759 corpus files
    are already bare.
 6. **Keep hotel facts in `hotel_metrics` and make it required (G3 draft
-   default).** Rejected by the owner: it states the same facts twice.
+   default).** Rejected by the UWMD maintainers: it states the same facts twice.
 
 ## Unresolved questions
 
@@ -768,7 +765,7 @@ one protocol version (4.0.0)**:
 Every later breaking change follows P5: an RFC and a version bump but no
 transition plan, until the owner declares the standard released.
 
-## Resolution
+## Implementation record
 
 **Accepted 2026-10-11 (PR #307); implemented 2026-10-12; released in 4.0.0**
 with Format 3.0, Stable Protocol 4.0.0, core/CLI 4.0.0 and seven packages.
@@ -776,8 +773,8 @@ Signing moved to 0.3.0, because a 0.2.26 signature does not verify under the
 §3 digest; batch, Excel, report and lake took patch steps. The two module
 packages were never published again and stay at their final, deprecated
 0.2.0. The decisions are P5 and D1–D14 under
-[Owner direction](#owner-direction-binding), G1–G3 and Q1–Q3 under
-[Owner decisions at acceptance](#owner-decisions-at-acceptance-2026-10-11),
+[Resolution](#resolution), G1–G3 and Q1–Q3 under
+[Acceptance choices](#acceptance-choices),
 and the [Decisions](#decisions) table. Implementing PRs: #308 (spec, schemas
 and `protocol.ts`), #309 (corpus re-authoring), #310 (code deletion), #311
 (conformance renames) and #312 (release preparation). `FORMAT_VERSION` and

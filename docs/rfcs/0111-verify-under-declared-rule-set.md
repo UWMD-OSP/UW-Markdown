@@ -13,13 +13,14 @@ affects:
 
 # RFC 0111: Verify each record under the rule set of the version it declares
 
-> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0111 (#473) accepted as drafted, including D4: stricter security and soundness fixes apply to every kept rule set.").
-> Origin: owner ruling of 2026-10-21 on the
-> release rules after launch, rule (1): "a record is always verified under the
-> rule set of the version it declares, and every 5.x verifier keeps every
-> earlier 5.x rule set; a fix applies to new records only." It binds every
-> Verifier, so it is normative. It takes effect at the 5.0.0 launch; nothing
-> changes for prelaunch 4.x, which has one rule set.
+## Resolution
+
+The UWMD maintainers accepted verification under each record's declared rule
+set on 2026-10-21, including retention of earlier 5.x rule sets. D4 applies
+stricter security and soundness fixes to every retained rule set. The policy
+takes effect at the separately approved 5.0.0 launch; prelaunch 4.x has one
+rule set. These decisions make verification outcomes depend on the declared
+contract rather than whichever implementation release happens to run.
 
 ## Summary
 
@@ -71,7 +72,7 @@ creates a new rule set instead of rewriting an old one.
 
 ## Compatibility analysis
 
-No compatibility path (prelaunch; the owner rule). The RFC adds an obligation
+No compatibility path (prelaunch; the prelaunch policy). The RFC adds an obligation
 from 5.0.0: before it, there is one rule set, Format 3.0. Implementations must
 then be able to carry more than one rule set; the reference implementation would
 select the dictionary, bands and procedures by the declared version.
@@ -120,11 +121,11 @@ runner keys cases by Format version.
 |---|---|---|---|
 | D1 | What selects a record's rule set | The declared Format version; a rule-set change issues a Format minor | Release rule (5): a record declares its Format version. Alternative: a separate `uwmd_rules` field |
 | D2 | What a rule set contains | Format rules, §5.2 bands and codes, Protocol verification procedures, receipt rules, the metric dictionary | Everything normative that decides an outcome; starter products excluded (RFC 0078) |
-| D3 | Which rule sets a Verifier keeps | Every Format version issued in 5.x up to its claimed release; none prelaunch | The ruling ("every earlier 5.x rule set"); the owner rule's zero prelaunch retention |
+| D3 | Which rule sets a Verifier keeps | Every Format version issued in 5.x up to its claimed release; none prelaunch | The ruling ("every earlier 5.x rule set"); the prelaunch policy's zero prelaunch retention |
 | D4 | Security and soundness fixes | **Ruled:** Apply to every kept rule set when they make verification stricter | Otherwise an old declaration reaches a known flaw. Alternative: no exception |
 | D5 | Reporting | Verification results and receipts name the applied rule set | A verdict is only reproducible if its rule set is known |
 | D6 | Conformance | Cases keyed by Format version; a Verifier passes every kept rule set's cases | Proves retention rather than claiming it |
-| D7 | Versions | None allocated; effective at 5.0.0 | Owner rule: 5.0.0 needs separate approval |
+| D7 | Versions | None allocated; effective at 5.0.0 | Prelaunch policy: 5.0.0 needs separate approval |
 
 ## Prior art
 

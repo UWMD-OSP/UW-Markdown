@@ -29,9 +29,9 @@ identity diagnostics are warnings in both format generations: existing valid
 documents gain no errors. No calculation, default, pack or underwriting
 behavior depends on either label.
 
-## Owner direction (2026-10-04)
+## Resolution
 
-These owner decisions bind the RFC. The merge of this RFC and its implementation is acceptance.
+The UWMD maintainers accepted these decisions on 2026-10-04; they bind the RFC. The merge of this RFC and its implementation is acceptance.
 
 | # | Decision |
 |---|---|
@@ -195,12 +195,12 @@ solely to close otherwise open metadata.
 - Full repair of Appendix B's vestigial `scenario_defaults.json` and the broader
   `scenario_default` terminology remains separate under D6.
 
-## Resolution
+## Implementation record
 
 **Accepted 2026-10-09; implemented 2026-10-10; released in core/CLI 2.20.0
 with Protocol 2.24.0 and Format 2.0.** This RFC and its implementation landed
-in one pull request; the owner accepted it by merging PR #285 on 2026-10-09.
-The owner decisions D1-D6 and the [Decisions](#decisions) table R1-R8 are the
+in one pull request; the maintainers accepted it by merging PR #285 on 2026-10-09.
+The accepted decisions D1-D6 and the [Decisions](#decisions) table R1-R8 are the
 accepted contract. Under R8, the Protocol label advanced to 2.24.0 at release
 preparation; Format stays 2.0.
 

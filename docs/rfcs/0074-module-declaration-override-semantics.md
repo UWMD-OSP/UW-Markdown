@@ -39,7 +39,7 @@ it**. The protocol enforces this with static load-time refusals, not by
 scheduling calculations across modules.
 
 The owner settled its three open questions on 2026-10-05
-([Owner decisions](#owner-decisions-2026-10-05)). Protocol §VII.3 and §X now
+([Accepted decisions](#accepted-decisions-2026-10-05)). Protocol §VII.3 and §X now
 carry the normative text, and [Resolution](#resolution) records the
 implementation.
 
@@ -239,7 +239,7 @@ verdict and, if accepted, the same effective declarations.
 The allocation is reconciled against `main` after #267. That PR takes
 `080`–`082`. Draft RFC 0073's candidates are `085`–`086`.
 
-### P6. Protocol floor for modules that override (owner decision O3)
+### P6. Protocol floor for modules that override (accepted decision O3)
 
 A module manifest that redeclares a section ID, calculation ID or view-model
 `section_id` declared by a module it names in `depends_on` uses this RFC's
@@ -356,7 +356,7 @@ evaluation order and values on a shared deal, and exact refusal-code sets.
    Rejected for now. Refusals added under P3 can later be relaxed into
    acceptances without breaking anyone.
 4. **Silent `null` for unserved readers.** This turns a previously available
-   value into absence with no failure. Rejected by the owner during the #267
+   value into absence with no failure. Rejected by the UWMD maintainers during the #267
    review.
 5. **Per-document owners.** An override would apply only on documents where
    the overriding module applies, and the overridden declaration would run
@@ -366,9 +366,9 @@ evaluation order and values on a shared deal, and exact refusal-code sets.
 
 ## Unresolved questions
 
-No semantic question remains open. The owner decisions are recorded below, and release preparation assigned the Protocol floor (P6): `>=2.22.0`. P6 adds no code, and its `requires_protocol` ranges are set by module authors.
+No semantic question remains open. The accepted decisions are recorded below, and release preparation assigned the Protocol floor (P6): `>=2.22.0`. P6 adds no code, and its `requires_protocol` ranges are set by module authors.
 
-### Owner decisions (2026-10-05)
+### Accepted decisions (2026-10-05)
 
 The owner decided these on 2026-10-05.
 
@@ -410,8 +410,8 @@ The owner decided these on 2026-10-05.
 
 **Accepted 2026-10-06; implemented 2026-10-08; released in core/CLI 2.18.0
 with Protocol 2.22.0 and Format 2.0.** The owner settled O1-O3 on 2026-10-05
-([Owner decisions](#owner-decisions-2026-10-05)) and directed implementation
-the same day; the owner accepted the RFC by merging the implementation, PR
+([Accepted decisions](#accepted-decisions-2026-10-05)) and directed implementation
+the same day; the maintainers accepted the RFC by merging the implementation, PR
 #273, on 2026-10-06. The accepted contract is P1-P6 above.
 
 - **Implementation.** PR #273 restored #267's implementation of P1-P5 in

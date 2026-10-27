@@ -11,7 +11,7 @@ affects:
 
 # RFC 0113: Define hospitality occupied room nights as paid room nights sold
 
-> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0113 (#476) and RFC 0114 (#477) accepted as drafted.").
+> **Accepted by the UWMD maintainers, 2026-10-21, as drafted** (owner: "RFC 0113 (#476) and RFC 0114 (#477) accepted as drafted.").
 > Origin: issue #343 finding M07, left open by the
 > metric variants table in `spec/metrics/README.md` ("whether to define
 > `occupied_room_nights` as paid rooms sold"). It fixes the meaning of a stated
@@ -55,7 +55,7 @@ This RFC defines the field as paid room nights sold.
 
 ## Compatibility analysis
 
-No compatibility path (prelaunch; the owner rule). The examples' stated counts
+No compatibility path (prelaunch; the prelaunch policy). The examples' stated counts
 are already paid counts; at implementation, each is checked against its
 narrative.
 

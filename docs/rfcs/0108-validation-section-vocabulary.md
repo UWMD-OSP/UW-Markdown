@@ -11,16 +11,14 @@ affects:
 
 # RFC 0108: Align the §4.17 validation section's vocabulary with the validation result
 
-> **Accepted by the owner, 2026-10-21, with D2 and D3** (owner: "Owner rulings, 2026-10-21. RFC 0107 (#460) accepted with D2 = yes, add quick_metrics.ltc as a second home; D3 = check every stated LTC, not construction only. RFC 0108 (#461) accepted with D2 = yes, align completeness.severity; D3 = yes, replace the four stage names with the seven deal_stage values. RFC 0109 (#462) accepted with D1 = a separate deal_flags list; D3 = institutions list codes one by one in validation_overrides.financial_validity_errors. All other decisions as drafted.").
-> Origin: owner ruling of 2026-10-21 (4): align
-> the §4.17 `validation` vocabulary with the CLI result before 5.0. It changes a
-> section's closed vocabulary, so it is normative.
->
-> **Owner ruling, 2026-10-21 evening** (owner: "Accept your RFC 0108 mapping of
-> "blocking" completeness items to error; no blocking_flags added."). In the
-> corpus, a stored `completeness[]` item with the retired severity `blocking`
-> becomes `error`, and no `blocking_flags` entry is added: the items name what a
-> later stage requires, and the records are not halted.
+## Resolution
+
+The UWMD maintainers accepted this alignment on 2026-10-21 so stored
+`validation` and fresh CLI results use the same vocabulary. D2 aligns
+`completeness.severity`; D3 replaces the four stage names with the seven
+`deal_stage` values. A stored `completeness[]` item with retired severity
+`blocking` becomes `error`, with no added `blocking_flags` entry, because these
+items describe later-stage requirements rather than a halted record.
 
 ## Summary
 
@@ -28,7 +26,7 @@ A record's stored `validation` section (Format §4.17) and a validator's result
 (Format §6.2, Protocol §III.6a) describe the same thing in different words. The
 section says `warnings_only` and `errors_present`; the result says `warnings` and
 `errors`. This RFC makes the section use the result's words, so a stored health
-signal and a fresh `uwmd validate` read the same way. The owner also ruled to
+signal and a fresh `uwmd validate` read the same way. The maintainers also chose to
 align the two smaller mismatches in the same section: completeness severities
 (D2) and stage names (D3).
 

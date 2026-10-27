@@ -21,7 +21,7 @@ metadata and block-override predicates enumerated below, and `META-06`/error
 for conditional agent identity presence and stated provenance-reference carrier
 requirements. Preserve META-01/02/03/04, existing completeness warnings and SRC
 vocabulary ownership. Use the accepted retained-physical/current-model operation.
-**Accepted by the owner, 2026-10-18.** See [Resolution](#resolution).
+**Accepted by the UWMD maintainers, 2026-10-18.** See [Resolution](#resolution).
 
 ## Motivation and verified authority
 
@@ -36,7 +36,7 @@ The original reviewed draft was `cf3112951537fe0b69f1f06239fcc3330e6303c6`.
 This revision is based on current main
 `fa9a9ea37d31b918f5993eae4276b159f31719f3`, with accepted RFC0094 implementation
 reviewed separately in [PR388](https://github.com/UWMD-OSP/UW-Markdown/pull/388).
-The Python development checkpoint is
+The Python development revision is
 `54a44a3bde8bdca75e946b2f1801db672a18e095`; its local111-case result is development
 evidence, not complete validation or Verifier certification. The read-only population inventory and isolated date controls below are
 research evidence, not a live error count or executed future conformance result.
@@ -51,12 +51,12 @@ Authored controls do not change frozen expectations.
 | Trigger discrepancy | Format2.5b defines conditional requirements against canonical provenance.resolution; current `checkDataQuality` additionally observes override resolution=market_data_accepted |
 | Vintage domain discrepancy | Block schema asserts as_of:string; `MarketDataRef` in `packages/uwmd-verify/src/types.ts` comments ISO YYYY-MM-DD; RFC0022 supplies dated examples without an exhaustive reader predicate |
 
-Existing Python controls at the checkpoint include
+Existing Python controls at the revision include
 `implementations/python/test_validation_metadata_admission.py`,
 `test_validation_provenance.py` and the excluded-requirements control in
 `test_metadata_leaves_0094.py`. They distinguish nullable values, presence,
 reference carriers and unallocated local evidence. These WIP files are evidence
-at that checkpoint; they are not claimed to be shipped on this RFC's main base.
+at that validation pass; they are not claimed to be shipped on this RFC's main base.
 
 ## Accepted contract
 
@@ -186,7 +186,7 @@ assigns its requirement to the earlier META-06 pass.
 
 Complete old shape, RFC0093 placement/section/quality, actor, META-02/03 and
 META-04 passes first. Then complete all META-05 findings across the union;
-then all META-06 findings; then run existing role/period/source checkpoints and
+then all META-06 findings; then run existing role/period/source validation passes and
 the remaining validators in their existing relative order. Do not globally
 sort issues or interleave these passes with per-block old findings. Remove the
 later attribution DQ-06/error under U1; it MUST NOT also emit for a requirement
@@ -238,7 +238,7 @@ remain separate. This is not a generic schema-to-error allocation or complete
 Python validation/Verifier certification. Discovery stays parse-only until its
 independent complete capability gate passes.
 
-## Accepted decisions from precedent and owner direction
+## Accepted decisions from precedent and maintainer decision
 
 | Call | Accepted disposition | Evidence |
 |---|---|---|
@@ -410,7 +410,7 @@ new error allocations. Original111 portable validate expectations remain the
 current authority unless a separately reviewed attributed change is approved.
 
 Implementation must provide these focused authored controls and independent
-expected arrays, with the owner-selected U1–U3 rules frozen before activation:
+expected arrays, with the accepted U1–U3 rules frozen before activation:
 
 | Group | Required positive/negative evidence |
 |---|---|
@@ -420,7 +420,7 @@ expected arrays, with the owner-selected U1–U3 rules frozen before activation:
 | Override annotation | Absent/empty array; each bad parent/entry; missing and typed path; full confidence/reason domains; note null; unknown members/empty and duplicate paths; independent SRC attribution; null entries cannot crash later DQ checks |
 | Reference shapes | Each optional absence and required absence under U2; null/array/scalar/object; each missing/wrong-type child; exact digest anchors/case/length/trailing newline; distance0/1/1.0/fraction/bool/large integer; unknown members |
 | Owner choices | Both DQ-06 conditions together, stage suppression and exact attribution; canonical-only and override-only reference triggers; shadowed/duplicate paths; as_of vectors selected under U3 |
-| Parent/order | Whole missing/rejected metadata with independently invalid sibling _overrides; invalid quality independent of provenance; META-01/02/03/04 unchanged; complete META-05 then META-06 then unrelated checkpoints |
+| Parent/order | Whole missing/rejected metadata with independently invalid sibling _overrides; invalid quality independent of provenance; META-01/02/03/04 unchanged; complete META-05 then META-06 then unrelated validation passes |
 | Physical/model/composed | History, overwritten and extension peers, append and unselected variants; identity dedup; equal distinct objects; in-place mutation, replaced/added blocks and own-versus-prototype carriers/children/triggers; fresh SOURCE, current MODEL, root/consumed parts and unused loaded files |
 | Transport/integrity | Exact issue fields/partitions/status and actual CLI stdout/stderr/exits; unsupported/unavailable source distinctions; byte preservation; receipt policy counts with unchanged subject/authentication/verdict procedures |
 
@@ -528,7 +528,7 @@ current clock or RFC0094's T1B predicate.
  Observed local report
  records source hashes, Node24.14.1/Windows and TypeScript5.9.3. The independent
  Python files identify the author authority main separately from the unmodified
- Python WIP checkpoint. Fresh final-head CI re-executes the research; archived
+ Python WIP revision. Fresh final-head CI re-executes the research; archived
  observations alone are not a fresh platform result.
 
 Reproduce from the repository root with existing locked dependencies and Python:
@@ -571,12 +571,12 @@ docs-only acceptance PR. The isolated review controls have no production imports
 - Infer missing identity/reference/defaults or fetch external data: changes the
   stated record and exceeds read-only validation.
 - Activate the uncontroversial rows while leaving U1–U3 implementation-defined:
-  would leave cross-implementation results undefined; the owner accepted the exact
+  would leave cross-implementation results undefined; the maintainers accepted the exact
   U1–U3 text instead.
 
 ## Resolution
 
-Accepted by the owner, 2026-10-18, in
+Accepted by the UWMD maintainers, 2026-10-18, in
 [#389](https://github.com/UWMD-OSP/UW-Markdown/pull/389):
 
 > RFC 0095 (#389) is accepted as pinned at c551e956: U1 the DQ-06 split with attribution under META-06, U2 symmetric stated-assertion triggers, U3 the whole-string YYYY-MM-DD Gregorian date domain. Mark it ready and merge when exact-main CI is green; […] Implement META-05/06 and the as_of domain in TS and Python together on the #354 lane, with the 89-reference inventory frozen as the activation baseline and the calendar vectors as cross-runtime tests. No release, version, tag or publication.

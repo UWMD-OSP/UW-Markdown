@@ -16,20 +16,20 @@ affects:
 # RFC 0069: Declare the student rent-roll bed counts and pre-leasing dates the student pack already reads
 
 **Implemented; released in core/CLI 2.16.0** with Protocol 2.20.0 and Format
-2.0. On 2026-10-02 the owner accepted this RFC as a whole and authorized
+2.0. On 2026-10-02 the maintainers accepted this RFC as a whole and authorized
 implementation. See [Resolution](#resolution).
 
 Drafted with AI assistance; reviewed by maintainers. An adopter's
 student-housing export and its issue report are requirements evidence, not
 UWMD authority or owner authorship.
 
-Three owner decisions of 2026-10-01 settle specific validation semantics:
+Three accepted decisions of 2026-10-01 settle specific validation semantics:
 
 1. a stated bed count may not exceed `property.total_beds`;
 2. a stated `preleased_beds` requires both pre-leasing dates;
 3. a stated `occupied_beds` requires the roll's `as_of_date`.
 
-With acceptance the owner resolved the draft's four open questions; see
+Acceptance resolved the draft's four open questions; see
 [Resolved questions](#resolved-questions):
 
 - senior housing is out of scope;
@@ -216,9 +216,9 @@ recoveries and the CAM true-up" paragraph:
 |---|---|---|
 | A count is absent because underwriting is incomplete | No `BED-*` issue; the metric resolves to `null` | New §4.3 fields are OPTIONAL and absence is unchanged ("a tenant stating none of them is unchanged", RFC 0055/0058). Stage gating of absent data is `IncompleteDataPolicy` (`halt`, `degrade`, `substitute`, `defer` per section, field and stage); its built-in `rent_roll` entries already degrade at screening and halt at full underwrite. |
 | A stated count is non-numeric, non-integer, non-finite or negative | `BED-01` error | Feature families refuse a stated value that breaks its typed contract: `REC-01` (fractions out of range), `LSE-09` (amounts finite and nonnegative). |
-| A valid count exceeds `property.total_beds` | `BED-02` error, for either count | **Owner decision 1.** `property.total_beds` is the normative student-housing size denominator the pack uses. A future-phase capacity is not admitted through a warning; representing it needs its own explicit contract. In-family bounds are errors elsewhere too (`LSE-09`, `REC-07`). |
-| `occupied_beds` stated without a real roll `as_of_date` | `BED-03` error | **Owner decision 3.** `occupied_beds` is defined as measured on `as_of_date`, so a count without it is not a complete typed fact. A malformed `as_of_date` leaves the count just as undated, so it falls under the same rule. No `BED-*` rule checks `as_of_date` when `occupied_beds` is absent; that remains a general roll field. |
-| `preleased_beds` stated, a pre-leasing date absent | `BED-04` error | **Owner decision 2.** MUST plus error, as `LSE-03`, `LSE-06` and `LSE-08` treat required companion fields. The tuple as a whole stays optional. |
+| A valid count exceeds `property.total_beds` | `BED-02` error, for either count | **Accepted decision 1.** `property.total_beds` is the normative student-housing size denominator the pack uses. A future-phase capacity is not admitted through a warning; representing it needs its own explicit contract. In-family bounds are errors elsewhere too (`LSE-09`, `REC-07`). |
+| `occupied_beds` stated without a real roll `as_of_date` | `BED-03` error | **Accepted decision 3.** `occupied_beds` is defined as measured on `as_of_date`, so a count without it is not a complete typed fact. A malformed `as_of_date` leaves the count just as undated, so it falls under the same rule. No `BED-*` rule checks `as_of_date` when `occupied_beds` is absent; that remains a general roll field. |
+| `preleased_beds` stated, a pre-leasing date absent | `BED-04` error | **Accepted decision 2.** MUST plus error, as `LSE-03`, `LSE-06` and `LSE-08` treat required companion fields. The tuple as a whole stays optional. |
 | A stated pre-leasing date is not a real `YYYY-MM-DD` date | `BED-05` error | `REC-04`, `LSE-01`, `LSE-04` and `CAPX-01` refuse a stated non-date. |
 | `preleased_as_of` ≥ `preleased_term_start` | `BED-06` error | Date-order contracts are errors: `REC-05` (a true-up ends strictly before the roll's `as_of_date`) and `LSE-02` (steps inside the lease term). |
 | A pre-leasing date stated without `preleased_beds` | No requirement beyond `BED-05`/`BED-06` | Inert context. Nothing in the existing contract requires a count to accompany a date, and the pack reads only the counts. No rule is added for symmetry. |
@@ -368,7 +368,7 @@ therefore takes Protocol minor **2.20.0**, released in core/CLI **2.16.0**
 and now stable. Format stays **2.0**:
 `UW_FORMAT_SPEC_v2.md` incorporates v1 Part IV by reference, as for RFCs 0055
 and 0058. The version follows from existing semver-per-surface precedent; it is
-not a separate owner decision.
+not a separate accepted decision.
 
 **Separate concern, not in scope.** CC-13 accepts any finite number as a
 class's primary size field, so it does not enforce that `total_beds` is a
@@ -404,14 +404,14 @@ and stays correct as specified, so this RFC does not change CC-13.
   no check to catch it, which is the failure mode the calc engine exists to
   prevent.
 - **A warning for a pre-leased count above `total_beds`**, to allow for a phase
-  delivering before the coming term. Rejected by owner decision 1:
+  delivering before the coming term. Rejected by accepted decision 1:
   `property.total_beds` is the denominator, and future capacity needs its own
   explicit contract rather than a warning.
 - **SHOULD plus a warning for missing pre-leasing dates**, as in an earlier
-  revision of this draft. Rejected by owner decision 2: an undated pre-leased
+  revision of this draft. Rejected by accepted decision 2: an undated pre-leased
   count is not a complete fact, and the tuple's optionality already covers
   incomplete screening data.
-- **No date requirement for `occupied_beds`.** Rejected by owner decision 3:
+- **No date requirement for `occupied_beds`.** Rejected by accepted decision 3:
   the count is defined as measured on the roll's `as_of_date`.
 - **All warnings.** This was the original draft's choice. It would let a
   malformed typed value (a negative or fractional bed count, a non-date)
@@ -427,7 +427,7 @@ and stays correct as specified, so this RFC does not change CC-13.
 
 ## Resolved questions
 
-The owner resolved the draft's four open questions on acceptance, 2026-10-02:
+The maintainers resolved the draft's four open questions on acceptance, 2026-10-02:
 
 - **Senior housing: out of scope.** `senior_housing` also states `total_beds`
   as a secondary size (§4.1), but RFC 0069 does not extend `occupied_beds`,
@@ -451,12 +451,12 @@ core/CLI **2.16.0** with Protocol **2.20.0** and Format **2.0**.
 |---|---|---|
 | `property.total_beds` is the student-housing size field and per-bed denominator | Format §4.1, Protocol §XIII.1 (RFC 0027) | Existing normative rule. Unchanged. |
 | Pack formulas for `occupancy` and `pre_lease_rate` | `STUDENT_HOUSING_PACK` | Existing. Unchanged. |
-| A stated `occupied_beds` or `preleased_beds` may not exceed `property.total_beds`; both are errors (`BED-02`); no future-phase exception through a warning | Owner decision 1, 2026-10-01 | Decided. Future capacity needs its own contract. |
-| A stated `preleased_beds` requires `preleased_as_of` and `preleased_term_start`: MUST plus error (`BED-04`); the tuple stays optional | Owner decision 2, 2026-10-01 | Decided. |
-| A stated `occupied_beds` requires the roll's `as_of_date` as a real `YYYY-MM-DD` date; an absent or malformed (non-real) `as_of_date` is an error (`BED-03`) | Owner decision 3, 2026-10-01, confirmed by the owner to cover both an absent and a malformed `as_of_date` | Decided. |
+| A stated `occupied_beds` or `preleased_beds` may not exceed `property.total_beds`; both are errors (`BED-02`); no future-phase exception through a warning | Accepted decision 1, 2026-10-01 | Decided. Future capacity needs its own contract. |
+| A stated `preleased_beds` requires `preleased_as_of` and `preleased_term_start`: MUST plus error (`BED-04`); the tuple stays optional | Accepted decision 2, 2026-10-01 | Decided. |
+| A stated `occupied_beds` requires the roll's `as_of_date` as a real `YYYY-MM-DD` date; an absent or malformed (non-real) `as_of_date` is an error (`BED-03`) | Accepted decision 3, 2026-10-01, confirmed by the UWMD maintainers to cover both an absent and a malformed `as_of_date` | Decided. |
 | Acceptance of RFC 0069 as a whole: field names, types and date semantics; one `BED-NN` error family; absent counts draw nothing; dates without a count are inert; no pack formula change | Owner acceptance, 2026-10-02 | Accepted. Format §4.3, Protocol §III.6a. |
 | Senior housing, `mixed_use` components, other classes, future capacity | Owner scope resolutions, 2026-10-02 | Resolved; see [Resolved questions](#resolved-questions). |
-| Protocol 2.20.0; Format unchanged at 2.0 | Semver-per-surface precedent (RFC 0058) | Consequence of acceptance, not a separate owner decision. |
+| Protocol 2.20.0; Format unchanged at 2.0 | Semver-per-surface precedent (RFC 0058) | Consequence of acceptance, not a separate accepted decision. |
 | Implementation | Owner authorization, 2026-10-02 | Released in core/CLI 2.16.0; RFC status `implemented` after verification. |
 
 ## Prior art

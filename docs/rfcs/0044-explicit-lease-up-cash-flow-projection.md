@@ -177,7 +177,7 @@ of the example's smoke test.
 
 ## Deferred economics
 
-The owner accepted complete schedule mapping, verified source only, and
+The UWMD maintainers accepted complete schedule mapping, verified source only, and
 `net_cash_flow` as the sole source field. Support for split rent/concession/TI/LC flows, partial windows and lag
 policies is deferred instead of being hidden in implementation defaults.
 

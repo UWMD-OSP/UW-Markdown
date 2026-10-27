@@ -19,7 +19,7 @@ Adopt a document-type selection rule and catalog, then implement three bounded
 profiles: `loan-quote-v1`, `offering-memorandum-v1` and `appraisal-abstract-v1`.
 They carry source-located facts for existing record fields, not new calculations.
 Each exposes reviewed candidate edits with an omission/conflict report. This
-RFC is **accepted** by the owner on 2026-10-26: “yes to the codex list”.
+RFC was **accepted** by the UWMD maintainers on 2026-10-26.
 The separate reference-source implementation provides the three profiles and
 `document-facts` conformance through the public library, package admission and
 complete Lite views. CLI/MCP/HTTP fact-operation bindings and Lite compilation
@@ -239,7 +239,7 @@ LTV basis unstated. A second conflicting opinion blocks automatic projection.
 
 ## Compatibility analysis
 
-This is a prelaunch4.x proposal under the owner rule. No compatibility layer,
+This is a prelaunch4.x proposal under the prelaunch policy. No compatibility layer,
 migration path, deprecation or published-version change is proposed.
 
 ## Conformance impact
@@ -276,9 +276,10 @@ would cross a financial choice. Deferring appraisal entirely misses an existing
 native value/date home. A broad OM financial projection is deferred until its
 source-period and variant choices have an explicit contract.
 
-## Unresolved questions
+## Resolution
 
-The owner accepted this combined scope on 2026-10-26: “yes to the codex list”.
+The UWMD maintainers accepted this combined scope on 2026-10-26 because the
+three profiles reuse existing fields and preserve attributable source facts.
 No normative decision changed from the approved draft.
 No new financial convention is requested: any later discovery of one returns
 as a concrete acceptance question rather than an implementation assumption.

@@ -13,18 +13,17 @@ affects:
 
 # RFC 0126: Verify the stated land carry-NOI identity
 
-## Owner ruling — 2026-10-22 (sixth set)
+## Resolution
 
-Accepted as drafted by the owner, D1–D6 stand as written.
-This PR records the ruling and implements the synchronized current contract.
+The UWMD maintainers accepted this contract on 2026-10-22. D1–D6 stand as
+written; the synchronized current contract is implemented.
 
 ## Summary
 
 Define the land identity `land_carry_noi`: stated effective gross income minus
 stated total operating expenses, at the same scope, period and variant. Verify
 negative and zero results as well as positive ones. Add no land cap rate or DSCR.
-**Accepted by the owner; implemented in this PR.** The owner's fifth-set ruling
-requests this proposal. Recommendation: accept D1–D6 as written.
+D1–D6 define the accepted contract.
 
 ## Motivation
 

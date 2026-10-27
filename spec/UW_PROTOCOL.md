@@ -832,7 +832,7 @@ fences under `.uw.md`; `UNSUPPORTED_FORMAT_VERSION` rejects absent or non-3.0
 frontmatter.
 
 **Bounded metadata admission (RFC0093).** After the complete existing
-wrapper/nested-object shape checkpoint, emit one `META-01`/error for each failed
+wrapper/nested-object shape validation pass, emit one `META-01`/error for each failed
 predicate below, on every retained physical block followed by model-only blocks
 in the exact-identity union order defined below. Within each block emit P1, P2,
 then P3. Complete this entire pass before the actor pass and META-02/03 pass;
@@ -959,7 +959,7 @@ remain outside this closed list; no generic fallback is allocated.
 **Closed optional metadata and reference admission (RFC0095).** Complete all
 META-04 findings before the entire META-05 pass; complete META-05 across the
 physical/current MODEL identity union before the entire META-06 pass. Only then
-run existing role/period/source checkpoints and remaining checks in their
+run existing role/period/source validation passes and remaining checks in their
 existing relative order. Do not globally sort or interleave old per-block
 findings. Exact reference deduplication, current canonical own-member authority,
 SOURCE versus MODEL and resolved root/consumed-part accounting above apply.

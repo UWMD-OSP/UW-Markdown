@@ -13,10 +13,12 @@ affects:
 
 # RFC 0117: Extend the size contract to mixed-use component sizes and guard the per-size component metrics
 
-> **Accepted by the owner, 2026-10-22 (second set), as drafted.** Origin: owner ruling of 2026-10-22 (5), taking
-> option 1 on bug bash finding #490 (a residual of #415 / RFC 0100). It extends
-> a closed table and changes when dictionary metrics are verifiable, so it is
-> normative.
+## Resolution
+
+The UWMD maintainers accepted this extension on 2026-10-22 to resolve #490
+and complete the size-contract coverage from #415 and RFC 0100. The decisions
+below extend the closed size table and per-size metric admission to mixed-use
+component sizes.
 
 ## Summary
 
