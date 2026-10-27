@@ -20,10 +20,20 @@ describe('the MCP server', () => {
     const { tools } = await client.listTools();
     expect(tools.map((t) => t.name).sort()).toEqual(['uwmd_explain_code', 'uwmd_validate', 'uwmd_verify']);
     for (const tool of tools) {
+      expect(tool.inputSchema.additionalProperties, tool.name).toBe(false);
       expect(tool.annotations?.readOnlyHint, tool.name).toBe(true);
       expect(tool.annotations?.destructiveHint, tool.name).toBe(false);
       expect(tool.annotations?.openWorldHint, tool.name).toBe(false);
     }
+  });
+
+  it('refuses arguments outside the advertised closed tool schema', async () => {
+    const result = await client.callTool({ name: 'uwmd_verify', arguments: { source: WRONG_CAP_RATE, unexpected: true } });
+    expect(result.isError).toBe(true);
+    const [text] = result.content as Array<{ type: string; text: string }>;
+    expect(text!.text).toMatch(/Input validation error/);
+    expect(text!.text).toMatch(/unexpected/);
+    expect(result.structuredContent).toBeUndefined();
   });
 
   it('returns structured content and the same value as JSON text', async () => {
