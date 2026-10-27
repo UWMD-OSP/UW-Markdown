@@ -7365,6 +7365,11 @@
       "suite": "metrics",
       "scenario": "document-facts/target.uwx.md",
       "target": "verifier"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "multiple-appraisal-premises-stay-unmapped",
+      "target": "document-facts"
     }
   ]
 }

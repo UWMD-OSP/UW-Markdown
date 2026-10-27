@@ -1748,5 +1748,67 @@
     "expected_codes": [
       "DF-008"
     ]
+  },
+  {
+    "id": "multiple-appraisal-premises-stay-unmapped",
+    "operation": "validate",
+    "profile": "appraisal-abstract-v1",
+    "document": {
+      "document_id": "appraisal:qa-001",
+      "artifact_kind": "appraisal_report",
+      "as_of": "2026-09-30",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-appraisal"
+      ],
+      "facts": {
+        "valuation.appraised_as_of": {
+          "value": "2026-09-30",
+          "source_ref": {
+            "source": "source:qa-appraisal",
+            "locator": "p4 effective date"
+          }
+        },
+        "valuation.appraisal_report_date": {
+          "value": "2026-10-02",
+          "source_ref": {
+            "source": "source:qa-appraisal",
+            "locator": "p1 report date"
+          }
+        }
+      },
+      "findings": [
+        "Multiple source opinions; no singular value selected."
+      ],
+      "unmapped_facts": [
+        {
+          "label": "as_is_opinion",
+          "term": {
+            "value": 2100000,
+            "source_ref": {
+              "source": "source:qa-appraisal",
+              "locator": "p4 as-is premise"
+            }
+          }
+        },
+        {
+          "label": "as_complete_opinion",
+          "term": {
+            "value": 3000000,
+            "source_ref": {
+              "source": "source:qa-appraisal",
+              "locator": "p5 as-complete conditional premise"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-appraisal"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
   }
 ]
