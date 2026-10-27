@@ -18,6 +18,7 @@
 // Run: npm run verify-indexes
 
 import { trackedPublicIdentityFindings } from './public-identity.mjs';
+import { trackedPublicVoiceFindings } from './public-voice.mjs';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -201,6 +202,11 @@ if (!failures.some(f => f.startsWith('CLAUDE.md') || f.startsWith('AGENTS.md')))
 const identities = trackedPublicIdentityFindings(root);
 failures.push(...identities.map(({ path, line, rule }) => `${path}:${line}: public identity policy (${rule})`));
 checks.push('Tracked file contents checked against the public identity policy');
+
+// Report during the editorial sweep; switch to enforcing once it is complete.
+const voice = trackedPublicVoiceFindings(root);
+for (const { path, line, rule } of voice) console.warn(`[VOICE] ${path}:${line}: ${rule}`);
+checks.push(`Tracked public voice scan: ${voice.length} findings (report mode)`);
 
 // ── Report ───────────────────────────────────────────────────────────────────
 
