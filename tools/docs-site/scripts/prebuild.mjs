@@ -51,6 +51,7 @@ const FOUNDATION_GUIDES = [
   ['FOUNDATION.md', 'foundation', 'The UWMD foundation'],
   ['HOW-UWMD-GROWS.md', 'how-uwmd-grows', 'How UWMD grows'],
   ['document-types.md', 'document-types', 'Document types'],
+  ['document-facts.md', 'document-facts', 'Source-fact profiles'],
   ['KNOWN-LIMITS.md', 'known-limits', 'Known limits'],
 ];
 
