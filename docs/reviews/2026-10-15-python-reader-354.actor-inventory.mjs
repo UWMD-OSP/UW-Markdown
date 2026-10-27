@@ -377,7 +377,8 @@ async function cliObserve(root, output) {
 async function receiptProbe(candidateRoot) {
   const originalPath = 'examples/Parkview-Apts-Glendale-AZ.uwx.md';
   const original = readFileSync(join(ROOT, originalPath), 'utf8');
-  const removed = '      "actor": "jared",\n'.replaceAll('\\n', '\n');
+  // UWMD maintainers use the neutral analyst label in the public synthetic example.
+  const removed = '      "actor": "analyst",\n'.replaceAll('\\n', '\n');
   const position = original.indexOf(removed);
   assert(position >= 0, 'Exact authored actor line must exist');
   const actorAbsent = original.slice(0, position) + original.slice(position + removed.length);

@@ -14,14 +14,17 @@ export const identityRules = [
   ['session-branch-a', ['co', 'dex/'].join('')],
   ['session-branch-b', ['clau', 'de/'].join('')],
   ['retired-product', ['Banc', 'roft'].join('')],
-].map(([id, source]) => ({ id, pattern: new RegExp(source, 'g') }));
-
-const handleFiles = new Set(['MAINTAINERS.md', '.github/CODEOWNERS']);
+].map(([id, source]) => ({
+  id,
+  pattern: new RegExp(
+    id === 'owner-name' ? String.raw`\b${source}\b` : source,
+    id === 'owner-name' || id === 'public-handle' ? 'gi' : 'g',
+  ),
+}));
 
 export function publicIdentityFindings(path, text) {
   const findings = [];
   for (const { id, pattern } of identityRules) {
-    if (id === 'public-handle' && handleFiles.has(path)) continue;
     for (const match of text.matchAll(pattern)) {
       findings.push({ path, rule: id, line: text.slice(0, match.index).split('\n').length });
     }

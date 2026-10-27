@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Remove personal identity labels from current public reviewer routing and examples; enforce case-insensitive owner checks in every tracked file, including maintainer files. No financial or authority-selection rule changes.
+
 - Claim the bounded RFC0092 pro-forma profile for the reference CLI and public library after independent #551/#552 proof at source e2bd0067; document exact runtime/binding limits and keep the profile in required Main CI. No package version or release change.
 
 - Correct the downloadable LLM indexes to label the current Protocol4.1.0; no contract, package version or launch wiring changes.
