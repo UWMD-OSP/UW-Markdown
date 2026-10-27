@@ -35,7 +35,7 @@ test('a real clean Git build stamps exact commit/tree and preserves declared inp
     const result = buildSource(root, { runBuild: () => {} });
     assert.equal(result.core.source_commit, git(root, 'rev-parse', 'HEAD'));
     assert.equal(result.core.source_tree, git(root, 'rev-parse', 'HEAD^{tree}'));
-    assert.equal(result.core.build_version, '4.3.0+source.' + result.core.source_commit);
+    assert.equal(result.core.build_version, `4.3.0+source.${result.core.source_commit}`);
     const emitted = await import(pathToFileURL(metadataPath(root)).href);
     assert.deepEqual(emitted.BUILD_INFO, result.core);
     assert.equal(emitted.BUILD_VERSION, result.core.build_version);
@@ -92,7 +92,8 @@ test('Gitless archives are explicitly unidentified', () => {
 });
 
 test('a linked output directory cannot write outside the owned source root', () => {
-  const root = fixture(), outside = fixture(false);
+  const root = fixture();
+  const outside = fixture(false);
   try {
     const sentinel = join(outside, 'build-info.js'); writeFileSync(sentinel, 'unchanged');
     symlinkSync(outside, join(root, 'packages/uwmd-verify/dist'), process.platform === 'win32' ? 'junction' : 'dir');
