@@ -1,5 +1,7 @@
 # 13 — Build status (living document)
 
+**Document types.** The [catalog](../document-types.md) distinguishes available contracts from draft/planned fact profiles and source evidence. The [playbook](../playbooks/ADD_DOCUMENT_TYPE.md) covers acceptance, sources, lifecycle, section projections and conformance. Proposed loan-quote, offering-memorandum and appraisal profiles remain drafts; no new profile support is claimed.
+
 **Public identity.** Current tracked content uses UWMD maintainers wording; owner-name and handle checks are case-insensitive with no maintainer-file exemption. CODEOWNERS has no named account routing because the existing branch policy does not require code-owner review. Governance authority and required CI stay in place. Historical commit attribution remains part of the separate launch-day history cutover.
 
 **RFC 0092 scoped support.** The reference manifest now claims pro-forma/pro-forma-verify for the CLI and public library after #551 and the independently reviewed #552. Evidence is tied to source e2bd0067a83376d19c58a87e40a9e7526c28dece, not older registry code sharing a package version. No MCP/HTTP binding is claimed; exit2 was shown only by fault injection. Exact runtime combinations, assurance limits and the required Main CI profile gate are documented in [the support scope](03-core-library.md#rfc-0092-support-scope). No release or package-version change.
