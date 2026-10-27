@@ -132,7 +132,7 @@ the post-sale value.
           <span>Format 3.0 · excerpt of the complete record</span>
           <span class="uw-file-links">
             <a href="/viewer/">Open in the viewer</a>
-            <a :href="`/editor/?sample=/viewer/samples/${PARKVIEW}`" target="_self">Edit it in the reference editor</a>
+            <a href="/editor/" target="_self">Open the reference editor</a>
           </span>
         </div>
       </div>
