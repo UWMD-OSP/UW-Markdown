@@ -44,11 +44,17 @@ faithfully and explain them, not to compute.
    for every class.
 3. **Fill the frontmatter**: `deal_name`, address fields, `asset_class`,
    `deal_stage`. Leave `quick_metrics` values `null` unless a tool computed them.
-4. **Fill each section's JSON block** with stated facts: `property` (size,
-   year built, units or square feet), `rent_roll`, `operating_statement`
+4. **Fill each section's JSON block** with stated facts: `property` (the same
+   provided address and asset class as frontmatter, plus the registered class
+   size, year built, units or square feet), `rent_roll`, `operating_statement`
    (historical), `noi_model` (underwritten income and expenses),
    `debt_structure`, `valuation`, `sources_uses`. Write each section's narrative
    above its block: what the source says, what is assumed, what is missing.
+   Scope readiness reads `property.address` and `property.asset_class` too;
+   setting only frontmatter does not fill those section fields. Repeat provided
+   identity, never invent it. For a retail single-tenant NNN example, keep
+   `asset_class: retail` and state `lease_type: nnn` in the tenant row; a
+   descriptive subtype does not choose a calculation pack.
 5. **Set honest quality.** In each block's `_meta.quality`, `confidence` is
    `high` only for figures read directly from a reliable source. Use `low` and
    `human_review_required: true` for estimates.
@@ -92,6 +98,7 @@ object. `_meta.section` repeats the section id.
 
 - `uwmd validate` reports no error, and every remaining warning is explained in
   the narrative.
+- The expected named metric appears as `verified` in the evidence, rather than only a primary-size entry or a zero failure count. Use the documented current source if an older registry artifact lacks that coverage.
 - `uwmd verify` reports no `failed` statement, and every `unverifiable` statement is disclosed; an exit0 alone does not establish complete assurance.
 - A stated LTV has an explicit `ltv_basis` and the matching source input (Format RFC0092 bounded wire contract); never guess a denominator. Base `verify` does not establish pro-forma coverage. Use the explicitly supported CLI/library profile and inspect its report when that claim is needed; the MCP connector has no pro-forma binding. See the [scoped source/runtime proof](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/03-core-library.md#rfc-0092-support-scope).
 - Every figure traces to a source document or is marked as an assumption.

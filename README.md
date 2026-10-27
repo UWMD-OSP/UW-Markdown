@@ -54,12 +54,20 @@ npx @uwmd/cli init --output my-deal.uwx.md
 npx @uwmd/cli validate my-deal.uwx.md
 ```
 
+`init` writes a blank scaffold. Fill the stated facts before expecting clean
+validation, including the matching address/class in frontmatter and `property`.
+Choose a stage the inputs actually satisfy. When checking a figure, confirm its
+named evidence entry is `verified`; a zero exit or zero failures does not prove
+that a package checked that assertion. Current source and older registry
+artifacts can have different coverage despite sharing a prelaunch version.
+
+
 To work from source instead:
 
 ```bash
 git clone https://github.com/UWMD-OSP/UW-Markdown.git
 cd UW-Markdown
-npm install
+npm ci
 npm run build
 
 # Parse and validate the example file
