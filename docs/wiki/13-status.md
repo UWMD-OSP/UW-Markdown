@@ -1,5 +1,7 @@
 # 13 — Build status (living document)
 
+**Known limits.** The [plain-language limits](../KNOWN-LIMITS.md) separate representable source facts, structural checks and verified financial assertions. Current synthetic probes cover64 cases; gaps are tracked in issues572–578 without inventing a financial convention or silently repairing inputs.
+
 **Document types.** The [catalog](../document-types.md) distinguishes available contracts from draft/planned fact profiles and source evidence. The [playbook](../playbooks/ADD_DOCUMENT_TYPE.md) covers acceptance, sources, lifecycle, section projections and conformance. Proposed loan-quote, offering-memorandum and appraisal profiles remain drafts; no new profile support is claimed.
 
 **Public identity.** Current tracked content uses UWMD maintainers wording; owner-name and handle checks are case-insensitive with no maintainer-file exemption. CODEOWNERS has no named account routing because the existing branch policy does not require code-owner review. Governance authority and required CI stay in place. Historical commit attribution remains part of the separate launch-day history cutover.
