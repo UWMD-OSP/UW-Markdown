@@ -29,7 +29,7 @@ Three accepted decisions of 2026-10-01 settle specific validation semantics:
 2. a stated `preleased_beds` requires both pre-leasing dates;
 3. a stated `occupied_beds` requires the roll's `as_of_date`.
 
-With acceptance the owner resolved the draft's four open questions; see
+Acceptance resolved the draft's four open questions; see
 [Resolved questions](#resolved-questions):
 
 - senior housing is out of scope;
