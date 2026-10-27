@@ -1,5 +1,7 @@
 # 13 — Build status (living document)
 
+**Newcomer documentation.** Public-only authoring/signing/verification tests exposed missing MCP build prerequisites and property-identity/coverage guidance. Current recipes build local dependencies first, fill provided identity in both homes and require a named verified assertion; no repair of older registry artifacts or new capability claim.
+
 **Agent-kit refresh.** Anonymous aggregate coverage includes the released lake package; valid zero counts and unavailable counts remain distinct. Skill/MCP docs distinguish supported CLI/library pro-forma from the unsupported MCP binding and state the exact 5 MiB limit. Measurement is observational, not an adoption target; nothing is listed or deployed.
 
 **Foundation and growth.** Newcomer-oriented [foundation](../FOUNDATION.md) and [growth paths](../HOW-UWMD-GROWS.md) connect existing contracts to seven contributor paths. Dedicated conformance/verification-profile playbooks complete the set. Postlaunch promises restate RELEASE_RULES/VERSIONS; drafts and planned families remain unclaimed.
