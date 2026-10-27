@@ -155,10 +155,11 @@ The gap between in-place rents and current market rents on the same
 units. Captured in the `rent_roll` section.
 
 ### LTV
-Loan-to-Value. The builtin divides stated loan amount by
-`valuation.underwritten_value`, using `valuation.purchase_price` only when the
-former is absent or null. Validator `CC-02` checks the corresponding stated
-ratio in `debt_structure` against `valuation`.
+Loan-to-Value. The builtin uses the selected loan's explicit `ltv_basis`:
+purchase price, underwritten value or total project cost selects its named
+denominator. An absent/unknown basis or missing denominator is unavailable;
+there is no fallback. See the [dictionary](../spec/metrics/README.md) and
+RFC 0092; native capital-stack `ltv_through` has its separate underwritten-value basis.
 
 ### NOI
 Net Operating Income. Effective gross income minus operating expenses,

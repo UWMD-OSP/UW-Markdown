@@ -159,7 +159,7 @@ receipts. The [data-lake guide](/guide/data-lake) runs the whole pipeline with
 the published CLI and DuckDB. A reference adapter, `@uwmd/lake`, shows one way
 to project records into PostgreSQL.
 
-The UWMD maintainers also build StackUW, a commercial underwriting product that writes `.uwx.md` records; nothing in the standard requires a StackUW account, package or service.
+StackUW is a commercial adopter that writes `.uwx.md` records; nothing in the standard requires a StackUW account, package or service.
 
 The standard itself is MIT-licensed and vendor-neutral. No part of it depends on a vendor SDK,
 service, or model provider.

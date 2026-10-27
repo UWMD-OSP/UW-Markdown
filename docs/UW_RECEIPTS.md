@@ -175,7 +175,7 @@ Issue the receipt when you are finished editing, and send it with the file.
 
 ## What is inside
 
-Current receipt excerpt from the reference CLI, with the result list trimmed
+Receipt excerpt from the reference CLI, with the result list trimmed
 to two of the eight outputs and other envelope members omitted:
 
 ```json
@@ -215,9 +215,11 @@ to two of the eight outputs and other envelope members omitted:
 
 Three details worth understanding:
 
-**The digest covers meaning, not bytes.** It is computed over a canonical form of
-the deal's financial content, so reflowing a label, changing comma grouping, or
-switching line endings does not break a receipt. Changing a number does.
+**The digest covers its named canonical subject.** Lite's financial form omits
+cosmetic labels and comma grouping. The complete structured envelope also
+commits retained prose, metadata and history. Re-encoding the same canonical
+value preserves its digest; changing that value does not. See the
+[receipt specification](../spec/UW_RECEIPT.md#31-canonicalizations) for each scope.
 
 **`computed: false` distinguishes missing inputs from a computed zero.** A pack declares
 a fixed set of outputs, and the receipt lists all of them. When the deal lacks
