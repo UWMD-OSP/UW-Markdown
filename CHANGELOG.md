@@ -955,6 +955,8 @@ protocol, and each package each carry an independent semver).
   checks tarball integrity and signatures/provenance, and runs strict consumer
   and portable CLI checks. Ordinary development runs skip this external gate.
 
+- Align contributor identity guidance with the universal tracked-content check; maintainer files carry no personal-handle exemption.
+
 ## [4.3.0] - 2026-10-15
 
 ### Released
