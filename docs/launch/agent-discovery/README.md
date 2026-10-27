@@ -52,3 +52,8 @@ and keeps the owner in charge of listing and publication.
 [Listing metadata](listing-metadata.json) describes the existing local stdio tools and marks unavailable policy URLs explicitly. Follow the [launch checklist](LAUNCH-CHECKLIST.md) for MCP Registry, Claude desktop/plugin and ChatGPT desktop eligibility. No public HTTPS connector or directory availability is implied.
 
 `node scripts/adoption-counts.mjs` reads only anonymous public aggregate endpoints and writes one JSON report. Its bounded response parser keeps unavailable/compact values unknown, not zero. It never requests issue authors, fork owners, user lists, tokens or private analytics. See the checklist for the exact proxy limits.
+
+Aggregate measurement is optional observation, not an adoption target or release
+gate. The script includes all eight currently released packages plus the staged
+MCP package; an unavailable MCP aggregate remains unknown, while a valid zero
+count remains zero. No personal usage or private directory analytics is read.
