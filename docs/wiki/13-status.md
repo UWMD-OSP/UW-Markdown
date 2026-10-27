@@ -1,5 +1,7 @@
 # 13 — Build status (living document)
 
+**Test toolchain.** Development tests and coverage use Vitest4.1.12, including its patched mock handling and worker implementation. The current Node20/22/24 test matrix and financial expectations are unchanged. Source development requires Node20 or later; the private workspace explicitly declares its already-used test runner and coverage provider for root helpers. Published package runtime ranges are unchanged.
+
 **MCP dependency.** The connector uses patched Zod4 within the existing SDK peer contract. Its three read-only tools, closed advertised argument schemas and source-size guard remain explicit; unknown arguments refuse before record processing. No profile or network binding is added.
 
 **Dependency maintenance.** Root and separately locked tools resolve compatible patched transitive dependencies within existing declared ranges. Package versions and financial contracts are unchanged; other advisory families are assessed separately.

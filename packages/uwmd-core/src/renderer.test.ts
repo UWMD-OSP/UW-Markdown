@@ -565,3 +565,57 @@ describe('CSV chat source/uses regression #538', () => {
       expect(result.content).toMatch(/Other Reserves: (?:USD |\$)5,000/);
   });
 });
+
+
+describe('partial native and auxiliary render boundaries', () => {
+  it('retains populated auxiliary and extension blocks in JSON without altering source metadata', () => {
+    const parsed = loadFixture();
+    const template = parsed.sections['property'] as UWBlock;
+    parsed.pipeline_log = [structuredClone(template)];
+    parsed.custom_calculations = [structuredClone(template)];
+    parsed.custom_scenarios = [structuredClone(template)];
+    parsed.extensions['x_qa_render'] = { mode: 'single', block: structuredClone(template) };
+    const before = structuredClone(parsed);
+    const result = JSON.parse(render(parsed, { format: 'json', includeSuperseded: true }).content);
+    expect(result.pipeline_log).toEqual([template.content]);
+    expect(result.custom_calculations).toEqual([template.content]);
+    expect(result.custom_scenarios).toEqual([template.content]);
+    expect(result.extensions.x_qa_render.block).toEqual(template.content);
+    expect(parsed).toEqual(before);
+  });
+
+  it('shows partial source rows and warnings while chat elides only middle rows', () => {
+    const parsed = loadFixture();
+    const template = parsed.sections['property'] as UWBlock;
+    const section = (id: string, content: Record<string, unknown>): UWBlock => ({
+      ...structuredClone(template), annotation: { section: id, variant: 'base' }, content,
+    });
+    const dates = ['2026-01-01', '2026-02-01', '2026-03-01', '2026-04-01', '2026-05-01', '2026-06-01', '2026-07-01', '2026-08-01'];
+    parsed.sections['lease_up_schedule'] = { base: section('lease_up_schedule', {
+      period_granularity: 'monthly', schedule: dates.map(period => ({ period, occupied_sf: 0, rent_revenue: 0, net_cash_flow: 0 })),
+    }) };
+    parsed.sections['cash_flow_series'] = { base: section('cash_flow_series', {
+      day_count: 'actual/365f', series: dates.map(date => ({ date, amount: 0, kind: 'operating', label: 'Synthetic source row' })),
+    }) };
+    parsed.sections['stress_tests'] = section('stress_tests', { scenarios: [{ name: 'QA-null-stress', dscr: null, irr: null, passes_policy: false }] });
+    parsed.frontmatter.flags = ['qa_partial_source'];
+    parsed.frontmatter.blocking_flags = ['qa_requires_review'];
+    const before = structuredClone(parsed);
+    const diagnostics = validateUWFile(parsed);
+    const summary = render(parsed, { format: 'summary' }).content;
+    expect(summary).toContain('qa_partial_source');
+    expect(summary).toContain('qa_requires_review');
+    for (const date of dates) expect(summary).toContain(date);
+    expect(summary).toContain('Lease-Up Schedule');
+    const chat = render(parsed, { format: 'chat' }).content;
+    expect(chat).toContain('2 middle periods elided');
+    expect(chat).toContain('2 middle flows elided');
+    expect(chat).toContain('QA-null-stress');
+    expect(chat).not.toContain('2026-04-01:');
+    expect(chat).not.toContain('2026-05-01:');
+    expect(chat).toContain('2026-01-01:');
+    expect(chat).toContain('2026-08-01:');
+    expect(parsed).toEqual(before);
+    expect(validateUWFile(parsed)).toEqual(diagnostics);
+  });
+});

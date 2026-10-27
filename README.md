@@ -62,7 +62,7 @@ that a package checked that assertion. Current source and older registry
 artifacts can have different coverage despite sharing a prelaunch version.
 
 
-To work from source instead:
+To work from source instead (Node.js 20 or later for development builds and tests):
 
 ```bash
 git clone https://github.com/UWMD-OSP/UW-Markdown.git

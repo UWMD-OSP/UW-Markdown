@@ -38,12 +38,14 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
-    "yaml": "^2.9.1"
+    "yaml": "^2.9.1",
+    "vitest": "4.1.12",
+    "@vitest/coverage-v8": "4.1.12"
   }
 }
