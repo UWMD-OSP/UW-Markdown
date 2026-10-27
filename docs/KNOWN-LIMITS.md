@@ -1,13 +1,13 @@
 # Known limits
 
 UWMD verifies stated assertions against explicit inputs and accepted procedures.
-A valid record is not a complete underwriting package, and an exit0 does not
+A valid record is not a complete underwriting package, and an exit 0 does not
 mean every financial, legal or source assertion was checked. Read the report's
 failed, unavailable and unchecked coverage as well as its exit code.
 
-The current reference was exercised with64 synthetic edge cases:43 handled
+The current reference was exercised with 64 synthetic edge cases: 43 handled
 within the boundaries below,4 refused clearly and17 gaps grouped into seven
-follow-up issues. These additional probes used Windows11/Node24.14.1 and source
+follow-up issues. These additional probes used Windows 11 / Node 24.14.1 and source
 `90b4b77e1731056e85f6f464b9f5530618153880`; they do not establish every runtime,
 property or legal jurisdiction. Source tests and required conformance CI cover
 the independently declared runtime matrix. Golden/QA fixtures are not an
@@ -25,7 +25,7 @@ investment track record.
 | Reserves | Admitted property-reserve movements and balance identities at their stated quantum | Conditional availability, lender-reserve class and bank-interest treatment are not covered by that identity contract |
 | Dates and units | Explicit dated flows, accepted declared day counts, leap-day/partial/fiscal-year dates; SF, units, sites, keys, beds and kW at the registered class basis | No implicit annualization, unit conversion or universal month-end rolling rule |
 | Source lifecycle | Explicit null statuses, ambiguous source terms, visible supersede history and bounded projection omissions | A conflict needs a resolution; an amendment is not automatically the legally controlling instrument |
-| Large/Unicode data | A1200-row synthetic roll and non-ASCII QA labels were preserved and checked through the actual CLI | This is a tested example, not an unlimited file/row-size guarantee or a certification of every row's business identity |
+| Large/Unicode data | A 1,200-row synthetic roll and non-ASCII QA labels were preserved and checked through the actual CLI | This is a tested example, not an unlimited file/row-size guarantee or a certification of every row's business identity |
 
 Lease abstracts validate attribution and null-status grammar for their material
 terms. Arbitrary term objects in an abstract do not acquire economic semantics
@@ -76,8 +76,8 @@ distinct from an underwritten value; a quote ceiling stays distinct from a
 computed LTV; asking price stays distinct from an agreed purchase price.
 
 RFC0092 pro-forma support is scoped to the CLI and public library, proven at
-sourcee2bd0067 through issues551/552; there is no pro-forma MCP/HTTP binding yet.
-Exit2 was shown only by fault injection. Read the
+source e2bd0067 through issues551/552; there is no pro-forma MCP/HTTP binding yet.
+Exit 2 was shown only by fault injection. Read the
 [precise support scope](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/03-core-library.md#rfc-0092-support-scope)
 and use current source when a registry package with the same version contains
 older code. This page grants no new profile, formula or jurisdictional claim.
