@@ -57,7 +57,7 @@ const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
       <div class="uw-file-window">
         <div class="uw-file-header">
           <span class="uw-file-name"><span class="uw-file-mini" aria-hidden="true">UW</span> {{ PARKVIEW }}</span>
-          <span class="uw-file-state"><span class="uw-status uw-status-valid">VALID</span><span class="uw-status uw-status-info">METRICS RECOMPUTED</span></span>
+          <span class="uw-file-state"><span class="uw-status uw-status-valid">VALID</span><span class="uw-status uw-status-info">SELECTED METRICS CHECKED</span></span>
         </div>
         <div class="uw-file-views">
           <section class="uw-source" aria-labelledby="source-title">
@@ -109,7 +109,7 @@ the post-sale value.
               <div><span>Purchase price</span><strong>$7,200,000</strong></div>
               <div><span>UW NOI</span><strong>$396,635</strong></div>
               <div><span>DSCR</span><strong>1.109×</strong></div>
-              <div><span>LTV</span><strong>70.0%</strong></div>
+              <div><span>Stated LTV</span><strong>70.0%</strong></div>
             </div>
             <div class="uw-table-wrap">
               <table>
@@ -125,7 +125,7 @@ the post-sale value.
                 </tbody>
               </table>
             </div>
-            <div class="uw-check"><span aria-hidden="true">✓</span><p><strong>DSCR and LTV recomputed by the multifamily calculation pack</strong><br>The pack derives DSCR, LTV, cap rate, and debt yield from figures stated in the record, using deterministic code rather than a model. The operating statement is stated, and validator cross-checks test it for consistency. The DSCR of 1.109× produces a financial flag in the warning band. Financial flags describe the deal; validation issues describe the record.</p></div>
+            <div class="uw-check"><span aria-hidden="true">✓</span><p><strong>DSCR, cap rate and debt yield recomputed by the multifamily pack</strong><br>The current pack computes seven of eight outputs from this example. LTV is stated above; it remains unavailable to recompute until the loan explicitly declares its LTV basis. The operating statement is stated, and validator cross-checks test it for consistency. The DSCR of 1.109× produces a financial flag in the warning band. Financial flags describe the deal; validation issues describe the record.</p></div>
           </section>
         </div>
         <div class="uw-file-footer">

@@ -224,8 +224,8 @@ value preserves its digest; changing that value does not. See the
 **`computed: false` distinguishes missing inputs from a computed zero.** A pack declares
 a fixed set of outputs, and the receipt lists all of them. When the deal lacks
 the inputs for one, it is recorded as `{"value": null, "computed": false}` rather
-than as a number nobody calculated — the deal above supports all eight of its
-pack's outputs, but a leaner record often will not. A receipt never carries a
+than as a number nobody calculated. The excerpt above shows two computed
+outputs; other declared outputs can remain uncomputed. A receipt never carries a
 hand-entered figure.
 
 **Validation counts are recorded, not enforced.** A receipt notes how many errors

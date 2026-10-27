@@ -333,6 +333,7 @@ function rewriteLinks(md) {
       '#viii2c-contextual-workbook-bindings-rfc-0043': '#viii-2c-contextual-workbook-bindings-rfc-0043',
       '#vi3-institutionconfig-layering': '#vi-3-institutionconfig-layering',
       '#22-frontmatter-schema': '#_2-2-frontmatter',
+      '#31-canonicalizations': '#_3-1-canonicalizations',
       '#24-data-block-annotation-syntax': '#_2-4-data-block-annotation-syntax',
       '#25-the-_meta-object': '#_2-5-the-meta-object',
       '#25b-provenance--who-wrote-this-block-and-how-its-values-were-resolved': '#_2-5b-provenance-—-who-wrote-this-block-and-how-its-values-were-resolved',

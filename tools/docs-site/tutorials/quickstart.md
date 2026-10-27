@@ -88,19 +88,13 @@ npx @uwmd/cli receipt issue Parkview-Apts-Glendale-AZ.uwx.md
 npx @uwmd/cli receipt verify Parkview-Apts-Glendale-AZ.uwx.md Parkview-Apts-Glendale-AZ.receipt.json
 ```
 
-```text
-Receipt issued for Parkview-Apts-Glendale-AZ.uwx.md → Parkview-Apts-Glendale-AZ.receipt.json (org.uwmd.pack.multifamily@…)
-Metric completeness: complete
-Computed: 8/8
-Uncomputed: none
-…
-A receipt attests that these outputs follow from this record. It does not attest that the inputs are true.
-
-Receipt verification verdict: VERIFIED
-```
-
-The multifamily calculation pack recomputed all eight metrics from the record's
-inputs and matched them. If you change an input after issuing, verification
+Inspect the command's **Computed** and **Uncomputed** lists as well as its
+verdict. Current repository source computes seven of eight pack outputs for
+this illustration; LTV is unavailable because the loan does not declare its
+explicit LTV basis. Older published artifacts sharing a prelaunch package number
+can have different coverage; see the [version matrix](/about/versions).
+Matching uncomputed statuses can verify without claiming those metrics were
+calculated. If you change an input after issuing, verification
 fails with `RCP-01`: the record's financial content no longer matches the receipt.
 `receipt verify` exits `0` for verified, `1` for failed, and `3` for
 unverifiable.
