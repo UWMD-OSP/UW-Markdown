@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Fix #586: refresh audited transitive lockfile resolutions within existing dependency ranges; package versions and workspace links are unchanged.
+- Fix #586: refresh audited root and tool transitive lockfile resolutions within existing dependency ranges; package versions and workspace links are unchanged.
 
 - Fix #583: clarify blank-scaffold identity, named assertion coverage and fresh MCP dependency build order after the public-only newcomer test. Source verification remains distinct from older registry artifacts.
 

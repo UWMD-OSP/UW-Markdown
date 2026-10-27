@@ -1,6 +1,6 @@
 # 13 — Build status (living document)
 
-**Dependency maintenance.** The root lockfile resolves patched body-parser, brace-expansion, fast-uri, nanoid, source-map-js and Vite within existing declared ranges. Package versions and financial contracts are unchanged; other advisory families are assessed separately.
+**Dependency maintenance.** Root and separately locked tools resolve compatible patched transitive dependencies within existing declared ranges. Package versions and financial contracts are unchanged; other advisory families are assessed separately.
 
 **Newcomer documentation.** Public-only authoring/signing/verification tests exposed missing MCP build prerequisites and property-identity/coverage guidance. Current recipes build local dependencies first, fill provided identity in both homes and require a named verified assertion; no repair of older registry artifacts or new capability claim.
 
