@@ -18,9 +18,13 @@ This repository is the home of the standard:
 - [`packages/uwmd-verify/`](packages/uwmd-verify/) — `@uwmd/verify`, the reference TypeScript implementation of the standard: read and verify a `.uw.md` with nothing else installed.
 - [`packages/uwmd-core/`](packages/uwmd-core/) — `@uwmd/core`, the reference TypeScript library and CLI: the starter toolkit on top of `@uwmd/verify`, whose whole API it re-exports.
 - [`conformance/`](conformance/) — fixtures and expected outputs implementers self-certify against.
-- [`tools/`](tools/) — starter tools (single-file web viewer, VS Code extension, VitePress documentation site; more planned). The calc engine, editor, viewer, Excel exporter, defaults and AI agents are non-normative starter products ([`docs/starter/`](docs/starter/README.md)).
+- [`tools/`](tools/) — starter tools (single-file web viewer, VS Code extension, VitePress documentation site; more planned). The calc engine, editor, viewer, Excel exporter, defaults and host integration guidance are non-normative starter products ([`docs/starter/`](docs/starter/README.md)).
 - [`examples/`](examples/) — sample deal files covering all twelve builtin asset classes in `.uwx.md` plus a UW Lite `.uw.md` summary. `Parkview-Apts-Glendale-AZ`
   exists in **both** representations, so the two can be read side by side.
+
+Read the [foundation](docs/FOUNDATION.md), [growth paths](docs/HOW-UWMD-GROWS.md),
+[document types](docs/document-types.md) and [known limits](docs/KNOWN-LIMITS.md)
+for the current boundary and how to extend it.
 
 ## Why a standard?
 
@@ -91,9 +95,9 @@ that frozen source. Pro-forma has no MCP or HTTP binding yet.
 To open the reference web viewer, point any browser at
 [`tools/web-viewer/index.html`](tools/web-viewer/) and drop in a `.uwx.md` file.
 
-## What ships in v1
+## What is built
 
-- The format spec (`UW_FORMAT_SPEC.md`) — 21 standard sections, validation rules, supersede semantics.
+- The format spec (`UW_FORMAT_SPEC.md`) — registered sections, validation rules and supersede semantics.
 - The protocol spec (`UW_PROTOCOL.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 4.1.0; RFCs 0078, 0081 and 0084). Display, editing, defaults, the agent writer conventions, the CLI and the renderers are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
 - `@uwmd/core` - parser, validator, renderer, the generic block writers and the context profiles. It runs no agent; a host runs its own and writes through the writers or the edit API.
 - A conformance corpus per tier so third parties can self-certify.

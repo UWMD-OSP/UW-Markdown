@@ -11,6 +11,8 @@ They apply now and after the public launch.
 | [Adding a document type](ADD_DOCUMENT_TYPE.md) | Independently attributable facts need a new purpose profile |
 | [A non-property subject](NON_PROPERTY_SUBJECT.md) | A record's subject is not a property, such as a loan to an operating company (RFC 0082, draft) |
 | [Third-party modules](THIRD_PARTY_MODULE.md) | Someone outside the project extends UW Markdown for their own class or calculations |
+| [Adding a conformance profile](ADD_CONFORMANCE_PROFILE.md) | A finite optional test/claim boundary needs portable proof |
+| [Adding a verification profile](ADD_VERIFICATION_PROFILE.md) | A new deterministic check procedure needs an explicit optional contract |
 | [Release rules after launch](RELEASE_RULES.md) | Versions, deprecations, comment windows, keys and disclosure once 5.0.0 ships |
 
 Background these playbooks rely on:

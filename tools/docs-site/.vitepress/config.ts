@@ -134,6 +134,10 @@ export default defineConfig({
         text: 'Project',
         activeMatch: '^/about/.',
         items: [
+          { text: 'Foundation', link: '/guide/foundation' },
+          { text: 'How UWMD grows', link: '/guide/how-uwmd-grows' },
+          { text: 'Document types', link: '/guide/document-types' },
+          { text: 'Known limits', link: '/guide/known-limits' },
           { text: 'Version matrix', link: '/about/versions' },
           { text: 'Changelog', link: '/about/changelog' },
           { text: 'Roadmap', link: '/about/roadmap' },
