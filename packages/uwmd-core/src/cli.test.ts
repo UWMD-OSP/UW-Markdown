@@ -3,7 +3,9 @@ import { tmpdir } from 'node:os';
 import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { VERIFY_VERSION } from '@uwmd/verify';
+import { VERIFY_VERSION, VERIFY_BUILD_VERSION, VERIFY_BUILD_INFO } from '@uwmd/verify';
+import { BUILD_INFO, BUILD_VERSION } from '../dist/build-info.js';
+import { tmpdir } from 'node:os';
 import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js';
 
 // These tests exercise built executables, stdout/stderr and exit codes.
@@ -78,12 +80,21 @@ describe('uwmd --version', () => {
   const run = (...args: string[]) => spawnCli(process.execPath, [cli, ...args], { encoding: 'utf8' });
   const manifest = REFERENCE_IMPLEMENTATION_MANIFEST;
 
-  it.each(['--version', '-V', 'version'])('%s prints the manifest versions, not the help text', async (flag) => {
+  it('build-info emits exactly the compiled metadata without a Git lookup', async () => {
+    const result = await spawnCli(process.execPath, [cli, 'build-info'], {
+      encoding: 'utf8', cwd: tmpdir(), env: { ...process.env, PATH: '', Path: '' },
+    });
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe('');
+    expect(JSON.parse(result.stdout)).toEqual({ core: BUILD_INFO, verify: VERIFY_BUILD_INFO });
+  });
+
+  it.each(['--version', '-V', 'version'])('%s prints supplemental build versions and declared protocol/format', async (flag) => {
     const result = await run(flag);
     expect(result.status).toBe(0);
     expect(result.stdout.trim().split('\n')).toEqual([
-      `@uwmd/core ${manifest.version}`,
-      `@uwmd/verify ${VERIFY_VERSION}`,
+      `@uwmd/core ${BUILD_VERSION}`,
+      `@uwmd/verify ${VERIFY_BUILD_VERSION}`,
       `Protocol ${manifest.protocol_version}`,
       `Format ${manifest.format_version}`,
     ]);

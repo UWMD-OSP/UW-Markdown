@@ -124,6 +124,8 @@ import { resolveValue } from './cascade.js';
 import { getAssetClassDefaults } from './defaults.js';
 import { MULTIFAMILY_PACK, getPackForAssetClass } from './packs/index.js';
 import { CORE_VERSION } from './version.js';
+import { BUILD_INFO, BUILD_VERSION } from './build-info.js';
+import { VERIFY_BUILD_INFO, VERIFY_BUILD_VERSION } from '@uwmd/verify';
 
 import {
   parseFlags,
@@ -1982,14 +1984,16 @@ switch (command) {
   case '--version':
   case '-V':
   case 'version':
-    // Read from the manifest so `--version` and `manifest` cannot disagree.
-    // These used to fall through to `default` and print the help text.
-    // `@uwmd/verify` is the engine core is built on and every receipt names
-    // (RFC 0083).
-    console.log(`@uwmd/core ${REFERENCE_IMPLEMENTATION_MANIFEST.version}`);
-    console.log(`${VERIFY_PACKAGE_NAME} ${VERIFY_VERSION}`);
+    // Supplemental source identity is distinct from the manifest/package and
+    // receipt versions. No Git or filesystem lookup occurs at CLI runtime.
+    console.log(`@uwmd/core ${BUILD_VERSION}`);
+    console.log(`${VERIFY_PACKAGE_NAME} ${VERIFY_BUILD_VERSION}`);
     console.log(`Protocol ${REFERENCE_IMPLEMENTATION_MANIFEST.protocol_version}`);
     console.log(`Format ${REFERENCE_IMPLEMENTATION_MANIFEST.format_version}`);
+    break;
+
+  case 'build-info':
+    console.log(JSON.stringify({ core: BUILD_INFO, verify: VERIFY_BUILD_INFO }, null, 2));
     break;
 
   case 'portfolio': {
@@ -2078,7 +2082,8 @@ Commands:
   package  create|verify|...    Build, verify, list, or project a UW Deal Package (RFC 0018)
   portfolio validate|edges      Validate a .uwportfolio.json sidecar, or list its entity edges (RFC 0015)
   manifest                     Print this implementation's ImplementationManifest (conformance protocol; @uwmd/verify version on stderr)
-  --version, -V                Print the @uwmd/core, @uwmd/verify, Protocol and Format versions
+  build-info                   Print source commit/tree metadata as JSON
+  --version, -V                Print source build identities, Protocol and Format versions
 
 Options (each command accepts only the flags listed for it; an unknown flag exits 1 before any work runs):
   --output <path>    Output file path (init; init refuses an existing file)
