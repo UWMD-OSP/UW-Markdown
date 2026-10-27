@@ -157,7 +157,7 @@ export function parseDocumentFactsUWX(source: string, inventory: DocumentFactsSo
   const profile = parsed.frontmatter.document_profile;
   if (!isDocumentFactsProfile(profile)) throw new DocumentFactsError('DF-001', 'Declare an implemented document-facts profile.');
   const block = getSection(parsed, DOCUMENT_FACTS_SECTION);
-  if (!block || parsedPhysicalBlocks(parsed).filter(b => b.annotation.section === DOCUMENT_FACTS_SECTION && !b.annotation.superseded).length !== 1) throw new DocumentFactsError('DF-011', 'A fact document requires one unvarianted current document_facts block.');
+  if (!block || block.annotation.variant !== undefined || parsedPhysicalBlocks(parsed).filter(b => b.annotation.section === DOCUMENT_FACTS_SECTION && !b.annotation.superseded && !b.meta?.lifecycle?.superseded).length !== 1) throw new DocumentFactsError('DF-011', 'A fact document requires one unvarianted current document_facts block.');
   const document = assertDocumentFacts(profile, blockPayload(block), inventory);
   for (const key of ['document_id', 'as_of', 'currency_code'] as const) {
     if (parsed.frontmatter[key] !== undefined && parsed.frontmatter[key] !== document[key]) throw new DocumentFactsError('DF-011', 'Descriptor and payload identities disagree.');

@@ -24,8 +24,8 @@ const codes = (profile: unknown, doc: unknown, inv: DocumentFactsSourceInventory
 function deepFreeze(value: unknown): void { if (value !== null && typeof value === 'object') { for (const item of Object.values(value)) deepFreeze(item); Object.freeze(value); } }
 
 describe('RFC0129 document facts', () => {
-  const ajv = new Ajv({ strict: false, allErrors: true });
-  addFormats(ajv);
+  const ajv = new Ajv.default({ strict: false, allErrors: true });
+  addFormats.default(ajv);
   for (const name of ['document-fact-term', ...profiles.map(p => `document-facts-${file(p)}`)]) ajv.addSchema(JSON.parse(readFileSync(new URL(`../../../spec/schemas/${name}.schema.json`, import.meta.url), 'utf8')));
 
   it.each(profiles)('%s validates the original worked JSON and strict UWX without changing source', profile => {
@@ -33,6 +33,8 @@ describe('RFC0129 document facts', () => {
     const inv = inventory(doc);
     const raw = source(profile, doc);
     expect(validateDocumentFacts(profile, doc, inv)).toEqual([]);
+    const schema = ajv.getSchema(`https://uwmd.org/schemas/document-facts-${file(profile)}.schema.json`)!.schema as { properties: { facts: { properties: Record<string, unknown> } } };
+    expect(Object.keys(schema.properties.facts.properties).sort()).toEqual(Object.keys(DOCUMENT_FACT_DEFINITIONS[profile]).sort());
     expect(ajv.validate(`https://uwmd.org/schemas/document-facts-${file(profile)}.schema.json`, doc)).toBe(true);
     expect(parseDocumentFactsJSON(profile, JSON.stringify(doc), inv)).toEqual(doc);
     expect(parseDocumentFactsUWX(raw, inv)).toEqual({ profile, document: doc });
@@ -184,6 +186,17 @@ describe('RFC0129 document facts', () => {
     expect(compilation.report.issues.map(i => i.code)).toContain('LITE_COMPILE_DOCUMENT_PROFILE_UNSUPPORTED');
     await expect(createUWMCPValidationResult(toUWEnvelope(parseUWFile(raw.replace('uw_version: \"3.0\"', 'uw_version: \"3.0\"\ndeal_id: qa-binding-target\ndeal_name: QA source binding target'))), 'unused')).rejects.toMatchObject({ code: 'BINDING_PROFILE_UNSUPPORTED' });
     expect(DOCUMENT_FACTS_BINDINGS).toEqual({ library: true, lite_view: true, lite_compile: false, cli: false, mcp: false, http: false });
+  });
+
+  it('retains superseded physical source history without admitting a named fact variant', () => {
+    const doc = load(profiles[0]);
+    const inv = inventory(doc);
+    const raw = source(profiles[0], doc);
+    expect(() => parseDocumentFactsUWX(raw.replace('uw:section=document_facts', 'uw:section=document_facts variant=other'), inv)).toThrow(/DF-011/);
+    const parsed = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
+    parsed._meta.lifecycle.superseded = true;
+    const historic = `\n\`\`\`json uw:section=document_facts\n${JSON.stringify(parsed)}\n\`\`\`\n`;
+    expect(parseDocumentFactsUWX(raw + historic, inv).document).toEqual(doc);
   });
 
   it('refuses wrong or ambiguous carriers while preserving unknown purposes as a Reader', () => {
