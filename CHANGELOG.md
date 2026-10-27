@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Explain the foundation and seven growth paths, add conformance/verification-profile playbooks, and link current postlaunch stability commitments without making new promises.
+- Explain the foundation and seven growth paths, add conformance/verification-profile playbooks, and align README/roadmap with current source and existing postlaunch commitments without new promises.
 
 - Document bounded edge-case coverage and known limits, including standalone duplicate rent-roll identifiers and unsupported financial projection conventions.
 

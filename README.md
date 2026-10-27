@@ -42,6 +42,11 @@ constraint.
 
 ## Quick start
 
+The npm quickstart exercises the published package. Main contains newer
+unpublished work with the same prelaunch package numbers. For current source
+contracts, use the source workflow below and record `git rev-parse HEAD`; a
+version string alone does not identify that code.
+
 **No clone needed** — install the scoped CLI package and scaffold or validate a deal file with:
 
 ```bash
@@ -105,16 +110,14 @@ To open the reference web viewer, point any browser at
 
 ## Roadmap
 
-The full, status-tracked roadmap lives in [ROADMAP.md](./ROADMAP.md). Highlights:
-
-- **Shipped in v1** — Tier-1/2/3 implementation, the conformance runner, the JSON
-  Schemas, and the tool set (VS Code extension, docs site, web editor, Excel
-  converter, PDF report pipeline, standalone CLI).
-- **Shipped in v1.1** — machine interchange: a shared document envelope with
-  lossless JSON, XML, and normalized CSV-bundle codecs, plus HTTP/MCP companion
-  bindings, under accepted [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
-- **Next** — additional asset-class calc packs, starting with hospitality.
-- **v2 spec exploration** — locale negotiation, lease-up modeling, `_meta` v2, portfolio relationships. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/). The signing chain shipped 2026-08-27: signed blocks ([RFC 0010](./docs/rfcs/0010-signed-blocks.md), protocol §V.11) and module signatures ([RFC 0002](./docs/rfcs/0002-module-signing.md), protocol §X.1), both on the optional [`@uwmd/signing`](./packages/uwmd-signing/) package; core stays crypto-free. A language-agnostic conformance driver ([RFC 0004](./docs/rfcs/0004-conformance-runner-v2.md), protocol §II.6a) shipped alongside, so an implementation in any language can self-certify against the same corpus — see [`conformance/runner/`](./conformance/runner/README.md). And [RFC 0006](./docs/rfcs/0006-hospitality-module.md) gave the module system its first real consumer, a hospitality module, plus the runtime that actually executes what a module declares; RFC 0080 later folded hospitality into core as a builtin. [RFC 0003](./docs/rfcs/0003-module-asset-classes.md) then let a module declare its own **asset class** — third-party classes have a namespaced space. [RFC 0080](./docs/rfcs/0080-official-classes-are-builtins.md) makes all official classes full builtins: twelve equal standard and starter surfaces, with future official additions by RFC.
+The [roadmap](ROADMAP.md) separates published artifacts, current source and
+future proposals. All twelve official asset classes already have full builtin
+support, including hospitality. The base Python Verifier is complete; bounded
+pro-forma support is scoped to the CLI/public library at the documented source.
+New document families and optional procedures follow the
+[growth playbooks](docs/HOW-UWMD-GROWS.md), with acceptance and conformance before
+support is claimed. Planned types are not delivery promises. There is no
+adoption target; maintenance after launch follows filed issues.
 
 ## Who's building on it
 
@@ -139,7 +142,7 @@ This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md).
 - [MAINTAINERS.md](./MAINTAINERS.md) — current maintainers and areas of ownership.
 - [SECURITY.md](./SECURITY.md) — how to report a vulnerability.
 - [CHANGELOG.md](./CHANGELOG.md) — release-by-release history.
-- [UW XML Mapping 1.0](./spec/UW_XML_MAPPING.md) — deterministic, lossless XML representation and secure decoding rules.
+- [UW XML Mapping 2.0](./spec/UW_XML_MAPPING.md) — deterministic, lossless XML representation and secure decoding rules.
 - [UW Document Envelope 2.0](./spec/UW_ENVELOPE.md) — complete model, tagged extensions and coordinated subject identities.
 - [UW CSV Bundle 2.0](./spec/UW_CSV_BUNDLE.md) — normalized CSV tables, deterministic ZIP, safe extraction, and named views.
 - [HTTP Binding 1.0](./spec/bindings/UW_HTTP_BINDING_v1.md) and [MCP Binding 1.0](./spec/bindings/UW_MCP_BINDING_v1.md) — API negotiation, semantic ETags, stable resources, and AI-friendly tool results.
