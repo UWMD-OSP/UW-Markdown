@@ -102,6 +102,20 @@ test('a linked output directory cannot write outside the owned source root', () 
   } finally { cleanup(root); cleanup(outside); }
 });
 
+test('a dangling output-file link cannot create an external file', { skip: process.platform === 'win32' }, () => {
+  // File symlink creation needs a Windows privilege; the portable directory
+  // junction control above runs on Windows too. Required Ubuntu CI runs this.
+  const root = fixture();
+  const outside = fixture(false);
+  try {
+    const folder = join(root, 'packages/uwmd-verify/dist');
+    mkdirSync(folder);
+    symlinkSync(join(outside, 'uncreated.js'), join(folder, 'build-info.js'), 'file');
+    assert.throws(() => buildSource(root, { runBuild: () => {} }), refusal('BUILD_OUTPUT_INVALID'));
+    assert.throws(() => readFileSync(join(outside, 'uncreated.js')), error => error.code === 'ENOENT');
+  } finally { cleanup(root); cleanup(outside); }
+});
+
 test('partial, malformed or missing identity never becomes a full stamp', () => {
   const sha = 'a'.repeat(40);
   for (const source of [undefined, {}, { commit: sha }, { tree: sha }, { commit: 'short', tree: sha }, { commit: sha, tree: 'dirty' }]) {

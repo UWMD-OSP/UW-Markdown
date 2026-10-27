@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Explicit committed-source build. Does not change any package/version/pin.
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, lstatSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { lstatSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { npmInvocation } from './npm-invocation.mjs';
@@ -46,7 +46,7 @@ function writeMetadata(root, source) {
     const declared = JSON.parse(readFileSync(resolve(root, output.dir, 'package.json'), 'utf8')).version;
     const info = sourceBuildIdentity(declared, source);
     const outputFile = resolve(folder, 'build-info.js');
-    if (existsSync(outputFile) && lstatSync(outputFile).isSymbolicLink()) refuse('BUILD_OUTPUT_INVALID', 'Build metadata must not follow an output link.');
+    if (lstatSync(outputFile, { throwIfNoEntry: false })?.isSymbolicLink()) refuse('BUILD_OUTPUT_INVALID', 'Build metadata must not follow an output link.');
     writeFileSync(outputFile, `// Generated supplemental source identity.\nexport const ${output.info} = Object.freeze(${JSON.stringify(info, null, 2)});\nexport const ${output.version} = ${output.info}.build_version;\n`);
   }
 }
