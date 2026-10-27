@@ -1586,5 +1586,167 @@
   {
     "id": "package-predecessor-and-async-snapshot",
     "operation": "control"
+  },
+  {
+    "id": "negative-unit-count",
+    "operation": "validate",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "property.total_units": {
+          "value": -1,
+          "source_ref": {
+            "source": "source:qa-om",
+            "locator": "p2 stated size"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-008"
+    ]
+  },
+  {
+    "id": "fractional-unit-count",
+    "operation": "validate",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "property.total_units": {
+          "value": 0.5,
+          "source_ref": {
+            "source": "source:qa-om",
+            "locator": "p2 stated size"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-008"
+    ]
+  },
+  {
+    "id": "negative-source-area",
+    "operation": "validate",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "property.total_nra_sqft": {
+          "value": -1,
+          "source_ref": {
+            "source": "source:qa-om",
+            "locator": "p2 stated size"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-008"
+    ]
   }
 ]

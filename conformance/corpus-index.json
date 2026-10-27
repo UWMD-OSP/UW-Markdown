@@ -7345,6 +7345,21 @@
       "suite": "document-facts",
       "scenario": "package-predecessor-and-async-snapshot",
       "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "negative-unit-count",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "fractional-unit-count",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "negative-source-area",
+      "target": "document-facts"
     }
   ]
 }

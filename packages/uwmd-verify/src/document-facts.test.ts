@@ -1,3 +1,5 @@
+import { SIZE_CONTRACT } from './size-contract.js';
+import { validateUWFile } from './validator.js';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import Ajv from 'ajv/dist/2020.js';
@@ -42,7 +44,8 @@ describe('RFC0129 document facts', () => {
   });
 
   for (const profile of profiles) for (const [key, definition] of Object.entries(DOCUMENT_FACT_DEFINITIONS[profile])) {
-    const values = Array.isArray(definition.kind) ? definition.kind : definition.kind === 'date' ? ['2024-02-29'] : [0, 0.06, -1, 1e-308];
+    const sizeKind = definition.section === 'property' && Object.hasOwn(SIZE_CONTRACT.property, definition.field) ? SIZE_CONTRACT.property[definition.field] : undefined;
+    const values = Array.isArray(definition.kind) ? definition.kind : definition.kind === 'date' ? ['2024-02-29'] : sizeKind === 'count' ? [0, 1] : sizeKind === 'measure' ? [0, 0.06, 1e-308] : [0, 0.06, -1, 1e-308];
     it(`${profile} admits every exact ${key} type/vocabulary without conversion`, () => {
       const doc = load(profile); const ref = { source: doc.governing_documents[0], locator: 'synthetic p1 exact stated value' };
       for (const value of values) {
@@ -67,6 +70,18 @@ describe('RFC0129 document facts', () => {
     expect(result.edits).toEqual([]);
     expect([...result.report.omitted, ...result.report.conflicts].some(e => e.fact === key && e.reason.includes(status))).toBe(true);
     expect(renderDocumentFactsLite(profile, doc, inventory(doc))).toContain(status);
+  });
+
+  it('uses the existing SIZE-01 integer/nonnegative contract for exact property homes', () => {
+    const doc = load('offering-memorandum-v1');
+    for (const [key, value] of [['property.total_units', -1], ['property.total_units', 0.5], ['property.total_nra_sqft', -1]] as const) {
+      const record = target();
+      getSection(record, 'property')!.content[key.slice('property.'.length)] = value;
+      expect(validateUWFile(record).errors.some(e => e.code === 'SIZE-01')).toBe(true);
+      doc.facts = { [key]: { value, source_ref: { source: doc.governing_documents[0], locator: 'p2 source statement' } } };
+      expect(codes('offering-memorandum-v1', doc, inventory(doc))).toContain('DF-008');
+      expect(ajv.validate('https://uwmd.org/schemas/document-facts-offering-memorandum.schema.json', doc)).toBe(false);
+    }
   });
 
   it('refuses malformed roots, identities, dates, currency and inventory deterministically', () => {

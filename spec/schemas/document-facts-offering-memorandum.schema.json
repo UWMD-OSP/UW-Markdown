@@ -80,7 +80,8 @@
                 "value": {
                   "anyOf": [
                     {
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0
                     },
                     {
                       "type": "null"
@@ -101,7 +102,8 @@
                 "value": {
                   "anyOf": [
                     {
-                      "type": "number"
+                      "type": "number",
+                      "minimum": 0
                     },
                     {
                       "type": "null"

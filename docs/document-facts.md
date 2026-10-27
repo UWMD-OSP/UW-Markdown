@@ -9,6 +9,9 @@ attributable statements, not adopted underwriting or financial assurance:
 | `offering-memorandum-v1` | Six property/appraisal facts; asking price, NOI, rent and occupancy schedules stay unmapped |
 | `appraisal-abstract-v1` | Five appraisal opinion/date/approach fields in `valuation`; never underwritten value or a selected opinion |
 
+The OM count/area homes also keep Format5.5’s existing nonnegative/integer
+SIZE-01 contract; a source transcription cannot redefine those units.
+
 The exact allowlists and native units are in [RFC0129](rfcs/0129-document-fact-profiles.md)
 and the [Format](../spec/UW_FORMAT_SPEC.md#attributable-source-fact-profiles-rfc0129).
 The optional conformance claim is `document-facts`, distinct from the three

@@ -1,3 +1,4 @@
+import { SIZE_CONTRACT, meetsSizeContract } from './size-contract.js';
 import { hasBlockRole, isBlockRole } from './block-roles.js';
 import { explicitVariantBlock } from './section-resolution.js';
 // RFC0129: attributed source facts, never underwriting or opinion selection.
@@ -110,6 +111,7 @@ export function validateDocumentFacts(profile: unknown, candidate: unknown, sour
       if (definition) {
         const k = definition.kind;
         const valid = k === 'number' ? typeof value.value === 'number' && Number.isFinite(value.value)
+          && (definition.section !== 'property' || !Object.hasOwn(SIZE_CONTRACT.property, definition.field) || meetsSizeContract(value.value, SIZE_CONTRACT.property[definition.field]))
           : k === 'date' ? typeof value.value === 'string' && isValidAsOf(value.value)
           : typeof value.value === 'string' && k.includes(value.value);
         if (!valid) error('DF-008', 'Value does not have the exact destination field type/vocabulary; no unit conversion occurs.', `${at}/value`);
