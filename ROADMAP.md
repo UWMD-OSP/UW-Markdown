@@ -74,7 +74,7 @@ is `implemented` after shipment and independently verified publication.
 Release run 38663508062 and independent registry/provenance/published-file/
 CLI/consumer checks pass, including the document-signature fixtures through
 the registry-installed CLI. See
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.2.0-publication.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.2.0).
 
 ## Historical publication: 4.1.0
 
@@ -96,7 +96,7 @@ RFC 0083 is `implemented` after shipment and independently verified
 publication. Release run 38509776606 and independent
 registry/provenance/published-file/CLI/consumer checks pass, including
 `@uwmd/verify` installed on its own. See
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.1.0-publication.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.1.0).
 
 ## Historical publication: 4.0.1
 
@@ -110,7 +110,7 @@ version, and the private web editor reads its own name and version. Signing
 release workflow with provenance; neither module package published again. Release
 run 38429239833 and independent registry/provenance/published-file/CLI/consumer
 checks pass. See
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.1-publication.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.0.1).
 
 ## Historical publication: 4.0.0
 
@@ -128,7 +128,7 @@ release workflow with provenance; neither module package published again. No
 financial value changes. RFC 0081 is `implemented` after shipment and
 independently verified publication. Release run 38339991109 and independent
 registry/provenance/published-file/CLI/consumer checks pass. See
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.0-publication.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.0.0).
 
 ## Historical publication: 3.0.0
 
@@ -153,7 +153,7 @@ on npm on 2026-10-11. No new §X floor applies. RFCs 0078–0080 are
 `implemented` after shipment and independently verified publication. Release
 run 38163964522 and independent registry/provenance/published-file/CLI/
 consumer checks pass. See
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/3.0.0-publication.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v3.0.0).
 
 ## Historical publication: 2.21.0
 
@@ -170,7 +170,7 @@ Format stays 2.0. Signing 0.2.25, batch 0.8.20 and both module packages
 RFC 0065 is `implemented` after shipment and independently verified
 publication. Release run 38088657045 and independent registry/provenance/
 published-file/CLI/module-consumer checks pass. See
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.21.0-publication.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.21.0).
 
 ## Historical publication: 2.20.0
 
@@ -191,7 +191,7 @@ Format stays 2.0. Signing 0.2.24, batch 0.8.19 and both module packages
 RFCs 0064 and 0072 are `implemented` after shipment and independently verified
 publication. Release run 38064763014 and independent registry/provenance/
 published-file/CLI/module-consumer checks pass. See
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.20.0-publication.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.20.0).
 
 ## Historical publication: 2.19.0
 
@@ -212,7 +212,7 @@ CLI in the six-package workflow. No new §X floor applies. RFCs 0075–0077 are
 `implemented` after shipment and independently verified publication. Release
 run 37950962666 and independent registry/provenance/published-file/CLI/
 module-consumer checks pass. See
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.19.0-publication.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.19.0).
 
 ## Historical publication: 2.18.0
 
@@ -232,8 +232,8 @@ It is the first six-package generation. `@uwmd/module-hospitality` and
 0.8.17. RFCs 0071 and 0074 are `implemented` after shipment and
 independently verified publication. Release run 37795279528 and independent
 registry/provenance/published-file/CLI/module-consumer checks pass. See
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-publication.md) and
-[the preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-preparation.md).
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.18.0) and
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.18.0).
 
 ## Historical publication: 2.17.0
 
@@ -245,8 +245,8 @@ shipment and independently verified publication. Signing 0.2.21 and batch
 0.8.16 are also published; all other package generations remain source-only.
 Release run 37172975077 and independent registry/provenance/published-file/CLI
 checks pass. The frozen funding semantics and synchronous/async verification
-boundary are unchanged. See [the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-publication.md) and
-[the preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-preparation.md).
+boundary are unchanged. See [GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.17.0) and
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.17.0).
 
 ## Historical publication: 2.16.0
 
@@ -257,7 +257,7 @@ hardening and the final publication-neutral tagged-tree checks. RFC 0069
 is `implemented`. Release run 37075007121 and independent registry/provenance/
 published-CLI checks verify the publication. Preparation and publication
 evidence are recorded separately in
-`docs/releases/2.16.0-candidate.md`.
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.16.0).
 
 ## Historical publication: 2.15.0
 
@@ -311,8 +311,8 @@ does not mean its standalone npm package is published.
 | Work | State | Evidence / completion |
 |---|---|---|
 | Current roadmap and status reconciliation | Merged in PR #181 | Historical launch plans archived; implemented/published/proposed states separated; RFC 0040/0041 marked implemented. |
-| Independent PCG64 verification | Sprint verification complete | 11 seeds, 11,264 raw draws and 176 doubles match NumPy 1.26.4's compiled PCG64 under the upstream default stream and srandom sequence. Existing outputs are unchanged. [Evidence and reproduction](docs/reviews/2026-09-12-pcg64-reference.md). |
-| Period consumers and lease-up projection | Released in 2.8.0 | RFCs 0042–0044, validated CLI context and the explicit projection workflow. [Publication and installation evidence](docs/reviews/2026-09-12-release-2.8.0.md). |
+| Independent PCG64 verification | Sprint verification complete | 11 seeds, 11,264 raw draws and 176 doubles match NumPy 1.26.4's compiled PCG64 under the upstream default stream and srandom sequence. Existing outputs are unchanged. [Evidence and reproduction](conformance/stochastic/pcg64-reference.md). |
+| Period consumers and lease-up projection | Released in 2.8.0 | RFCs 0042–0044, validated CLI context and the explicit projection workflow. Publication and installation evidence. |
 
 ## Released in 2.10.0
 
@@ -379,15 +379,15 @@ the intended state: the format learns to *say* these things before anything acts
 on them, and each consumer arrives with its own contract.
 
 For the lake adapter, a real load against a live PostgreSQL server ran on
-2026-09-16 and is recorded [here](docs/reviews/2026-09-16-lake-live-postgres.md);
+2026-09-16 and is recorded here;
 a managed-service run and the publication decision are still open. See the
-[adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md) and
+adoption notes and
 the [data-lake guide](docs/DATA_LAKE.md).
 
 ## Released in 2.15.0
 
 Released from the reviewed `v2.15.0` tag. The living detail is in the developer
-wiki's build-status page (`docs/wiki/13-status.md`); this section records only
+wiki's build-status page (`ROADMAP.md`); this section records only
 what changes a roadmap or status claim.
 
 | Change | Effect on this roadmap |
@@ -402,7 +402,7 @@ No other forward candidate moved.
 ## Released in 2.14.0
 
 Released from the reviewed `v2.14.0` tag. The living detail is in the developer
-wiki's build-status page (`docs/wiki/13-status.md`); this section records only
+wiki's build-status page (`ROADMAP.md`); this section records only
 what changes a roadmap or status claim.
 
 | Change | Effect on this roadmap |
@@ -418,7 +418,7 @@ No forward candidate below moved.
 
 Released from the reviewed `v2.13.0` tag. The living detail is in the developer
 wiki's build-status page
-(`docs/wiki/13-status.md`); this section records only what changes a roadmap or
+(`ROADMAP.md`); this section records only what changes a roadmap or
 status claim.
 
 | Change | Effect on this roadmap |
@@ -429,7 +429,7 @@ status claim.
 | **SQL export surface: added, then withdrawn** | An unreleased `exportSql` in `@uwmd/core` emitted PostgreSQL and Snowflake DDL and a second `uw_documents` table that collided with `@uwmd/lake`'s. RFC 0049 names warehouse-specific SQL a non-goal and gives `@uwmd/lake` the relational boundary, so it was withdrawn rather than re-homed. **This is not planned work.** A second BI-oriented projection would need an adopter requirement and its own RFC; none exists. |
 | **`@uwmd/lake` 0.2.1, lake schema 0.2** | The live-PostgreSQL fixes below. The package remains unpublished. |
 | **Release readiness check** | `npm run release:check` verifies npm Trusted Publishers OIDC before a `v*` tag triggers a publish. Tooling only. |
-| **Golden-deal release comparison** | Eight runnable cases pass in the release evidence: 532 Artifact B assertions accounted for, 526 passing, six documented baseline defects, and 20 refusal assertions passing. [De-identified evidence](docs/reviews/2026-09-21-golden-deal-release-comparison.md). This does not close RFC 0045-specific real-deal assembly evidence. |
+| **Golden-deal release comparison** | Eight runnable cases pass in the release evidence: 532 Artifact B assertions accounted for, 526 passing, six documented baseline defects, and 20 refusal assertions passing. De-identified evidence. This does not close RFC 0045-specific real-deal assembly evidence. |
 
 Nothing here adds a protocol capability, and no forward candidate below moved.
 
@@ -509,7 +509,7 @@ no additional financial assumptions are supplied by the released adapter.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Real-deal DCF validation and extensions | RFCs 0062 and 0063 released in 2.14.0 | The [completed-corpus review](docs/reviews/2026-09-24-completed-golden-corpus-validation.md) records 640/640 registered comparisons, 20/20 existing refusals and a separate stale-workbook integrity refusal; stated-source checks do not establish complete assembly parity. RFC 0062's same-day errata is integrated at `e49eb43`. The [terminal-boundary owner brief](docs/reviews/2026-09-24-terminal-boundary-design.md) places final monthly cash on disposition at the final period's exclusive boundary. The owner accepted [RFC 0063](docs/rfcs/0063-final-period-exclusive-boundary.md) at `f04b34a`; its implementation is on `main` at `413a645`, preparing Protocol **2.18.0** for explicit monthly/quarterly boundary admission. Both RFCs shipped in 2.14.0 and are **implemented**. The [verification record](docs/reviews/2026-09-24-rfc-0063-implementation.md) covers conformance and review corpus probes: the timing-only case assembles with opt-in, while reserve-dependent spending still refuses. Reserve-account and financing assembly remain separate. |
+| 1 | Real-deal DCF validation and extensions | RFCs 0062 and 0063 released in 2.14.0 | The completed-corpus review records 640/640 registered comparisons, 20/20 existing refusals and a separate stale-workbook integrity refusal; stated-source checks do not establish complete assembly parity. RFC 0062's same-day errata is integrated at `e49eb43`. The [terminal-boundary owner brief](docs/rfcs/0063-final-period-exclusive-boundary.md) places final monthly cash on disposition at the final period's exclusive boundary. The owner accepted [RFC 0063](docs/rfcs/0063-final-period-exclusive-boundary.md) at `f04b34a`; its implementation is on `main` at `413a645`, preparing Protocol **2.18.0** for explicit monthly/quarterly boundary admission. Both RFCs shipped in 2.14.0 and are **implemented**. The [verification record](docs/rfcs/0063-final-period-exclusive-boundary.md) covers conformance and review corpus probes: the timing-only case assembles with opt-in, while reserve-dependent spending still refuses. Reserve-account and financing assembly remain separate. |
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | RFC 0051 implemented; **RFC 0059 released in 2.12.0** | Combined-hurdle "any" mode implemented under RFC 0051. RFC 0059 takes up clawback as the terminal true-up protocol §XVI predicted, closed-form via the RFC 0036 hurdle balance so no iteration is introduced. GP-side hurdles (`until_gp_irr`) remain deliberately out. |
@@ -529,8 +529,8 @@ draw-to-expenditure binding shipped separately in 2.21.0 with Stable Protocol
 | Work | State | Next evidence |
 |---|---|---|
 | Standalone document and package example kit | RFC 0048 implemented (2.10.0) | Adopter authoring against the kit. |
-| Element/package validation and deterministic stitching | Future RFC/design candidate; no new implementation | Extend existing RFCs 0018/0021/0048 for standalone rent rolls, T-12s, debt schedules and property files; pin ZIP/folder manifests, assembly conflicts, package canonicalization/hashing, provenance and document-versus-package receipt scope. See [candidate brief](docs/roadmap/element-package-validation.md). |
-| PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0; **live load run 2026-09-16**; `@uwmd/lake` published since 3.0.0 (0.3.0 today) | The corpus load against PostgreSQL 18 is done and found three defects, all fixed — see the [load record](docs/reviews/2026-09-16-lake-live-postgres.md). Remaining: a run against a managed service with roles and concurrency. |
+| Element/package validation and deterministic stitching | Future RFC/design candidate; no new implementation | Extend existing RFCs 0018/0021/0048 for standalone rent rolls, T-12s, debt schedules and property files; pin ZIP/folder manifests, assembly conflicts, package canonicalization/hashing, provenance and document-versus-package receipt scope. See candidate brief. |
+| PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0; **live load run 2026-09-16**; `@uwmd/lake` published since 3.0.0 (0.3.0 today) | The corpus load against PostgreSQL 18 is done and found three defects, all fixed — see the load record. Remaining: a run against a managed service with roles and concurrency. |
 | Additional niche asset classes | Demand-gated | Bring a concrete deal/operator workflow before adding another class or module. |
 
 ### Mixed-use and speculative leasing
@@ -551,7 +551,7 @@ product specification; lease economics and cash timing are.
   moves its namespace can already keep old documents resolvable by continuing
   to declare each retired class id. RFC 0073 would declare the old and new ids
   one class. It waits on StackUW's answers in the
-  [review](docs/reviews/2026-10-04-renamed-identifiers.md) and owner acceptance.
+  [review](docs/rfcs/0073-previous-asset-class-identifiers.md) and owner acceptance.
 - **Investor profiles and portfolio/relationship consumers:** the data
   surfaces exist, but reference consumers need concrete adoption requirements.
 - **Official module publication:** hospitality and data-center are approved together
@@ -574,12 +574,10 @@ product specification; lease economics and cash timing are.
 
 ## History and maintenance
 
-The [historical roadmap](docs/roadmap/history-through-2.7.0.md) preserves the v1
-launch, interchange train and v2 exploration narrative. Those milestones are
-closed history, not remaining npm setup or launch tasks.
+Release history is recorded in [CHANGELOG.md](CHANGELOG.md).
 
 For each future item, record its user need, acceptance state, implementation
 scope, proof of completion and publication state. Update the RFC frontmatter
 and index together after a release; keep detailed implementation notes in the
-developer wiki and dated reviews. New normative behavior requires an RFC under
+maintainer working records. New normative behavior requires an RFC under
 [governance](GOVERNANCE.md); editorial status corrections do not change contracts.

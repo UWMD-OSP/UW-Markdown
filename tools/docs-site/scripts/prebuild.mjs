@@ -303,7 +303,6 @@ for (const file of await readdir(join(REPO_ROOT, 'docs/playbooks'))) {
   NORMALIZED_LINK_MAP.set(`playbooks/${file}`, url);
   if (file !== 'README.md') NORMALIZED_LINK_MAP.set(file, url);
 }
-NORMALIZED_LINK_MAP.set('wiki/13-status.md', `${GITHUB_BLOB}/docs/wiki/13-status.md`);
 
 
 function rewriteLinks(md) {
