@@ -1,220 +1,111 @@
-# AGENTS.md — UW Markdown
+# AGENTS.md — UW Markdown contributor guide
 
-<!-- owner-rule:start -->
-## Owner rule — 2026-10-17
+This guide applies to every coding agent and contributor. Read the
+[developer wiki](docs/wiki/README.md) for non-trivial work and any package's
+local guidance before editing it. `CLAUDE.md` entry files import this guide.
 
-5.0.0 is the official public launch release only. Every @uwmd npm package goes
-to 5.0.0 together at that launch. All prelaunch releases use 4.x.x and may ship
-from main as needed; breaking changes within 4.x are allowed.
+## Scope and contracts
 
-Before 5.0 there is zero backward compatibility. Do not write migration notes,
-deprecation paths, "breaking for consumers" analyses or version-bump
-recommendations. Do not preserve or repair pre-5.0 documents, signatures,
-receipts or historical artifacts. The owner is the only prelaunch consumer; no
-prelaunch document is intended for anyone else. Drop work whose only purpose
-is prelaunch compatibility or artifact preservation. This restates PROCESS
-principle 5 and supersedes earlier compatibility/preservation instructions.
+UW Markdown is an open underwriting document standard and reference toolkit:
+a library, specifications and static tools. It has no Express server or database.
+Producing applications remain separate from the vendor-neutral standard.
 
-Normative changes still follow RFC discipline, synchronized current contracts
-and conformance, deterministic tests and review. Current read-only verification
-and source-integrity requirements remain; they do not create a legacy retention
-obligation. A 5.0.0 launch still requires separate explicit owner approval.
-<!-- owner-rule:end -->
+The normative standard comprises the Format, verification Protocol, receipts,
+module system, representations/bindings and `spec/metrics/` dictionary.
+Conformance has Reader and Verifier tiers plus optional profiles. A verifier
+can implement the standard without the starter toolkit (RFC 0078).
 
-The single source of guidance for every coding agent in this repo (Claude Code,
-Codex, or anything else). `CLAUDE.md` imports this file and repeats only the
-owner-rule block above; CI requires that block to match exactly. The deep reference is the **developer wiki** in
-[`docs/wiki/`](docs/wiki/README.md) — read it for any non-trivial task.
+The non-normative starter products include calc-engine code, packs, defaults,
+editing, rendering, Excel export and CLI tooling; see [docs/starter](docs/starter/README.md).
+Every official asset class is a full builtin on both sides (RFC 0080).
+Modules are third-party extensions. The toolkit hosts no agents; generic agent
+provenance, integrity, receipts, edit APIs and transport interoperability remain.
 
-## What this is
+## Prelaunch policy
 
-UW Markdown is the open **`.uw.md`** standard (Markdown + JSON for commercial
-real-estate underwriting) plus its reference implementation. It is a **library +
-specification**, supported by static tools including a React web editor. There
-is no Express server and no database here. `underwriter.cc` is a separate
-product that consumes this standard.
+5.0.0 is reserved for the official public launch. Every `@uwmd` npm package
+launches at 5.0.0 together; prelaunch releases use 4.x.x and may include
+incompatible changes. Before 5.0 there is no backward compatibility: do not add
+compatibility layers, migration/deprecation paths, consumer-breakage analyses,
+version-bump recommendations or preservation/repair work for prelaunch artifacts.
+Current RFC, deterministic verification, conformance and source-integrity
+requirements remain. A 5.0.0 launch requires separate explicit project owner approval.
 
-## The standard vs the starter products
+## Source map
 
-[RFC 0078](docs/rfcs/0078-protocol-is-verification.md) splits the repo in two.
-Know which side a change is on before you start.
+- `packages/uwmd-verify`: reference Reader/Verifier, validation, evaluator,
+  dictionary, receipts, integrity, modules and profiles; no `@uwmd/*` dependency.
+- `packages/uwmd-core`: starter library; pins and re-exports verify's whole API.
+- `packages/uwmd-cli`, `uwmd-excel`, `uwmd-signing`, `uwmd-batch`, `uwmd-report`:
+  CLI, workbooks, signing, collections and reports.
+- `packages/uwmd-lake`: SQL/JSONB projection planning without a database driver.
+- `tools/`: editor, viewer, VS Code extension and documentation site.
+- `spec/`, `conformance/`, `docs/rfcs/`: contracts, executable cases and design record.
 
-- **The standard (normative)** is a document format plus the rules any party
-  uses to *verify* a document: the Format spec, the Protocol (verification),
-  receipts, the module system, the representation specs and bindings, and the
-  metric dictionary `spec/metrics/builtin.json`, which defines every builtin
-  metric. Conformance is two tiers, **Reader** and **Verifier**, plus optional
-  profiles. The boundary test: a lender can verify a `.uw.md` from any producer
-  using only the standard, with none of this repo's tools.
-- **The starter products (non-normative)** are the tools given away so the
-  standard spreads: the calc engine code and packs, defaults and the cascade,
-  refinement, the editor, viewer and report, the Excel exporter, the AI agents,
-  capability tokens and display conventions. Their guide is
-  [`docs/starter/`](docs/starter/README.md); they change by package semver, never
-  by a Protocol version.
-- **Every official asset class is a full builtin** on both sides, equal to
-  multifamily (RFC 0080): class id, sections, dictionary metrics, pack, Excel
-  layout, defaults and example. Modules are for third parties only.
+Public APIs are each library's `src/index.ts`; browser tools use the browser
+entry point. `packages/uwmd-verify/src/protocol.ts` mirrors the Protocol.
+Use [VERSIONS](VERSIONS.md) for current versions and publication state.
 
-## Product ownership and compatibility
+## Invariants
 
-UWMD stays vendor-neutral and verifier-focused. StackUW owns modeling, AI
-agents and workflow products; it is an adopter, not the required producer or
-runtime for this standard. The reference toolkit no longer hosts agents, and
-RFC 0112 removed the retired agent host layer vocabulary from the standard (layer
-registry, `pipeline_state`, module `agent_layers`, `agent-host`, `uwmd layers`).
-Generic agent provenance (`agent/<id>` with `agent_id`/`agent_version`) stays.
-None of this is a direction to expand UWMD's product scope. UWMD 5.0 is the first official public
-compatibility baseline. Apply the owner rule above: all @uwmd npm packages
-launch together at 5.0.0, prelaunch releases use4.x.x, and no prelaunch
-compatibility or artifact-retention work is required. Specific normative
-changes and product removals still follow their reviewed scope and applicable
-RFC discipline; no release is authorized by this guidance.
-See the [architecture overview](ARCHITECTURE.md).
+Numbers are fixed because source comments cite them.
 
-Keep provenance (including agent identities), integrity, receipts, module
-declarations, HTTP/MCP interoperability, generic edit APIs and repository
-developer instructions. An `agent` field or filename alone is never evidence
-that a contract can be deleted. RFC 0078 D1/D7 and RFC 0083 still govern.
-Issue #355's latest scope is bounded financial assurance; proposed return
-bindings, ledger coverage, named identities and coverage counts require its
-RFC before editing contracts. Do not build a complete projection engine here.
+1. **AI never does financial math.** Extract facts and write narrative;
+   deterministic calc/pack code computes financial results.
+2. **Layering:** spec depends on nothing; verify has no `@uwmd/*` or vendor SDK
+   dependency; core depends on verify without a vendor SDK; tools never import other tools.
+3. **Editor byte preservation:** edits preserve bytes outside the edited region.
+4. **Exact Excel/evaluator parity:** one pack drives both; unrounded binary64,
+   then one `round_to` quantization, half away from zero (Protocol §VIII.5).
+5. **Append-only provenance:** supersede rather than destroy; the host owns `_meta`.
+6. **Separate versions:** Format and Protocol are distinct surfaces; package
+   publication follows the prelaunch policy above.
+7. **Lockstep contracts:** Protocol types, schemas and normative text change
+   together; dictionary definitions and pack entries agree exactly.
+8. **Workspace isolation:** every `@uwmd/*` import resolves through local workspace links.
+9. **Descriptive identity:** `scenario` and `asset_subtype` never select
+   calculations, defaults, packs or rules (Format §2.2b).
 
-## Package map
+## Implementation
 
-- `packages/uwmd-verify` — `@uwmd/verify`, the reference implementation of the
-  standard (RFC 0083): reader, validation, calc evaluator, metric dictionary,
-  receipts, integrity, modules and the profiles. Depends on no `@uwmd/*`
-  package; runtime dependencies are `fast-xml-parser` and `fflate`.
-- `packages/uwmd-core` — `@uwmd/core`, the library and the heart of the repo.
-  Everything depends on it or on `@uwmd/verify`. It depends on `@uwmd/verify`
-  at an exact version and re-exports its whole surface. It has no vendor SDK
-  dependency, optional or otherwise.
-- `packages/uwmd-cli` — the `uwmd` CLI (thin wrapper over core's `cli.ts`).
-- `packages/uwmd-excel` — `.uw.md → .xlsx` converter.
-- `packages/uwmd-lake` — `@uwmd/lake`, the RFC 0049 PostgreSQL/JSONB adapter.
-  Plans SQL; takes no database driver.
-- `packages/uwmd-signing`, `uwmd-batch`, `uwmd-report` — signing, batch runs,
-  reports.
-- `tools/` — web-viewer, web-editor, vscode-uwmd, docs-site.
-- `spec/` — the normative specs, JSON Schemas and the metric dictionary
-  (`spec/metrics/`).
-- `conformance/` — fixture/expected pairs that prove behavior.
-- `docs/rfcs/` — the standard's design record. `docs/starter/` — the
-  non-normative starter products guide. `docs/wiki/` — developer reference.
+Use TypeScript and ESM, with `.js` extensions on relative NodeNext imports.
+Rates are fractions (`0.0551` = 5.51%); display is the conversion boundary.
+Export public symbols through `src/index.ts` and browser-safe entries as applicable.
+Use typed errors such as `ProtocolError`, `CalcError` and `ExcelEmitError`.
+Vitest tests live beside their sources; Biome is lint-only.
 
-The public API is `packages/uwmd-core/src/index.ts` (browser-safe subset:
-`src/browser.ts`), which re-exports `@uwmd/verify`'s whole surface; the
-standard's reference implementation is `packages/uwmd-verify` (its own
-`src/index.ts`). The contract is `spec/UW_FORMAT_SPEC.md`, `spec/UW_PROTOCOL.md`,
-`spec/UW_RECEIPT.md` and
-`spec/metrics/`; `packages/uwmd-verify/src/protocol.ts` is the executable mirror
-of the protocol.
-Current state: [Roadmap](ROADMAP.md) and
-[`VERSIONS.md`](VERSIONS.md).
+Browser tools import `@uwmd/core/browser` or `@uwmd/verify/browser`.
+The docs site's prebuild copies repository source Markdown and rewrites links;
+edit those sources. The contributor wiki is separate from the published site nav.
+Tool/package guidance and [wiki 08](docs/wiki/08-tools.md) describe their entry points.
 
-Some directories carry their own `CLAUDE.md` with package-specific notes
-(`packages/uwmd-verify`, `packages/uwmd-core`, `packages/uwmd-excel`, `tools/`). Every agent should read
-the one for the directory it is working in.
+## Changes and validation
 
-## Invariants you must not break (full list: docs/wiki/10)
+Keep one PR to one topic, including relevant tests, documentation and an
+`[Unreleased]` changelog entry. Normative changes require an RFC and synchronized
+specification, schema, implementation and conformance updates. Decide routine
+questions from accepted contracts and record the decision and precedent in the PR.
+Unsettled financial conventions, normative format decisions and new external
+dependencies require maintainer approval; never guess at numerical rules.
 
-Code comments cite these by number, so the numbers stay fixed. A rule marked
-starter-product is a quality bar for the reference tools, not a requirement of
-the standard; every rule here still blocks a PR.
-
-1. **AI never does financial math.** Agents extract data and write narrative; all
-   NOI/DSCR/LTV/IRR/DCF math is deterministic in `calc/` + `packs/`. A project
-   rule for every tool.
-2. **Layering:** spec → nothing; `@uwmd/verify` → no `@uwmd/*` and no vendor
-   SDK; `@uwmd/core` → verify, no vendor SDK as a hard dependency; tools → core
-   or verify only, never another tool.
-3. **Edits preserve bytes** outside the edited region. A starter-product
-   (editor) guarantee: integrity hashes use canonical JSON, not raw bytes.
-4. **Excel ↔ calc-engine parity is exact.** A starter-product quality bar, not a
-   standard requirement. One pack drives both, and every pack equals its
-   `spec/metrics/` entries; math runs unrounded in IEEE-754 binary64 and both
-   sides quantize once at the same `round_to`, half-away-from-zero (protocol
-   §VIII.5, which *is* normative).
-5. **Append-only provenance:** supersede, don't destroy; the host owns `_meta`.
-6. **Versioning:** Format and Protocol remain separate surfaces. All @uwmd npm
-   packages launch together at5.0.0; prelaunch releases use4.x.x under the owner
-   rule above. No prelaunch compatibility classification or bump recommendation.
-7. **Spec/schema/protocol stay in lockstep:** `protocol.ts`, `spec/schemas/` and
-   `spec/UW_PROTOCOL.md` change in the same PR or not at all.
-8. **Workspace isolation:** `@uwmd/*` always resolves through local workspace
-   links, never a registry tarball.
-9. **Descriptive identity never selects underwriting behavior:** frontmatter
-   `scenario` and `asset_subtype` may route descriptive workflows, but never
-   choose calculations, defaults, packs or rules (Format §2.2b).
-
-## Conventions
-
-- TypeScript, **ESM only**; relative imports use the `.js` extension (NodeNext).
-- Rates are **fractions, not percents** (`0.0551` = 5.51%) everywhere but display.
-- Export new public symbols from `src/index.ts` (and `src/browser.ts` if
-  browser-safe). Web tools import from `@uwmd/core/browser`.
-- One `*.test.ts` per source file (Vitest). Lint is Biome, lint-only.
-- Use typed errors (`ProtocolError`, `CalcError`, `ExcelEmitError`), not bare `Error`.
-
-## Commands and gates
+Before a PR, run:
 
 ```bash
-npm run build            # tsc across workspaces (build before conformance!)
-npm test                 # vitest across workspaces
-npm run typecheck:tests  # tests are not type-checked by build or npm test
-npm run conformance      # all tiers (imports dist/, so build first)
-npm run validate-schemas # ajv compile of spec/schemas
-npm run lint             # biome, lint-only
-npm run cli -- <cmd>     # run the uwmd CLI from source
+npm run build
+npm test
+npm run typecheck:tests
+npm run conformance
 ```
 
-Before opening a PR, run `build`, `test`, `typecheck:tests` and `conformance`,
-plus whichever guards the change touches: `verify-packages`, `verify-lockfile`,
-`verify-versions`, `verify-indexes`, `verify-codes`, `verify-release`, and
-`npm --prefix tools/docs-site run build` when `docs/` or `spec/` changed.
-Run `npm ci` only when dependencies, lockfiles or workspace links changed.
-CI runs all of them; a red check is yours to fix before asking for review.
+Build before conformance, which imports `dist/`. Run affected guards:
+`validate-schemas`, `verify-packages`, `verify-lockfile`, `verify-versions`,
+`verify-indexes`, `verify-codes`, `verify-release`, and `lint`.
+Run `npm --prefix tools/docs-site run build` for docs/spec changes.
+Use `npm ci` only when dependencies, lockfiles or workspace links change.
+Work on an isolated branch/check-out from current main and rebase before merging.
 
-
-## Contributing a change
-
-- **One PR, one topic.** A PR ships everything its change needs: code, tests,
-  the wiki page it changes, the `CHANGELOG.md` `[Unreleased]` entry, and (for
-  normative changes) the RFC, spec, schema and conformance updates. Anything
-  out of scope goes in the PR description or a separate issue, not the diff.
-- **Normative changes need an RFC** in `docs/rfcs/` (process: `docs/wiki/11`
-  and [GOVERNANCE.md](GOVERNANCE.md)). That includes adding or changing a
-  metric definition in `spec/metrics/` and adding an official asset class. An
-  RFC and its implementation can land in one PR; merging it accepts the RFC.
-  Starter-product changes need no RFC, but numerics still follow the next rule.
-- **Decide open questions from precedent** (existing RFCs, the spec,
-  `protocol.ts`, house patterns such as closed vocabularies that refuse
-  unknown values) and record each call in the PR description:
-  question, decision, and the precedent behind it.
-- **Never guess at numerics.** A formula, day count, rounding rule or tolerance
-  that no accepted RFC or the spec pins is a question for the maintainers, not
-  a judgment call (invariant 1). The same goes for an unresolved normative
-  format decision or a new external dependency. Prelaunch incompatibility alone
-  is not an approval gate.
-- **Releases** follow the procedure in `docs/wiki/11` exactly; `verify-release`
-  enforces it.
-- **Parallel work:** use separate checkouts or worktrees, branch from current
-  `main`, and rebase before merging. PRs that each append to `CHANGELOG.md`
-  conflict even when both are green.
-
-Maintainers keep their own team workflow outside this repo. It loads through
-gitignored local files (`CLAUDE.local.md`, a user-level Codex `AGENTS.md`), so
-this file stays the same for every contributor and fork.
-
-## Public paperwork policy
-
-The public repository holds the standard, reference implementation (including
-examples and conformance), RFCs, contributor documentation, CHANGELOG and VERSIONS.
-Release preparation and evidence, reviews, status notes and owner briefs belong
-in the private maintainer workspace. Public release proof is CHANGELOG, VERSIONS,
-GitHub Releases and npm provenance. No release gate requires a public release
-record file. Existing paperwork is moved by the separately scheduled launch
-cleanup; do not add more of it. CI scans all tracked file contents for the public
-identity policy. No baseline, maintainer-file or path-wide content exemptions
-apply.
+Public content includes contracts, implementation, examples, conformance, RFCs,
+contributor documentation, CHANGELOG and VERSIONS. Preparation/evidence, reviews
+and status notes belong outside the public tree. Public release proof is
+CHANGELOG, VERSIONS, GitHub Releases and npm provenance. Tracked-content guards
+enforce public identity and language policy without directory exemptions.

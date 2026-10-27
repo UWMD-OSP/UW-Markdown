@@ -91,12 +91,12 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
   republished `0.2.0` carrying a different pin is not something npm allows, so
   leaving one behind means its repin never ships.
 
-**Owner release rule,2026-10-17:** every @uwmd npm package goes to5.0.0
+**Prelaunch release policy:** every @uwmd npm package goes to5.0.0
 at the official public launch, together. Every prelaunch release uses4.x.x,
 from main as needed, including incompatible changes. Do not produce migration
 notes, deprecation paths, consumer-breakage analyses, bump recommendations or
 preservation/repair work for prelaunch documents, signatures, receipts or
-artifacts. See the rule at the top of AGENTS.md/CLAUDE.md and [VERSIONS](../../VERSIONS.md).
+artifacts. See [AGENTS.md](../../AGENTS.md#prelaunch-policy) and [VERSIONS](../../VERSIONS.md).
 Format/Protocol remain separate contracts. Current RFC, deterministic verification,
 conformance and source-integrity gates remain. No release is prepared here;
 5.0.0 publication still requires separate explicit owner launch approval.
