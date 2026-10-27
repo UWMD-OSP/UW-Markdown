@@ -284,7 +284,7 @@ this RFC neither accepts nor promises their schemas.
 
 [RFC0018](0018-document-profiles-and-deal-packages.md),
 [RFC0022](0022-market-data-documents.md), the Format§4.6/4.7/4.13, and the
-[document-type playbook](../playbooks/ADD_DOCUMENT_TYPE.md). Public
+[document-type playbook](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/playbooks/ADD_DOCUMENT_TYPE.md). Public
 [FDIC CRE documentation categories](https://www.fdic.gov/risk-management-manual-examination-policies/commercial-real-estate-lending)
 help distinguish instruments, commitments, operating records and settlement
 sheets. No licensed format, government form or real deal data is copied.
