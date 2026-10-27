@@ -8,6 +8,7 @@ They apply now and after the public launch.
 |---|---|
 | [Adding an official asset class](ADD_ASSET_CLASS.md) | The standard should know a new property type, with full builtin support |
 | [Adding or changing a metric](ADD_METRIC.md) | A dictionary metric is added, or an existing definition changes |
+| [Adding a document type](ADD_DOCUMENT_TYPE.md) | Independently attributable facts need a new purpose profile |
 | [A non-property subject](NON_PROPERTY_SUBJECT.md) | A record's subject is not a property, such as a loan to an operating company (RFC 0082, draft) |
 | [Third-party modules](THIRD_PARTY_MODULE.md) | Someone outside the project extends UW Markdown for their own class or calculations |
 | [Release rules after launch](RELEASE_RULES.md) | Versions, deprecations, comment windows, keys and disclosure once 5.0.0 ships |
