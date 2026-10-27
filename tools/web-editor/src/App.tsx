@@ -93,7 +93,7 @@ export function App() {
     <div className={`flex h-full flex-col ${dragOver ? 'outline-4 -outline-offset-4 outline-dashed outline-accent' : ''}`}>
       <Toolbar deal={deal} tab={tab} onTab={setTab} onOpen={handleFile} onNew={() => setShowNewDialog(true)}
         onUndo={actions.undo} onRedo={actions.redo} onDownloadUWX={actions.downloadUWX} onDownloadLite={actions.downloadLite} />
-      <div className="flex min-h-0 flex-1">
+      <div className="editor-workspace flex min-h-0 flex-1">
         {deal.loaded ? <>
           <Sidebar parsed={deal.loaded.parsed} validation={deal.loaded.validation} active={activeSection}
             onSelect={(id) => { setActiveSection(id); setTab('edit'); }} />

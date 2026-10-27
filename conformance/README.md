@@ -9,13 +9,13 @@ test corpus — analogous to the
 The corpus is **tagged by case**, rather than by directory. Its authoritative
 runtime [ownership index](corpus-index.json) gives each reference check exactly
 one target: `reader`, `verifier`, one of `module`, `integrity`, `representations`,
-`portfolio`, `sensitivity`, `stochastic`, `pro-forma`, or `starter-products`. Fixture directories
+`portfolio`, `sensitivity`, `stochastic`, `pro-forma`, `document-facts`, or `starter-products`. Fixture directories
 describe content; they do not confer a tier claim.
 
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
 | Reader | 59 | 44 |
-| Verifier | 881 | 568 |
+| Verifier | 882 | 568 |
 | Module | 76 | 1 |
 | Integrity | 34 | 16 |
 | Representations | 158 | 0 |
@@ -23,8 +23,9 @@ describe content; they do not confer a tier claim.
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
 | Pro-forma | 54 | 0 |
+| Document facts | 43 | 0 |
 | Starter products | 142 | 57 |
-| **Total** | **1,430** | **686** |
+| **Total** | **1,474** | **686** |
 
 ## How to self-certify
 

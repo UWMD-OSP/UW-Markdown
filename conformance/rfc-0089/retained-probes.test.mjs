@@ -22,5 +22,5 @@ test('retained independent source/95 probes/25 subjects/46 ZIP/four auth/169 bou
   }
   assert.equal(read('independent-subject-results.json').results.length,25);
   const auth=read('independent-auth-results.json').observations;assert.equal(auth.length,4);for(const row of auth){assert.equal(row.state??row.verdict,'verified');assert.equal(row.backend_calls,1);assert.deepEqual(row.codes,[]);}
-  writeFileSync(resolve(folder,'retained-probes-summary.json'),`${JSON.stringify({node:process.version,platform:process.platform,source:18,probes:95,subjects:25,zip:46,auth:4,boundaries:169,admission:22,status:'pass',scope:'Builder replay on production. Sync model comparison facade/native async carrier APIs; private current call/data-flow inventory is separate.'},null,2)}\n`);
+  writeFileSync(resolve(folder,'retained-probes-summary.json'),`${JSON.stringify({node:process.version,platform:process.platform,source:18,probes:95,subjects:25,zip:46,auth:4,boundaries:169,admission:22,status:'pass',scope:'Production regression replay with fixed independent expectations and explicit API-shape adapters.'},null,2)}\n`);
 });

@@ -73,9 +73,9 @@ never returns null:
 - It returns `false` for null, absent values, numbers, padded or date-time
   strings, and impossible dates such as `'2026-02-30'`.
 - To allow an absent date, write `x == null || is_calendar_date(x)`.
-- A module that calls it must require a Protocol version at or above the first
-  release that contains it. That floor is assigned when the release is
-  prepared.
+- A module that calls it must declare a Protocol requirement that includes the
+  function; use the [version matrix](/about/versions) and current Protocol
+  contract when choosing that requirement.
 
 ## Excel-emittable pack formulas
 

@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Refresh newcomer documentation against current source, generate the canonical sitemap, and repair rendered navigation, links and presentation.
+
 - Consolidate coding-agent and contributor guidance, with import-only root/tool entry points and matching index controls.
 
 - Normalize RFC attribution and public terminology, retain the required numerical/conformance controls, and consolidate historical changelog and roadmap prose. No financial calculation or verification rule changes.

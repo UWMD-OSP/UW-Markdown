@@ -28,7 +28,7 @@ affects:
 
 Every other rule in the accepted contract follows from D1 and D2 under existing
 precedent. Those rules are listed under
-[Consequences of D1 and D2](#independent-verification-and-owner-decision-set-2026-10-02);
+[Consequences of D1 and D2](#independent-verification-and-accepted-decision-set-2026-10-02);
 none is a separate accepted decision.
 
 Drafted with AI assistance; reviewed by maintainers. An adopter's

@@ -9,7 +9,7 @@ export function Toolbar(props: {
   const { deal, tab, onTab, onOpen, onNew, onUndo, onRedo, onDownloadUWX, onDownloadLite } = props;
   const fileInput = useRef<HTMLInputElement>(null);
   const dealName = (deal.loaded?.parsed.frontmatter as { deal_name?: string } | undefined)?.deal_name;
-  return <header className="flex items-center gap-4 border-b border-rule bg-accent px-4 py-2 text-white">
+  return <header className="editor-toolbar flex items-center gap-4 border-b border-rule bg-accent px-4 py-2 text-white">
     <h1 className="font-display text-base font-semibold tracking-wide">UW<span className="opacity-60">/</span>MD</h1>
     {deal.loaded && <><span className="max-w-64 truncate text-sm opacity-90" title={deal.filename}>{dealName ?? deal.filename}{deal.dirty && <span className="ml-1.5 text-amber-300">●</span>}</span>
       <nav aria-label="Editor views" className="ml-2 flex overflow-hidden rounded border border-white/25 text-xs">

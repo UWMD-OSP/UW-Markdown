@@ -10,7 +10,7 @@ products. Directories describe content;
 A Reader (Protocol §II.1) MUST:
 
 - Parse all required frontmatter fields and surface them as structured data.
-- Recognize all 21 standard sections defined in `UW_FORMAT_SPEC.md` §4.
+- Recognize the 35 registered standard sections defined in `UW_FORMAT_SPEC.md` §4.
 - Treat unknown frontmatter keys, sections and `x_*` blocks as informative.
 - Honor the `superseded` semantics: when multiple blocks share a `section_id`,
   the most recent non-superseded block is canonical.
@@ -23,7 +23,7 @@ How a Reader displays values, including the Part III display conventions and
 | Fixture | Covers |
 |---|---|
 | `fixtures/01-minimal-screening.uwx.md` | Single-section minimal file at the screening stage |
-| `fixtures/02-full-multifamily.uwx.md`  | Full multifamily deal across all 21 standard sections |
+| `fixtures/02-full-multifamily.uwx.md`  | Full multifamily example with its applicable standard sections |
 | `fixtures/04-scope-only.uwx.md` | Back-of-napkin scope-stage file with provisional blocks + populated `gaps` section |
 | `fixtures/14-student-bed-counts.uwx.md` | Student-housing roll stating both bed counts with their dates (RFC 0069); no `BED-*` issue |
 | `fixtures/15-student-bed-counts-inconsistent.uwx.md` | The same roll with `preleased_beds` above `total_beds` and `preleased_as_of` after `preleased_term_start`; `BED-02` and `BED-06` errors, nothing for the valid `occupied_beds` |

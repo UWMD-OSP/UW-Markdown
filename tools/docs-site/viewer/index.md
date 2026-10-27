@@ -11,10 +11,10 @@ Open a `.uwx.md` underwriting record without installing anything. The
 reference viewer reads the file locally in your browser and presents its deal
 summary, quick metrics, major sections, pipeline state, flags, and supersede
 history. It reads UWX records only; open a UW Lite `.uw.md` summary in the
-[reference editor](https://www.uwmd.org/editor/){target="_self"} instead.
+[reference editor](/editor/){target="_self"} instead.
 
 <div class="viewer-actions">
-  <a class="viewer-action viewer-action--primary" href="https://www.uwmd.org/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md" target="_self">Edit this sample</a>
+  <a class="viewer-action viewer-action--primary" href="/editor/" target="_self">Open the editor</a>
   <a class="viewer-action" href="/viewer/app/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md" target="_blank" rel="noopener">Open viewer full screen</a>
   <a class="viewer-action" href="/downloads/programs/uwmd-viewer.html" download="uwmd-viewer.html">Download standalone viewer</a>
   <a class="viewer-action" href="/tutorials/your-first-uwmd-file">How the format works</a>
@@ -28,8 +28,10 @@ this project.
 
 ## Try it
 
+All samples are synthetic engineering fixtures, not an investment track record.
 Choose a sample or drop your own file into the viewer. Sample links update the
-embedded viewer without leaving this page.
+embedded viewer without leaving this page. To edit an example, download its
+file and use **Open** in the reference editor.
 
 <nav class="viewer-samples" aria-label="Example UW Markdown files">
   <a href="/viewer/app/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md" target="uwmd-reference-viewer">Multifamily</a>

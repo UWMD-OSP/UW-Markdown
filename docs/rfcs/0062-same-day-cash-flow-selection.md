@@ -246,7 +246,7 @@ rollforward, levered assembly and any other protocol feature are excluded.
 
 - **Status.** Accepted 2026-09-24; implemented and released 2026-10-02 in
   core/CLI 2.14.0. The errata are Protocol 2.17.1 (see
-  [Version treatment selected by the UWMD maintainers](#version-treatment-selected-by-the-owner)),
+  [Version treatment selected by the UWMD maintainers](#version-treatment-selected-by-the-uwmd-maintainers)),
   shipped within Protocol 2.18.0 together with RFC 0063. Format remains 2.0.
   No schema or public type changed.
 - **Decided.** The contract under [Proposed change](#proposed-change), as

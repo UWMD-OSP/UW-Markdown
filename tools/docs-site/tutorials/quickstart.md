@@ -75,7 +75,8 @@ npx @uwmd/cli summary Parkview-Apts-Glendale-AZ.uwx.md
 
 To look through the rent roll, operating statement, and narrative without a
 terminal, open the same file in the [viewer](/viewer/) or the
-[reference editor](https://www.uwmd.org/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md){target="_self"}.
+[reference editor](/editor/){target="_self"}. In the editor, choose **Open** and
+select the downloaded example.
 
 ## 4. Verify the arithmetic
 
@@ -87,19 +88,13 @@ npx @uwmd/cli receipt issue Parkview-Apts-Glendale-AZ.uwx.md
 npx @uwmd/cli receipt verify Parkview-Apts-Glendale-AZ.uwx.md Parkview-Apts-Glendale-AZ.receipt.json
 ```
 
-```text
-Receipt issued for Parkview-Apts-Glendale-AZ.uwx.md → Parkview-Apts-Glendale-AZ.receipt.json (org.uwmd.pack.multifamily@…)
-Metric completeness: complete
-Computed: 8/8
-Uncomputed: none
-…
-A receipt attests that these outputs follow from this record. It does not attest that the inputs are true.
-
-Receipt verification verdict: VERIFIED
-```
-
-The multifamily calculation pack recomputed all eight metrics from the record's
-inputs and matched them. If you change an input after issuing, verification
+Inspect the command's **Computed** and **Uncomputed** lists as well as its
+verdict. Current repository source computes seven of eight pack outputs for
+this illustration; LTV is unavailable because the loan does not declare its
+explicit LTV basis. Older published artifacts sharing a prelaunch package number
+can have different coverage; see the [version matrix](/about/versions).
+Matching uncomputed statuses can verify without claiming those metrics were
+calculated. If you change an input after issuing, verification
 fails with `RCP-01`: the record's financial content no longer matches the receipt.
 `receipt verify` exits `0` for verified, `1` for failed, and `3` for
 unverifiable.
@@ -108,17 +103,22 @@ A receipt says nothing about whether the rent roll or T-12 is accurate. It
 covers the arithmetic only. Receipts are issued when you ask for one; editing a
 record never creates one automatically.
 
-## 5. Convert it
+## 5. Convert a record
 
-The same record converts to the machine representations and to a compact
-[UW Lite](/guide/lite-and-uwx) summary:
+Use the fresh `deal.uwx.md` scaffold from step 1 to try the machine representations
+and the compact [UW Lite](/guide/lite-and-uwx) summary:
 
 ```bash
-npx @uwmd/cli convert Parkview-Apts-Glendale-AZ.uwx.md --to uw-json
-npx @uwmd/cli convert Parkview-Apts-Glendale-AZ.uwx.md --to lite --projection-report lite-omissions.json
+npx @uwmd/cli convert deal.uwx.md --to uw-json
+npx @uwmd/cli convert deal.uwx.md --to lite --projection-report lite-omissions.json
 ```
 
-The Lite conversion warns that it omitted advanced paths. That is deliberate:
+Full-model encodings require schema-admitted metadata as well as valid financial
+fields. The Parkview illustration contains abbreviated input-hash placeholders;
+use a fresh scaffold for this conversion exercise rather than treating those
+placeholders as full SHA-256 digests.
+
+The Lite conversion can warn that it omitted advanced paths. That is deliberate:
 UW Lite is a smaller summary profile, and `lite-omissions.json` lists every
 path it left out. Keep the `.uwx.md` file as the complete record. Other targets
 are `uw-xml` and `uw-csv-bundle`. Run `npx @uwmd/cli formats` to list them.

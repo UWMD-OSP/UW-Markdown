@@ -92,7 +92,7 @@ edit, and no legal finding is inferred from an absent term.
 
 A public [FDIC CRE review module](https://www.fdic.gov/risk-management-manual-examination-policies/commercial-real-estate-lending)
 separates loan instruments, title/insurance and leases from commitments,
-settlement sheets, operating statements and rent rolls (Â§Â§13â€“14). Its
+settlement sheets, operating statements and rent rolls (sections 13–14). Its
 [construction review module](https://www.fdic.gov/risk-management-manual-examination-policies/construction-and-land-development-lending.pdf)
 also distinguishes plans/permits, inspections and disbursement records. These
 categories support adding settlement and draw statements to the planned set;
@@ -104,7 +104,7 @@ are copied.
 The proposed set retains the acquisition and financing candidates, folds
 estoppels into the existing lease profile, and treats IC memos as views. The
 appraisal candidate stays because the current Format already has appraised-value
-and report-date fields (Â§4.6) and diligence facts (Â§4.13), including the existing
+and report-date fields (§4.6) and diligence facts (§4.13), including the existing
 CC-08 consistency check. Add a type through the
 [document-type playbook](playbooks/ADD_DOCUMENT_TYPE.md); registering a name
 alone does not make it available.

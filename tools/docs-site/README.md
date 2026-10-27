@@ -18,7 +18,7 @@ exist only at build time.
 
 ```bash
 cd tools/docs-site
-npm install
+npm ci
 npm run dev       # localhost:5173
 ```
 
@@ -31,8 +31,9 @@ npm run preview   # serve the built site locally
 
 ## Update content
 
-Edit the source files at the repo root. Re-run `npm run dev` (or just save
-in dev mode — the prebuild step runs again automatically when you restart).
+Edit copied content in its repository source file, and authored site pages in
+this directory. Restart `npm run dev` after changing a copied source so prebuild
+refreshes it.
 
 Every `docs/rfcs/*.md` file is discovered automatically in sorted order, including
 new drafts. `README.md` becomes the RFC index and `0000-template.md` keeps its
@@ -114,7 +115,6 @@ and [headers](https://developers.cloudflare.com/workers/static-assets/headers/).
 
 ## Roadmap
 
-- Interactive playground — drop a `.uwx.md`, see parse + render output.
-  Requires bundling `@uwmd/core` for the browser.
-- Versioned spec navigation — once v2 RFCs land.
-- Search backed by Algolia DocSearch (currently uses local search).
+See the repository [roadmap](../../ROADMAP.md) for growth paths. The current
+site includes a browser viewer, reference editor and local search. A build
+generates `sitemap.xml` with the canonical `https://www.uwmd.org` hostname.

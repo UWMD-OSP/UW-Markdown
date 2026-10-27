@@ -73,8 +73,11 @@ npm run build
 # Parse and validate the example file
 npm run cli -- parse examples/Parkview-Apts-Glendale-AZ.uwx.md
 npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uwx.md
-npm run cli -- convert examples/Parkview-Apts-Glendale-AZ.uwx.md --to uw-xml
-npm run cli -- convert examples/Parkview-Apts-Glendale-AZ.uw.xml --to uw-json
+
+# Exercise full-model conversion with schema-admitted scaffold metadata
+npm run cli -- init --output representation-demo.uwx.md
+npm run cli -- convert representation-demo.uwx.md --to uw-xml
+npm run cli -- convert representation-demo.uw.xml --to uw-json
 
 # The same deal as a UW Lite summary, and what compiling it costs you
 npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uw.md
@@ -114,7 +117,7 @@ To open the reference web viewer, point any browser at
 - The protocol spec (`UW_PROTOCOL.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 4.1.0; RFCs 0078, 0081 and 0084). Display, editing, defaults, the agent writer conventions, the CLI and the renderers are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
 - `@uwmd/core` - parser, validator, renderer, the generic block writers and the context profiles. It runs no agent; a host runs its own and writes through the writers or the edit API.
 - A conformance corpus per tier so third parties can self-certify.
-- A single-file web viewer demonstrating a Reader in <500 LOC.
+- A single-file web viewer for inspecting records in a browser.
 
 ## Roadmap
 
@@ -145,11 +148,11 @@ This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md).
 
 ## Project documents
 
-- [ROADMAP.md](./ROADMAP.md) — what's planned, what's shipped, what's deferred.
+- [ROADMAP.md](./ROADMAP.md) — forward-looking growth paths and current boundaries.
 - [GOVERNANCE.md](./GOVERNANCE.md) — decision-making model and RFC process.
 - [MAINTAINERS.md](./MAINTAINERS.md) — current maintainers and areas of ownership.
 - [SECURITY.md](./SECURITY.md) — how to report a vulnerability.
-- [CHANGELOG.md](./CHANGELOG.md) — release-by-release history.
+- [CHANGELOG.md](./CHANGELOG.md) — unreleased changes and the 4.x release summary; full release notes are on GitHub Releases.
 - [UW XML Mapping 2.0](./spec/UW_XML_MAPPING.md) — deterministic, lossless XML representation and secure decoding rules.
 - [UW Document Envelope 2.0](./spec/UW_ENVELOPE.md) — complete model, tagged extensions and coordinated subject identities.
 - [UW CSV Bundle 2.0](./spec/UW_CSV_BUNDLE.md) — normalized CSV tables, deterministic ZIP, safe extraction, and named views.

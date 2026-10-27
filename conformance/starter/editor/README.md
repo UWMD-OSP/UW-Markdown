@@ -4,8 +4,8 @@ Every case here is a starter-product check, owned by docs/starter, not a Protoco
 [corpus-index.json](../../corpus-index.json) determines each case’s single owner.
 
 
-Compatible editors apply structured edits to a `.uw.md` file and produce a new
-`.uw.md` that:
+Compatible editors apply structured edits to a `.uwx.md` file and produce a new
+`.uwx.md` that:
 
 - Round-trips formatting for unrelated regions (untouched bytes stay
   identical, ignoring trailing whitespace).

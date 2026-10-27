@@ -49,12 +49,12 @@
 
 .viewer-action--primary {
   border-color: var(--vp-c-brand-2);
-  color: #fff !important;
+  color: var(--vp-c-bg) !important;
   background: var(--vp-c-brand-2);
 }
 
 .viewer-action--primary:hover {
-  color: #fff !important;
+  color: var(--vp-c-bg) !important;
   background: var(--vp-c-brand-1);
 }
 

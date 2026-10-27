@@ -175,7 +175,7 @@ Issue the receipt when you are finished editing, and send it with the file.
 
 ## What is inside
 
-Current receipt excerpt from the reference CLI, with the result list trimmed
+Receipt excerpt from the reference CLI, with the result list trimmed
 to two of the eight outputs and other envelope members omitted:
 
 ```json
@@ -185,8 +185,8 @@ to two of the eight outputs and other envelope members omitted:
     "representation": "uwx-markdown",
     "representation_version": "1.0",
     "canonicalization": "uw-envelope-semantic",
-    "canonicalization_version": "1.0",
-    "digest": "sha256:d6d385866e5ed70f78776974810adc2ae0c3348b728a0c92df75610ef6f14be0"
+    "canonicalization_version": "2.0",
+    "digest": "sha256:638c59abb25376f92991a23747f842aa2ff8d7f4db3ba2e15d7998f5da315b09"
   },
   "computation": {
     "pack": "org.uwmd.pack.multifamily",
@@ -215,15 +215,17 @@ to two of the eight outputs and other envelope members omitted:
 
 Three details worth understanding:
 
-**The digest covers meaning, not bytes.** It is computed over a canonical form of
-the deal's financial content, so reflowing a label, changing comma grouping, or
-switching line endings does not break a receipt. Changing a number does.
+**The digest covers its named canonical subject.** Lite's financial form omits
+cosmetic labels and comma grouping. The complete structured envelope also
+commits retained prose, metadata and history. Re-encoding the same canonical
+value preserves its digest; changing that value does not. See the
+[receipt specification](../spec/UW_RECEIPT.md#31-canonicalizations) for each scope.
 
 **`computed: false` distinguishes missing inputs from a computed zero.** A pack declares
 a fixed set of outputs, and the receipt lists all of them. When the deal lacks
 the inputs for one, it is recorded as `{"value": null, "computed": false}` rather
-than as a number nobody calculated — the deal above supports all eight of its
-pack's outputs, but a leaner record often will not. A receipt never carries a
+than as a number nobody calculated. The excerpt above shows two computed
+outputs; other declared outputs can remain uncomputed. A receipt never carries a
 hand-entered figure.
 
 **Validation counts are recorded, not enforced.** A receipt notes how many errors

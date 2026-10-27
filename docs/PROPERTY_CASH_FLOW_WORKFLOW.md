@@ -1,6 +1,7 @@
 # Assemble explicitly covered property cash flows
 
-RFC 0045 is available in published core/CLI **2.9.0** with Protocol **2.12.0**.
+This guide uses the current source implementation of [RFC 0045](rfcs/0045-explicit-property-cash-flow-assembly.md).
+See [VERSIONS](../VERSIONS.md) for source contracts and publication state.
 
 The assembler combines verified stated lease-up cash with a supplemental dated
 ledger. The result covers one property, one explicitly declared currency,
@@ -13,11 +14,10 @@ All inputs below are **synthetic engineering data**. They describe no actual
 property or investment. They demonstrate cash coverage and refusal behavior,
 not an underwriting recommendation.
 
-Install the CLI for your own explicitly covered source and plan:
+From a built source checkout, supply your explicitly covered source and plan:
 
 ```sh
-npm install --global @uwmd/cli@2.9.0
-uwmd verify-property-cash-flows deal.uwx.md plan.json --json
+npm run cli -- verify-property-cash-flows deal.uwx.md plan.json --json
 ```
 
 To run the included synthetic fixtures from a repository checkout:
@@ -31,7 +31,7 @@ node scripts/verify-property-cash-flow-workflow.mjs
 The `verify-property-cash-flows` command (named `assemble-property` before RFC 0115) emits a candidate JSON payload and does not edit either input.
 The workflow script additionally invokes the existing dated metric engine at an
 explicit discount-rate input of `0.08`. Neither operation writes to the deal.
-The `.uwx.md` example uses Format 2.0 nested metadata; its provenance labels the
+The `.uwx.md` example uses Format 3.0 nested metadata; its provenance labels the
 inputs as synthetic.
 
 ## Prepare a real-deal plan without inventing inputs
@@ -153,7 +153,7 @@ and eligible reserve return assigned to disposition occur exactly on that
 date. No settlement horizon, delayed cash or inferred reserve release is added.
 Reserve, financing and investor-tax exclusions and RFC 0062 same-day rules
 remain unchanged. See the [accepted RFC](rfcs/0063-final-period-exclusive-boundary.md)
-and [verification record](rfcs/0063-final-period-exclusive-boundary.md).
+for the accepted boundary.
 
 ## Read the result without losing its meaning
 

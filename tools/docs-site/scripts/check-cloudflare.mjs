@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Run against `wrangler dev --local`, not VitePress preview: this checks the host.
 import assert from 'node:assert/strict';
-import { readdir } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 const origin = new URL(process.argv[2] ?? 'http://127.0.0.1:8787');
@@ -63,6 +63,18 @@ for (const [path, type] of [['/favicon.svg', /^image\/svg\+xml\b/], ['/schemas/u
   await response.body?.cancel();
 }
 const dist = fileURLToPath(new URL('../.vitepress/dist/', import.meta.url));
+const sitemap = await request('/sitemap.xml');
+assert.equal(sitemap.status, 200, 'The sitemap must be a real asset, not the 404 page');
+assert.match(sitemap.headers.get('content-type'), /^(application|text)\/xml\b/);
+const sitemapText = await sitemap.text();
+assert.match(sitemapText, /<loc>https:\/\/www\.uwmd\.org\//);
+assert.doesNotMatch(sitemapText, /<loc>[^<]*\/404(?:\.html)?<\/loc>/);
+const schemas = new URL('../../../spec/schemas/', import.meta.url);
+for (const name of (await readdir(schemas)).filter(name => name.endsWith('.json') || name.endsWith('.xsd'))) {
+  const response = await request(`/schemas/${name}`);
+  assert.equal(response.status, 200, `Schema download: ${name}`);
+  assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(new URL(name, schemas)), `Schema bytes: ${name}`);
+}
 for (const [folder, extension, type] of [['assets', '.js', /^(application|text)\/javascript\b/], ['assets', '.css', /^text\/css\b/], ['editor/assets', '.js', /^(application|text)\/javascript\b/]]) {
   const name = (await readdir(`${dist}/${folder}`)).find(file => file.endsWith(extension));
   assert.ok(name, `${folder}: missing built ${extension}`);
