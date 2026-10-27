@@ -29,8 +29,8 @@ Without these options existing reference-engine baseline expectations apply.
 
 ## What it does not cover
 
-**`npm run conformance` remains the full CI gate:** 1,249 reference checks.
-This driver retains all 557 CLI projections, including Reader, Verifier,
+**`npm run conformance` remains the full CI gate:** 1,474 reference checks.
+This driver retains all 686 CLI projections, including Reader, Verifier,
 Module and separately reported starter-product cases. A portable result
 claims coverage of those cases, not the omitted cross-fixture contracts.
 
@@ -58,7 +58,6 @@ Known gaps inside the tiers it does cover, listed rather than hidden:
 - **`starter/editor/parent-hash-stamp` and `stale-parent-rejected`** need
   `applyEditAsync` and a volatile content hash, which the CLI's synchronous
   `edit` cannot express. Covered by the TypeScript runner only.
-- **The layer-profile starter check** reads the layer registry directly; it has no CLI surface.
 - **The named suites** (`lite`, `market-data`, `modules`, `packages`,
   `composition`, `size-intensive`, `signing`) are TypeScript-only today.
 - **Verifier obligations (RFC 0115).** Every Verifier obligation has portable

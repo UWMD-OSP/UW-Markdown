@@ -65,7 +65,11 @@ const FOUNDATION_GUIDES = [
   ['KNOWN-LIMITS.md', 'known-limits', 'Known limits'],
 ];
 
+const SCHEMA_FILES = (await readdir(join(REPO_ROOT, 'spec/schemas')))
+  .filter(name => name.endsWith('.json') || name.endsWith('.xsd')).sort();
+
 const COPIES = [
+  ...SCHEMA_FILES.map(name => ({ from: `spec/schemas/${name}`, to: `public/schemas/${name}` })),
   ...FOUNDATION_GUIDES.map(([file, slug, title]) => ({
     from: `docs/${file}`, to: `guide/${slug}.md`, title,
   })),
@@ -85,10 +89,8 @@ const COPIES = [
   { from: 'spec/bindings/UW_HTTP_API_v1.openapi.json', to: 'public/spec/UW_HTTP_API_v1.openapi.json' },
   { from: 'spec/metrics/README.md', to: 'spec/metrics/index.md', title: 'Metric dictionary' },
   { from: 'spec/metrics/builtin.json', to: 'public/spec/metrics/builtin.json' },
-  { from: 'spec/schemas/metric-dictionary.schema.json', to: 'public/schemas/metric-dictionary.schema.json' },
   { from: 'conformance/metrics/README.md', to: 'conformance/metrics.md', title: 'Metric verification' },
   { from: 'spec/schemas/README.md',      to: 'spec/schemas/index.md', title: 'Schemas' },
-  { from: 'spec/schemas/uw-document-envelope.xsd', to: 'public/schemas/uw-document-envelope.xsd' },
 
   // Conformance
   { from: 'conformance/README.md',                  to: 'conformance/index.md',  title: 'Conformance Corpus' },
@@ -322,9 +324,26 @@ function rewriteLinks(md) {
       '#ii4-tier-4--agent-host': '#ii-4-starter-product-claims',
       '#appendix-d--worked-example-tier-1-reader-in-500-loc': '#appendix-d-worked-example-a-reader-in-500-loc',
       '#ix-ai-host-contract-tier-4': '#ix-ai-host-contract',
+      '#v7-fallback-cascade': '#v-7-fallback-cascade',
+      '#v71-inherited-assumptions': '#v-7-1-inherited-assumptions',
+      '#iii1a-display-locales-rfc-0001': '#iii-1a-display-locales-rfc-0001',
+      '#iii6-validation-issue-display': '#iii-6-validation-issue-display',
+      '#viii2a-explicit-period-addressing-rfc-0041': '#viii-2a-explicit-period-addressing-rfc-0041',
+      '#viii2b-stated-period-inputs-in-refinement-rfc-0042': '#viii-2b-stated-period-inputs-in-refinement-rfc-0042',
+      '#viii2c-contextual-workbook-bindings-rfc-0043': '#viii-2c-contextual-workbook-bindings-rfc-0043',
+      '#vi3-institutionconfig-layering': '#vi-3-institutionconfig-layering',
+      '#22-frontmatter-schema': '#_2-2-frontmatter',
+      '#24-data-block-annotation-syntax': '#_2-4-data-block-annotation-syntax',
+      '#25-the-_meta-object': '#_2-5-the-meta-object',
+      '#25b-provenance--who-wrote-this-block-and-how-its-values-were-resolved': '#_2-5b-provenance-—-who-wrote-this-block-and-how-its-values-were-resolved',
+      '#426-cash-flow-series': '#§-4-26-—-cash-flow-series',
+      '#c6--custom-validation-thresholds': '#c-6-—-custom-validation-thresholds',
     };
     const frag = historicalAnchors[originalFrag] ?? originalFrag;
     const norm = normalize(path);
+
+    const schema = norm.match(/^(?:(?:spec\/)?schemas\/)?([^/]+\.(?:json|xsd))$/)?.[1];
+    if (schema && SCHEMA_FILES.includes(schema)) return `](/schemas/${schema}${frag})`;
 
     if (NORMALIZED_LINK_MAP.has(norm)) {
       return `](${NORMALIZED_LINK_MAP.get(norm)}${frag})`;
