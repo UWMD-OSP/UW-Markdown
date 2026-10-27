@@ -94,7 +94,7 @@ Field | Meaning
 `superseded` | True once a newer version replaces it
 `source` | Where the value came from (`SourceTag`; e.g. `agent/risk-rater`, `manual`, `document/rent_roll`, or a canonical short tag)
 `agent_id` / `agent_version` | Producing agent identity (null for manual)
-`actor` | Who performed the write (`"jared"`, `"system"`, …)
+`actor` | Who performed the write (`"UWMD maintainers"`, `"system"`, …)
 `timestamp` | ISO-8601
 `confidence` | `high` \| `medium` \| `low`
 `human_review_required` | Gate: true means a human must check before advancing

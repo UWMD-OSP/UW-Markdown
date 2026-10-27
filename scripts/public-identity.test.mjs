@@ -16,21 +16,24 @@ const samples = [owner, handle, ['underwriter', '-app'].join(''),
 test('every named pattern rejects tracked content with useful locations', () => {
   for (const sample of samples) {
     const found = publicIdentityFindings('docs/example.md', `safe\n${sample}\n`);
-    assert.equal(found.length, 1, sample);
+    assert.equal(found.length, 1, 'identity sample must be rejected');
     assert.equal(found[0].line, 2);
   }
   const encodedPath = `C:${String.fromCharCode(92).repeat(2)}Users`;
   assert.equal(publicIdentityFindings('evidence.json', encodedPath).length, 1);
 });
 
-test('only named maintainer files exempt the public handle, never other terms', () => {
-  for (const path of ['MAINTAINERS.md', '.github/CODEOWNERS']) {
-    assert.deepEqual(publicIdentityFindings(path, handle), []);
-    assert.equal(publicIdentityFindings(path, owner).length, 1);
+test('personal identity has no file exemption and matches case variants', () => {
+  for (const path of ['MAINTAINERS.md', '.github/CODEOWNERS', 'README.md', 'CODEOWNERS', 'docs/MAINTAINERS.md', 'other/CODEOWNERS']) {
+    for (const sample of [handle, handle.toUpperCase(), owner, owner.toLowerCase(), owner.toUpperCase()]) {
+      assert.equal(publicIdentityFindings(path, sample).length, 1, 'identity probe must be rejected');
+    }
   }
-  for (const path of ['README.md', 'CODEOWNERS', 'docs/MAINTAINERS.md', 'other/CODEOWNERS']) {
-    assert.equal(publicIdentityFindings(path, handle).length, 1);
-  }
+});
+
+test('owner name boundaries avoid duplicate handle findings and unrelated embedded tokens', () => {
+  assert.equal(publicIdentityFindings('README.md', `@${handle}`).length, 1);
+  assert.deepEqual(publicIdentityFindings('README.md', `prefix${owner}suffix`), []);
 });
 
 test('safe text stays clean and repeated findings retain their own locations', () => {
