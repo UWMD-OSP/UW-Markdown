@@ -7150,6 +7150,226 @@
       "suite": "pro-forma",
       "scenario": "rfc0128-t13-x34-ledger-token-as-rel",
       "target": "pro-forma"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "clean-loan-quote-v1",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "loan-quote-v1-null-not_stated",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "loan-quote-v1-null-ambiguous",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "loan-quote-v1-null-not_reviewed",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "clean-offering-memorandum-v1",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "offering-memorandum-v1-null-not_stated",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "offering-memorandum-v1-null-ambiguous",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "offering-memorandum-v1-null-not_reviewed",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "clean-appraisal-abstract-v1",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "appraisal-abstract-v1-null-not_stated",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "appraisal-abstract-v1-null-ambiguous",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "appraisal-abstract-v1-null-not_reviewed",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "invalid-calendar-date",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "non-iso-date",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "unknown-currency-spelling",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "duplicate-source-id",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "unresolved-governing-source",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "unknown-quote-kind",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "unknown-root-member",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "self-supersede",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "quote-ceiling-not-result",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "money-not-text",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "missing-source",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "empty-locator",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "foreign-source",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "null-without-status",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "nonnull-with-status",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "asking-price-not-purchase",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "appraisal-not-underwritten",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "raw-duplicate-key",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "view-and-no-compilation-loan-quote-v1",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "view-and-no-compilation-offering-memorandum-v1",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "view-and-no-compilation-appraisal-abstract-v1",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "projection-noop-conflict-exact-variant",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "amendments-and-governing-conflicts",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "closed-allowlists-and-native-types",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "reader-purpose-and-carrier-refusal",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "package-byte-semantic-roundtrip-and-tamper",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "package-predecessor-and-async-snapshot",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "negative-unit-count",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "fractional-unit-count",
+      "target": "document-facts"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "negative-source-area",
+      "target": "document-facts"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "document-facts/target.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "document-facts",
+      "scenario": "multiple-appraisal-premises-stay-unmapped",
+      "target": "document-facts"
     }
   ]
 }

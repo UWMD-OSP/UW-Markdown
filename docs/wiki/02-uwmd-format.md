@@ -177,3 +177,13 @@ CC-01 rent-roll GPR vs operating-statement GPR (3%), CC-02 stated LTV vs
 NOI used for DSCR vs `noi_model.net_operating_income` (1%). See [07 — Data model reference](07-data-model-reference.md)
 and [03 — Core library › validator](03-core-library.md) for the full code families
 (CC / DQ / INT / POL / FV).
+
+
+### Source-fact documents
+
+RFC0129 adds the descriptive `loan-quote-v1`, `offering-memorandum-v1` and
+`appraisal-abstract-v1` purposes. Their one `document_facts` block is not a deal
+section. Three closed root schemas and the shared `document-fact-term` schema
+pin the payload; [the library guide](../document-facts.md) explains source
+inventory, nulls, explicit candidates and unsupported bindings. No financial
+formula or automatic input adoption is added.

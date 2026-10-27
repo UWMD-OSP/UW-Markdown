@@ -1,0 +1,4 @@
+Synthetic QA source: source:qa-appraisal-multiple
+p1 report date2026-10-02. p4 effective date2026-09-30.
+p4 as-is premise:2100000 USD. p5 as-complete conditional premise:3000000 USD.
+No singular opinion is selected by this abstract.

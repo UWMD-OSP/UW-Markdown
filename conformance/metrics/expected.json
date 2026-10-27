@@ -1900,6 +1900,17 @@
     ]
   },
   {
+    "example": "document-facts/target.uwx.md",
+    "rule_set": "3.0",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 0,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": []
+  },
+  {
     "example": "market-data/Phoenix-Multifamily-2026-Q2.uwx.md",
     "rule_set": "3.0",
     "asset_class": "multifamily",

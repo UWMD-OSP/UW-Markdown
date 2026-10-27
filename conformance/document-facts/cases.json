@@ -1,0 +1,1815 @@
+[
+  {
+    "id": "clean-loan-quote-v1",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 amount"
+          }
+        },
+        "debt_structure.interest_rate": {
+          "value": 0.06,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 rate"
+          }
+        },
+        "debt_structure.io_period_months": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "loan-quote-v1-null-not_stated",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "loan-quote-v1-null-ambiguous",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": null,
+          "status": "ambiguous"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "loan-quote-v1-null-not_reviewed",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": null,
+          "status": "not_reviewed"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "clean-offering-memorandum-v1",
+    "operation": "validate",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "property.year_built": {
+          "value": 1998,
+          "source_ref": {
+            "source": "source:qa-om",
+            "locator": "p2 improvements"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "offering-memorandum-v1-null-not_stated",
+    "operation": "validate",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "property.year_built": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "offering-memorandum-v1-null-ambiguous",
+    "operation": "validate",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "property.year_built": {
+          "value": null,
+          "status": "ambiguous"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "offering-memorandum-v1-null-not_reviewed",
+    "operation": "validate",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "property.year_built": {
+          "value": null,
+          "status": "not_reviewed"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "clean-appraisal-abstract-v1",
+    "operation": "validate",
+    "profile": "appraisal-abstract-v1",
+    "document": {
+      "document_id": "appraisal:qa-001",
+      "artifact_kind": "appraisal_report",
+      "as_of": "2026-09-30",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-appraisal"
+      ],
+      "facts": {
+        "valuation.appraised_value": {
+          "value": 2100000,
+          "source_ref": {
+            "source": "source:qa-appraisal",
+            "locator": "p4 as-is conclusion"
+          }
+        },
+        "valuation.appraised_as_of": {
+          "value": "2026-09-30",
+          "source_ref": {
+            "source": "source:qa-appraisal",
+            "locator": "p4 effective date"
+          }
+        },
+        "valuation.appraisal_report_date": {
+          "value": "2026-10-02",
+          "source_ref": {
+            "source": "source:qa-appraisal",
+            "locator": "p1 report date"
+          }
+        }
+      },
+      "findings": [
+        "Extraordinary assumption at source:qa-appraisal p8; independent review required."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-appraisal"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "appraisal-abstract-v1-null-not_stated",
+    "operation": "validate",
+    "profile": "appraisal-abstract-v1",
+    "document": {
+      "document_id": "appraisal:qa-001",
+      "artifact_kind": "appraisal_report",
+      "as_of": "2026-09-30",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-appraisal"
+      ],
+      "facts": {
+        "valuation.appraised_value": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "findings": [
+        "Extraordinary assumption at source:qa-appraisal p8; independent review required."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-appraisal"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "appraisal-abstract-v1-null-ambiguous",
+    "operation": "validate",
+    "profile": "appraisal-abstract-v1",
+    "document": {
+      "document_id": "appraisal:qa-001",
+      "artifact_kind": "appraisal_report",
+      "as_of": "2026-09-30",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-appraisal"
+      ],
+      "facts": {
+        "valuation.appraised_value": {
+          "value": null,
+          "status": "ambiguous"
+        }
+      },
+      "findings": [
+        "Extraordinary assumption at source:qa-appraisal p8; independent review required."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-appraisal"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "appraisal-abstract-v1-null-not_reviewed",
+    "operation": "validate",
+    "profile": "appraisal-abstract-v1",
+    "document": {
+      "document_id": "appraisal:qa-001",
+      "artifact_kind": "appraisal_report",
+      "as_of": "2026-09-30",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-appraisal"
+      ],
+      "facts": {
+        "valuation.appraised_value": {
+          "value": null,
+          "status": "not_reviewed"
+        }
+      },
+      "findings": [
+        "Extraordinary assumption at source:qa-appraisal p8; independent review required."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-appraisal"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": []
+  },
+  {
+    "id": "invalid-calendar-date",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-02-30",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 amount"
+          }
+        },
+        "debt_structure.interest_rate": {
+          "value": 0.06,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 rate"
+          }
+        },
+        "debt_structure.io_period_months": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-004"
+    ]
+  },
+  {
+    "id": "non-iso-date",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-01-01T00:00:00Z",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 amount"
+          }
+        },
+        "debt_structure.interest_rate": {
+          "value": 0.06,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 rate"
+          }
+        },
+        "debt_structure.io_period_months": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-004"
+    ]
+  },
+  {
+    "id": "unknown-currency-spelling",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "usd",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 amount"
+          }
+        },
+        "debt_structure.interest_rate": {
+          "value": 0.06,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 rate"
+          }
+        },
+        "debt_structure.io_period_months": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-004"
+    ]
+  },
+  {
+    "id": "duplicate-source-id",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote",
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 amount"
+          }
+        },
+        "debt_structure.interest_rate": {
+          "value": 0.06,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 rate"
+          }
+        },
+        "debt_structure.io_period_months": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-005"
+    ]
+  },
+  {
+    "id": "unresolved-governing-source",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "foreign"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 amount"
+          }
+        },
+        "debt_structure.interest_rate": {
+          "value": 0.06,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 rate"
+          }
+        },
+        "debt_structure.io_period_months": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-005",
+      "DF-007",
+      "DF-007",
+      "DF-007"
+    ]
+  },
+  {
+    "id": "unknown-quote-kind",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "executed_loan",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 amount"
+          }
+        },
+        "debt_structure.interest_rate": {
+          "value": 0.06,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 rate"
+          }
+        },
+        "debt_structure.io_period_months": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-004"
+    ]
+  },
+  {
+    "id": "unknown-root-member",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 amount"
+          }
+        },
+        "debt_structure.interest_rate": {
+          "value": 0.06,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 rate"
+          }
+        },
+        "debt_structure.io_period_months": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ],
+      "extra": true
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-003"
+    ]
+  },
+  {
+    "id": "self-supersede",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 amount"
+          }
+        },
+        "debt_structure.interest_rate": {
+          "value": 0.06,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 rate"
+          }
+        },
+        "debt_structure.io_period_months": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ],
+      "supersedes": "quote:qa-001"
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-010"
+    ]
+  },
+  {
+    "id": "quote-ceiling-not-result",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.sizing_metrics.ltv": {
+          "value": 0.65,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 ceiling"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-006"
+    ]
+  },
+  {
+    "id": "money-not-text",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": "1000000 USD",
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 amount"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-008"
+    ]
+  },
+  {
+    "id": "missing-source",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-007"
+    ]
+  },
+  {
+    "id": "empty-locator",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": ""
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-007"
+    ]
+  },
+  {
+    "id": "foreign-source",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "foreign",
+            "locator": "p1"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-007"
+    ]
+  },
+  {
+    "id": "null-without-status",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": null
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-007"
+    ]
+  },
+  {
+    "id": "nonnull-with-status",
+    "operation": "validate",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "status": "not_stated",
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-007"
+    ]
+  },
+  {
+    "id": "asking-price-not-purchase",
+    "operation": "validate",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "valuation.purchase_price": {
+          "value": 2000000,
+          "source_ref": {
+            "source": "source:qa-om",
+            "locator": "p1 asking"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-006"
+    ]
+  },
+  {
+    "id": "appraisal-not-underwritten",
+    "operation": "validate",
+    "profile": "appraisal-abstract-v1",
+    "document": {
+      "document_id": "appraisal:qa-001",
+      "artifact_kind": "appraisal_report",
+      "as_of": "2026-09-30",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-appraisal"
+      ],
+      "facts": {
+        "valuation.underwritten_value": {
+          "value": 2100000,
+          "source_ref": {
+            "source": "source:qa-appraisal",
+            "locator": "p4 opinion"
+          }
+        }
+      },
+      "findings": [
+        "Extraordinary assumption at source:qa-appraisal p8; independent review required."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-appraisal"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-006"
+    ]
+  },
+  {
+    "id": "raw-duplicate-key",
+    "operation": "raw",
+    "profile": "loan-quote-v1",
+    "file": "duplicate-fact.json.txt",
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_code": "DF-012"
+  },
+  {
+    "id": "view-and-no-compilation-loan-quote-v1",
+    "operation": "view",
+    "profile": "loan-quote-v1",
+    "document": {
+      "document_id": "quote:qa-001",
+      "artifact_kind": "quote",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-quote"
+      ],
+      "facts": {
+        "debt_structure.loan_amount": {
+          "value": 1000000,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 amount"
+          }
+        },
+        "debt_structure.interest_rate": {
+          "value": 0.06,
+          "source_ref": {
+            "source": "source:qa-quote",
+            "locator": "p1 rate"
+          }
+        },
+        "debt_structure.io_period_months": {
+          "value": null,
+          "status": "not_stated"
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "maximum_ltv",
+          "term": {
+            "value": 0.65,
+            "source_ref": {
+              "source": "source:qa-quote",
+              "locator": "p1 maximum LTV"
+            }
+          }
+        }
+      ],
+      "findings": [
+        "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-quote"
+      ],
+      "conflicting_source_ids": []
+    }
+  },
+  {
+    "id": "view-and-no-compilation-offering-memorandum-v1",
+    "operation": "view",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "property.year_built": {
+          "value": 1998,
+          "source_ref": {
+            "source": "source:qa-om",
+            "locator": "p2 improvements"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    }
+  },
+  {
+    "id": "view-and-no-compilation-appraisal-abstract-v1",
+    "operation": "view",
+    "profile": "appraisal-abstract-v1",
+    "document": {
+      "document_id": "appraisal:qa-001",
+      "artifact_kind": "appraisal_report",
+      "as_of": "2026-09-30",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-appraisal"
+      ],
+      "facts": {
+        "valuation.appraised_value": {
+          "value": 2100000,
+          "source_ref": {
+            "source": "source:qa-appraisal",
+            "locator": "p4 as-is conclusion"
+          }
+        },
+        "valuation.appraised_as_of": {
+          "value": "2026-09-30",
+          "source_ref": {
+            "source": "source:qa-appraisal",
+            "locator": "p4 effective date"
+          }
+        },
+        "valuation.appraisal_report_date": {
+          "value": "2026-10-02",
+          "source_ref": {
+            "source": "source:qa-appraisal",
+            "locator": "p1 report date"
+          }
+        }
+      },
+      "findings": [
+        "Extraordinary assumption at source:qa-appraisal p8; independent review required."
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-appraisal"
+      ],
+      "conflicting_source_ids": []
+    }
+  },
+  {
+    "id": "projection-noop-conflict-exact-variant",
+    "operation": "control"
+  },
+  {
+    "id": "amendments-and-governing-conflicts",
+    "operation": "control"
+  },
+  {
+    "id": "closed-allowlists-and-native-types",
+    "operation": "control"
+  },
+  {
+    "id": "reader-purpose-and-carrier-refusal",
+    "operation": "control"
+  },
+  {
+    "id": "package-byte-semantic-roundtrip-and-tamper",
+    "operation": "control"
+  },
+  {
+    "id": "package-predecessor-and-async-snapshot",
+    "operation": "control"
+  },
+  {
+    "id": "negative-unit-count",
+    "operation": "validate",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "property.total_units": {
+          "value": -1,
+          "source_ref": {
+            "source": "source:qa-om",
+            "locator": "p2 stated size"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-008"
+    ]
+  },
+  {
+    "id": "fractional-unit-count",
+    "operation": "validate",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "property.total_units": {
+          "value": 0.5,
+          "source_ref": {
+            "source": "source:qa-om",
+            "locator": "p2 stated size"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-008"
+    ]
+  },
+  {
+    "id": "negative-source-area",
+    "operation": "validate",
+    "profile": "offering-memorandum-v1",
+    "document": {
+      "document_id": "om:qa-001",
+      "artifact_kind": "offering_memorandum",
+      "as_of": "2026-10-01",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-om"
+      ],
+      "facts": {
+        "property.total_nra_sqft": {
+          "value": -1,
+          "source_ref": {
+            "source": "source:qa-om",
+            "locator": "p2 stated size"
+          }
+        }
+      },
+      "unmapped_facts": [
+        {
+          "label": "asking_price",
+          "term": {
+            "value": 2000000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p1 offering"
+            }
+          }
+        },
+        {
+          "label": "forecast_noi",
+          "term": {
+            "value": 180000,
+            "source_ref": {
+              "source": "source:qa-om",
+              "locator": "p3 forecast"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-om"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [
+      "DF-008"
+    ]
+  },
+  {
+    "id": "multiple-appraisal-premises-stay-unmapped",
+    "operation": "validate",
+    "profile": "appraisal-abstract-v1",
+    "document": {
+      "document_id": "appraisal:qa-001",
+      "artifact_kind": "appraisal_report",
+      "as_of": "2026-09-30",
+      "currency_code": "USD",
+      "governing_documents": [
+        "source:qa-appraisal-multiple"
+      ],
+      "facts": {
+        "valuation.appraised_as_of": {
+          "value": "2026-09-30",
+          "source_ref": {
+            "source": "source:qa-appraisal-multiple",
+            "locator": "p4 effective date"
+          }
+        },
+        "valuation.appraisal_report_date": {
+          "value": "2026-10-02",
+          "source_ref": {
+            "source": "source:qa-appraisal-multiple",
+            "locator": "p1 report date"
+          }
+        }
+      },
+      "findings": [
+        "Multiple source opinions; no singular value selected."
+      ],
+      "unmapped_facts": [
+        {
+          "label": "as_is_opinion",
+          "term": {
+            "value": 2100000,
+            "source_ref": {
+              "source": "source:qa-appraisal-multiple",
+              "locator": "p4 as-is premise"
+            }
+          }
+        },
+        {
+          "label": "as_complete_opinion",
+          "term": {
+            "value": 3000000,
+            "source_ref": {
+              "source": "source:qa-appraisal-multiple",
+              "locator": "p5 as-complete conditional premise"
+            }
+          }
+        }
+      ]
+    },
+    "source_inventory": {
+      "source_ids": [
+        "source:qa-appraisal-multiple"
+      ],
+      "conflicting_source_ids": []
+    },
+    "expected_codes": [],
+    "source_file": "sources/multiple-premises.txt"
+  }
+]

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/document-fact-term.schema.json",
+  "title": "Attributable document fact term (RFC0129)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "value"
+  ],
+  "properties": {
+    "value": {},
+    "status": {
+      "enum": [
+        "not_stated",
+        "ambiguous",
+        "not_reviewed"
+      ]
+    },
+    "source_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "locator"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "value": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "status"
+      ]
+    },
+    {
+      "properties": {
+        "value": {
+          "not": {
+            "type": "null"
+          }
+        }
+      },
+      "required": [
+        "source_ref"
+      ],
+      "not": {
+        "required": [
+          "status"
+        ]
+      }
+    }
+  ]
+}

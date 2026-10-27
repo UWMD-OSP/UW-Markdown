@@ -1,3 +1,4 @@
+import { isDocumentFactsProfile } from './document-facts.js';
 import { verifyReplacementFundingBindings } from './replacement-funding.js';
 import type { CodecRegistry } from './codec.js';
 import { CORE_CODEC_REGISTRY } from './codecs.js';
@@ -283,6 +284,7 @@ export async function createUWMCPValidationResult(
   dealId: string,
 ): Promise<UWMCPToolResult> {
   assertUWEnvelope(envelope);
+  if (isDocumentFactsProfile(envelope.frontmatter.document_profile)) throw new UWBindingError('BINDING_PROFILE_UNSUPPORTED', 415, 'Document-facts validation requires the standalone library and source inventory.');
   const stamped = await stampEnvelopeDigest(envelope);
   assertDealIdentity(stamped, dealId);
   const parsed = fromUWEnvelope(stamped);

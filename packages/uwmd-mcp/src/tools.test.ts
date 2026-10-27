@@ -74,3 +74,12 @@ it('keeps the staged registry description within its upstream schema limit', () 
   expect(manifest.description.length).toBeGreaterThan(0);
   expect(manifest.description.length).toBeLessThanOrEqual(100);
 });
+
+
+describe('document-facts profile binding boundary', () => {
+  it.each(['loan-quote-v1', 'offering-memorandum-v1', 'appraisal-abstract-v1'])('refuses %s before record validation or verification', async profile => {
+    const source = `---\nuw_version: "3.0"\ndocument_profile: ${profile}\n---\n`;
+    expect(() => validateSource(source)).toThrow(expect.objectContaining({ code: 'UWMD-MCP-DOCUMENT-PROFILE-UNSUPPORTED' }));
+    await expect(verifySource(source)).rejects.toMatchObject({ code: 'UWMD-MCP-DOCUMENT-PROFILE-UNSUPPORTED' });
+  });
+});

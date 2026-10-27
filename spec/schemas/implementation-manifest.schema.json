@@ -57,7 +57,8 @@
           "portfolio",
           "sensitivity",
           "stochastic",
-          "pro-forma"
+          "pro-forma",
+          "document-facts"
         ]
       },
       "uniqueItems": true,

@@ -61,7 +61,7 @@ const STANDARD_MODULES: readonly string[] = Object.freeze([
   // Profiles: representations, portfolio, sensitivity, stochastic, market data, read bindings
   'carrier-schema.ts', 'carrier-schema-data.ts', 'carrier-values.ts', 'xml-tree.ts', 'xml-mapping.ts', 'csv-mapping.ts', 'csv-views.ts', 'envelope.ts', 'codec.ts', 'codecs.ts', 'uwjson.ts', 'uwxml.ts', 'uwcsv.ts', 'zip-safety.ts',
   'lite.ts', 'lite-bridge.ts', 'source-representation.ts', 'composition.ts', 'negotiation.ts',
-  'deal-package.ts', 'deal-package-context.ts', 'deal-package-zip.ts', 'lease-abstract.ts',
+  'deal-package.ts', 'deal-package-context.ts', 'deal-package-zip.ts', 'lease-abstract.ts', 'document-facts.ts', 'document-facts-package.ts',
   'portfolio.ts', 'calc/sensitivity.ts', 'calc/stochastic.ts', 'calc/prng.ts', 'market-data.ts',
   'bindings.ts',
   // The normative part of the protocol surface

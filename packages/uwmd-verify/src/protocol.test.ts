@@ -154,7 +154,7 @@ describe('ImplementationManifest tiers and profiles (RFC 0078)', () => {
     for (const tier of LEGACY) expect(section).not.toContain(tier);
   });
 
-  it('names exactly the seven profiles in the §II.3 table', () => {
+  it('names exactly the eight profiles in the §II.3 table', () => {
     const section = repoFile('spec/UW_PROTOCOL.md').split('### II.3 Verification profiles')[1]?.split('\n### ')[0] ?? '';
     const profiles = [...section.matchAll(/^\| `([a-z-]+)` \|/gm)].map((m) => m[1]);
     expect(profiles).toEqual([...CONFORMANCE_PROFILES]);

@@ -1,0 +1,3 @@
+Synthetic QA source: source:qa-om
+p1 offering:asking2000000 USD. p2 improvements:constructed1998.
+p3 forecast:forecast NOI180000 USD. Effective2026-10-01.

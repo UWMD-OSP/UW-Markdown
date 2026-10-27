@@ -1,3 +1,4 @@
+import { DOCUMENT_FACTS_PROFILES } from './protocol.js';
 import { extensionBlocks } from './extension-entry.js';
 import { assertUWEnvelope, canonicalizeUWEnvelope, toUWEnvelope } from './envelope.js';
 import { parseUWFile } from './parser.js';
@@ -235,6 +236,11 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
     })),
     source_preserved_in: UW_LITE_SOURCE_EXTENSION,
   };
+
+  if ((DOCUMENT_FACTS_PROFILES as readonly unknown[]).includes(document.frontmatter.document_profile)) {
+    report.issues.push({ code: 'LITE_COMPILE_DOCUMENT_PROFILE_UNSUPPORTED', severity: 'error', message: 'Document facts are a source view; deal Lite compilation is unsupported.', field_path: 'frontmatter.document_profile' });
+    return { ok: false, report };
+  }
 
   const frontmatter = compileFrontmatter(document, report);
   const timestamp = readRequiredString(document.frontmatter, 'created', report);

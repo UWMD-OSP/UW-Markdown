@@ -4954,3 +4954,57 @@ The public reference manifest MUST keep pro-forma and pro-forma-verify unclaimed
 RFC0128 clarifies this current bounded contract. An unsupported string convention_registry is an error-severity unsupported_registry profile-claim finding and completed exit1, including for zero rows/relationships. A supplied effective ltv_basis convention (global then relationship override) must equal the selected loan's own explicit basis; contradiction makes the relationship locally unverifiable with computed=null and never replaces or fills the loan's basis. When stabilized-summary occupied_sf is actually the native occupancy numerator fallback, it is a computed prerequisite that must be inventoried, claimed and verified; stated final-row occupied_sf does not acquire an unused summary prerequisite.
 
 An otherwise admissible claim with unknown claim members or unsupported global convention values completes with error-severity profile-claim findings and exit1 rather than whole-operation request refusal. An excluded optional member without an admitted binding stays in exclusions and as a non-required gap without its own exit effect. A valid required-member exclusion stays in exclusions and as an unmet required gap causing exit1. In the existing MOIC/XIRR dated-return admission, supplied currency unequal to document currency yields local unverifiable currency_mismatch with ordinary assertion precedence. Within each assertion/input collection unresolved targets follow resolved targets in stable inventory-declaration order. A numeric declared_ledger_membership relationship yields local unverifiable identity_not_defined. Per-loan LTV computed is the existing comparator's already quantized comparison result, with fractional-token m2/r6 unchanged.
+
+
+## Attributable source-fact profiles (RFC0129)
+
+`loan-quote-v1`, `offering-memorandum-v1` and `appraisal-abstract-v1` are
+descriptive document purposes. Their closed logical payload is defined by
+[the accepted RFC](../docs/rfcs/0129-document-fact-profiles.md),
+[the common term schema](schemas/document-fact-term.schema.json), and the
+[quote](schemas/document-facts-loan-quote.schema.json),
+[OM](schemas/document-facts-offering-memorandum.schema.json) and
+[appraisal](schemas/document-facts-appraisal-abstract.schema.json) root schemas.
+The purpose id is an external descriptor or `document_profile` frontmatter
+member, never an extra logical-payload field. UWX carries exactly one current
+unvarianted `document_facts` JSON block, with ordinary block metadata outside
+the logical payload. This group is not a deal section and MUST NOT select a pack
+or be promoted to adopted underwriting inputs automatically.
+
+The required payload members are `document_id`, `artifact_kind`, real-calendar
+`as_of`, three-uppercase-letter `currency_code`, nonempty unique
+`governing_documents` and nonempty closed `facts`. Optional members are
+`unmapped_facts`, `findings` and non-self `supersedes`. A stated term requires
+`source_ref:{source,locator}` with both strings nonempty; the source MUST resolve
+to a governing identity. Null requires `not_stated`, `ambiguous` or
+`not_reviewed`; it never means zero or no obligation. An optional null locator
+still resolves. Duplicate decoded JSON keys, governing ids and unmapped labels
+MUST be refused. Existing I-JSON admission applies before object reduction.
+
+Only the RFC's exact Format4.1/4.6/4.7 allowlists are admitted. A quoted LTV or
+DSCR ceiling is unmapped, not a sizing result. Asking price, forecast/historical
+NOI and rent/occupancy schedules remain unmapped in this OM revision. An
+appraisal opinion remains distinct from underwritten value; multiple premises
+remain separately attributed unless the source identifies the singular opinion.
+No conversion, annualization, opinion selection, new tolerance or financial
+procedure is defined. Validation establishes structure and attribution, not
+source truth, legal adequacy, or institution authentication.
+
+The named `record-facts-v1` projection MUST receive an explicit destination
+deal identity, exact section and nullable variant, and currency for every
+requested fact. All currencies MUST agree. It returns canonical fact-key-sorted
+candidates, explicit no-ops, omissions and conflicts, and MUST NOT mutate either
+record. Missing sources/targets, nulls, mismatches or existing conflicts produce
+no candidate for the refused fact. It MUST NOT default a loan, variant, period,
+value or currency. Applying candidates is a separate host provenance operation.
+Amendments and conflicting governing sources refuse automatic projection; no
+source order selects a winner. Superseding documents MUST retain their prior
+document and source history in a package using existing `abstracts`,
+`contributes_to` and `supersedes` links.
+
+A Lite source view MUST show identity, dates, currency, every fact/status/locator
+and every finding/unmapped fact. It is not the deal-summary compilation profile.
+The first reference implementation supports the public library's logical JSON,
+UWX, package admission/projection and complete Lite views; Lite compilation and
+CLI/MCP/HTTP fact-operation bindings are explicitly unsupported. Generic Reader
+preservation or transport does not itself claim these profile operations.

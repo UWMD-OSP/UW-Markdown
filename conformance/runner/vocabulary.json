@@ -9,6 +9,7 @@
     "sensitivity",
     "stochastic",
     "pro-forma",
+    "document-facts",
     "starter-products"
   ],
   "profiles": [
@@ -18,7 +19,8 @@
     "portfolio",
     "sensitivity",
     "stochastic",
-    "pro-forma"
+    "pro-forma",
+    "document-facts"
   ],
   "tiers": [
     "reader",

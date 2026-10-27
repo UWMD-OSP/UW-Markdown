@@ -137,6 +137,7 @@ export default defineConfig({
           { text: 'Foundation', link: '/guide/foundation' },
           { text: 'How UWMD grows', link: '/guide/how-uwmd-grows' },
           { text: 'Document types', link: '/guide/document-types' },
+          { text: 'Source-fact profiles', link: '/guide/document-facts' },
           { text: 'Known limits', link: '/guide/known-limits' },
           { text: 'Version matrix', link: '/about/versions' },
           { text: 'Changelog', link: '/about/changelog' },

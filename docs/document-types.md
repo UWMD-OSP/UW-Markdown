@@ -13,7 +13,7 @@ acceptance. **Planned** describes a bounded future contract, with no implementat
 profile in this catalog. Availability here describes current source, not the
 older code that may share its npm version; see [build status](wiki/13-status.md).
 
-Count by catalog row: **12 available, 2 draft, 14 planned, 6 evidence only**.
+Count by catalog row: **15 available, 2 draft, 11 planned, 6 evidence only**.
 These are logical families, including supporting artifacts; they are not 34
 registered document profiles. A profile describes purpose and permitted content
 ([RFC0018](rfcs/0018-document-profiles-and-deal-packages.md)). JSON, XML and CSV
@@ -36,6 +36,9 @@ is a separate claim about checks, not a document type.
 | Portfolio sidecar | Entities, typed relationships and provenance | Links records; does not consolidate their economics | Portfolio1.0, `.uwportfolio.json`; optional conformance profile `portfolio`, no document-profile id |
 | Verification receipt | Checks, selected inputs and result evidence pinned to their subject | Assurance artifact, not a new input of record | Receipt1.1; not a document-purpose profile |
 | Signed artifact | Authenticated content and signer-key evidence | Integrity/authentication, not appraisal or credit approval | [Signing contract](../spec/UW_PROTOCOL.md); not a document-purpose profile |
+| Loan quote/term-sheet abstract | Stated quote terms, nullable status and exact source locators | Explicit `record-facts-v1` candidates into the16 allowed `debt_structure` fields; no selected/funded loan or sizing result | `loan-quote-v1`; [library scope](document-facts.md) |
+| Offering-memorandum abstract | Attributable property/appraisal facts, visible marketing statements and limitations | Six allowed `property`/`valuation` fact homes; asking price, NOI and schedules stay unmapped | `offering-memorandum-v1`; [library scope](document-facts.md) |
+| Appraisal abstract | Stated singular appraisal opinion, dates, approach and conditions | Five allowed `valuation` fields; no underwritten-value or opinion selection | `appraisal-abstract-v1`; [library scope](document-facts.md) |
 
 UWPart can carry other admitted standard sections or `x_` extension sections;
 the three fragment rows are common uses, not a closed list. A package context
@@ -56,18 +59,7 @@ profile ids does not establish validation or verification support.
 
 ## Planned
 
-The first three designs are accepted by [RFC0129](rfcs/0129-document-fact-profiles.md)
-and await implementation; they are not available yet. A quoted LTV ceiling is
-not computed LTV, asking price is not purchase price, and appraised value is not
-underwritten value.
-
-| Accepted design | Intended contribution | Reserved profile id |
-|---|---|---|
-| Loan quote/term-sheet abstract | Existing stated `debt_structure` facts only; no loan selection or sizing results | `loan-quote-v1` |
-| Offering-memorandum abstract | The six explicitly allowed property/appraisal facts; price, NOI and schedules remain unmapped | `offering-memorandum-v1` |
-| Appraisal abstract | Existing five `valuation` appraisal facts; no underwritten value or opinion selection | `appraisal-abstract-v1` |
-
-Each remaining row is the bounded specification for a possible future profile.
+Each row is the bounded specification for a possible future profile.
 Their ids are **unassigned**. No source value is promoted without an explicit reviewed
 edit, and no legal finding is inferred from an absent term.
 

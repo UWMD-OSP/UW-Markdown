@@ -4284,6 +4284,13 @@ function runCrossChecks() {
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
+  'document-facts': async () => {
+    const { cases, checkDocumentFactsCase } = await import('../conformance/document-facts/checks.mjs');
+    for (const c of cases) {
+      try { await checkDocumentFactsCase(c); record('document-facts', c.id, 'pass'); }
+      catch (error) { record('document-facts', c.id, 'fail', error.message); }
+    }
+  },
   'extension-envelope': async () => {
     const packet=readCase(join(CONFORMANCE_DIR,'rfc-0089'),'cases.json');
     for(const item of packet.source_cases.filter(item=>item.name!=='empty')) {

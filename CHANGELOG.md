@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Implement RFC0129’s loan quote, offering memorandum and appraisal source-fact profiles: closed schemas, attribution validation, explicit read-only candidates, package history/integrity, complete Lite views and required conformance. No formula or automatic underwriting input is added; fact-operation CLI/MCP/HTTP bindings and Lite compilation remain unsupported.
+
 - Accept RFC0129’s three source-fact profile designs; implementation and support claims follow separately.
 
 - Fix #587: use the patched Vitest4.1.12 development toolchain while retaining the existing test assertions and coverage requirements.

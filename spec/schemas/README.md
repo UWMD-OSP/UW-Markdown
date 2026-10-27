@@ -53,6 +53,10 @@ files live in this directory pending publication on `uwmd.org`.
 | [`expense-targeted-capex.schema.json`](expense-targeted-capex.schema.json) | capex bought to reduce a named operating expense | Format §4.8 / RFC 0057 |
 | [`uw-deal-package-manifest.schema.json`](uw-deal-package-manifest.schema.json) | `UWDealPackageManifest` | RFC 0018 |
 | [`uw-portfolio-profile.schema.json`](uw-portfolio-profile.schema.json) | `.uwportfolio.json` sidecar (`PortfolioProfile`) | Protocol §XV / RFC 0015 |
+| [document-fact-term.schema.json](document-fact-term.schema.json) | Closed attributable term, locator and null status | RFC0129 / Format source-fact profiles |
+| [document-facts-loan-quote.schema.json](document-facts-loan-quote.schema.json) | `loan-quote-v1` logical payload | RFC0129 / Format4.7 |
+| [document-facts-offering-memorandum.schema.json](document-facts-offering-memorandum.schema.json) | `offering-memorandum-v1` logical payload | RFC0129 / Format4.1,4.6,5.5 |
+| [document-facts-appraisal-abstract.schema.json](document-facts-appraisal-abstract.schema.json) | `appraisal-abstract-v1` logical payload | RFC0129 / Format4.6 |
 | [`uw-market-data.schema.json`](uw-market-data.schema.json) | `market-data-v1` documents | RFC 0022 |
 | [`uwpart.schema.json`](uwpart.schema.json) | `.uwpart.md` frontmatter | [UW Composition 1.0](../UW_COMPOSITION.md) §2 / RFC 0021 |
 | [`uw-external-section.schema.json`](uw-external-section.schema.json) | `external` section directive | [UW Composition 1.0](../UW_COMPOSITION.md) §3 / RFC 0021 |

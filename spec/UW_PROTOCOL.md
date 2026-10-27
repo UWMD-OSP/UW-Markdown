@@ -8,7 +8,7 @@ This document specifies how any party **verifies** a UW Markdown
 document: that it is well formed, that its stated figures agree with
 each other under the standard's definitions, and that its results
 reproduce from its stated inputs. It defines two conformance tiers,
-**Reader** and **Verifier**, and seven optional verification profiles.
+**Reader** and **Verifier**, and eight optional verification profiles.
 
 The format spec defines what bytes are allowed on disk. This protocol
 defines what a document's contents mean and how a receiver checks them.
@@ -39,7 +39,7 @@ The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**",
 
 ### 0.2 Abstract
 
-The UW Protocol defines two conformance tiers and seven optional
+The UW Protocol defines two conformance tiers and eight optional
 verification profiles. A Verifier MUST satisfy every Reader
 requirement. A profile adds to whichever tier the implementation
 claims.
@@ -58,8 +58,9 @@ claims.
 | Sensitivity | `sensitivity` | Reproduce stated sensitivity grids (§VIII.7). |
 | Stochastic | `stochastic` | Reproduce stated seeded distributions (§VIII.8). |
 | Pro forma | `pro-forma` | Bounded explicitly bound L1 assertions and declared-ledger membership (RFC0092). |
+| Document facts | `document-facts` | Attributable source facts and explicit read-only candidate projection (RFC0129). |
 
-Editing and AI-agent hosting are starter products, outside the Protocol. Conformance claims use only Reader and Verifier and the seven profiles above.
+Editing and AI-agent hosting are starter products, outside the Protocol. Conformance claims use only Reader and Verifier and the eight profiles above.
 
 ### 0.3 Semantic versioning
 
@@ -338,6 +339,7 @@ section names, and never reported as passed or failed.
 | `sensitivity` | Reproduce stated sensitivity grids (§VIII.7). | `calc-sensitivity` |
 | `stochastic` | Reproduce stated seeded distributions with the exact sampler (§VIII.8). | `calc-stochastic` |
 | `pro-forma` | Verify explicitly bound L1 assertions and declared-ledger membership under RFC0092 and its wire contract below. | `pro-forma-verify` |
+| `document-facts` | Validate all three RFC0129 source-fact purposes, resolve attribution against the supplied inventory, preserve null/status/unknown-purpose boundaries, and implement the explicit read-only projection and package/Lite controls below. | `validate` (standalone library operations; no CLI/MCP/HTTP fact binding) |
 
 A Verifier without the Module profile reports module and
 document-declared calculations `unverifiable`, never wrong.
@@ -4678,3 +4680,40 @@ The public reference manifest MUST keep pro-forma and pro-forma-verify unclaimed
 RFC0128 clarifies this current bounded contract. An unsupported string convention_registry is an error-severity unsupported_registry profile-claim finding and completed exit1, including for zero rows/relationships. A supplied effective ltv_basis convention (global then relationship override) must equal the selected loan's own explicit basis; contradiction makes the relationship locally unverifiable with computed=null and never replaces or fills the loan's basis. When stabilized-summary occupied_sf is actually the native occupancy numerator fallback, it is a computed prerequisite that must be inventoried, claimed and verified; stated final-row occupied_sf does not acquire an unused summary prerequisite.
 
 An otherwise admissible claim with unknown claim members or unsupported global convention values completes with error-severity profile-claim findings and exit1 rather than whole-operation request refusal. An excluded optional member without an admitted binding stays in exclusions and as a non-required gap without its own exit effect. A valid required-member exclusion stays in exclusions and as an unmet required gap causing exit1. In the existing MOIC/XIRR dated-return admission, supplied currency unequal to document currency yields local unverifiable currency_mismatch with ordinary assertion precedence. Within each assertion/input collection unresolved targets follow resolved targets in stable inventory-declaration order. A numeric declared_ledger_membership relationship yields local unverifiable identity_not_defined. Per-loan LTV computed is the existing comparator's already quantized comparison result, with fractional-token m2/r6 unchanged.
+
+
+### RFC0129 attributable document-facts profile
+
+The optional conformance profile `document-facts` is distinct from the three
+document-purpose ids `loan-quote-v1`, `offering-memorandum-v1` and
+`appraisal-abstract-v1`. Its exact payload, source terms, closed allowlists and
+projection/lifecycle rules are normative in
+[Format: attributable source-fact profiles](UW_FORMAT_SPEC.md#attributable-source-fact-profiles-rfc0129)
+and [RFC0129](../docs/rfcs/0129-document-fact-profiles.md). Unknown document
+purposes retain Reader preservation; a conformance claim never reinterprets an
+unknown purpose as a deal or one of these profiles. No pack applies to them.
+
+The public library operations are `validateDocumentFacts(profile,payload,sourceInventory)`
+and `projectDocumentFacts(profile,payload,target,selection)`, with typed
+`DocumentFactsError` refusals for asserting/reading malformed documents. The
+host explicitly supplies source ids and known conflicting-source ids; this is
+a declared inventory, not an identity or truth service. Unresolved attribution
+cannot establish an admitted fact. A projection returns no edits on invalid
+source structure/attribution and reports the refusals; it never repairs a fact.
+Nulls and unselected facts stay visible as omissions or conflicts. Existing
+matching targets are no-ops; differing targets refuse rather than select a
+winner. Candidate application remains separate and subject to normal provenance.
+
+Package admission MUST check the exact member bytes before reading facts; a
+declared semantic digest must be verified or reported unsupported, never
+ignored. It MUST preserve and resolve a stated predecessor and its governing
+sources through the existing member links. Verification and subsequent reads
+use one immutable byte snapshot. This establishes integrity/attribution, not
+the truth or legal precedence of the instruments. The complete Lite view is
+read-only; compilation and CLI/MCP/HTTP fact-operation bindings are unsupported
+in the first reference implementation. Existing generic Reader carrier
+transport is not a fact validation or projection claim.
+
+The indexed `conformance/document-facts/` cases exercise these obligations.
+`DF-*` errors belong to the standalone profile operations, not a new base
+financial-validation rule or a new financial comparison procedure.

@@ -1,0 +1,58 @@
+---
+uw_version: "3.0"
+uw_lite_version: "1.0"
+document_profile: "loan-quote-v1"
+document_id: "quote:qa-001"
+---
+
+# Document facts — view only
+
+Every stated fact, null status, source locator and finding is shown below.
+Lite compilation and CLI/MCP/HTTP profile bindings are unsupported.
+
+```json
+{
+  "document_id": "quote:qa-001",
+  "artifact_kind": "quote",
+  "as_of": "2026-10-01",
+  "currency_code": "USD",
+  "governing_documents": [
+    "source:qa-quote"
+  ],
+  "facts": {
+    "debt_structure.loan_amount": {
+      "value": 1000000,
+      "source_ref": {
+        "source": "source:qa-quote",
+        "locator": "p1 amount"
+      }
+    },
+    "debt_structure.interest_rate": {
+      "value": 0.06,
+      "source_ref": {
+        "source": "source:qa-quote",
+        "locator": "p1 rate"
+      }
+    },
+    "debt_structure.io_period_months": {
+      "value": null,
+      "status": "not_stated"
+    }
+  },
+  "unmapped_facts": [
+    {
+      "label": "maximum_ltv",
+      "term": {
+        "value": 0.65,
+        "source_ref": {
+          "source": "source:qa-quote",
+          "locator": "p1 maximum LTV"
+        }
+      }
+    }
+  ],
+  "findings": [
+    "Unsigned quote; not an adopted loan. Expiry2026-11-01."
+  ]
+}
+```

@@ -894,3 +894,8 @@ export type { UWPortableBlock } from './portable-projection.js';
 export { verifyProForma, PRO_FORMA_REGISTRY, PRO_FORMA_IDENTITIES, PRO_FORMA_FAMILIES } from './pro-forma.js';
 export type { VerifyProFormaOptions } from './pro-forma.js';
 export type * from './pro-forma-types.js';
+
+export * from './document-facts.js';
+
+export { DOCUMENT_FACTS_PROFILES } from './protocol.js';
+export { readDocumentFactsPackage } from './document-facts-package.js';
