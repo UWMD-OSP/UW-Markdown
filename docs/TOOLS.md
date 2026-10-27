@@ -271,7 +271,7 @@ conventions.
 | Web viewer | `tools/web-viewer/` | Reader |
 | VS Code extension | `tools/vscode-uwmd/` | Reader |
 | Web editor | `tools/web-editor/` | Starter editor; recomputes with the reference engine |
-| `uwmd` CLI | `packages/uwmd-cli/` | Verifier (all six profiles, `uwmd manifest`), plus starter editing |
+| `uwmd` CLI | `packages/uwmd-cli/` | Verifier plus starter editing; inspect `uwmd manifest` and each profile's binding scope. Document-fact operations are library-only. |
 | Excel converter | `packages/uwmd-excel/` | Starter workbook export and bounded input import |
 | Batch indexer | `packages/uwmd-batch/` | Reader (read-only index) |
 | Context profiles and writers | `packages/uwmd-core/src/context-profiles.ts`, `runner.ts` | Starter context builder and generic writers (no agent execution) |

@@ -31,7 +31,7 @@ The project has five layers, each consuming the one above it:
 │                   ├── editor (starter edit dispatcher)       │  verify
 │                   ├── renderer / report / cascade / defaults │
 │                   ├── packs/ (excel-emit)                    │
-│                   └── context (layer registry; no agents)    │
+│                   └── context profiles and generic writers │
 └─────────────────────────────────────────────────────────────┘
                           ▲
                           │ used by
@@ -47,7 +47,7 @@ The project has five layers, each consuming the one above it:
                           │ certified by
 ┌─────────────────────────────────────────────────────────────┐
 │  Conformance      conformance/corpus-index.json             │  one owner
-│  corpus           (reader, verifier, six profiles,          │  per case
+│  corpus           (reader, verifier, optional profiles,     │  per case
 │                    starter products) over fixture families  │  fixtures +
 │                   conformance/<family>/  (legacy dir names) │  expected
 └─────────────────────────────────────────────────────────────┘
@@ -66,16 +66,16 @@ Versioned normative documents and one schema set. Adopters needing to
 implement only one tier can read just the relevant sections.
 
 - [`spec/UW_FORMAT_SPEC.md`](spec/UW_FORMAT_SPEC.md) — file shape:
-  frontmatter, the 21 standard sections, supersede semantics, the
+  frontmatter, the 35 registered standard sections, supersede semantics, the
   cross-section consistency rules (`CC-NN`).
 - [`spec/UW_PROTOCOL.md`](spec/UW_PROTOCOL.md) — how any party
   verifies a document: the Reader and Verifier tiers and optional profiles,
   the provenance rules, the calc-engine grammar (EBNF) and the stated-figure
-  verifiers (Protocol 3.0 contract, RFC 0078). Display, editing, defaults and
+  verifiers (current Protocol 4.1.0; RFC 0078). Display, editing, defaults and
   the AI host are non-normative starter-product guidance in
   [`docs/starter/`](docs/starter/README.md).
 - [`spec/UW_XML_MAPPING.md`](spec/UW_XML_MAPPING.md) — deterministic
-  Envelope 1.0 mapping, namespace, integrity, and secure decoding rules.
+  Envelope 2.0 mapping, namespace, integrity, and secure decoding rules.
 - [`spec/UW_CSV_BUNDLE.md`](spec/UW_CSV_BUNDLE.md) — normalized tables,
   deterministic ZIP, model reconstruction, views, and extraction limits.
 - [`spec/bindings/`](spec/bindings/) — HTTP Binding 1.0, MCP Binding 1.0,
@@ -99,7 +99,7 @@ module.
 | `validator.ts` (verify) | Cross-section + financial-validity + meta-integrity checks. Hosts `BUILTIN_REMEDIATIONS`, the registry referenced by protocol §III.6a. |
 | `editor.ts` (core) | Starter-product edit dispatcher: `applyEdit()` over four operation types, gated by `BUILTIN_EDIT_POLICIES`. |
 | `bindings.ts` (verify) + `bindings-edit.ts` (core) | HTTP negotiation/ETags and MCP resource/tool-result adapters over the shared codecs; core injects its editor for source edits. |
-| `renderer.ts` (core) | HTML / Markdown rendering paths. PDF/DOCX are stubs deferred to a third-party pipeline. |
+| `renderer.ts` (core) | Markdown/JSON/CSV context renders; `report.ts` produces report HTML, and `@uwmd/report` generates PDFs. No DOCX renderer is implemented. |
 | `runner.ts` (core) | Writer API; generic metadata is supplied by verify's `buildMeta`. Generic editing and initialization import metadata directly from verify. |
 | `calc/` (verify) | `parser.ts` (recursive-descent), `evaluator.ts` (AST walker), `builtins.ts` (financial + math primitives). The evaluator is sandboxed: capped input, no globals, no I/O. |
 | `builtin-packs/` (verify) + `packs/` (core) | One pack manifest per builtin asset class in `builtin-packs/` (standard data), each equal to its normative `spec/metrics/` entries (`metric-dictionary.test.ts`); `packs/` re-exports them. `packs/excel-emit.ts` translates the same AST to Excel formulas, and the pack tests assert the two paths agree exactly after §VIII.5 quantization (a starter-product quality bar). |
@@ -107,8 +107,7 @@ module.
 | `starter-protocol.ts` (core) | Starter tables: `BUILTIN_VIEW_MODELS`, number formats, `CASCADE_ORDER` and the capability-token types (RFC 0083). |
 | `format.ts` (core) | Field-level formatters (currency, percent, multiple, etc.) used by view models. |
 | `context-profiles.ts` (core) | `buildContext`, the starter context profiles. The toolkit hosts no agents: a host runs its own and writes through `runner.ts` or the editor. The [starter guide](docs/starter/ai-host.md) describes this non-normative surface. |
-| `compactor.ts` (core) | Materializes "live view" by collapsing superseded blocks. |
-| `init.ts` (core) | Scaffold a new `.uw.md` from defaults. |
+| `init.ts` (core) | Scaffold a new `.uwx.md` from defaults. |
 | `cli.ts` (core) | Programmatic CLI entry; surfaced via `uwmd-cli`. |
 | `browser.ts` (both) | Subpath export excluding Node-only starter code so the parser/validator/calc engine can be bundled into a web app. Verify's equals its main entry; core's adds the browser-safe starter products. |
 
@@ -144,7 +143,8 @@ case exactly one owner (Protocol §II.6, RFC 0078):
   reproduction, the stated-figure verifiers (including the IRR procedure),
   receipts and the §VIII.1–VIII.3 expression notation.
 - **Profiles** — Module, Integrity, Representations, Portfolio,
-  Sensitivity and Stochastic, each claimed explicitly.
+  Sensitivity, Stochastic, Pro-forma and Document facts, each claimed explicitly.
+  Binding coverage is separate; document-fact operations are library-only.
 - **Starter products** — editor, rendering, defaults and refinement
   checks. Not conformance; still blocking in CI and reported separately.
 

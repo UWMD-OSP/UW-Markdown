@@ -49,7 +49,7 @@ const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
         <div>
           <p class="uw-eyebrow">Show me a deal</p>
           <h2 id="example-title">A plain-text record, and the underwriting it produces.</h2>
-          <p class="uw-section-lede">An excerpt from a 48-unit multifamily acquisition. The narrative explains the analyst's adjustments; the JSON block beneath it holds the same numbers in typed form, so any compatible tool can read and recompute them.</p>
+          <p class="uw-section-lede">A synthetic 48-unit multifamily example for engineering QA, not an investment track record. The narrative explains the analyst's adjustments; the JSON block beneath it holds the same numbers in typed form, so any compatible tool can read and recompute them.</p>
         </div>
         <a :href="`https://github.com/UWMD-OSP/UW-Markdown/blob/main/examples/${PARKVIEW}`">Open the complete record <span aria-hidden="true">→</span></a>
       </header>
@@ -132,7 +132,7 @@ the post-sale value.
           <span>Format 3.0 · excerpt of the complete record</span>
           <span class="uw-file-links">
             <a href="/viewer/">Open in the viewer</a>
-            <a :href="`https://www.uwmd.org/editor/?sample=/viewer/samples/${PARKVIEW}`" target="_self">Edit it in the reference editor</a>
+            <a :href="`/editor/?sample=/viewer/samples/${PARKVIEW}`" target="_self">Edit it in the reference editor</a>
           </span>
         </div>
       </div>
@@ -199,7 +199,7 @@ the post-sale value.
         <p class="uw-section-lede">The published CLI runs with Node.js 18 or later. Nothing to clone, no account.</p>
         <nav class="uw-actions" aria-label="Try UW Markdown">
           <a class="uw-button uw-button-primary" href="/tutorials/quickstart">Quickstart</a>
-          <a class="uw-button" href="https://www.uwmd.org/editor/" target="_self">Reference editor</a>
+          <a class="uw-button" href="/editor/" target="_self">Reference editor</a>
           <a class="uw-text-link" href="/downloads/">Templates and examples <span aria-hidden="true">→</span></a>
         </nav>
       </div>

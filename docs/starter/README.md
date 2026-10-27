@@ -8,7 +8,7 @@ the rules any party uses to *verify* a document: the
 [Protocol](../../spec/UW_PROTOCOL.md), receipts, the module system and
 the representation specs. **The starter products** are the tools the
 project gives away so the standard spreads: a calc engine, a web editor, a
-report viewer, an Excel exporter, default assumptions and AI agents.
+report viewer, an Excel exporter, default assumptions and generic agent writers.
 
 [RFC 0078](../rfcs/0078-protocol-is-verification.md) separated the two.
 The test for the boundary: *if Argus, an Excel model or another producer exported a
@@ -48,7 +48,7 @@ here.
 
 ## Pages
 
-| Former Protocol section | Page | Owner decision |
+| Former Protocol section | Page | RFC decision |
 |---|---|---|
 | §III.1 Number formatting, §III.1a Display locales, §III.2 Date/time, §III.3 Section display hierarchy, §III.4 Badge system, §III.5 Supersede UX, §III.6 Validation issue display | [Display conventions](display.md) | D11 |
 | §IV View models | [View models](view-models.md) | disposition table |

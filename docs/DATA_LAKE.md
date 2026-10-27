@@ -201,9 +201,9 @@ One shape to expect in `uw_facts`: a fact whose `json_type` is `object` or
 container by its flattened children rather than by a repeated blob. Filter on
 `value_json IS NOT NULL` when you want only the leaves.
 
-The whole conformance corpus has been loaded against PostgreSQL 18 — 382
-documents, 24,380 facts — twice, for the same row counts. See the
-load record.
+Loader tests exercise repeated loads and stable row identity. These controls
+establish the adapter's stated cases rather than a current corpus-wide database
+certification; see the [lake package](../packages/uwmd-lake/README.md).
 
 What the standard will **not** grow: a storage contract, warehouse-specific
 loaders, or aggregate-math semantics in the lake layer. Aggregates that need

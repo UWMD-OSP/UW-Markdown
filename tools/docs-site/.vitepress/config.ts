@@ -11,6 +11,7 @@ export default defineConfig({
   title: 'UW Markdown',
   description: SITE_DESCRIPTION,
   cleanUrls: true,
+  sitemap: { hostname: 'https://www.uwmd.org' },
   lastUpdated: true,
   // XSD is copied to public/ as a downloadable static asset.
   ignoreDeadLinks: [/\.xsd$/, /^\/downloads\//],
@@ -48,7 +49,7 @@ export default defineConfig({
           { text: 'Quickstart', link: '/tutorials/quickstart' },
           { text: 'Open a deal in the viewer', link: '/viewer/' },
           { text: 'Example deals (GitHub)', link: 'https://github.com/UWMD-OSP/UW-Markdown/tree/main/examples' },
-          { text: 'Reference editor', link: 'https://www.uwmd.org/editor/', target: '_self' },
+          { text: 'Reference editor', link: '/editor/', target: '_self' },
           { text: 'Your first record, by hand', link: '/tutorials/your-first-uwmd-file' },
           { text: 'Templates and downloads', link: '/downloads/' },
           { text: 'UWX and UW Lite', link: '/guide/lite-and-uwx' },

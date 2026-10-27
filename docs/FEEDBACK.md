@@ -248,6 +248,5 @@ there is no interoperability contract to standardize. The facts a report needs
 already exist as normative, machine-readable outputs: the implementation
 manifest, validation results with registered codes, `ProtocolError`, receipts
 with input and result digests, and the conformance runner's report. The forms
-ask for exactly those outputs. The evaluation behind this decision, and the
-evidence that would reopen it, is recorded in the
-adopter feedback review.
+ask for exactly those outputs. A proposal for a new report contract can use the
+same capability-request and RFC process described above.

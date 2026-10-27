@@ -21,9 +21,9 @@ Validation surfaces issues in the `META_*` family (protocol §III.6a).
 ### Append-only / supersede
 The `.uwx.md` update model. A block is never edited in place; a
 *superseding* block is appended to the section, and the original is
-marked `_meta.lifecycle.superseded: true` with a back-reference. The
-[compactor](../packages/uwmd-core/src/compactor.ts) materializes the
-"live view" by walking supersede chains. See protocol §V.
+marked `_meta.lifecycle.superseded: true`. The
+[parser](../packages/uwmd-verify/src/parser.ts) selects current sections while
+retaining superseded blocks. See protocol §V and Format §2.7.
 
 ### Calc engine / safe expression
 The sandboxed expression evaluator at
@@ -40,8 +40,9 @@ normative metric dictionary (`spec/metrics/`). The canonical
 
 ### Conformance tier
 One of two self-certification levels, Reader and Verifier (a Verifier
-includes Reader), plus optional verification profiles (Module, Integrity,
-Representations, Portfolio, Sensitivity, Stochastic). Defined in protocol §II.
+includes Reader), plus optional profiles (Module, Integrity, Representations,
+Portfolio, Sensitivity, Stochastic, Pro-forma and Document facts).
+Defined in protocol §II; individual bindings may support a smaller scope.
 The four Protocol 2.x tiers (Reader, Editor, Calc Host, Agent Host) are
 retired; editing and agent hosting are starter-product claims (RFC 0078).
 
@@ -64,14 +65,14 @@ fast pipeline routing without full parse. See format spec §III.
 
 ### Section
 A registered block in a `.uwx.md` record (e.g. `rent_roll`,
-`debt_structure`). Twenty-seven are standard (`STANDARD_SECTION_IDS`);
+`debt_structure`). Thirty-five are registered (`STANDARD_SECTION_IDS`);
 an `x_*` namespace holds extensions. See format spec §II.
 
 ### Stress test
 A multi-variant section evaluating the deal under perturbed
 assumptions (e.g. exit cap shocks). See format spec §IV. Stress
-tables are framework-only in v1; richer sensitivity analysis is
-queued for v2 (see [RFC 0007](/about/rfcs/0007-sensitivity-tables)).
+tables and the optional sensitivity profile have their own stated-input and
+comparison contracts (see [RFC 0007](rfcs/0007-sensitivity-tables.md)).
 
 ### UW Lite (`.uw.md`)
 The human-readable **summary** representation: a short Markdown deal
@@ -91,9 +92,9 @@ file" without qualification, it means this. See
 [UW Lite and UWX](UW_LITE_AND_UWX.md).
 
 ### Supersede chain
-The linked sequence formed when block B carries
-`_meta.supersedes: <A.id>`. Cycles are forbidden; the validator
-emits a `META_SUPERSEDE_CYCLE` issue when it detects one.
+The retained sequence of section revisions, with current and superseded blocks
+identified by `_meta.lifecycle`. Optional integrity fields bind each revision
+to the prior block; see [Protocol §V](../spec/UW_PROTOCOL.md#v-edit-semantics).
 
 ### Verification receipt
 A detached JSON file binding a digest of a deal's canonical

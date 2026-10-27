@@ -1,13 +1,11 @@
 # From stated lease-up periods to an explicitly dated stream
 
-[RFC 0044](rfcs/0044-explicit-lease-up-cash-flow-projection.md) ships in
-core/CLI **2.8.0**, with Protocol **2.11.0**. The browser-safe
+[RFC 0044](rfcs/0044-explicit-lease-up-cash-flow-projection.md) defines the browser-safe
 `projectLeaseUpCashFlows` API and read-only CLI copy verified stated amounts
 onto caller-supplied dates and return source digest/binding evidence.
 
-Install the published CLI with `npm install -g @uwmd/cli@2.8.0`, or invoke
-`npx @uwmd/cli@2.8.0 project-lease-up deal.uwx.md cash-dates.json --json`.
-The worked repository example below uses the same published API.
+The examples below use current source after `npm run build`.
+See [VERSIONS](../VERSIONS.md) for source contracts and publication state.
 
 ## Run it
 
@@ -20,8 +18,8 @@ node scripts/verify-lease-up-workflow.mjs
 
 The runner reads the existing RFC 0008 `valid-value-add-turnover` conformance
 fixture and the authored scenario in
-`docs/examples/lease-up-dated-cash-flow.json`. The source fixture intentionally
-exercises the legacy reader; this workflow creates no new Markdown document.
+`docs/examples/lease-up-dated-cash-flow.json`. The source fixture uses Format 3.0
+nested metadata; this workflow creates no new Markdown document.
 Its source variant is explicitly `base`. Each cash date, day count and discount
 rate is stated in the scenario, not inferred from the period label.
 

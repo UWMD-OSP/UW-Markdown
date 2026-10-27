@@ -48,9 +48,12 @@ unavailable behavior explicit.
 
 ## Current growth boundaries
 
-The loan-quote, offering-memorandum and appraisal profiles in draft RFC0129 are
-proposals. Borrower underwriting (RFC0082) and ground-lease tenure (RFC0067)
-remain drafts too. Source notes and package evidence can preserve unsupported
+The loan-quote, offering-memorandum and appraisal source-fact profiles in
+accepted RFC0129 are implemented in the public library and complete Lite views;
+they have no profile-specific CLI, MCP or HTTP binding and no Lite compilation.
+See [source-fact profiles](document-facts.md) for the current API and limits.
+Borrower underwriting (RFC0082) and ground-lease tenure (RFC0067) remain drafts.
+Source notes and package evidence can preserve unsupported
 facts while a contract is designed; they must not imply that an implementation
 checked those facts. The [known-limits page](KNOWN-LIMITS.md) links concrete
 follow-ups for interests, lease projections, payoffs and other boundaries.

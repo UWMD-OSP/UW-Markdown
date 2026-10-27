@@ -32,7 +32,8 @@ a `label`, and a `kind` mapping to a formatter in `format.ts`.
 
 ### IV.2 BUILTIN_VIEW_MODELS
 
-`starter-protocol.ts` exports a registry covering all 21 standard sections.
+`starter-protocol.ts` exports the current `BUILTIN_VIEW_MODELS` registry of
+32 presentation entries, including class-specific views.
 Implementations SHOULD use this registry as the default. Modules MAY
 override per-section by declaring a `view_models[]` entry with the
 matching `section_id` (§X).

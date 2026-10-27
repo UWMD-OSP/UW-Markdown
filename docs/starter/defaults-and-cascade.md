@@ -120,7 +120,7 @@ The reference library publishes per-asset-class default tables from
 `@uwmd/core` (`getAssetClassDefaults(assetClass)` and the per-class
 `*_DEFAULTS` tables). Each entry resolves to a `{low, central,
 high}` triple plus a unit and source tag. Producers consuming the
-table at cascade step 5 (`asset_class_default`) MUST use the
+table at cascade step 6 (`asset_class_default`) MUST use the
 published `central` value as the resolved scalar and MAY surface the
 range to downstream consumers via `field_overrides`.
 
@@ -134,12 +134,12 @@ prints it beside `source` and `resolved_from`, so a starter proxy (for example
 a data-center range that reuses the industrial table) is never shown as a bare
 number. A table MAY omit a field outright — land and mixed-use publish no
 income-property ranges, and data center publishes no expense ratio because its
-expense basis is grossed up for power (owner decision 2026-10-10, RFC 0080).
+expense basis is grossed up for power (RFC 0080).
 An omitted field resolves past `asset_class_default` to the global or system
 default; a resolver MUST NOT borrow another class's table for it.
 
-The `MarketDataLookup` interface (cascade step 4) is defined by the
+The `MarketDataLookup` interface (cascade step 5) is defined by the
 reference library but ships no built-in implementation; adopters
 bring their own (CoStar, Yardi, internal). When no implementation is
-attached, step 4 is silently skipped and resolution falls through to
-step 5.
+attached, step 5 is silently skipped and resolution falls through to
+step 6.

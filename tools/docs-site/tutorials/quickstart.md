@@ -75,7 +75,7 @@ npx @uwmd/cli summary Parkview-Apts-Glendale-AZ.uwx.md
 
 To look through the rent roll, operating statement, and narrative without a
 terminal, open the same file in the [viewer](/viewer/) or the
-[reference editor](https://www.uwmd.org/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md){target="_self"}.
+[reference editor](/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md){target="_self"}.
 
 ## 4. Verify the arithmetic
 
