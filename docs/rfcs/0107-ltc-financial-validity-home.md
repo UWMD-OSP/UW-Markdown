@@ -91,7 +91,7 @@ case 67.
 - **Compute LTC from `loan_amount ÷ uses.total` and check that.** That is
   financial math in validation; the dictionary already computes `ltc`, and §5.2
   reads stated values only (RFC 0105). Rejected.
-- **No frontmatter home.** Proposed in the draft as D2; the owner ruled for
+- **No frontmatter home.** Proposed in the draft as D2; the prelaunch policyd for
   `quick_metrics.ltc`, which matches DSCR and LTV.
 - **Check LTC only for construction loans** (`loan_purpose` or `loan_type`
   `construction`). Closer to the row's label, but a producer that states LTC on

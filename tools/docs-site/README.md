@@ -98,7 +98,7 @@ only watches local development). Ordinary pushes with no matching changed file
 skip the site build. Cloudflare bypasses this filter for empty pushes and pushes
 containing at least 3,000 files or 20 commits. Other build inputs, including
 `spec/`, `packages/`, root Markdown and build configuration, intentionally do not
-trigger it under the owner's selected policy; manually trigger a build when
+trigger it under the configured build policy; manually trigger a build when
 those inputs need publishing.
 
 `uwmd.org` and `www.uwmd.org` are attached to the Worker; canonical links use

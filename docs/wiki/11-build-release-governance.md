@@ -3,8 +3,8 @@
 ## Monorepo & tooling
 
 The required index gate also scans every tracked file for internal process
-narration using `scripts/public-voice.mjs`. It currently reports findings while
-the editorial cleanup is in progress. Its allow-list contains exact file/line
+narration using `scripts/public-voice.mjs` and fails on any finding.
+Its allow-list contains exact file/line
 pairs with a technical reason; it has no directory or historical baseline
 exemptions. Regression controls run through `npm run verify-indexes`.
 

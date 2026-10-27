@@ -98,7 +98,7 @@ changes. No land or other-class entry changes.
 
 The synchronized spec/dictionary/pack and conformance changes implement the
 accepted contract. No version
-is allocated; prelaunch packages remain 4.x under the owner rule. No historical
+is allocated; prelaunch packages remain 4.x under the prelaunch policy. No historical
 artifact repair or compatibility path.
 
 ## Conformance impact

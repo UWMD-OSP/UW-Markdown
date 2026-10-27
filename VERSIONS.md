@@ -434,7 +434,7 @@ The current version matrix above records the implemented release state.
 
 ## Development and release policy
 
-Apply the 2026-10-17 owner rule above. Earlier release descriptions are not
+Apply the prelaunch policy above. Earlier release descriptions are not
 compatibility obligations. Use the current source, accepted RFCs and conformance
 for development; do not maintain old readers, receipts, APIs or document repair
 paths for prelaunch consumers. Current source/digest correctness remains part of

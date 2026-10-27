@@ -27,7 +27,7 @@ projections or choose assumptions.
 RFC 0078 D1/D7 stand. The approved convention registry gains the owner's
 2026-10-17 addition, per-loan `ltv_basis`. **Draft, docs only:** no implementation,
 profile claim, schema, dictionary rule, diagnostic or receipt behavior activates.
-The owner's 2026-10-23 ruling resolves U3–U7 for the bounded admissions in
+The accepted 2026-10-23 resolution resolves U3–U7 for the bounded admissions in
 section3a. The maintainers selected U1 option A and U9 option A on 2026-10-24:
 exactly the fifteen section4b entries, with land outside the initial set, and
 completed exit1 for unmet required declared-ledger obligations. Independent

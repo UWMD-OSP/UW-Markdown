@@ -8,10 +8,11 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Consolidate coding-agent guidance into one contributor guide, with import-only root/tool entry points and matching index controls.
+- Consolidate coding-agent and contributor guidance, with import-only root/tool entry points and matching index controls.
 
 - Normalize RFC attribution and public terminology, retain the required numerical/conformance controls, and consolidate historical changelog and roadmap prose. No financial calculation or verification rule changes.
 
+- Enforce tracked public-language checks in the required index gate with exact technical-label exceptions. Remove internal release, review and status paperwork plus obsolete skill/site wiring; retain current conformance dependencies and repair documentation links.
 
 - Implement RFC0129’s loan quote, offering memorandum and appraisal source-fact profiles: closed schemas, attribution validation, explicit read-only candidates, package history/integrity, complete Lite views and required conformance. No formula or automatic underwriting input is added; fact-operation CLI/MCP/HTTP bindings and Lite compilation remain unsupported.
 

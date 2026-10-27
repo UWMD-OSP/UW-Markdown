@@ -427,7 +427,7 @@ and stays correct as specified, so this RFC does not change CC-13.
 
 ## Resolved questions
 
-The owner resolved the draft's four open questions on acceptance, 2026-10-02:
+The maintainers resolved the draft's four open questions on acceptance, 2026-10-02:
 
 - **Senior housing: out of scope.** `senior_housing` also states `total_beds`
   as a secondary size (§4.1), but RFC 0069 does not extend `occupied_beds`,

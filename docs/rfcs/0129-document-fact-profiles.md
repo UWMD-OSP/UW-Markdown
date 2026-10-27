@@ -239,7 +239,7 @@ LTV basis unstated. A second conflicting opinion blocks automatic projection.
 
 ## Compatibility analysis
 
-This is a prelaunch4.x proposal under the owner rule. No compatibility layer,
+This is a prelaunch4.x proposal under the prelaunch policy. No compatibility layer,
 migration path, deprecation or published-version change is proposed.
 
 ## Conformance impact

@@ -101,7 +101,7 @@ implementation.
 
 ## Compatibility analysis
 
-No compatibility path (prelaunch; the owner rule). The reference implementation
+No compatibility path (prelaunch; the prelaunch policy). The reference implementation
 claims every capability, so its results do not change. The Python
 implementation's manifest gains flags only as it implements each verifier.
 

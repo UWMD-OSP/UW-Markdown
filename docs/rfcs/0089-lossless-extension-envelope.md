@@ -397,7 +397,7 @@ separate explicit approval. Modules/financial definitions are unchanged.
 
 | Decision | Recommendation | Authority / acceptance evidence |
 |---|---|---|
-| D1/D2 tagged exact identities | Retain owner-selected single/variants and null != default | Direction selected 2026-10-17; current peer loss reproduced; exact source/order/history fixtures required |
+| D1/D2 tagged exact identities | Retain accepted single/variants and null != default | Direction selected 2026-10-17; current peer loss reproduced; exact source/order/history fixtures required |
 | D3 minimum/full subject | Tagged portable minimum; full authored Envelope for commitments | Selected direction; independently frozen absent/null/notes/prose controls required |
 | D4 total mapping | ASCII lexical XML; CSV block-extra + empty carrier; strict raw duplicate admission | Selected direction; complete lawful-domain independent codecs and actual ZIP refusals required |
 | D5 commitments | New complete subject, unchanged V.13 admission and current receipt precedence | Selected direction plus accepted RFCs 0088/0111/0123/0124; real signing/receipt state-machine controls required |

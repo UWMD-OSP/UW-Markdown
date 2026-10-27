@@ -63,7 +63,7 @@ not convert between standards.
 
 ## Compatibility analysis
 
-No compatibility path (prelaunch; the owner rule). The member is optional, so no
+No compatibility path (prelaunch; the prelaunch policy). The member is optional, so no
 existing record changes meaning.
 
 ## Conformance impact

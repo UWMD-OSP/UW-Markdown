@@ -11,7 +11,7 @@ last_modified: "2026-09-12T00:00:00Z"
 # Synthetic property cash-flow assembly
 
 Engineering test inputs only. No actual property, transaction or underwriting
-recommendation. The owner requested synthetic fixtures before real-deal review.
+recommendation. All fixtures are synthetic engineering inputs.
 
 The restricted reserve funds separate maintenance work. Its internal spending
 is excluded from every cash row below, including lease-up TI/LC and nonleasing

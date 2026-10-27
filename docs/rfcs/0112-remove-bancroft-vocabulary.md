@@ -93,7 +93,7 @@ block, but no longer *which layer of which product* did.
 
 ## Compatibility analysis
 
-No compatibility path (prelaunch; the owner rule). Records that carry
+No compatibility path (prelaunch; the prelaunch policy). Records that carry
 `pipeline_state` keep reading (D4). Module manifests that declare
 `agent_layers` are refused. Examples, fixtures and baselines are rewritten.
 

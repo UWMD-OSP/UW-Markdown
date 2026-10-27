@@ -558,7 +558,7 @@ no intervening accepted change or release takes those slots.
 
 Protocol-minor applicability is explicit opt-in: the old escrow branch is
 preserved and the new branch has stronger deterministic evidence requirements.
-The owner-selected direction permits an old tool to refuse new-feature files;
+The accepted direction permits an old tool to refuse new-feature files;
 it does not promise that every new file validates under every prior protocol.
 The missing-section coverage correction enforces existing normative behavior.
 

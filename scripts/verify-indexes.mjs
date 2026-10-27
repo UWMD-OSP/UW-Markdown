@@ -202,10 +202,10 @@ const identities = trackedPublicIdentityFindings(root);
 failures.push(...identities.map(({ path, line, rule }) => `${path}:${line}: public identity policy (${rule})`));
 checks.push('Tracked file contents checked against the public identity policy');
 
-// Report during the editorial sweep; switch to enforcing once it is complete.
+// Public language is enforced in this already-required Main CI gate.
 const voice = trackedPublicVoiceFindings(root);
-for (const { path, line, rule } of voice) console.warn(`[VOICE] ${path}:${line}: ${rule}`);
-checks.push(`Tracked public voice scan: ${voice.length} findings (report mode)`);
+failures.push(...voice.map(({ path, line, rule }) => `${path}:${line}: public language policy (${rule})`));
+checks.push(`Tracked public language enforced: ${voice.length} findings`);
 
 // ── Report ───────────────────────────────────────────────────────────────────
 

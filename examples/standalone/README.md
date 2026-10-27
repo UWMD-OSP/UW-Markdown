@@ -5,7 +5,7 @@ fragments, composition and deal-package examples. It has explicit authored
 review/lifecycle declarations and tests complete resolved models, digests,
 package integrity and source-context boundaries.
 
-The2026-10-17 owner rule retires prelaunch preservation, migration and repair
+The prelaunch policy retires prelaunch preservation, migration and repair
 work. Existing examples are ordinary development inputs; their historical
 bytes and verdicts are not compatibility gates. Current verification tests
 continue to enforce the accepted contracts.

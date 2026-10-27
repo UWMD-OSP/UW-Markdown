@@ -55,7 +55,7 @@ This RFC defines the field as paid room nights sold.
 
 ## Compatibility analysis
 
-No compatibility path (prelaunch; the owner rule). The examples' stated counts
+No compatibility path (prelaunch; the prelaunch policy). The examples' stated counts
 are already paid counts; at implementation, each is checked against its
 narrative.
 

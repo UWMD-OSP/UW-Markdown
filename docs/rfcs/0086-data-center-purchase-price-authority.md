@@ -87,7 +87,7 @@ the way CC-10 checks Sources & Uses.
 
 ## Compatibility analysis
 
-No compatibility path (prelaunch; the owner rule). A record whose frontmatter
+No compatibility path (prelaunch; the prelaunch policy). A record whose frontmatter
 price differs from its valuation by more than $100 changes outcome:
 - it gains a `CC-17` error;
 - its stated `price_per_commissioned_kw` is now checked against the valuation

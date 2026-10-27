@@ -410,7 +410,7 @@ new error allocations. Original111 portable validate expectations remain the
 current authority unless a separately reviewed attributed change is approved.
 
 Implementation must provide these focused authored controls and independent
-expected arrays, with the owner-selected U1–U3 rules frozen before activation:
+expected arrays, with the accepted U1–U3 rules frozen before activation:
 
 | Group | Required positive/negative evidence |
 |---|---|

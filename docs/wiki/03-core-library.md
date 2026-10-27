@@ -81,7 +81,7 @@ else in the repo depends on one or both:
 
 ## Pinned numerical primitives — draft RFC0088 candidate
 
-The owner selected one pinned fdlibm procedure for `pow`, `exp` and `log`.
+RFC 0088 selects one pinned fdlibm procedure for `pow`, `exp` and `log`.
 The draft implementation exports `pinnedPow(base, exponent)`, `pinnedExp(value)`
 and `pinnedLog(value)` from `@uwmd/verify` and its browser entry, with identical
 bindings through both core entries. StackUW can use that same implementation;

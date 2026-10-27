@@ -37,9 +37,9 @@ schema/fallback diagnostic.
 | D1 | META-02/error and META-03/error for the two already-required canonical boolean members; literal true/false only | Accepted decision; existing Format/schema types |
 | D2 | Existing container/actor precedence, independent findings and exact field attribution; flags pass follows shape/actor and precedes role/period/source | Independently reviewed bounded implementation |
 | D3 | All retained physical blocks, including history, plus explicit mutable-model identity union | Accepted operation boundaries; no history-authority decision for RFC0085 |
-| D4 | Governed diagnostic expectations and authored positives; no ongoing prelaunch artifact freeze | Six declarations accepted; later2026-10-17 owner rule retires retention work |
+| D4 | Governed diagnostic expectations and authored positives; no ongoing prelaunch artifact freeze | Six declarations accepted; later2026-10-17 prelaunch policy retires retention work |
 | D5 | Activation can change validation exits and newly issued receipt policy counts; no source or historical-subject repair | Explicit owner activation decision; existing receipt rules |
-| D6 | No prelaunch version recommendation;4.x.x development and coordinated npm5.0.0 launch | Later2026-10-17 explicit owner rule |
+| D6 | No prelaunch version recommendation;4.x.x development and coordinated npm5.0.0 launch | Later2026-10-17 explicit prelaunch policy |
 
 ## Evidence and joint contract
 
