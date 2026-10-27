@@ -93,7 +93,7 @@ object. `_meta.section` repeats the section id.
 - `uwmd validate` reports no error, and every remaining warning is explained in
   the narrative.
 - `uwmd verify` reports no `failed` statement, and every `unverifiable` statement is disclosed; an exit0 alone does not establish complete assurance.
-- A stated LTV has an explicit `ltv_basis` and the matching source input (Format RFC0092 bounded wire contract); never guess a denominator or claim pro-forma support.
+- A stated LTV has an explicit `ltv_basis` and the matching source input (Format RFC0092 bounded wire contract); never guess a denominator. Base `verify` does not establish pro-forma coverage. Use the explicitly supported CLI/library profile and inspect its report when that claim is needed; the MCP connector has no pro-forma binding. See the [scoped source/runtime proof](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/03-core-library.md#rfc-0092-support-scope).
 - Every figure traces to a source document or is marked as an assumption.
 
 ## References

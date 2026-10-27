@@ -22,9 +22,11 @@ record's text, not a path.
 
 Results follow the [UW MCP binding](../../spec/bindings/UW_MCP_BINDING_v1.md)'s
 result rule (§3): structured content plus the same value as one JSON text block.
-A refusal (an unparseable record, an unsupported version, a record over 5 MB) is
+A refusal (an unparseable record, an unsupported version, a record over 5 MiB (5 × 1024 × 1024 bytes)) is
 `isError: true` with a structured `code` and no stack trace. Signatures are
-counted but not checked: the connector holds no key store.
+counted but not checked: the connector holds no key store. The connector does
+not expose RFC0092 pro-forma verification; that scoped claim is for the CLI
+and public library at the documented source, not this MCP binding.
 
 These are stateless companions to the binding's `deal_id` tools, which a server
 with stored deals implements; they do not redefine them.
