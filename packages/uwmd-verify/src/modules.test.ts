@@ -6,9 +6,11 @@ import type { ModuleManifest } from './protocol.js';
 import {
   ModuleRegistryError,
   createModuleRegistry,
+  createModuleRegistryAsync,
   declarationOwnersOf,
   getModuleCalculationsForAssetClass,
   loadModuleManifest,
+  loadModuleManifestAsync,
 } from './modules.js';
 
 const BASE: ModuleManifest = {
@@ -35,6 +37,18 @@ const BASE: ModuleManifest = {
 };
 
 describe('loadModuleManifest', () => {
+  it('applies async signature policy before returning a module registry', async () => {
+    const optional = await loadModuleManifestAsync(BASE, { signaturePolicy: 'verify-if-present' });
+    expect(optional.ok).toBe(true);
+    const required = await loadModuleManifestAsync(BASE, { signaturePolicy: 'require' });
+    expect(required.ok).toBe(false);
+    await expect(createModuleRegistryAsync({ modules: [BASE], signaturePolicy: 'require' })).rejects.toThrow(ModuleRegistryError);
+    const accepted = await createModuleRegistryAsync({ modules: [BASE], signaturePolicy: 'verify-if-present' });
+    expect(accepted.byId.get(BASE.id)?.version).toBe(BASE.version);
+    const malformed = { ...BASE, manifest_version: 'invalid' };
+    expect(await loadModuleManifestAsync(malformed, { signaturePolicy: 'require' })).toEqual(loadModuleManifest(malformed));
+  });
+
   it('loads a valid declarative module manifest', () => {
     const result = loadModuleManifest(BASE);
 

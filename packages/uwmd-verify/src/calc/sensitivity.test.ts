@@ -3,6 +3,7 @@ import {
   MAX_SENSITIVITY_AXIS,
   MAX_SENSITIVITY_CELLS,
   evaluateSensitivity,
+  assertSensitivityOk,
   isSensitivityDecl,
   type SensitivityDecl,
 } from './sensitivity.js';
@@ -226,5 +227,15 @@ describe('isSensitivityDecl', () => {
   it('rejects non-objects', () => {
     expect(isSensitivityDecl(null)).toBe(false);
     expect(isSensitivityDecl('base_formula')).toBe(false);
+  });
+});
+
+
+describe('sensitivity exception boundary', () => {
+  it('preserves a refused empty-axis result as a typed calculator error', () => {
+    const result = evaluateSensitivity({ ...BASE, row_axis: { ...BASE.row_axis, values: [] } }, CTX);
+    expect(result.ok).toBe(false);
+    expect(() => assertSensitivityOk(result)).toThrow(result.error!.code);
+    expect(() => assertSensitivityOk(evaluateSensitivity(BASE, CTX))).not.toThrow();
   });
 });

@@ -33,6 +33,15 @@ afterAll(async () => {
 });
 
 describe('registered source files', () => {
+  it('refuses an unregistered Lite anchor without changing its bytes', async () => {
+    const file = join(temp, 'unregistered-field.uw.md');
+    const source = await readFile(files.lite!, 'utf8');
+    await writeFile(file, `${source}\n- Synthetic: 1 <!-- uw:acquisition.not_registered -->\n`);
+    const before = await readFile(file);
+    await expect(loadUWSourceFile(file)).rejects.toMatchObject({ code: 'LITE_COMPILE_FIELD_UNKNOWN' });
+    expect(await readFile(file)).toEqual(before);
+  });
+
   it('preserves XML declaration/BOM positions and refuses invalid UTF-8 bytes', async () => {
     const xml = await readFile(files['uw-xml']!, 'utf8');
     const path = join(temp,'synthetic-boundary.uw.xml');

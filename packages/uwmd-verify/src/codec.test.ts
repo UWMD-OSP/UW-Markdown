@@ -21,6 +21,20 @@ const EMPTY_DOCUMENT = toUWEnvelope({
 });
 
 describe('CodecRegistry', () => {
+  it('prefers the longest overlapping suffix and normalizes media-type parameters', () => {
+    const specific: UWCodec<string> = { ...UW_JSON_CODEC, descriptor: {
+      ...UW_JSON_CODEC.descriptor, id: 'qa-specific',
+      media_types: ['application/x-qa-specific'], file_extensions: ['.long.uw.json', '.qa'],
+    } };
+    const registry = new CodecRegistry([UW_JSON_CODEC, specific]);
+    expect(registry.findByFileName('RECORD.LONG.UW.JSON')).toBe(specific);
+    expect(registry.findByFileName('record.uw.json')).toBe(UW_JSON_CODEC);
+    expect(registry.findByFileName('record.unknown')).toBeNull();
+    expect(registry.findByMediaType(' APPLICATION/X-QA-SPECIFIC ; charset=utf-8')).toBe(specific);
+    expect(registry.findByMediaType('application/x-absent')).toBeNull();
+    expect(registry.list().map(item => item.id)).toEqual(['qa-specific', 'uw-json']);
+  });
+
   it('discovers codecs by id, media type, and longest file extension', () => {
     const registry = new CodecRegistry([UW_JSON_CODEC]);
     expect(registry.get('uw-json')).toBe(UW_JSON_CODEC);

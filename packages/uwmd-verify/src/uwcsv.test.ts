@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { strToU8, zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
-import { areEnvelopesEquivalent, fromUWEnvelope, toUWEnvelope } from './envelope.js';
+import { areEnvelopesEquivalent, fromUWEnvelope, toUWEnvelope, type UWEnvelopeBlock } from './envelope.js';
 import { validateUWFile } from './validator.js';
 import { parseUWFile } from './parser.js';
 import { sha256BytesHex } from './integrity.js';
@@ -27,6 +27,42 @@ const envelope = toUWEnvelope(parseUWFile(source), {
 });
 
 describe('UW CSV Bundle 2.0', () => {
+  it('preserves populated auxiliary collections, nullable extension variants and empty history slots', async () => {
+    const extended = structuredClone(envelope);
+    const property = structuredClone(extended.sections['property']) as UWEnvelopeBlock;
+    for (const key of ['pipeline_log', 'custom_calculations', 'custom_scenarios'] as const) {
+      extended[key] = [structuredClone(property), structuredClone(property)];
+    }
+    const extension = (variant: string | null): UWEnvelopeBlock => {
+      const value = structuredClone(property);
+      value.annotation.section = 'x_qa_archive';
+      (value.content['_meta'] as Record<string, unknown>)['section'] = 'x_qa_archive';
+      if (variant === null) delete value.annotation.variant;
+      else value.annotation.variant = variant;
+      value.prose = 'Synthetic provenance — café 雪';
+      return value;
+    };
+    extended.extensions['x_qa_archive'] = { mode: 'variants', blocks: [
+      { variant: null, block: extension(null) },
+      { variant: 'base', block: extension('base') },
+      { variant: 'stress', block: extension('stress') },
+    ] };
+    extended.superseded['property'] = [];
+    extended.superseded['debt_structure'] = [];
+    const history = structuredClone(extended.sections['valuation']) as UWEnvelopeBlock;
+    const meta = history.content['_meta'] as Record<string, unknown>;
+    (meta['lifecycle'] as Record<string, unknown>)['superseded'] = true;
+    extended.superseded['valuation'] = [history];
+    const before = structuredClone(extended);
+    const decoded = await decodeUWCSVBundle(await encodeUWCSVBundle(extended));
+    expect(areEnvelopesEquivalent(decoded, extended)).toBe(true);
+    expect(decoded.superseded['property']).toEqual([]);
+    expect(decoded.superseded['debt_structure']).toEqual([]);
+    const restored = fromUWEnvelope(decoded);
+    expect(areEnvelopesEquivalent(toUWEnvelope(restored), extended)).toBe(true);
+    expect(extended).toEqual(before);
+  });
+
   it('round-trips the complete envelope through normalized CSV tables', async () => {
     const bundle = await encodeUWCSVBundle(envelope);
     expect(Object.keys(bundle.files).sort()).toEqual([
