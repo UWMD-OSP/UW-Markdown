@@ -1,5 +1,7 @@
 # 13 — Build status (living document)
 
+**Agent-kit refresh.** Anonymous aggregate coverage includes the released lake package; valid zero counts and unavailable counts remain distinct. Skill/MCP docs distinguish supported CLI/library pro-forma from the unsupported MCP binding and state the exact 5 MiB limit. Measurement is observational, not an adoption target; nothing is listed or deployed.
+
 **Foundation and growth.** Newcomer-oriented [foundation](../FOUNDATION.md) and [growth paths](../HOW-UWMD-GROWS.md) connect existing contracts to seven contributor paths. Dedicated conformance/verification-profile playbooks complete the set. Postlaunch promises restate RELEASE_RULES/VERSIONS; drafts and planned families remain unclaimed.
 
 **Known limits.** The [plain-language limits](../KNOWN-LIMITS.md) separate representable source facts, structural checks and verified financial assertions. Current synthetic probes cover64 cases; gaps are tracked in issues572–578 without inventing a financial convention or silently repairing inputs.

@@ -1,6 +1,6 @@
 import { pathToFileURL } from 'node:url';
 
-const PACKAGES = ['verify', 'core', 'cli', 'excel', 'signing', 'batch', 'report', 'mcp'];
+const PACKAGES = ['verify', 'core', 'cli', 'excel', 'signing', 'batch', 'report', 'lake', 'mcp'];
 const REPO = 'UWMD-OSP/UW-Markdown';
 const HEADERS = Object.freeze({ Accept: 'application/json', 'User-Agent': 'UWMD-aggregate-counts/1.0' });
 const LIMIT = 8192;
