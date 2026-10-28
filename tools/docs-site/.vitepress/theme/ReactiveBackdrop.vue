@@ -71,7 +71,7 @@ onUnmounted(() => dispose());
 
 <template>
   <div ref="field" class="uw-ambient" aria-hidden="true">
-    <div class="uw-aurora uw-aurora-mint" />
+    <div class="uw-aurora uw-aurora-coral" />
     <div class="uw-aurora uw-aurora-violet" />
     <div class="uw-aurora uw-aurora-blue" />
     <div class="uw-ambient-grid" />

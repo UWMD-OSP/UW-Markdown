@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Add a terminal-inspired site theme and a homepage gradient that responds to pointer movement and scrolling, with reduced-motion and background-tab handling.
+- Add a terminal-inspired ultraviolet/coral site theme, a fine 24px grid and a homepage gradient that responds to pointer movement and scrolling, with reduced-motion and background-tab handling.
 
 - Remove the generated 404 page's indexing tag when returning to a normal page through client navigation.
 
