@@ -137,7 +137,7 @@
 }
 
 /* The decorative field lives only while the home component is mounted. */
-.dark .uw-home { --uw-accent: var(--uw-source-accent); }
+.dark .uw-home { --uw-accent: var(--uw-source-accent); --vp-c-text-2: #e2eaf5; }
 .uw-ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: var(--vp-c-bg); }
 .uw-pixel-field { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
 .uw-ambient-grid { position: absolute; inset: 0; background-image: linear-gradient(rgb(60 100 140 / .06) 1px, transparent 1px), linear-gradient(90deg, rgb(60 100 140 / .06) 1px, transparent 1px); background-size: 24px 24px; mask-image: linear-gradient(#000, transparent 85%); }
