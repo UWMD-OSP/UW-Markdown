@@ -103,7 +103,7 @@ for (const path of ['/', '/tutorials/quickstart', '/spec/format', '/spec/metrics
 const missing = await request('/__discovery_missing__');
 assert.equal(missing.status, 404);
 const missingHtml = await missing.text();
-assert.match(missingHtml, /<meta name="robots" content="noindex">/);
+assert.match(missingHtml, /<meta name="robots" content="noindex" data-uwmd-not-found(?:="")?>/);
 assert.doesNotMatch(missingHtml, /rel="canonical"/);
 const dist = fileURLToPath(new URL('../.vitepress/dist/', import.meta.url));
 const sitemap = await request('/sitemap.xml');

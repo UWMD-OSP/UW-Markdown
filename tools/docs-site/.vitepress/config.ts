@@ -20,7 +20,7 @@ export default defineConfig({
   transformPageData: (page) => addDiscoveryMetadata(page, SITE_DESCRIPTION),
   // The default 404 is synthesized after normal Markdown page transforms.
   transformHead: ({ page }) => page === '404.md'
-    ? [['meta', { name: 'robots', content: 'noindex' }]]
+    ? [['meta', { name: 'robots', content: 'noindex', 'data-uwmd-not-found': '' }]]
     : [],
 
   head: [
