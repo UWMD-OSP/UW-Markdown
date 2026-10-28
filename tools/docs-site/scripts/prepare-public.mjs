@@ -10,6 +10,8 @@ const repoRoot = resolve(siteRoot, '..', '..');
 
 const files = [
   ['tools/docs-site/static/_headers', '_headers'],
+  ['tools/docs-site/static/robots.txt', 'robots.txt'],
+  ['tools/docs-site/static/security.txt', '.well-known/security.txt'],
   ['docs/site-assets/og-v2.png', 'og-v2.png'],
   ['docs/site-assets/favicon.svg', 'favicon.svg'],
   ['tools/web-viewer/index.html', 'viewer/app/index.html'],
