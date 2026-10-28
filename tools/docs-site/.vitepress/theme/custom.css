@@ -1,8 +1,21 @@
 :root {
-  --vp-c-brand-1: #18181b;
-  --vp-c-brand-2: #3f3f46;
-  --vp-c-brand-3: #52525b;
-  --vp-c-brand-soft: rgba(24, 24, 27, .07);
+  --uw-field-one: #245BFF;
+  --uw-field-two: #88E6FF;
+  --uw-field-three: #85A9CF;
+  --uw-field-strength: .23;
+  --uw-home-button: #245BFF;
+  --uw-home-button-foreground: #F2F7FF;
+  --uw-home-button-hover: #1745D1;
+  --uw-home-title-accent: #285c80;
+  --uw-source-bg: #0c141d;
+  --uw-source-text: #eaf3fc;
+  --uw-source-muted: #b4c4d3;
+  --uw-source-accent: #88E6FF;
+  --uw-source-string: #cbdcff;
+  --vp-c-brand-1: #195893;
+  --vp-c-brand-2: #124a80;
+  --vp-c-brand-3: #103e6a;
+  --vp-c-brand-soft: rgba(25, 88, 147, .08);
   --vp-c-bg: #ffffff;
   --vp-c-bg-alt: #fafafa;
   --vp-c-bg-soft: #f4f4f5;
@@ -28,24 +41,26 @@
   --vp-nav-height: 72px;
 }
 .dark {
-  --vp-c-brand-1: #f4f4f5;
-  --vp-c-brand-2: #e4e4e7;
-  --vp-c-brand-3: #d4d4d8;
-  --vp-c-brand-soft: rgba(244, 244, 245, .08);
-  --vp-c-bg: #111113;
-  --vp-c-bg-alt: #18181b;
-  --vp-c-bg-soft: #27272a;
-  --vp-c-bg-elv: #202023;
-  --vp-c-border: #3f3f46;
-  --vp-c-divider: #303035;
-  --vp-c-gutter: #202023;
+  --uw-field-strength: .62;
+  --uw-home-title-accent: #88E6FF;
+  --vp-c-brand-1: #88E6FF;
+  --vp-c-brand-2: #c3efff;
+  --vp-c-brand-3: #77c9f3;
+  --vp-c-brand-soft: rgba(159, 227, 255, .12);
+  --vp-c-bg: #090D18;
+  --vp-c-bg-alt: #101820;
+  --vp-c-bg-soft: #1b2835;
+  --vp-c-bg-elv: #15212c;
+  --vp-c-border: #394c5d;
+  --vp-c-divider: #273949;
+  --vp-c-gutter: #15212c;
   --vp-c-text-1: #f4f4f5;
   --vp-c-text-2: #b9b9c1;
   --vp-c-text-3: #a1a1aa;
   --vp-code-color: #e4e4e7;
   --vp-code-bg: #27272a;
-  --vp-code-block-bg: #18181b;
-  --uw-code-string: #d6b4ed;
+  --vp-code-block-bg: #101820;
+  --uw-code-string: #cbdcff;
   --uw-green: #f4f4f5;
   --uw-blue: #a7bafb;
   --uw-amber: #dbb86f;
@@ -110,3 +125,9 @@ body { text-rendering: optimizeLegibility; }
   .vp-doc h2 { font-size: 28px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Terminal accents frame the publication; long-form documentation stays sans-serif. */
+.VPNavBarTitle .title { font-family: var(--vp-font-family-mono); font-size: 18px; font-weight: 600; letter-spacing: -.065em; }
+.VPNavBarMenuLink, .VPNavBarMenuGroup .text { font-family: var(--vp-font-family-mono); font-size: 12px; }
+.VPButton { border-radius: 3px !important; }
+.dark .VPButton.brand { color: #061a28; }

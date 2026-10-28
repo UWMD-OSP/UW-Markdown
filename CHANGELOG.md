@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Add a terminal-inspired cobalt/cyan site theme, a fine 24px grid and a dithered pixel gradient that responds to pointer movement and scrolling, with reduced-motion and background-tab handling.
+
 - Remove the generated 404 page's indexing tag when returning to a normal page through client navigation.
 
 - Rework the public site around a neutral developer-tool layout and the example record; add crawl directives, per-page canonical/social metadata and a machine-readable link to the existing security policy.

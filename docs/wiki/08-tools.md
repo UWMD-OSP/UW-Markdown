@@ -600,9 +600,17 @@ build: `npm run build`.
 
 Public positioning (home page, `/about`, quickstart) leads with the `.uwx.md`
 record and the AI boundary; UW Lite is introduced as the compact summary
-representation. The home page uses neutral surfaces and sans-serif typography,
+representation. The home page uses terminal typography and an ambient gradient,
 with a synthetic record beside its illustrative view, current standard versions,
 the verification boundary, a standard/tool index and a two-command quickstart.
+`theme/ReactiveBackdrop.vue` owns the decorative homepage field. Pointer and
+scroll inputs drive a low-resolution canvas with ordered dithering, capped at
+approximately 20 updates per second. Its pixel count is bounded on large
+screens. Reduced motion makes the field static; hidden documents pause it.
+Unmounting the homepage cancels its frame, aborts its event listeners and
+disconnects its theme observer.
+Dark is the initial appearance; the persisted light/dark control remains available.
+Long-form documentation retains sans-serif body text.
 `theme/AiBoundary.vue` supplies the explanatory workflow diagram on `/ai`.
 Navigation separates About, Get started, Standard, Tools and Project. Shared
 typography and compact page-classification lines distinguish normative
