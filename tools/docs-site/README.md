@@ -20,6 +20,14 @@ This keeps contribution links on the original files rather than generated copies
 `public/` is excluded from Markdown page discovery: its files remain downloads,
 without duplicate HTML pages or search/sitemap entries for static asset inputs.
 
+`.vitepress/discovery.mjs` adds canonical URLs and page-specific Open Graph and
+Twitter metadata, including on client navigation. The 404 page is `noindex`.
+`static/robots.txt` points crawlers at the sitemap; Cloudflare may prepend its
+managed directives. `static/security.txt` mirrors the published Security Policy
+at `/.well-known/security.txt`; review its expiry before 2027-10-01. Both are
+copied by `prepare-public.mjs` with UTF-8 plain-text response headers. This is a
+documentation site, without an installable-app manifest.
+
 ## Develop
 
 ```bash

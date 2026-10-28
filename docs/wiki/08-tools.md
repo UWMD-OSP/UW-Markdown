@@ -600,13 +600,21 @@ build: `npm run build`.
 
 Public positioning (home page, `/about`, quickstart) leads with the `.uwx.md`
 record and the AI boundary; UW Lite is introduced as the compact summary
-representation. The home page uses an editorial layout: a short introduction,
-current standard versions, a synthetic record beside its illustrative view,
+representation. The home page uses neutral surfaces and sans-serif typography,
+with a synthetic record beside its illustrative view, current standard versions,
 the verification boundary, a standard/tool index and a two-command quickstart.
 `theme/AiBoundary.vue` supplies the explanatory workflow diagram on `/ai`.
 Navigation separates About, Get started, Standard, Tools and Project. Shared
 typography and compact page-classification lines distinguish normative
 documents from reference-tool guidance without obscuring the page title.
+
+The site emits per-page canonical and social metadata through
+`.vitepress/discovery.mjs`, including client-side navigation updates; 404 pages
+are marked `noindex`. `static/robots.txt` names the generated canonical sitemap.
+`static/security.txt` mirrors the existing Security Policy contact and policy URL
+at `/.well-known/security.txt`; review its expiry before 2027-10-01. The build
+copies both text files and their response headers. Hosting checks cover their
+bytes, types, GET/HEAD responses and the rendered discovery metadata.
 
 > This wiki (`docs/wiki/`) is deliberately **not** wired into the docs-site nav —
 > it is internal dev/agent documentation, not part of the published standard.

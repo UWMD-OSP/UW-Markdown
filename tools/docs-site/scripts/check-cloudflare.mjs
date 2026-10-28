@@ -50,6 +50,18 @@ for (const path of ['/llms.txt', '/llms-full.txt']) {
   assert.equal(response.headers.get('cache-control'), 'public, max-age=0, s-maxage=3600');
   assert.match(await response.text(), /UW Markdown/);
 }
+for (const [path, source] of [
+  ['/robots.txt', 'robots.txt'],
+  ['/.well-known/security.txt', 'security.txt'],
+]) {
+  for (const method of ['GET', 'HEAD']) {
+    const response = await request(path, method);
+    assert.equal(response.status, 200, `${method} ${path}`);
+    assert.equal(response.headers.get('content-type'), 'text/plain; charset=utf-8');
+    assert.equal(response.headers.get('cache-control'), 'public, max-age=0, s-maxage=3600');
+    assert.equal(await response.text(), method === 'HEAD' ? '' : await readFile(new URL(`../static/${source}`, import.meta.url), 'utf8'));
+  }
+}
 for (const name of ['blank-screener.uw.md', 'blank-analyst.uw.md', 'blank-screener.uwx.md', 'blank-analyst.uwx.md']) {
   const response = await request(`/downloads/templates/${name}`);
   assert.equal(response.status, 200);
@@ -75,6 +87,24 @@ for (const [path, source] of [
   const href = `https://github.com/UWMD-OSP/UW-Markdown/edit/main/${source}`;
   assert.ok((await response.text()).includes(`href="${href}"`), `${path}: edit link must target ${source}`);
 }
+for (const path of ['/', '/tutorials/quickstart', '/spec/format', '/spec/metrics/', '/about/security']) {
+  const response = await request(path);
+  const html = await response.text();
+  const canonical = `https://www.uwmd.org${path}`;
+  assert.ok(html.includes(`<link rel="canonical" href="${canonical}">`), `${path}: canonical URL`);
+  assert.ok(html.includes(`<meta property="og:url" content="${canonical}">`), `${path}: social URL`);
+  for (const key of ['og:title', 'og:description', 'twitter:title', 'twitter:description']) {
+    const tag = key.startsWith('og:') ? 'property' : 'name';
+    const matches = [...html.matchAll(new RegExp(`<meta ${tag}="${key}" content="([^"]+)">`, 'g'))];
+    assert.equal(matches.length, 1, `${path}: one nonempty ${key}`);
+    if (key.endsWith(':title') && path !== '/') assert.notEqual(matches[0][1], 'UW Markdown', `${path}: page-specific title`);
+  }
+}
+const missing = await request('/__discovery_missing__');
+assert.equal(missing.status, 404);
+const missingHtml = await missing.text();
+assert.match(missingHtml, /<meta name="robots" content="noindex">/);
+assert.doesNotMatch(missingHtml, /rel="canonical"/);
 const dist = fileURLToPath(new URL('../.vitepress/dist/', import.meta.url));
 const sitemap = await request('/sitemap.xml');
 assert.equal(sitemap.status, 200, 'The sitemap must be a real asset, not the 404 page');

@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress';
 import { fileURLToPath } from 'node:url';
 import { docsVersions } from '../../../scripts/docs-site-sources.mjs';
 import { markNormative, siteSidebars } from './page-status.mjs';
+import { addDiscoveryMetadata } from './discovery.mjs';
 
 const versions = docsVersions(fileURLToPath(new URL('../../../', import.meta.url)));
 const SITE_DESCRIPTION =
@@ -16,24 +17,16 @@ export default defineConfig({
   // XSD is copied to public/ as a downloadable static asset.
   ignoreDeadLinks: [/\.xsd$/, /^\/downloads\//],
   srcExclude: ['README.md', 'public/**'],
+  transformPageData: (page) => addDiscoveryMetadata(page, SITE_DESCRIPTION),
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
-    ['meta', { name: 'theme-color', content: '#315f4b' }],
+    ['meta', { name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' }],
+    ['meta', { name: 'theme-color', content: '#111113', media: '(prefers-color-scheme: dark)' }],
     ['meta', { property: 'og:type', content: 'website' }],
-    ['meta', { property: 'og:title', content: 'UW Markdown' }],
-    ['meta', {
-      property: 'og:description',
-      content: SITE_DESCRIPTION,
-    }],
     ['meta', { property: 'og:site_name', content: 'UW Markdown' }],
     ['meta', { property: 'og:image', content: 'https://www.uwmd.org/og-v2.png' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: 'UW Markdown' }],
-    ['meta', {
-      name: 'twitter:description',
-      content: SITE_DESCRIPTION,
-    }],
     ['meta', { name: 'twitter:image', content: 'https://www.uwmd.org/og-v2.png' }],
   ],
 
