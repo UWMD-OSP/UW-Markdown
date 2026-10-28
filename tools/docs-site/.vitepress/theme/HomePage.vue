@@ -1,19 +1,22 @@
 <script setup>
+import ReactiveBackdrop from './ReactiveBackdrop.vue';
 import versions from '../../about/versions.json';
 const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
 </script>
 
 <template>
   <main class="uw-home">
+    <ReactiveBackdrop />
     <section class="uw-hero" aria-labelledby="uw-home-title">
-      <p class="uw-eyebrow">UW Markdown · Open source, open standard</p>
+      <p class="uw-eyebrow"><span class="uw-prompt" aria-hidden="true">~/uwmd $</span> open source. open standard.</p>
       <h1 id="uw-home-title">Underwriting.<br><span>In a common format.</span></h1>
       <p class="uw-intro">Deal facts, assumptions and the reasoning behind them.<br class="uw-desktop-break"> One readable record that people and software can share.</p>
-      <nav class="uw-actions" aria-label="Get started"><a class="uw-button uw-button-primary" href="/tutorials/quickstart">Get started <span aria-hidden="true">→</span></a><a class="uw-button uw-button-secondary" href="/spec/format">Read the specification</a></nav>
+      <nav class="uw-actions" aria-label="Get started"><a class="uw-button uw-button-primary" href="/tutorials/quickstart"><span aria-hidden="true">&gt;_</span> Get started <span aria-hidden="true">↵</span></a><a class="uw-button uw-button-secondary" href="/spec/format">Read the specification <span aria-hidden="true">↗</span></a></nav>
+      <p class="uw-hero-note"><span aria-hidden="true">[</span> Markdown + JSON <span aria-hidden="true">/</span> deterministic verification <span aria-hidden="true">]</span></p>
     </section>
 
     <section id="example" class="uw-example" aria-labelledby="example-title">
-      <header class="uw-example-toolbar"><h2 id="example-title"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true"><path d="M5 2.5h7l3 3v12H5zM11.5 2.5V6H15M8 10h4M8 13h4" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>parkview.uwx.md</h2><span>Synthetic example · Engineering QA</span></header>
+      <header class="uw-example-toolbar"><h2 id="example-title"><span class="uw-prompt" aria-hidden="true">&gt;_</span> cat parkview.uwx.md</h2><span>Synthetic example · Engineering QA</span></header>
       <div class="uw-example-spread">
         <section class="uw-source" aria-labelledby="source-title">
           <div class="uw-subhead"><h3 id="source-title">The record</h3><span>Markdown + JSON</span></div>
@@ -98,8 +101,8 @@ to the post-sale value.
       </div>
     </section>
 
-    <section class="uw-section uw-try" aria-labelledby="try-title"><div><p class="uw-eyebrow">Your first record</p><h2 id="try-title">From terminal to deal file.</h2><p>The published CLI runs with Node.js 18 or later. No account or repository clone is needed.</p><a href="/tutorials/quickstart">Follow the quickstart <span aria-hidden="true">→</span></a></div><div class="uw-command-block"><p>In your terminal</p><pre tabindex="0" aria-label="Create and validate a record"><code>npx @uwmd/cli init --output deal.uwx.md
-npx @uwmd/cli validate deal.uwx.md</code></pre><a href="/downloads/">Or start from a template <span aria-hidden="true">→</span></a></div></section>
+    <section class="uw-section uw-try" aria-labelledby="try-title"><div><p class="uw-eyebrow">Your first record</p><h2 id="try-title">From terminal to deal file.</h2><p>The published CLI runs with Node.js 18 or later. No account or repository clone is needed.</p><a href="/tutorials/quickstart">Follow the quickstart <span aria-hidden="true">→</span></a></div><div class="uw-command-block"><p><span class="uw-prompt" aria-hidden="true">&gt;_</span> quickstart.sh</p><pre tabindex="0" aria-label="Create and validate a record"><code><span class="uw-prompt" aria-hidden="true">$ </span>npx @uwmd/cli init --output deal.uwx.md
+<span class="uw-prompt" aria-hidden="true">$ </span>npx @uwmd/cli validate deal.uwx.md</code></pre><a href="/downloads/">Or start from a template <span aria-hidden="true">→</span></a></div></section>
     <footer class="uw-home-footer"><p>MIT-licensed. Open and vendor-neutral.</p><nav aria-label="About the project"><a href="/about/">About UW Markdown</a><a href="/about/roadmap">Roadmap</a><a href="https://github.com/UWMD-OSP/UW-Markdown">Source on GitHub <span aria-hidden="true">↗</span></a></nav></footer>
   </main>
 </template>

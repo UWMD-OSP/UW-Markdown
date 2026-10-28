@@ -11,6 +11,7 @@ const SITE_DESCRIPTION =
 export default defineConfig({
   title: 'UW Markdown',
   description: SITE_DESCRIPTION,
+  appearance: 'dark',
   cleanUrls: true,
   sitemap: { hostname: 'https://www.uwmd.org' },
   lastUpdated: true,
@@ -26,7 +27,7 @@ export default defineConfig({
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['meta', { name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' }],
-    ['meta', { name: 'theme-color', content: '#111113', media: '(prefers-color-scheme: dark)' }],
+    ['meta', { name: 'theme-color', content: '#090e16', media: '(prefers-color-scheme: dark)' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: 'UW Markdown' }],
     ['meta', { property: 'og:image', content: 'https://www.uwmd.org/og-v2.png' }],

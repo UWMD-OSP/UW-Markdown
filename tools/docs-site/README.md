@@ -29,6 +29,12 @@ at `/.well-known/security.txt`; review its expiry before 2027-10-01. Both are
 copied by `prepare-public.mjs` with UTF-8 plain-text response headers. This is a
 documentation site, without an installable-app manifest.
 
+The homepage uses `theme/ReactiveBackdrop.vue` for its decorative gradient.
+It responds to pointer movement and scroll position, pauses in hidden tabs,
+and stays static for reduced motion. Its frame and listeners are disposed when
+leaving the homepage. The theme initially uses dark appearance and retains the
+persisted appearance control; documentation body text stays sans-serif.
+
 ## Develop
 
 ```bash
