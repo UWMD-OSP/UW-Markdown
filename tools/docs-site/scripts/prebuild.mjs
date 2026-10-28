@@ -399,6 +399,14 @@ function withFrontmatter(md, title) {
   return `---\ntitle: ${JSON.stringify(title)}\n---\n\n${md}`;
 }
 
+function withRepositorySource(md, source) {
+  const field = `repositorySource: ${JSON.stringify(source)}\n`;
+  const opening = /^---\r?\n/.exec(md);
+  return opening
+    ? md.slice(0, opening[0].length) + field + md.slice(opening[0].length)
+    : `---\n${field}---\n\n${md}`;
+}
+
 // ─── RFC status banner ────────────────────────────────────────────────────────
 // VitePress consumes YAML frontmatter, so an RFC's `status:` never reaches the
 // rendered page. That is dangerous for `draft`: a reader lands on a proposal
@@ -452,6 +460,7 @@ for (const c of COPIES) {
   let md = await readFile(src, 'utf8');
   md = rewriteLinks(md);
   md = withFrontmatter(md, c.title);
+  if (c.to.endsWith('.md')) md = withRepositorySource(md, c.from);
   md = withRfcStatusBanner(md, c.to);
   await writeFile(dst, md, 'utf8');
   console.log(`[copy]  ${c.from}  →  ${relative(SITE_ROOT, dst)}`);

@@ -354,8 +354,12 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern:
-        'https://github.com/UWMD-OSP/UW-Markdown/edit/main/:path',
+      pattern: ({ filePath, frontmatter }) => {
+        const source = typeof frontmatter.repositorySource === 'string'
+          ? frontmatter.repositorySource
+          : `tools/docs-site/${filePath}`;
+        return `https://github.com/UWMD-OSP/UW-Markdown/edit/main/${source.split('/').map(encodeURIComponent).join('/')}`;
+      },
       text: 'Edit this page on GitHub',
     },
 

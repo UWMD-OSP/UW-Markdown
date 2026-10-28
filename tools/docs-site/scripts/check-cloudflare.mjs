@@ -62,6 +62,19 @@ for (const [path, type] of [['/favicon.svg', /^image\/svg\+xml\b/], ['/schemas/u
   assert.match(response.headers.get('content-type'), type);
   await response.body?.cancel();
 }
+for (const [path, source] of [
+  ['/spec/format', 'spec/UW_FORMAT_SPEC.md'],
+  ['/guide/glossary', 'docs/GLOSSARY.md'],
+  ['/about/versions', 'VERSIONS.md'],
+  ['/about/rfcs/template', 'docs/rfcs/0000-template.md'],
+  ['/tutorials/quickstart', 'tools/docs-site/tutorials/quickstart.md'],
+  ['/ai/', 'tools/docs-site/ai/index.md'],
+]) {
+  const response = await request(path);
+  assert.equal(response.status, 200);
+  const href = `https://github.com/UWMD-OSP/UW-Markdown/edit/main/${source}`;
+  assert.ok((await response.text()).includes(`href="${href}"`), `${path}: edit link must target ${source}`);
+}
 const dist = fileURLToPath(new URL('../.vitepress/dist/', import.meta.url));
 const sitemap = await request('/sitemap.xml');
 assert.equal(sitemap.status, 200, 'The sitemap must be a real asset, not the 404 page');

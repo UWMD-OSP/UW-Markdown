@@ -14,6 +14,10 @@ site's tree on every dev/build, rewriting relative links to site URLs.
 The copied trees (`spec/`, `conformance/`, `about/`) are gitignored — they
 exist only at build time.
 
+Generated Markdown carries its repository source path as site-only metadata.
+The GitHub edit link uses that path; authored pages point into `tools/docs-site/`.
+This keeps contribution links on the original files rather than generated copies.
+
 ## Develop
 
 ```bash
