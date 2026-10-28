@@ -154,9 +154,9 @@
 
 .uw-intro { font-size: 17px; }
 .uw-button { border-radius: 3px; font-size: 12px; gap: 14px; }
-.uw-home .uw-button-primary { background: #17466d; border-color: #17466d; color: #f3faff; box-shadow: 0 0 24px rgb(7 88 255 / .12); }
+.uw-home .uw-button-primary { background: var(--uw-home-button); border-color: var(--uw-home-button); color: var(--uw-home-button-foreground); box-shadow: 0 0 28px color-mix(in srgb, var(--uw-field-one), transparent 84%); }
 .dark .uw-home .uw-button-primary { background: var(--uw-home-button); border-color: var(--uw-home-button); color: var(--uw-home-button-foreground); box-shadow: 0 0 28px color-mix(in srgb, var(--uw-field-one), transparent 84%); }
-.uw-home .uw-button-primary:hover { background: #195893; border-color: #195893; }
+.uw-home .uw-button-primary:hover { background: var(--uw-home-button-hover); border-color: var(--uw-home-button-hover); }
 .dark .uw-home .uw-button-primary:hover { background: var(--uw-home-button-hover); border-color: var(--uw-home-button-hover); }
 .uw-button-secondary { background: var(--vp-c-bg); }
 .uw-hero-note { margin: 22px 0 0; color: var(--vp-c-text-2); font-size: 10px; line-height: 1.8; }
