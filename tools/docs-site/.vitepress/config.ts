@@ -26,8 +26,12 @@ export default defineConfig({
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: 'UW Markdown' }],
     ['meta', { property: 'og:image', content: 'https://www.uwmd.org/og-v2.png' }],
+    ['meta', { property: 'og:image:width', content: '1200' }],
+    ['meta', { property: 'og:image:height', content: '630' }],
+    ['meta', { property: 'og:image:alt', content: 'UW Markdown — Underwriting. In a common format.' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:image', content: 'https://www.uwmd.org/og-v2.png' }],
+    ['meta', { name: 'twitter:image:alt', content: 'UW Markdown — Underwriting. In a common format.' }],
   ],
 
   themeConfig: {
