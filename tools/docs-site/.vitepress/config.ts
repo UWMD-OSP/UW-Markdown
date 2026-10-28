@@ -18,6 +18,10 @@ export default defineConfig({
   ignoreDeadLinks: [/\.xsd$/, /^\/downloads\//],
   srcExclude: ['README.md', 'public/**'],
   transformPageData: (page) => addDiscoveryMetadata(page, SITE_DESCRIPTION),
+  // The default 404 is synthesized after normal Markdown page transforms.
+  transformHead: ({ page }) => page === '404.md'
+    ? [['meta', { name: 'robots', content: 'noindex' }]]
+    : [],
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
