@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Remove the generated 404 page's indexing tag when returning to a normal page through client navigation.
+
 - Rework the public site around a neutral developer-tool layout and the example record; add crawl directives, per-page canonical/social metadata and a machine-readable link to the existing security policy.
 
 - Refine the public site's typography, homepage hierarchy, documentation navigation and viewer presentation for desktop and mobile reading; repair source-edit links and keep static downloads out of the page index.

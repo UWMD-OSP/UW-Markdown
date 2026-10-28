@@ -21,7 +21,8 @@ This keeps contribution links on the original files rather than generated copies
 without duplicate HTML pages or search/sitemap entries for static asset inputs.
 
 `.vitepress/discovery.mjs` adds canonical URLs and page-specific Open Graph and
-Twitter metadata, including on client navigation. The 404 page is `noindex`.
+Twitter metadata, including on client navigation. The 404 page is `noindex`;
+the layout owns that tag's client lifecycle and removes it on normal pages.
 `static/robots.txt` points crawlers at the sitemap; Cloudflare may prepend its
 managed directives. `static/security.txt` mirrors the published Security Policy
 at `/.well-known/security.txt`; review its expiry before 2027-10-01. Both are

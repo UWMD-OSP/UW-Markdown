@@ -610,7 +610,8 @@ documents from reference-tool guidance without obscuring the page title.
 
 The site emits per-page canonical and social metadata through
 `.vitepress/discovery.mjs`, including client-side navigation updates; 404 pages
-are marked `noindex`. `static/robots.txt` names the generated canonical sitemap.
+are marked `noindex`. The theme layout owns that tag during client navigation,
+removing it when a normal page renders. `static/robots.txt` names the generated canonical sitemap.
 `static/security.txt` mirrors the existing Security Policy contact and policy URL
 at `/.well-known/security.txt`; review its expiry before 2027-10-01. The build
 copies both text files and their response headers. Hosting checks cover their
