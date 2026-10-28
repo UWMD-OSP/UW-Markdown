@@ -15,7 +15,7 @@ export default defineConfig({
   lastUpdated: true,
   // XSD is copied to public/ as a downloadable static asset.
   ignoreDeadLinks: [/\.xsd$/, /^\/downloads\//],
-  srcExclude: ['README.md'],
+  srcExclude: ['README.md', 'public/**'],
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],

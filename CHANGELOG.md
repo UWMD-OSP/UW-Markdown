@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Refine the public site's typography, homepage hierarchy, documentation navigation and viewer presentation for desktop and mobile reading; point contribution links to their repository sources.
+- Refine the public site's typography, homepage hierarchy, documentation navigation and viewer presentation for desktop and mobile reading; repair source-edit links and keep static downloads out of the page index.
 
 - Refresh newcomer documentation against current source, generate the canonical sitemap, and repair rendered navigation, links and presentation.
 

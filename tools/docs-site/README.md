@@ -17,6 +17,8 @@ exist only at build time.
 Generated Markdown carries its repository source path as site-only metadata.
 The GitHub edit link uses that path; authored pages point into `tools/docs-site/`.
 This keeps contribution links on the original files rather than generated copies.
+`public/` is excluded from Markdown page discovery: its files remain downloads,
+without duplicate HTML pages or search/sitemap entries for static asset inputs.
 
 ## Develop
 

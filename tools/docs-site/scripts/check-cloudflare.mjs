@@ -35,7 +35,7 @@ for (const path of ['/', '/spec/format', '/conformance/', '/editor/', '/viewer/a
     else assert.equal(await response.text(), '');
   }
 }
-for (const path of ['/__uwmd_missing__/', '/spec/__uwmd_missing__', '/assets/__uwmd_missing__.js', '/_headers']) {
+for (const path of ['/__uwmd_missing__/', '/spec/__uwmd_missing__', '/assets/__uwmd_missing__.js', '/_headers', '/public/downloads/templates/blank-screener.uw.html']) {
   for (const method of ['GET', 'HEAD']) {
     const response = await request(path, method);
     assert.equal(response.status, 404, `${method} ${path} must not fall back to the homepage`);
@@ -82,6 +82,7 @@ assert.match(sitemap.headers.get('content-type'), /^(application|text)\/xml\b/);
 const sitemapText = await sitemap.text();
 assert.match(sitemapText, /<loc>https:\/\/www\.uwmd\.org\//);
 assert.doesNotMatch(sitemapText, /<loc>[^<]*\/404(?:\.html)?<\/loc>/);
+assert.doesNotMatch(sitemapText, /<loc>[^<]*\/public\//, 'Static download inputs must not become documentation pages');
 const schemas = new URL('../../../spec/schemas/', import.meta.url);
 for (const name of (await readdir(schemas)).filter(name => name.endsWith('.json') || name.endsWith('.xsd'))) {
   const response = await request(`/schemas/${name}`);
