@@ -5,7 +5,7 @@ import { markNormative, siteSidebars } from './page-status.mjs';
 
 const versions = docsVersions(fileURLToPath(new URL('../../../', import.meta.url)));
 const SITE_DESCRIPTION =
-  'One verifiable underwriting record for every CRE deal: the open .uwx.md standard that keeps deal facts, assumptions, narrative, and provenance together, with financial results computed by deterministic code.';
+  'An open standard for commercial real-estate underwriting records. Deal facts, assumptions, narrative and provenance in one readable format, checked by deterministic code.';
 
 export default defineConfig({
   title: 'UW Markdown',
@@ -41,7 +41,7 @@ export default defineConfig({
     siteTitle: 'UW Markdown',
 
     nav: [
-      { text: 'Why UWMD', link: '/about/', activeMatch: '^/about/$' },
+      { text: 'About', link: '/about/', activeMatch: '^/about/$' },
       {
         text: 'Get started',
         activeMatch: '^/(tutorials|downloads|viewer)/',

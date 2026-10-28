@@ -42,7 +42,7 @@ prebuild edit is needed. `npm run verify-indexes` checks linked files and tests
 discovery of a future RFC. RFC status banners still come from frontmatter.
 
 For other new pages, add a `COPIES` entry in `scripts/prebuild.mjs` and a nav or
-sidebar entry in `.vitepress/config.ts`. The home standard card reads Format,
+sidebar entry in `.vitepress/config.ts`. The home version line reads Format,
 Protocol and Receipt versions through `scripts/docs-site-sources.mjs`; the
 sidebar and generated titles use the same sources. Package details live on
 Versions. The Downloads "on npm" list uses the newest CHANGELOG generation marked
