@@ -27,7 +27,7 @@ export default defineConfig({
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['meta', { name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' }],
-    ['meta', { name: 'theme-color', content: '#100d18', media: '(prefers-color-scheme: dark)' }],
+    ['meta', { name: 'theme-color', content: '#080d13', media: '(prefers-color-scheme: dark)' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: 'UW Markdown' }],
     ['meta', { property: 'og:image', content: 'https://www.uwmd.org/og-v2.png' }],

@@ -1,6 +1,6 @@
 .uwmd-home-page .VPContent { padding-top: var(--vp-nav-height); }
 .uwmd-home-page .VPPage { padding: 0; }
-.uw-home { --uw-page: 1120px; --uw-accent: #743a90; position: relative; isolation: isolate; color: var(--vp-c-text-1); }
+.uw-home { --uw-page: 1120px; --uw-accent: #195893; position: relative; isolation: isolate; color: var(--vp-c-text-1); }
 .uw-home *, .uw-home *::before, .uw-home *::after { box-sizing: border-box; }
 .uw-home a { color: inherit; text-decoration: none; }
 .uw-home a:hover { text-decoration: underline; text-underline-offset: 4px; }
@@ -137,49 +137,49 @@
 }
 
 /* The decorative field lives only while the home component is mounted. */
-.dark .uw-home { --uw-accent: #ffb48f; }
+.dark .uw-home { --uw-accent: #9fe3ff; }
 .uw-ambient { --ambient-x: 0; --ambient-y: 0; --ambient-scroll: 0; --ambient-drift: 0; position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: var(--vp-c-bg); }
 .uw-aurora { position: absolute; width: max(620px, 62vw); height: max(560px, 80vh); border-radius: 50%; filter: blur(44px); opacity: .2; will-change: transform; }
-.uw-aurora-coral { left: -20%; top: -30%; background: radial-gradient(ellipse, #ff794a 0%, #ffb14a 30%, transparent 67%); transform: translate3d(calc(var(--ambient-x) * 30vw + var(--ambient-drift) * 5vw), calc(var(--ambient-y) * 22vh - var(--ambient-scroll) * 16vh), 0); }
-.uw-aurora-violet { right: -20%; top: -12%; background: radial-gradient(ellipse, #9b5bff 0%, #824dff 30%, transparent 67%); transform: translate3d(calc(var(--ambient-x) * -24vw - var(--ambient-drift) * 6vw), calc(var(--ambient-y) * -18vh + var(--ambient-scroll) * 25vh), 0); }
-.uw-aurora-blue { left: 22%; bottom: -60%; background: radial-gradient(ellipse, #347bff 0%, #47b4f6 25%, transparent 65%); transform: translate3d(calc(var(--ambient-x) * 15vw + var(--ambient-drift) * 4vw), calc(var(--ambient-y) * 15vh - var(--ambient-scroll) * 24vh), 0); }
-.dark .uw-aurora { opacity: .43; }
-.uw-ambient-grid { position: absolute; inset: 0; background-image: linear-gradient(rgb(120 78 132 / .06) 1px, transparent 1px), linear-gradient(90deg, rgb(120 78 132 / .06) 1px, transparent 1px); background-size: 24px 24px; mask-image: linear-gradient(#000, transparent 85%); }
-.dark .uw-ambient-grid { background-image: linear-gradient(rgb(190 155 225 / .075) 1px, transparent 1px), linear-gradient(90deg, rgb(190 155 225 / .075) 1px, transparent 1px); }
+.uw-aurora-cobalt { left: -20%; top: -30%; background: radial-gradient(ellipse, #0758ff 0%, #2a89ff 30%, transparent 67%); transform: translate3d(calc(var(--ambient-x) * 30vw + var(--ambient-drift) * 5vw), calc(var(--ambient-y) * 22vh - var(--ambient-scroll) * 16vh), 0); }
+.uw-aurora-cyan { right: -20%; top: -12%; background: radial-gradient(ellipse, #00b7ec 0%, #238dce 30%, transparent 67%); transform: translate3d(calc(var(--ambient-x) * -24vw - var(--ambient-drift) * 6vw), calc(var(--ambient-y) * -18vh + var(--ambient-scroll) * 25vh), 0); }
+.uw-aurora-blue { left: 22%; bottom: -60%; background: radial-gradient(ellipse, #52aaff 0%, #6ee7f5 25%, transparent 65%); transform: translate3d(calc(var(--ambient-x) * 15vw + var(--ambient-drift) * 4vw), calc(var(--ambient-y) * 15vh - var(--ambient-scroll) * 24vh), 0); }
+.dark .uw-aurora { opacity: .34; }
+.uw-ambient-grid { position: absolute; inset: 0; background-image: linear-gradient(rgb(60 100 140 / .06) 1px, transparent 1px), linear-gradient(90deg, rgb(60 100 140 / .06) 1px, transparent 1px); background-size: 24px 24px; mask-image: linear-gradient(#000, transparent 85%); }
+.dark .uw-ambient-grid { background-image: linear-gradient(rgb(140 190 225 / .075) 1px, transparent 1px), linear-gradient(90deg, rgb(140 190 225 / .075) 1px, transparent 1px); }
 .uw-ambient-shade { position: absolute; inset: 0; background: linear-gradient(transparent, rgb(255 255 255 / .48)); }
-.dark .uw-ambient-shade { background: linear-gradient(rgb(16 13 24 / .16), rgb(16 13 24 / .65)); }
+.dark .uw-ambient-shade { background: linear-gradient(rgb(8 13 19 / .16), rgb(8 13 19 / .65)); }
 .uw-hero { padding-top: 92px; padding-bottom: 58px; }
 .uw-eyebrow, .uw-button, .uw-hero-note, .uw-example-toolbar, .uw-subhead, .uw-edition, .uw-example-links, .uw-reference-columns h3 > span, .uw-home-footer { font-family: var(--vp-font-family-mono); }
 .uw-eyebrow { font-size: 12px; letter-spacing: .015em; }
 .uw-prompt { color: var(--uw-accent); }
 .uw-eyebrow .uw-prompt { margin-right: 8px; }
 .uw-hero h1 { font-family: var(--vp-font-family-mono); font-size: clamp(36px, 4.6vw, 60px); font-weight: 550; line-height: 1.16; letter-spacing: -.07em; }
-.uw-hero h1 span { color: #674578; }
-.dark .uw-hero h1 span { color: #d6c1f4; }
+.uw-hero h1 span { color: #285c80; }
+.dark .uw-hero h1 span { color: #9cc9f0; }
 .uw-intro { font-size: 17px; }
 .uw-button { border-radius: 3px; font-size: 12px; gap: 14px; }
-.uw-home .uw-button-primary { background: #542a6b; border-color: #542a6b; color: #fff5ff; box-shadow: 0 0 24px rgb(155 91 255 / .12); }
-.dark .uw-home .uw-button-primary { background: #ffb48f; border-color: #ffb48f; color: #21100b; box-shadow: 0 0 32px rgb(255 150 100 / .18); }
-.uw-home .uw-button-primary:hover { background: #743a90; border-color: #743a90; }
-.dark .uw-home .uw-button-primary:hover { background: #ffcfb8; border-color: #ffcfb8; }
+.uw-home .uw-button-primary { background: #17466d; border-color: #17466d; color: #f3faff; box-shadow: 0 0 24px rgb(7 88 255 / .12); }
+.dark .uw-home .uw-button-primary { background: #9fe3ff; border-color: #9fe3ff; color: #061a28; box-shadow: 0 0 32px rgb(75 175 255 / .16); }
+.uw-home .uw-button-primary:hover { background: #195893; border-color: #195893; }
+.dark .uw-home .uw-button-primary:hover { background: #c3efff; border-color: #c3efff; }
 .uw-button-secondary { background: var(--vp-c-bg); }
 .uw-hero-note { margin: 22px 0 0; color: var(--vp-c-text-2); font-size: 10px; line-height: 1.8; }
 .uw-hero-note > span { color: var(--uw-accent); margin-inline: 7px; }
 .uw-example { border-radius: 7px; background: var(--vp-c-bg); box-shadow: 0 20px 80px rgb(8 20 32 / .09); }
-.dark .uw-example { box-shadow: 0 20px 90px rgb(0 0 0 / .35), 0 0 0 1px rgb(255 180 143 / .035); }
+.dark .uw-example { box-shadow: 0 20px 90px rgb(0 0 0 / .35), 0 0 0 1px rgb(159 227 255 / .035); }
 .uw-example-toolbar { background: var(--vp-c-bg-alt); min-height: 49px; }
-.uw-source, .uw-command-block { --vp-c-text-1: #f3eaf5; --vp-c-text-2: #bcaec9; --uw-blue: #ffb48f; --uw-code-string: #b8c6ff; --uw-accent: #ffb48f; color: var(--vp-c-text-1); background: #130f1d; }
-.uw-source { border-right-color: #352b42; }
-.uw-source .uw-subhead > span, .uw-source-note { color: #bcaec9; }
+.uw-source, .uw-command-block { --vp-c-text-1: #eaf3fc; --vp-c-text-2: #b4c4d3; --uw-blue: #9fe3ff; --uw-code-string: #cbdcff; --uw-accent: #9fe3ff; color: var(--vp-c-text-1); background: #0c141d; }
+.uw-source { border-right-color: #273949; }
+.uw-source .uw-subhead > span, .uw-source-note { color: #b4c4d3; }
 .uw-subhead { font-size: 11px; }
-.uw-source .tok-rule { color: #bcaec9; }
+.uw-source .tok-rule { color: #b4c4d3; }
 .uw-source pre { line-height: 1.72; }
 .uw-render { background: var(--vp-c-bg); }
 .uw-section h2 { font-family: var(--vp-font-family-mono); font-size: 29px; font-weight: 550; letter-spacing: -.055em; }
 .uw-principles h2 { font-size: 18px; }
-.uw-command-block { border-color: #493b59; border-radius: 5px; }
-.uw-try .uw-command-block > p { color: #bcaec9; }
-.uw-command-block a { color: #f0cfe8; }
+.uw-command-block { border-color: #394c5d; border-radius: 5px; }
+.uw-try .uw-command-block > p { color: #b4c4d3; }
+.uw-command-block a { color: #c7e6ff; }
 .uw-command-block .uw-prompt { user-select: none; }
 .uw-home-footer { font-size: 11px; }
 @media (max-width: 767px) {
@@ -193,8 +193,8 @@
   .uw-section h2 { font-size: 26px; }
   .uw-principles h2 { font-size: 19px; }
   .uw-aurora { width: 160vw; height: 90vh; filter: blur(28px); }
-  .uw-aurora-coral { left: -90%; }
-  .uw-aurora-violet { right: -90%; }
+  .uw-aurora-cobalt { left: -90%; }
+  .uw-aurora-cyan { right: -90%; }
   .uw-aurora-blue { left: -15%; }
   .uw-home-footer { font-size: 10px; }
 }
