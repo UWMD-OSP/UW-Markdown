@@ -14,6 +14,12 @@ site's tree on every dev/build, rewriting relative links to site URLs.
 The copied trees (`spec/`, `conformance/`, `about/`) are gitignored — they
 exist only at build time.
 
+Generated Markdown carries its repository source path as site-only metadata.
+The GitHub edit link uses that path; authored pages point into `tools/docs-site/`.
+This keeps contribution links on the original files rather than generated copies.
+`public/` is excluded from Markdown page discovery: its files remain downloads,
+without duplicate HTML pages or search/sitemap entries for static asset inputs.
+
 ## Develop
 
 ```bash
@@ -42,7 +48,7 @@ prebuild edit is needed. `npm run verify-indexes` checks linked files and tests
 discovery of a future RFC. RFC status banners still come from frontmatter.
 
 For other new pages, add a `COPIES` entry in `scripts/prebuild.mjs` and a nav or
-sidebar entry in `.vitepress/config.ts`. The home standard card reads Format,
+sidebar entry in `.vitepress/config.ts`. The home version line reads Format,
 Protocol and Receipt versions through `scripts/docs-site-sources.mjs`; the
 sidebar and generated titles use the same sources. Package details live on
 Versions. The Downloads "on npm" list uses the newest CHANGELOG generation marked

@@ -600,9 +600,13 @@ build: `npm run build`.
 
 Public positioning (home page, `/about`, quickstart) leads with the `.uwx.md`
 record and the AI boundary; UW Lite is introduced as the compact summary
-representation. The home page and `/ai` share `theme/AiBoundary.vue`, the
-"AI extracts, code calculates" workflow diagram. Nav follows the visitor
-journey: Why UWMD → Examples → Get started → Integrate → Reference.
+representation. The home page uses an editorial layout: a short introduction,
+current standard versions, a synthetic record beside its illustrative view,
+the verification boundary, a standard/tool index and a two-command quickstart.
+`theme/AiBoundary.vue` supplies the explanatory workflow diagram on `/ai`.
+Navigation separates About, Get started, Standard, Tools and Project. Shared
+typography and compact page-classification lines distinguish normative
+documents from reference-tool guidance without obscuring the page title.
 
 > This wiki (`docs/wiki/`) is deliberately **not** wired into the docs-site nav —
 > it is internal dev/agent documentation, not part of the published standard.

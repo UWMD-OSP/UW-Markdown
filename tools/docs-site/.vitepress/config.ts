@@ -5,7 +5,7 @@ import { markNormative, siteSidebars } from './page-status.mjs';
 
 const versions = docsVersions(fileURLToPath(new URL('../../../', import.meta.url)));
 const SITE_DESCRIPTION =
-  'One verifiable underwriting record for every CRE deal: the open .uwx.md standard that keeps deal facts, assumptions, narrative, and provenance together, with financial results computed by deterministic code.';
+  'An open standard for commercial real-estate underwriting records. Deal facts, assumptions, narrative and provenance in one readable format, checked by deterministic code.';
 
 export default defineConfig({
   title: 'UW Markdown',
@@ -15,7 +15,7 @@ export default defineConfig({
   lastUpdated: true,
   // XSD is copied to public/ as a downloadable static asset.
   ignoreDeadLinks: [/\.xsd$/, /^\/downloads\//],
-  srcExclude: ['README.md'],
+  srcExclude: ['README.md', 'public/**'],
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
@@ -41,7 +41,7 @@ export default defineConfig({
     siteTitle: 'UW Markdown',
 
     nav: [
-      { text: 'Why UWMD', link: '/about/', activeMatch: '^/about/$' },
+      { text: 'About', link: '/about/', activeMatch: '^/about/$' },
       {
         text: 'Get started',
         activeMatch: '^/(tutorials|downloads|viewer)/',
@@ -354,8 +354,12 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern:
-        'https://github.com/UWMD-OSP/UW-Markdown/edit/main/:path',
+      pattern: ({ filePath, frontmatter }) => {
+        const source = typeof frontmatter.repositorySource === 'string'
+          ? frontmatter.repositorySource
+          : `tools/docs-site/${filePath}`;
+        return `https://github.com/UWMD-OSP/UW-Markdown/edit/main/${source.split('/').map(encodeURIComponent).join('/')}`;
+      },
       text: 'Edit this page on GitHub',
     },
 

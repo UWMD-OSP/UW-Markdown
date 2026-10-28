@@ -35,7 +35,7 @@ for (const path of ['/', '/spec/format', '/conformance/', '/editor/', '/viewer/a
     else assert.equal(await response.text(), '');
   }
 }
-for (const path of ['/__uwmd_missing__/', '/spec/__uwmd_missing__', '/assets/__uwmd_missing__.js', '/_headers']) {
+for (const path of ['/__uwmd_missing__/', '/spec/__uwmd_missing__', '/assets/__uwmd_missing__.js', '/_headers', '/public/downloads/templates/blank-screener.uw.html']) {
   for (const method of ['GET', 'HEAD']) {
     const response = await request(path, method);
     assert.equal(response.status, 404, `${method} ${path} must not fall back to the homepage`);
@@ -62,6 +62,19 @@ for (const [path, type] of [['/favicon.svg', /^image\/svg\+xml\b/], ['/schemas/u
   assert.match(response.headers.get('content-type'), type);
   await response.body?.cancel();
 }
+for (const [path, source] of [
+  ['/spec/format', 'spec/UW_FORMAT_SPEC.md'],
+  ['/guide/glossary', 'docs/GLOSSARY.md'],
+  ['/about/versions', 'VERSIONS.md'],
+  ['/about/rfcs/template', 'docs/rfcs/0000-template.md'],
+  ['/tutorials/quickstart', 'tools/docs-site/tutorials/quickstart.md'],
+  ['/ai/', 'tools/docs-site/ai/index.md'],
+]) {
+  const response = await request(path);
+  assert.equal(response.status, 200);
+  const href = `https://github.com/UWMD-OSP/UW-Markdown/edit/main/${source}`;
+  assert.ok((await response.text()).includes(`href="${href}"`), `${path}: edit link must target ${source}`);
+}
 const dist = fileURLToPath(new URL('../.vitepress/dist/', import.meta.url));
 const sitemap = await request('/sitemap.xml');
 assert.equal(sitemap.status, 200, 'The sitemap must be a real asset, not the 404 page');
@@ -69,6 +82,7 @@ assert.match(sitemap.headers.get('content-type'), /^(application|text)\/xml\b/);
 const sitemapText = await sitemap.text();
 assert.match(sitemapText, /<loc>https:\/\/www\.uwmd\.org\//);
 assert.doesNotMatch(sitemapText, /<loc>[^<]*\/404(?:\.html)?<\/loc>/);
+assert.doesNotMatch(sitemapText, /<loc>[^<]*\/public\//, 'Static download inputs must not become documentation pages');
 const schemas = new URL('../../../spec/schemas/', import.meta.url);
 for (const name of (await readdir(schemas)).filter(name => name.endsWith('.json') || name.endsWith('.xsd'))) {
   const response = await request(`/schemas/${name}`);

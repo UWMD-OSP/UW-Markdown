@@ -1,7 +1,5 @@
 <script setup>
 import versions from '../../about/versions.json';
-import AiBoundary from './AiBoundary.vue';
-
 const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
 </script>
 
@@ -9,239 +7,106 @@ const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
   <main class="uw-home">
     <section class="uw-hero" aria-labelledby="uw-home-title">
       <div class="uw-hero-copy">
-        <div class="uw-kicker"><span class="uw-file-mark" aria-hidden="true">UW</span> Open standard for commercial real-estate underwriting</div>
-        <h1 id="uw-home-title">One verifiable underwriting record for every CRE deal.</h1>
-        <p class="uw-intro">UW Markdown is an open interoperability standard for underwriting. A <code>.uwx.md</code> record keeps typed deal facts, underwriting assumptions, calculation inputs, narrative, and provenance together in one plain-text file. Excel models, AI agents, underwriting applications, and data pipelines can all work from the same deal record.</p>
-        <p class="uw-boundary"><span>AI can extract, classify, and explain.</span> <span>Deterministic code calculates and verifies the financial results.</span></p>
-        <nav class="uw-actions" aria-label="Get started">
-          <a class="uw-button uw-button-primary" href="#example">See a deal record</a>
-          <a class="uw-button" href="/tutorials/quickstart">Create and validate a file</a>
-          <a class="uw-text-link" href="https://github.com/UWMD-OSP/UW-Markdown">Source on GitHub <span aria-hidden="true">→</span></a>
-        </nav>
+        <p class="uw-eyebrow">An open standard for commercial real estate</p>
+        <h1 id="uw-home-title">Underwriting, in a common language.</h1>
+        <p class="uw-intro">UW Markdown brings deal facts, assumptions, narrative and provenance into one readable record. A shared format lets people and software work from the same underwriting.</p>
+        <nav class="uw-actions" aria-label="Get started"><a class="uw-button uw-button-primary" href="/tutorials/quickstart">Create your first record <span aria-hidden="true">→</span></a><a href="#example">See an example</a></nav>
       </div>
-
-      <aside class="uw-standard-card" aria-label="The standard">
-        <div class="uw-panel-bar"><span>THE STANDARD</span><span class="uw-status uw-status-valid">MIT</span></div>
-        <dl>
-          <div><dt><a href="/spec/format">Format</a></dt><dd><code>{{ versions.specFormat }}</code></dd></div>
-          <div><dt><a href="/spec/protocol">Protocol</a></dt><dd><code>{{ versions.specProtocol }}</code></dd></div>
-          <div><dt><a href="/spec/receipt">Receipts</a></dt><dd><code>{{ versions.receipt }}</code></dd></div>
-          <div><dt><a href="/spec/metrics/">Metric dictionary</a></dt><dd>JSON</dd></div>
-          <div><dt><a href="/conformance/">Conformance corpus</a></dt><dd>Tests</dd></div>
-        </dl>
-        <p>The documents every implementation uses to read and verify a record.</p>
-        <a href="/about/versions">Document and package versions</a>
-      </aside>
+      <nav class="uw-reading-list" aria-label="Explore UW Markdown">
+        <p class="uw-eyebrow">Explore the standard</p>
+        <a href="/spec/format"><span><strong>The document format</strong><small>Structure, typed sections and provenance</small></span><span aria-hidden="true">↗</span></a>
+        <a href="/spec/protocol"><span><strong>How verification works</strong><small>Rules any implementation can check</small></span><span aria-hidden="true">↗</span></a>
+        <a href="/guide/tools"><span><strong>The reference tools</strong><small>Libraries, editors and converters</small></span><span aria-hidden="true">↗</span></a>
+      </nav>
     </section>
 
-    <div class="uw-trust-strip" aria-label="What one record carries">
-      <span><strong>RENT ROLL</strong> units + leases</span>
-      <span><strong>T-12</strong> operating statement</span>
-      <span><strong>ASSUMPTIONS</strong> market + underwritten</span>
-      <span><strong>DEBT</strong> terms + sizing</span>
-      <span><strong>CASH FLOWS</strong> + returns</span>
-      <span><strong>NARRATIVE</strong> credit story</span>
-      <span><strong>PROVENANCE</strong> who, what, when</span>
+    <div class="uw-edition" aria-label="Current standard versions">
+      <dl><div><dt>Format</dt><dd>{{ versions.specFormat }}</dd></div><div><dt>Protocol</dt><dd>{{ versions.specProtocol }}</dd></div><div><dt>Receipt</dt><dd>{{ versions.receipt }}</dd></div></dl>
+      <a href="/about/versions">Document &amp; package versions <span aria-hidden="true">→</span></a>
     </div>
 
     <section id="example" class="uw-section uw-example" aria-labelledby="example-title">
-      <header class="uw-section-heading">
-        <div>
-          <p class="uw-eyebrow">Show me a deal</p>
-          <h2 id="example-title">A plain-text record, and the underwriting it produces.</h2>
-          <p class="uw-section-lede">A synthetic 48-unit multifamily example for engineering QA, not an investment track record. The narrative explains the analyst's adjustments; the JSON block beneath it holds the same numbers in typed form, so any compatible tool can read and recompute them.</p>
-        </div>
-        <a :href="`https://github.com/UWMD-OSP/UW-Markdown/blob/main/examples/${PARKVIEW}`">Open the complete record <span aria-hidden="true">→</span></a>
-      </header>
-
-      <div class="uw-file-window">
-        <div class="uw-file-header">
-          <span class="uw-file-name"><span class="uw-file-mini" aria-hidden="true">UW</span> {{ PARKVIEW }}</span>
-          <span class="uw-file-state"><span class="uw-status uw-status-valid">VALID</span><span class="uw-status uw-status-info">SELECTED METRICS CHECKED</span></span>
-        </div>
-        <div class="uw-file-views">
-          <section class="uw-source" aria-labelledby="source-title">
-            <div class="uw-subhead"><h3 id="source-title">The record</h3><span>plain text · excerpt</span></div>
-            <pre tabindex="0"><code><span class="tok-rule">---</span>
+      <header class="uw-section-heading"><div><p class="uw-eyebrow">The record, in practice</p><h2 id="example-title">Readable by people.<br>Checkable by software.</h2></div><p>A synthetic 48-unit multifamily example. The narrative explains the assumptions; typed data gives tools a common structure to read and verify. Engineering QA only, not an investment track record.</p></header>
+      <div class="uw-example-spread">
+        <section class="uw-source" aria-labelledby="source-title">
+          <div class="uw-subhead"><h3 id="source-title">A plain-text record</h3><span>UWX · Format {{ versions.specFormat }}</span></div>
+          <pre tabindex="0" aria-label="Excerpt of the synthetic Parkview record"><code><span class="tok-rule">---</span>
 <span class="tok-key">uw_version:</span> <span class="tok-string">"3.0"</span>
-<span class="tok-key">deal_name:</span> <span class="tok-string">"Parkview Apartments — Glendale, AZ"</span>
+<span class="tok-key">deal_name:</span> <span class="tok-string">"Parkview Apartments"</span>
 <span class="tok-key">asset_class:</span> <span class="tok-string">"multifamily"</span>
 <span class="tok-key">quick_metrics:</span>
   <span class="tok-key">purchase_price:</span>   <span class="tok-number">7200000</span>
   <span class="tok-key">noi_underwritten:</span> <span class="tok-number">396635</span>
   <span class="tok-key">dscr:</span>             <span class="tok-number">1.109</span>
   <span class="tok-key">ltv:</span>              <span class="tok-number">0.70</span>
-<span class="tok-key">source_documents:</span>
-  - <span class="tok-string">"parkview_rent_roll_apr2026.xlsx"</span>
-  - <span class="tok-string">"parkview_t12_2025.pdf"</span>
 <span class="tok-rule">---</span>
 
 <span class="tok-heading">## Underwritten NOI</span>
 
-Vacancy is normalized to 7% against the
-owner's reported 5%. The management fee
-drops from 10% to 5.5% of EGI under the
-new agreement. Taxes are reassessed to
-the post-sale value.
+Vacancy is normalized to 7%. Management
+fees reflect the new agreement, and taxes
+are reassessed to the post-sale value.
 
-<span class="tok-code">```json uw:section=noi_model</span>
+<span class="tok-rule">```json uw:section=noi_model</span>
 {
-  <span class="tok-json">"_meta"</span>: { <span class="tok-json">"quality"</span>: { <span class="tok-json">"confidence"</span>: <span class="tok-string">"high"</span> }, <span class="tok-tail">…</span> },
-  <span class="tok-json">"income"</span>: {
-    <span class="tok-json">"vacancy_credit_loss"</span>: {
-      <span class="tok-json">"value"</span>: <span class="tok-number">45864</span>, <span class="tok-json">"rate_applied"</span>: <span class="tok-number">0.07</span>
-    },
-    <span class="tok-json">"effective_gross_income"</span>: <span class="tok-number">630936</span>
+  <span class="tok-key">"_meta"</span>: { <span class="tok-tail">…</span> },
+  <span class="tok-key">"income"</span>: {
+    <span class="tok-key">"effective_gross_income"</span>: <span class="tok-number">630936</span>
   },
-  <span class="tok-json">"expenses"</span>: { <span class="tok-json">"total_operating_expenses"</span>: <span class="tok-number">234301</span> },
-  <span class="tok-json">"net_operating_income"</span>: <span class="tok-number">396635</span>
+  <span class="tok-key">"expenses"</span>: {
+    <span class="tok-key">"total_operating_expenses"</span>: <span class="tok-number">234301</span>
+  },
+  <span class="tok-key">"net_operating_income"</span>: <span class="tok-number">396635</span>
 }
-<span class="tok-code">```</span></code></pre>
-          </section>
+<span class="tok-rule">```</span></code></pre>
+          <p class="uw-source-note">Abbreviated for display. <a :href="`https://github.com/UWMD-OSP/UW-Markdown/blob/main/examples/${PARKVIEW}`">Read the complete record <span aria-hidden="true">↗</span></a></p>
+        </section>
+        <section class="uw-render" aria-labelledby="render-title">
+          <div class="uw-subhead"><h3 id="render-title">The same record, presented</h3><span>Illustrative view</span></div>
+          <div class="uw-deal-heading"><h4>Parkview Apartments</h4><p>48 units · Glendale, Arizona · 1987 vintage</p></div>
+          <dl class="uw-metrics"><div><dt>Purchase price</dt><dd>$7,200,000</dd></div><div><dt>UW NOI</dt><dd>$396,635</dd></div><div><dt>DSCR</dt><dd>1.109×</dd></div><div><dt>Stated LTV</dt><dd>70.0%</dd></div></dl>
+          <div class="uw-table-wrap" tabindex="0" role="region" aria-label="Synthetic operating statement"><table>
+            <caption class="uw-visually-hidden">Parkview operating statement: T-12 actuals and underwritten figures</caption>
+            <thead><tr><th scope="col">Operating statement</th><th scope="col">T-12</th><th scope="col">UW</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Gross potential rent</th><td>$655,200</td><td>$655,200</td></tr>
+              <tr><th scope="row">Vacancy / credit loss</th><td>($32,760)</td><td>($45,864)</td></tr>
+              <tr><th scope="row">Other income</th><td>$18,000</td><td>$21,600</td></tr>
+              <tr><th scope="row">Effective gross income</th><td>$640,440</td><td>$630,936</td></tr>
+              <tr><th scope="row">Operating expenses</th><td>($228,344)</td><td>($234,301)</td></tr>
+              <tr class="uw-total"><th scope="row">Net operating income</th><td>$412,096</td><td>$396,635</td></tr>
+            </tbody>
+          </table></div>
+          <aside class="uw-verification-note" aria-label="Example verification coverage"><h4>What is checked?</h4><p>The current multifamily pack computes seven of eight outputs from this example, including DSCR, cap rate and debt yield. LTV remains stated until the loan declares its basis. Financial flags describe the deal; validation issues describe the record.</p></aside>
+        </section>
+      </div>
+      <nav class="uw-example-links" aria-label="Work with the example"><a href="/viewer/">Open the viewer <span aria-hidden="true">→</span></a><a href="/editor/" target="_self">Open the editor <span aria-hidden="true">→</span></a></nav>
+    </section>
 
-          <section class="uw-render" aria-labelledby="render-title">
-            <div class="uw-subhead"><h3 id="render-title">What a compatible tool shows</h3><span>underwriting view</span></div>
-            <div class="uw-deal-heading">
-              <p>Parkview Apartments</p>
-              <span>48 units · 1987 vintage · Glendale, Arizona</span>
-            </div>
-            <div class="uw-metrics">
-              <div><span>Purchase price</span><strong>$7,200,000</strong></div>
-              <div><span>UW NOI</span><strong>$396,635</strong></div>
-              <div><span>DSCR</span><strong>1.109×</strong></div>
-              <div><span>Stated LTV</span><strong>70.0%</strong></div>
-            </div>
-            <div class="uw-table-wrap">
-              <table>
-                <caption class="uw-visually-hidden">Parkview Apartments operating statement, T-12 actuals against underwritten figures</caption>
-                <thead><tr><th scope="col">Operating statement</th><th scope="col">T-12</th><th scope="col">UW</th></tr></thead>
-                <tbody>
-                  <tr><td>Gross potential rent</td><td>$655,200</td><td>$655,200</td></tr>
-                  <tr><td>Vacancy / credit loss</td><td>($32,760)</td><td>($45,864)</td></tr>
-                  <tr><td>Other income</td><td>$18,000</td><td>$21,600</td></tr>
-                  <tr><td>Effective gross income</td><td>$640,440</td><td>$630,936</td></tr>
-                  <tr><td>Total operating expenses</td><td>($228,344)</td><td>($234,301)</td></tr>
-                  <tr class="uw-total"><td>Net operating income</td><td>$412,096</td><td>$396,635</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="uw-check"><span aria-hidden="true">✓</span><p><strong>DSCR, cap rate and debt yield recomputed by the multifamily pack</strong><br>The current pack computes seven of eight outputs from this example. LTV is stated above; it remains unavailable to recompute until the loan explicitly declares its LTV basis. The operating statement is stated, and validator cross-checks test it for consistency. The DSCR of 1.109× produces a financial flag in the warning band. Financial flags describe the deal; validation issues describe the record.</p></div>
-          </section>
-        </div>
-        <div class="uw-file-footer">
-          <span>Format 3.0 · excerpt of the complete record</span>
-          <span class="uw-file-links">
-            <a href="/viewer/">Open in the viewer</a>
-            <a href="/editor/" target="_self">Open the reference editor</a>
-          </span>
-        </div>
+    <section class="uw-section uw-principle" aria-labelledby="principle-title"><p class="uw-eyebrow">A clear division of work</p><h2 id="principle-title">People make the judgments.<br>Code checks the arithmetic.</h2><div><p>An analyst, application or AI can extract facts, explain assumptions and write the narrative. Financial results are calculated and verified by deterministic code.</p><p>A verification receipt shows that covered results follow from the record. It does not establish that the underlying source documents are true.</p><a href="/guide/receipts">Understand verification receipts <span aria-hidden="true">→</span></a></div></section>
+
+    <section class="uw-section" aria-labelledby="reference-title">
+      <header class="uw-section-heading"><div><p class="uw-eyebrow">Read &amp; build</p><h2 id="reference-title">The standard and its tools.</h2></div><p>Implement the standard independently, or use the reference toolkit. The requirements and the tools have distinct roles.</p></header>
+      <div class="uw-reference-columns">
+        <section aria-labelledby="standard-title"><h3 id="standard-title">The standard <span>Normative</span></h3><p>The contracts used to read and verify a record.</p><nav aria-label="Standard documents">
+          <a href="/spec/format"><strong>Format specification</strong><span>Document structure, sections and provenance</span></a>
+          <a href="/spec/protocol"><strong>Verification protocol</strong><span>Reader and Verifier requirements</span></a>
+          <a href="/spec/metrics/"><strong>Metric dictionary</strong><span>Definitions of the builtin financial metrics</span></a>
+          <a href="/conformance/"><strong>Conformance corpus</strong><span>Fixtures and expected results for implementations</span></a>
+          <a href="/spec/schemas/"><strong>Schemas &amp; representations</strong><span>Structured payloads, XML and transport contracts</span></a>
+        </nav></section>
+        <section aria-labelledby="toolkit-title"><h3 id="toolkit-title">Reference tools <span>Non-normative</span></h3><p>Open-source tools for working with the standard.</p><nav aria-label="Reference tools">
+          <a href="/guide/tools"><strong>Libraries &amp; CLI</strong><span>Read, validate, calculate and convert</span></a>
+          <a href="/editor/" target="_self"><strong>Reference editor</strong><span>Author a structured record in the browser</span></a>
+          <a href="/viewer/"><strong>Reference viewer</strong><span>Read a record without installing anything</span></a>
+          <a href="/guide/tools#excel-converter"><strong>Excel &amp; data tools</strong><span>Workbooks, collections and database projections</span></a>
+          <a href="/ai/"><strong>Working with AI</strong><span>Extract facts and write narrative within clear limits</span></a>
+        </nav></section>
       </div>
     </section>
 
-    <section class="uw-section" aria-labelledby="record-title">
-      <div class="uw-section-heading uw-section-heading-narrow">
-        <div>
-          <p class="uw-eyebrow">What the record holds</p>
-          <h2 id="record-title">The underwriting you already do, written down in a form software can check.</h2>
-        </div>
-      </div>
-      <div class="uw-record-grid">
-        <article>
-          <h3>Deal facts</h3>
-          <p>Property, ownership, rent roll, and the T-12 operating statement as extracted from source documents.</p>
-          <code>property · rent_roll · operating_statement</code>
-        </article>
-        <article>
-          <h3>Underwriting assumptions</h3>
-          <p>Market and underwritten vacancy, expenses, growth, and cap rates, with the analyst's rationale beside each one.</p>
-          <code>noi_model · assumptions · market_analysis</code>
-        </article>
-        <article>
-          <h3>Debt and capital</h3>
-          <p>Loan terms, sizing constraints, and capital stacks: the inputs behind DSCR, debt yield, and LTV.</p>
-          <code>debt_structure · preliminary_sizing · capital_stack</code>
-        </article>
-        <article>
-          <h3>Cash flows and returns</h3>
-          <p>Projected and dated cash flows, lease-up schedules, and distribution waterfalls behind IRR and equity returns.</p>
-          <code>dcf · lease_up_schedule · distribution_waterfall</code>
-        </article>
-        <article>
-          <h3>Credit narrative</h3>
-          <p>Ordinary Markdown for the story a credit committee reads: thesis, risks, mitigants, and open questions.</p>
-          <code>Markdown prose · risk_assessment</code>
-        </article>
-        <article>
-          <h3>Provenance</h3>
-          <p>Each block records who or what wrote it, when, from which source, and how confident they were. Revisions supersede earlier blocks instead of erasing them.</p>
-          <code>_meta · append-only revisions</code>
-        </article>
-      </div>
-      <p class="uw-grid-note">Each JSON block is a typed section with a published schema. Validators, calculation packs, converters, and conformance fixtures all work against those same sections. See <a href="/guide/lite-and-uwx">UWX and UW Lite</a> for the compact <code>.uw.md</code> summary representation.</p>
-    </section>
-
-    <section class="uw-section" aria-labelledby="flow-title">
-      <div class="uw-section-heading">
-        <div>
-          <p class="uw-eyebrow">AI never does the financial math</p>
-          <h2 id="flow-title">Models read documents. Code does the arithmetic.</h2>
-          <p class="uw-section-lede">The record sits between judgment and computation. Anything that interprets a document can write facts and narrative into it. Only deterministic code turns those facts into NOI, DSCR, or IRR.</p>
-        </div>
-        <a href="/ai/">Building with AI <span aria-hidden="true">→</span></a>
-      </div>
-      <AiBoundary />
-    </section>
-
-    <section class="uw-section uw-try" aria-labelledby="try-title">
-      <div class="uw-try-copy">
-        <p class="uw-eyebrow">Try it</p>
-        <h2 id="try-title">Create and validate a record in two commands.</h2>
-        <p class="uw-section-lede">The published CLI runs with Node.js 18 or later. Nothing to clone, no account.</p>
-        <nav class="uw-actions" aria-label="Try UW Markdown">
-          <a class="uw-button uw-button-primary" href="/tutorials/quickstart">Quickstart</a>
-          <a class="uw-button" href="/editor/" target="_self">Reference editor</a>
-          <a class="uw-text-link" href="/downloads/">Templates and examples <span aria-hidden="true">→</span></a>
-        </nav>
-      </div>
-      <div class="uw-terminal" role="group" aria-label="Quickstart commands">
-        <div class="uw-panel-bar"><span>TERMINAL</span><span>@uwmd/cli</span></div>
-        <pre tabindex="0"><code><span class="tok-rule">$</span> npx @uwmd/cli init --output deal.uwx.md
-<span class="tok-tail">Created: deal.uwx.md</span>
-
-<span class="tok-rule">$</span> npx @uwmd/cli validate deal.uwx.md
-<span class="tok-tail">Validation result: WARNINGS — deal.uwx.md</span>
-<span class="tok-tail">Stage Readiness (workflow completeness):</span>
-<span class="tok-tail">  screening: incomplete</span>
-<span class="tok-tail">Issues (3):</span>
-<span class="tok-tail">  [WARN] CC-13: the property section does not</span>
-<span class="tok-tail">  state multifamily's primary size field …</span>
-<span class="tok-tail">  [INFO] DQ-06: screening requires debt_structure</span>
-<span class="tok-tail">  [INFO] DQ-06: screening requires validation</span></code></pre>
-      </div>
-    </section>
-
-    <section class="uw-section uw-tools-strip" aria-labelledby="tools-title">
-      <h2 id="tools-title">Starter tools · non-normative</h2>
-      <p><code>@uwmd/verify</code> reads and verifies a record on its own. The reference tools help you work with it.</p>
-      <nav aria-label="Starter tools">
-        <a href="/guide/tools">Library and CLI</a>
-        <a href="/starter/">Editor, viewer and Excel</a>
-        <a href="/guide/data-lake">Portfolio and data lake</a>
-        <a href="/ai/">AI instructions and agent host</a>
-        <a href="/guide/receipts">Working with receipts</a>
-      </nav>
-    </section>
-
-    <section class="uw-section uw-closing" aria-labelledby="closing-title">
-      <div>
-        <p class="uw-eyebrow">Open and vendor-neutral</p>
-        <h2 id="closing-title">MIT-licensed. Not tied to any vendor SDK, service, or model provider.</h2>
-      </div>
-      <nav class="uw-actions" aria-label="Project links">
-        <a class="uw-button uw-button-primary" href="/about/">Why UW Markdown</a>
-        <a class="uw-button" href="/about/roadmap">Roadmap</a>
-        <a class="uw-text-link" href="https://github.com/UWMD-OSP/UW-Markdown">Browse source <span aria-hidden="true">→</span></a>
-      </nav>
-    </section>
+    <section class="uw-section uw-try" aria-labelledby="try-title"><div><p class="uw-eyebrow">Begin with a file</p><h2 id="try-title">Create. Validate. Read.</h2><p>The published CLI runs with Node.js 18 or later. No account or repository clone is needed.</p><a href="/tutorials/quickstart">Follow the quickstart <span aria-hidden="true">→</span></a></div><div class="uw-command-block"><p>In your terminal</p><pre tabindex="0" aria-label="Create and validate a record"><code>npx @uwmd/cli init --output deal.uwx.md
+npx @uwmd/cli validate deal.uwx.md</code></pre><a href="/downloads/">Or start from a template <span aria-hidden="true">→</span></a></div></section>
+    <footer class="uw-home-footer"><p>MIT-licensed. Open and vendor-neutral.</p><nav aria-label="About the project"><a href="/about/">About UW Markdown</a><a href="/about/roadmap">Roadmap</a><a href="https://github.com/UWMD-OSP/UW-Markdown">Source on GitHub <span aria-hidden="true">↗</span></a></nav></footer>
   </main>
 </template>
