@@ -15,6 +15,13 @@ Two test systems guard this repo: **unit tests** (Vitest, per package) and the
 **conformance corpus** (fixture/expected pairs that any implementation — including
 this one — runs to prove behavior). CI runs both.
 
+`npm run examples:verification` also runs the four user-facing verification
+scenarios and checks each Parkview twin by name: nine verified metrics, zero
+failed and zero unverifiable, including both LTV homes. Their selected loans
+declare `ltv_basis: "purchase-price"` under RFC 0092; a valuation note alone
+does not select that basis. Wrong-value, receipt-tamper and signature-tamper
+controls remain part of the same command.
+
 ## Unit tests (Vitest)
 
 - Nearly every `src/*.ts` has a sibling `src/*.test.ts`. In `@uwmd/core` the

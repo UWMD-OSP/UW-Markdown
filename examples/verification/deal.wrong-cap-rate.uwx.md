@@ -294,6 +294,7 @@ same senior loan for single-loan consumers.
   "loan_type": "permanent",
   "lender_type": "life_co",
   "loan_amount": 24000000,
+  "ltv_basis": "underwritten-value",
   "ltv": 0.4938,
   "interest_rate_type": "fixed",
   "all_in_rate_at_close": 0.0595,
