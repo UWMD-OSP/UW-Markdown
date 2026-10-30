@@ -1148,18 +1148,18 @@ describe('verify recomputes stated metrics (Protocol §II.2 item 2)', () => {
   const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-metrics-'));
   afterAll(() => rmSync(temp, { recursive: true, force: true }));
 
-  it('verifies available metrics and reports the two absent-basis statements', async () => {
+  it('verifies all nine stated metrics with the explicit LTV basis', async () => {
     const r = await runCli(['verify', VALID]);
     expect(r.status).toBe(0);
     expect(r.stdout).toContain('✓  OK — deal.uwx.md');
-    expect(r.stdout).toContain('Stated metrics: 7 verified, 0 failed, 2 unverifiable');
+    expect(r.stdout).toContain('Stated metrics: 9 verified, 0 failed, 0 unverifiable');
   });
 
   it('fails a document with a stated metric that disagrees with its recomputation', async () => {
     const r = await runCli(['verify', WRONG]);
     expect(r.status).toBe(1);
     expect(r.stdout).toContain('✗  FAIL — deal.wrong-cap-rate.uwx.md');
-    expect(r.stdout).toContain('Stated metrics: 6 verified, 1 failed, 2 unverifiable');
+    expect(r.stdout).toContain('Stated metrics: 8 verified, 1 failed, 0 unverifiable');
     expect(r.stdout).toContain('[FAILED] quick_metrics.cap_rate: stated 0.06, recomputed 0.0542');
     // --validate selects the same phase.
     expect((await runCli(['verify', WRONG, '--validate'])).status).toBe(1);
@@ -1170,12 +1170,12 @@ describe('verify recomputes stated metrics (Protocol §II.2 item 2)', () => {
     expect(r.status).toBe(1);
     const out = JSON.parse(r.stdout);
     expect(out.ok).toBe(false);
-    expect(out.stated_metrics.counts).toEqual({ verified: 6, failed: 1, unverifiable: 2 });
+    expect(out.stated_metrics.counts).toEqual({ verified: 8, failed: 1, unverifiable: 0 });
     expect(out.stated_metrics.evidence.filter((e: { state: string }) => e.state === 'failed'))
       .toEqual([expect.objectContaining({ id: 'cap_rate', path: 'quick_metrics.cap_rate', stated: 0.06, computed: 0.0542 })]);
     const valid = JSON.parse((await runCli(['verify', VALID, '--json'])).stdout);
     expect(valid.ok).toBe(true);
-    expect(valid.stated_metrics.counts).toEqual({ verified: 7, failed: 0, unverifiable: 2 });
+    expect(valid.stated_metrics.counts).toEqual({ verified: 9, failed: 0, unverifiable: 0 });
   });
 
   it('reports an unverifiable metric without failing, and an unrequested check as not checked', async () => {
