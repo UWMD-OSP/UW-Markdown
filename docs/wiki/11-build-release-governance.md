@@ -2,6 +2,12 @@
 
 ## Monorepo & tooling
 
+The four published `bin/*.mjs` launchers (batch, CLI, Excel and report) are
+tracked with executable mode `100755`. npm installs set that mode on POSIX;
+committing it prevents setup from dirtying an otherwise clean checkout.
+`scripts/build-source.mjs` still refuses every tracked change, including modes,
+before producing an identified build.
+
 The required index gate also scans every tracked file for internal process
 narration using `scripts/public-voice.mjs` and fails on any finding.
 Its allow-list contains exact file/line
