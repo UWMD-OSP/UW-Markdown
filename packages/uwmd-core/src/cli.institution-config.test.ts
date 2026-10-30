@@ -177,7 +177,13 @@ describe('RFC0097 aggregate and receipt boundaries', () => {
     expect(result.status).toBe(1); const output = JSON.parse(result.stdout);
     expect(output.ok).toBe(false); expect(output.validation).toEqual({ error: errorObject() });
     expect(output).not.toHaveProperty('replacement_funding_verification'); expect(output).not.toHaveProperty('stated_metrics');
-    if (flags.length) { expect(Object.keys(output).sort()).toEqual(['ok', 'validation']); }
+    if (flags.length) {
+      expect(Object.keys(output).sort()).toEqual(['ok', 'signature_checks', 'validation']);
+      expect(output.signature_checks).toEqual({
+        embedded_blocks: { requested: false, state: 'not_checked' },
+        detached_document: { requested: false, state: 'not_checked' },
+      });
+    }
     else { expect(output.integrity).toBeDefined(); expect(output.provenance).toBeDefined(); }
   });
   it.each(['--integrity', '--policy'])('nonvalidation %s operation does not discover a config', async flag => {

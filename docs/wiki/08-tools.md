@@ -220,6 +220,15 @@ compatibility shells whose final 0.2.0 was published and deprecated on npm on
 
 ## Signing — `packages/uwmd-signing` (`@uwmd/signing`; see VERSIONS.md)
 
+The [trusted-key provisioning guide](../../packages/uwmd-signing/README.md#getting-trusted-producer-public-keys)
+explains obtaining producer public keys over an independently authenticated
+channel, confirming their fingerprints and configuring the verifier's store.
+No key in a supplied document becomes trusted automatically. `verify` labels
+embedded block signatures and detached document authentication separately;
+JSON `signature_checks` reports whether each was requested and its state.
+Embedded counts distinguish presence from cryptographic verification; unknown
+keys report `unverifiable`, while skipped checks report `not_checked`.
+
 Block and receipt signatures (RFC 0010, protocol §V.11). Separate from
 `@uwmd/verify` and `@uwmd/core` so the library keeps its zero-crypto guarantee: reading,
 validating, editing, and computing over a `.uw.md` never require cryptography,

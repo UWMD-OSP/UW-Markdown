@@ -110,6 +110,61 @@ the real fix is to configure their key store.
 
 ## Key store format
 
+### Getting trusted producer public keys
+
+UWMD does not discover keys or decide which producer your organization trusts.
+Provision the verifier's key store before relying on signature results:
+
+1. Ask the producer's signing contact for its public key, `kid` and algorithm
+   through an independently authenticated channel: for example, an established
+   producer portal or a contact your organization has already verified. A key
+   included beside the deal or named by its signature is a candidate, not a
+   trust anchor. Confirm who controls that key and which producer it represents.
+2. Confirm the full public key or its fingerprint through that trusted channel.
+   For a PEM public key, agree on SHA-256 over DER SubjectPublicKeyInfo bytes;
+   this command produces that fingerprint:
+
+   ```bash
+   openssl pkey -pubin -in producer-public.pem -outform DER | openssl dgst -sha256
+   ```
+
+3. Add the approved public key to a verifier-controlled `keystore.json` in the
+   reference format below. Use the exact signature `kid` and algorithm; store
+   either its public JWK or base64 DER SPKI. To obtain the latter from PEM:
+
+   ```bash
+   openssl pkey -pubin -in producer-public.pem -outform DER | openssl base64 -A
+   ```
+
+   Put that output in `public_key_spki`. The verifier needs no producer private
+   key. Public-key import checks key material; it does not authenticate the
+   producer's identity. Protect the local trust configuration from unapproved
+   changes and update it through the same authenticated process for key changes.
+4. Choose the signature scope to check:
+
+   ```bash
+   # Embedded block attribution only
+   uwmd verify deal.uwx.md --integrity --signing --keystore=keystore.json
+   # Require a detached signature over the complete document snapshot
+   uwmd verify deal.uwx.md --integrity --document-signature=deal.signature.json --keystore=keystore.json
+   # Check both scopes
+   uwmd verify deal.uwx.md --integrity --signing --document-signature=deal.signature.json --keystore=keystore.json --json
+   ```
+
+`--signing` checks `_meta.integrity.signature` on embedded blocks. It does not
+authenticate the assembled document snapshot. `--document-signature` checks the
+supplied detached artifact against that snapshot; it does not request embedded
+block verification. Hash-chain success alone performs neither authentication.
+
+Text output labels both scopes. JSON `signature_checks.embedded_blocks` reports
+`requested`, `state`, `present` and `verified` when integrity runs;
+`signature_checks.detached_document` reports `requested`, `state` and an
+available refusal `reason`. A skipped scope is `not_checked`, never verified.
+Unknown trusted keys leave signatures present but `unverifiable`; a demonstrated
+bad signature is `failed`. Required detached authentication accepts only
+`verified`. A cryptographic success establishes control of the approved key and
+the signed commitment, not the truth of financial inputs.
+
 Key *distribution* is out of scope: a public key that travels inside the
 document it authenticates proves nothing. The file format below is a
 **reference**, not a normative one — back a `KeyStore` with an HSM and never

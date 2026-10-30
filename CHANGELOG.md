@@ -14,6 +14,8 @@ protocol, and each package each carry an independent semver).
 
 - Declare the Parkview examples' per-loan purchase-price LTV basis (RFC 0092) and require all nine expected example metrics to verify, including both LTV homes.
 
+- Explain how verifiers provision trusted producer public keys and report embedded block signature checks separately from detached document authentication, including unchecked and unverifiable signatures.
+
 - Add a terminal-inspired cobalt/cyan site theme, a fine 24px grid and a dithered pixel gradient that responds to pointer movement and scrolling, with reduced-motion and background-tab handling.
 
 - Remove the generated 404 page's indexing tag when returning to a normal page through client navigation.

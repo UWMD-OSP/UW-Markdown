@@ -32,6 +32,9 @@ describe('document authentication CLI', () => {
     expect(result.status).toBe(0);
     expect(JSON.parse(result.stdout)).toMatchObject({ ok: true, integrity: {
       signatures_present: 3, signatures_verified: 0, document_signature: { state: 'verified' },
+    }, signature_checks: {
+      embedded_blocks: { requested: false, state: 'not_checked', present: 3, verified: 0 },
+      detached_document: { requested: true, state: 'verified' },
     } });
   });
   it('keeps real block attribution but fails a relabeled authenticated snapshot', async () => {
@@ -73,6 +76,34 @@ describe('document authentication CLI', () => {
     const result = await cli('verify', source, '--integrity', `--document-signature=${resolve(fixture, 'signature.json')}`, `--keystore=${store}`);
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('Document snapshot authentication: verified');
+    expect(result.stdout).toContain('(detached document signature)');
+    expect(result.stdout).toContain('Embedded block signatures: not_checked — 3 present, 0 verified');
     expect((await cli('verify', source, '--integrity')).stdout).toContain('Document snapshot authentication: not checked');
+  });
+  it('distinguishes verified block attribution from present but unverifiable keys', async () => {
+    for (const flag of ['--signing', '--signing=true']) {
+      const verified = await cli('verify', source, '--integrity', flag, `--keystore=${store}`, '--json');
+      expect(verified.status).toBe(0);
+      expect(JSON.parse(verified.stdout).signature_checks).toMatchObject({
+        embedded_blocks: { requested: true, state: 'verified', present: 3, verified: 3 },
+        detached_document: { requested: false, state: 'not_checked' },
+      });
+    }
+    const empty = resolve(temp, 'trusted-keys.json');
+    writeFileSync(empty, JSON.stringify({ keystore_version: '1', keys: [] }));
+    const unknown = await cli('verify', source, '--integrity', '--signing', `--keystore=${empty}`, '--json');
+    expect(unknown.status).toBe(1);
+    expect(JSON.parse(unknown.stdout).signature_checks.embedded_blocks).toMatchObject({
+      requested: true, state: 'unverifiable', present: 3, verified: 0,
+    });
+    const text = await cli('verify', source, '--integrity', '--signing', `--keystore=${empty}`);
+    expect(text.stdout).toContain('Embedded block signatures: unverifiable — 3 present, 0 verified');
+    expect(text.stdout).toContain('Present but unverifiable');
+    const detached = await cli('verify', source, '--integrity', `--document-signature=${resolve(fixture, 'signature.json')}`, `--keystore=${empty}`, '--json');
+    expect(detached.status).toBe(1);
+    expect(JSON.parse(detached.stdout).signature_checks).toMatchObject({
+      embedded_blocks: { requested: false, state: 'not_checked' },
+      detached_document: { requested: true, state: 'unverifiable', reason: 'unknown_kid' },
+    });
   });
 });

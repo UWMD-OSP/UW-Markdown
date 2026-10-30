@@ -414,6 +414,10 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
 
   const sections: Record<string, unknown> = {
     replacement_funding_verification: { state: 'not_checked', reason: 'not_invoked', issues: [] },
+    signature_checks: {
+      embedded_blocks: { requested: false, state: 'not_checked' },
+      detached_document: { requested: false, state: 'not_checked' },
+    },
   };
   let hadError = false;
   let configError: InstitutionConfigError | undefined;
@@ -458,6 +462,24 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
           issues: [{ code: 'INT-14', message: `Document signatures require uwx-markdown; supplied ${loaded.representation}.` }] } };
     } else chain = await verifyChain(parsed, options);
     sections['integrity'] = chain;
+    const blockState = !flags['signing'] ? 'not_checked'
+      : chain.signatures_present === 0 ? 'absent'
+      : chain.issues.some((issue) => ['INT-05', 'INT-07'].includes(issue.code)) ? 'failed'
+      : chain.signatures_verified < chain.signatures_present ? 'unverifiable' : 'verified';
+    sections['signature_checks'] = {
+      embedded_blocks: {
+        requested: Boolean(flags['signing']),
+        state: blockState,
+        present: chain.signatures_present,
+        verified: chain.signatures_verified,
+      },
+      detached_document: {
+        requested: typeof flags['document-signature'] === 'string',
+        state: chain.document_signature?.state ?? 'not_checked',
+        ...(chain.document_signature && 'reason' in chain.document_signature
+          ? { reason: chain.document_signature.reason } : {}),
+      },
+    };
     if (!chain.ok) hadError = true;
   }
   if (runAll || onlyPolicy) {
@@ -503,18 +525,20 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     }
     if (chain) {
       const document = chain.document_signature;
-      console.log(`Document snapshot authentication: ${document ? document.state : 'not checked'}`);
+      console.log(`Document snapshot authentication: ${document ? document.state : 'not checked'} (detached document signature)`);
       if (document) for (const issue of document.issues) console.log(`  ${issue.code}: ${issue.message}`);
       console.log(`\nIntegrity: ${chain.ok ? 'ok' : 'FAIL'} — chains_with_hashes=${chain.chains_with_hashes}, chains_verified=${chain.chains_verified}`);
-      if (chain.signatures_present > 0) {
-        const checked = flags['signing']
-          ? `${chain.signatures_verified} verified`
-          : 'not checked (pass --signing --keystore=<path>)';
-        console.log(`Signatures: ${chain.signatures_present} present, ${checked}`);
-      }
+      const checks = sections['signature_checks'] as { embedded_blocks: { state: string } };
+      const state = checks.embedded_blocks.state;
+      console.log(`Embedded block signatures: ${state} — ${chain.signatures_present} present, ${chain.signatures_verified} verified`);
+      if (state === 'not_checked' && chain.signatures_present > 0) console.log('  Present but unchecked; pass --signing --keystore=<path> to authenticate embedded blocks.');
+      if (state === 'unverifiable') console.log('  Present but unverifiable with the supplied trusted keys; see integrity diagnostics.');
       for (const issue of chain.issues) {
         console.log(`  [${issue.severity.toUpperCase()}] ${issue.code}${issue.section ? ` [${issue.section}]` : ''}: ${issue.message}`);
       }
+    } else {
+      console.log('Embedded block signatures: not checked (integrity not requested)');
+      console.log('Document snapshot authentication: not checked (detached document signature)');
     }
     if (prov) {
       console.log(`\nProvenance: ${prov.ok ? 'ok' : 'FAIL'} (${prov.issues.length} issue${prov.issues.length === 1 ? '' : 's'})`);
