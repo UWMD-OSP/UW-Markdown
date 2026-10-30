@@ -3092,6 +3092,8 @@ export type { CashFlowVerification, CashFlowIssue } from './cash-flow-series.js'
 export type { WaterfallVerification, WaterfallIssue } from './waterfall.js';
 export type { CapitalStackVerification, CapitalStackIssue, SizingResult } from './capital-stack.js';
 export type { LeaseUpVerification, LeaseUpIssue } from './lease-up.js';
+// RFC 0130 / §II.6a.2: verify-receipt exits 0 verified, 1 failed/refused,
+// 3 unverifiable; the result and receipt wire types remain unchanged.
 export type { UWReceiptVerification, UWReceiptIssue } from './receipts.js';
 
 /**

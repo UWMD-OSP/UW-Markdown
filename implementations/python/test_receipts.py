@@ -9,6 +9,18 @@ from uwmd_receipts import verify_receipt,_hash,ReceiptError
 ROOT=Path(__file__).resolve().parents[2]
 
 class ReceiptTests(unittest.TestCase):
+    def test_cli_indeterminate_receipt_is_nonzero_and_preserves_json(self):
+        import subprocess
+        import sys
+        directory = ROOT / 'conformance/receipts/verify/14-dictionary-packless-clean'
+        run = subprocess.run([sys.executable, str(ROOT / 'implementations/python/uwmd.py'),
+            'verify-receipt', str(directory / 'receipt.json'), str(directory / 'deal.uwx.md'), '--json'],
+            capture_output=True, text=True, encoding='utf8', check=False)
+        self.assertEqual(run.returncode, 3, run.stderr)
+        report = json.loads(run.stdout)
+        self.assertEqual(report['verdict'], 'unverifiable')
+        self.assertIn('RCP-05', [issue['code'] for issue in report['issues']])
+
     def fixture(self,name='14-dictionary-packless-clean'):
         root=ROOT/'conformance/receipts/verify'/name
         return json.loads((root/'receipt.json').read_text(encoding='utf8')),(root/'deal.uwx.md').read_bytes()

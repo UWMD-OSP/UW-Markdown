@@ -154,6 +154,21 @@ class ReceiptRecomputedIdsTests(unittest.TestCase):
         self.assertTrue(runner.verdict_codes(expected, {}, ["recomputed_ids"]))
 
 class ReceiptEngineIdentityTests(unittest.TestCase):
+    def test_engine_relative_unverifiable_requires_exit_three(self):
+        case = json.loads((runner.CASES_DIR / 'verifier__receipts__verify-15-dictionary-packless-wrong-value__verify-receipt.case.json').read_text(encoding='utf8'))
+        output = json.dumps({'verdict': 'unverifiable', 'issues': [{'code': 'RCP-07'}, {'code': 'RCP-03'}], 'recomputed': [{'calc_id': 'cap_rate'}]})
+        class Process:
+            returncode = 3
+            stdout = output
+            stderr = ''
+        with patch.object(runner.subprocess, 'run', return_value=Process()):
+            _, problems = runner.run_case(['synthetic-verifier'], case, 10, receipt_engine=('another-engine', '1'))
+            self.assertEqual(problems, [])
+        Process.returncode = 0
+        with patch.object(runner.subprocess, 'run', return_value=Process()):
+            _, problems = runner.run_case(['synthetic-verifier'], case, 10, receipt_engine=('another-engine', '1'))
+            self.assertIn('exit 0, expected 3', problems[0])
+
     def test_finite_disagreement_uses_both_identity_members_without_weakening_evidence(self):
         original={'verdict':'failed','expected_codes':['RCP-03'],'recomputed_ids':['cap_rate']}
         other=runner.receipt_engine_expectation(original,True)

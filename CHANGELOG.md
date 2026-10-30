@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Make `verify-receipt` return exit 3 for an unverifiable receipt, matching `receipt verify`; synchronize the portable contract, reference and Python CLIs, and engine-relative conformance (RFC 0130).
+
 - Add a terminal-inspired cobalt/cyan site theme, a fine 24px grid and a dithered pixel gradient that responds to pointer movement and scrolling, with reduced-motion and background-tab handling.
 
 - Remove the generated 404 page's indexing tag when returning to a normal page through client navigation.
