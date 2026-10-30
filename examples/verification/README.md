@@ -13,7 +13,7 @@ exits 0 when the verifier reports what the scenario expects.
 
 `deal.uwx.md` is a copy of
 [`Agave-Court-Apts-Scottsdale-AZ.uwx.md`](../Agave-Court-Apts-Scottsdale-AZ.uwx.md);
-`deal.wrong-cap-rate.uwx.md` differs from it in that one line. Receipts and
+`deal.wrong-cap-rate.uwx.md` differs from it in that one line. These records explicitly select `underwritten-value` for the senior loan. The Parkview twins explicitly select `purchase-price`, matching their authored valuation basis; both verify all nine stated metrics, including both LTV homes (RFC 0092). Receipts and
 signing keys are created when a script runs, so no private key or
 engine-specific receipt is stored here.
 

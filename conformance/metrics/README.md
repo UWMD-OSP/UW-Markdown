@@ -67,16 +67,16 @@ replace this baseline.
 
 ## Current example findings
 
-The unchanged frozen `expected.json` records 26 selected documents:
-**179 verified, 1 failed and 31 unverifiable** numeric statements.
+`expected.json` records 26 selected documents:
+**189 verified, 1 failed and 21 unverifiable** numeric statements.
 The deliberately wrong-cap-rate fixture supplies the expected failure.
 Unavailable inputs or an absent explicit LTV basis remain unverifiable; a
 successful corpus run matches these stated outcomes, not an all-metrics-pass claim.
-No source figure or expected result is changed to remove a finding.
+Stated financial figures are unchanged; LTV expectations follow the explicitly authored loan bases.
 
 | Example (relative to examples/) | Verified | Failed | Unverifiable |
 |---|---|---|---|
-| `Agave-Court-Apts-Scottsdale-AZ.uwx.md` | 7 | 0 | 2 |
+| `Agave-Court-Apts-Scottsdale-AZ.uwx.md` | 9 | 0 | 0 |
 | `Cactus-Crossing-Retail-Mesa-AZ.uwx.md` | 12 | 0 | 2 |
 | `Desert-Palms-MHC-Apache-Junction-AZ.uwx.md` | 13 | 0 | 1 |
 | `Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md` | 12 | 0 | 2 |
@@ -84,7 +84,7 @@ No source figure or expected result is changed to remove a finding.
 | `Mill-Ave-Commons-Student-Tempe-AZ.uwx.md` | 12 | 0 | 2 |
 | `Ocotillo-Senior-Living-Chandler-AZ.uwx.md` | 13 | 0 | 2 |
 | `Parkview-Apts-Glendale-AZ.uw.md` | 2 | 0 | 0 |
-| `Parkview-Apts-Glendale-AZ.uwx.md` | 7 | 0 | 2 |
+| `Parkview-Apts-Glendale-AZ.uwx.md` | 9 | 0 | 0 |
 | `Riverside-Office-Phoenix-AZ.uwx.md` | 12 | 0 | 2 |
 | `Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md` | 4 | 0 | 1 |
 | `Saguaro-Select-Hotel-Tempe-AZ.uwx.md` | 13 | 0 | 2 |
@@ -92,7 +92,7 @@ No source figure or expected result is changed to remove a finding.
 | `Sundance-Ranch-Land-Buckeye-AZ.uwx.md` | 6 | 0 | 2 |
 | `document-facts/target.uwx.md` | 0 | 0 | 0 |
 | `market-data/Phoenix-Multifamily-2026-Q2.uwx.md` | 0 | 0 | 0 |
-| `parkview-reviewed.uwx.md` | 7 | 0 | 2 |
+| `parkview-reviewed.uwx.md` | 9 | 0 | 0 |
 | `standalone/authored-2026-10-17/externalized-deal.uwx.md` | 1 | 0 | 0 |
 | `standalone/authored-2026-10-17/inline-deal.uwx.md` | 1 | 0 | 0 |
 | `standalone/authored-2026-10-17/package/records/externalized-deal.uwx.md` | 1 | 0 | 0 |
@@ -100,8 +100,8 @@ No source figure or expected result is changed to remove a finding.
 | `standalone/externalized-deal.uwx.md` | 1 | 0 | 0 |
 | `standalone/inline-deal.uwx.md` | 1 | 0 | 0 |
 | `standalone/package/records/externalized-deal.uwx.md` | 1 | 0 | 0 |
-| `verification/deal.uwx.md` | 7 | 0 | 2 |
-| `verification/deal.wrong-cap-rate.uwx.md` | 6 | 1 | 2 |
+| `verification/deal.uwx.md` | 9 | 0 | 0 |
+| `verification/deal.wrong-cap-rate.uwx.md` | 8 | 1 | 0 |
 
 ## Controls
 

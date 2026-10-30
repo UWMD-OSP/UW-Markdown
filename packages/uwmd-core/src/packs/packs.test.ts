@@ -75,7 +75,7 @@ describe('MULTIFAMILY_PACK', () => {
     for (const c of MULTIFAMILY_PACK.calculations ?? []) {
       const r = evaluateCalc(c, ctx);
       expect(r.ok, `${c.id}: ${r.error?.message ?? ''}`).toBe(true);
-      if (c.id === 'ltv') expect(r.value).toBeNull();
+      if (c.id === 'ltv') expect(r.value).toBe(0.7);
       else expect(typeof r.value).toBe('number');
     }
   });

@@ -266,13 +266,7 @@
     {
       "name": "sizing-metrics-agree",
       "example": "Parkview-Apts-Glendale-AZ.uwx.md",
-      "edits": [
-        {
-          "section": "debt_structure",
-          "find": "\"loan_amount\":",
-          "replace": "\"ltv_basis\": \"purchase-price\",\n  \"loan_amount\":"
-        }
-      ],
+      "edits": [],
       "expect": [
         {
           "path": "debt_structure.sizing_metrics.dscr_underwritten",
@@ -315,11 +309,6 @@
       "name": "ltv-sizing-disagrees",
       "example": "Parkview-Apts-Glendale-AZ.uwx.md",
       "edits": [
-        {
-          "section": "debt_structure",
-          "find": "\"loan_amount\":",
-          "replace": "\"ltv_basis\": \"purchase-price\",\n  \"loan_amount\":"
-        },
         {
           "section": "debt_structure",
           "find": "\"ltv\": 0.7,",
