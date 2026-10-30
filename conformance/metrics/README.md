@@ -72,7 +72,7 @@ replace this baseline.
 The deliberately wrong-cap-rate fixture supplies the expected failure.
 Unavailable inputs or an absent explicit LTV basis remain unverifiable; a
 successful corpus run matches these stated outcomes, not an all-metrics-pass claim.
-No source figure or expected result is changed to remove a finding.
+Stated financial figures are unchanged; LTV expectations follow the explicitly authored loan bases.
 
 | Example (relative to examples/) | Verified | Failed | Unverifiable |
 |---|---|---|---|
