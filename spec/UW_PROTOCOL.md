@@ -509,6 +509,8 @@ reserve schemas).
   validation error and never sets exit `1` (RFC 0109).
 - **Exit `2`** — unrecoverable internal error. stdout is not required to
   be anything.
+- **Exit `3`** — receipt verification completed but is `unverifiable`
+  (RFC 0130). stdout remains its JSON verification result.
 
 For the `verify-*` subcommands (RFC 0115), a **failed** verification exits
 `1`. A verified result, an `unverifiable` result and an absent subject
@@ -517,6 +519,10 @@ failures, and `status` or `verdict` says which. A refusal (`{ error }`)
 also exits `1`. `verify-metrics` exits `1` when any statement is `failed`.
 The two reserve subcommands keep their §VIII.11 and §VIII.12 contract, which
 also exits `1` on `unverifiable`.
+`verify-receipt` instead exits `3` on `unverifiable` (RFC 0130), including
+engine-relative indeterminacy under RFC 0127. Only `verified` exits `0`;
+`failed` and unreadable-receipt refusals exit `1`. This exception changes no
+receipt verdict, issue, authentication ordering or recomputed evidence.
 
 Selected institution-config failures are operation errors, not ValidationResult
 findings: `validate --json` emits only `{ "error": ProtocolError }` and exits1.

@@ -1779,7 +1779,8 @@ switch (command) {
       console.log(`Receipt verification verdict (no calculation pack): ${result.verdict.toUpperCase()}`);
       for (const issue of result.issues) console.log(`  [${issue.code}] ${issue.message}`);
     }
-    process.exitCode = result.verdict === 'failed' ? 1 : 0;
+    // RFC 0130: match receipt verify; an indeterminate receipt is not a pass.
+    process.exitCode = result.verdict === 'verified' ? 0 : result.verdict === 'failed' ? 1 : 3;
     break;
   }
 

@@ -158,7 +158,7 @@ def main(arguments):
             except (OSError,SourceError) as error:raise ReceiptError(str(error)) from error
             source=Path(tail[1])
             report=verify_receipt(receipt,source.read_bytes(),filename=source.name,inputs=inputs)
-            return report,1 if report["verdict"]=="failed" else 0
+            return report,{"verified":0,"failed":1,"unverifiable":3}[report["verdict"]]
         except ReceiptError as error:return {"error":error.projection()},1
         except OSError as error:return {"error":{"message":str(error)}},2
     if arguments and arguments[0]=="verify-property-cash-flows":

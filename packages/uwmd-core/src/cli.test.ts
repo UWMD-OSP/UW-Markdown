@@ -280,11 +280,17 @@ describe('RFC 0115 portable Verifier subcommands', () => {
     expect(JSON.parse(wrong.stdout).counts.failed).toBe(1);
   });
 
-  it('verify-receipt holds no pack, refuses an unreadable receipt, and exits 1 only on failed', async () => {
+  it('verify-receipt exits 3 on unverifiable, 1 on failed or unreadable receipts', async () => {
     const dir = (id: string) => root(`conformance/receipts/verify/${id}`);
     const clean = await run('verify-receipt', `${dir('01-clean')}/receipt.json`, `${dir('01-clean')}/deal.uwx.md`, '--json');
-    expect(clean.status).toBe(0);
+    expect(clean.status).toBe(3);
     expect(JSON.parse(clean.stdout)).toMatchObject({ verdict: 'unverifiable', issues: [expect.objectContaining({ code: 'RCP-07' }), expect.objectContaining({ code: 'RCP-03' })] });
+    const packless = await run('verify-receipt', `${dir('14-dictionary-packless-clean')}/receipt.json`, `${dir('14-dictionary-packless-clean')}/deal.uwx.md`, '--json');
+    expect(packless.status).toBe(3);
+    expect(JSON.parse(packless.stdout)).toMatchObject({ verdict: 'unverifiable', issues: [expect.objectContaining({ code: 'RCP-05' })] });
+    const text = await run('verify-receipt', `${dir('14-dictionary-packless-clean')}/receipt.json`, `${dir('14-dictionary-packless-clean')}/deal.uwx.md`);
+    expect(text.status).toBe(3);
+    expect(text.stdout).toContain('UNVERIFIABLE');
     const mutated = await run('verify-receipt', `${dir('08-market-data-mutated')}/receipt.json`, `${dir('08-market-data-mutated')}/deal.uw.md`,
       '--inputs', `${dir('08-market-data-mutated')}/inputs.json`, '--json');
     expect(mutated.status).toBe(1);

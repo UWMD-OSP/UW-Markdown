@@ -58,6 +58,7 @@ Command | Purpose
 `refine <file>` | Rank gaps by value-of-information (`--targets`, `--top`, `--json`)
 `receipt issue <file>` | Issue a detached verification receipt (`--output`, `--issued-at`, `--stdout`)
 `receipt verify <file> <receipt.json>` | Verify a receipt (`--json`; exits 0 verified, 1 failed, 3 unverifiable)
+`verify-receipt <receipt.json> <file>` | Verify without a pack (`--inputs`, `--json`); exits 0 verified, 1 failed/refused, 3 unverifiable (RFC 0130), with the JSON result preserved on exit 3
 `compose <file> --externalize <s>` | Split a collection section into `.uwpart.md` fragments (`--collection-key`, `--collection-path`, `--out-dir`, `--in-place`, `--dry-run`)
 `resolve <file>` | Reassemble externalized sections from a parts directory (`--parts`, `--output`, `--json`; exits 1 unresolved)
 

@@ -423,7 +423,7 @@ def run_case(impl: list[str], case: dict, timeout: float, *, receipt_engine=None
         computation = json.loads(Path(args[0]).read_text(encoding="utf8"))["computation"]
         engine_differs = tuple(receipt_engine) != (computation["engine"], computation["engine_version"])
         engine_expected = receipt_engine_expectation(engine_expected, engine_differs)
-        expected_exit = 0 if engine_differs else 1
+        expected_exit = 3 if engine_differs else 1
     if proc.returncode != expected_exit:
         # Exit code 2 is "unrecoverable internal error" in the protocol; stdout
         # is not required to be parseable, so say so rather than showing a diff.

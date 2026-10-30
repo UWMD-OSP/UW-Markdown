@@ -157,8 +157,11 @@ without a calculation pack does: it recomputes stated builtin dictionary results
 under the record's declared rule set. A mismatch fails with RCP-03 or RCP-07;
 matching results leave overall `unverifiable` with RCP-05/06 when full claimed
 pack/output coverage is unproven. Digest, referenced-input, rule-set and
-signature checks still decide first. It exits 1 only on `failed`
-or an unreadable receipt. `uwmd receipt verify` is the pack-based check above.
+signature checks still decide first. Both receipt commands use the table above:
+exit 0 only for `verified`, 1 for `failed`, and 3 for `unverifiable` (RFC 0130).
+An unreadable receipt is refused with exit 1; an internal error exits 2.
+JSON mode still writes one result to stdout, including for exit 3.
+`uwmd receipt verify` is the pack-based check above.
 
 ## Receipts go stale, and that is normal
 

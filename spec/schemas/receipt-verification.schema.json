@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/receipt-verification.schema.json",
   "title": "Receipt verification (Receipt §5, RFC 0115)",
+  "$comment": "RFC 0130 / Protocol II.6a.2: verify-receipt exits 0 for verified, 1 for failed/refused and 3 for unverifiable. The JSON result is unchanged.",
   "description": "What `verify-receipt <receipt.json> <file> --json` prints (Protocol §II.6a.1): one of three verdicts and its issues (UW_RECEIPT §5). A Verifier holds no calculation pack (RFC 0115 D4), so a pack-named result is RCP-05 unverifiable. Mirrors UWReceiptVerification in @uwmd/verify's protocol.ts.",
   "type": "object",
   "additionalProperties": false,
