@@ -817,7 +817,6 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
     }
   },
   "_notes": "Ask Javelina Commercial Bank about 24mo IO — their current sheet shows 24mo IO available on multifamily <$7.5M. Would push amortizing DSCR risk past year 2 rent growth.",
-  "ltv_basis": "purchase-price",
   "loan_amount": 5040000,
   "ltv_basis": "purchase-price",
   "loan_purpose": "acquisition",
