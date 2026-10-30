@@ -105,12 +105,17 @@ function cellAt(wb: ExcelJS.Workbook, address: string): ExcelJS.Cell | null {
   return ws ? ws.getCell(ref) : null;
 }
 
-function namedNumber(wb: ExcelJS.Workbook, name: string): number | null {
+function namedScalar(wb: ExcelJS.Workbook, name: string): number | string | null {
   const ranges = wb.definedNames.getRanges(name);
   if (!ranges.ranges.length) return null;
   const cell = cellAt(wb, ranges.ranges[0]);
   const v = cell?.value;
-  return typeof v === 'number' ? v : null;
+  return typeof v === 'number' || typeof v === 'string' ? v : null;
+}
+
+function namedNumber(wb: ExcelJS.Workbook, name: string): number | null {
+  const value = namedScalar(wb, name);
+  return typeof value === 'number' ? value : null;
 }
 
 function rowByLabel(ws: ExcelJS.Worksheet): Map<string, number> {
@@ -234,9 +239,9 @@ for (const { file, layout } of CASES) {
 
       // values keyed by named-range name: inputs read from the workbook,
       // subtotals from the (footing) stored values.
-      const values: Record<string, number | null> = {};
+      const values: Record<string, number | string | null> = {};
       for (const input of layout.namedInputs) {
-        const n = namedNumber(wb, input.name);
+        const n = input.name === 'ltv_basis' ? namedScalar(wb, input.name) : namedNumber(wb, input.name);
         if (input.name === 'hotel_metrics_market_revpar' || input.name.startsWith('hotel_brand_') || input.name.startsWith('hotel_food_beverage_')) expect(n, `${input.name} absent in this example`).toBeNull();
         else if (!['levered_cash_flow_y1', 'equity_total', 'underwritten_value', 'ltv_basis', 'ltv_total_project_cost'].includes(input.name)) expect(n, `${input.name} resolved`).not.toBeNull();
         values[input.name] = n;
@@ -265,7 +270,7 @@ for (const { file, layout } of CASES) {
 
         let formula = emitExcelFormula(decl.formula, { namedRanges: map });
         for (const name of Object.keys(values)) {
-          formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
+          formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), JSON.stringify(values[name]));
         }
         let excelLike: number | null;
         if (['cash_on_cash', 'ltv', 'total_room_revenue', 'room_revenue_per_key', 'revpar_index', 'fb_gross_margin'].includes(decl.id)) {
@@ -474,7 +479,7 @@ describe(`toWorkbook — mixed_use (${MIXED_USE_FILE})`, () => {
     // Property inputs are read back from the workbook (proving the cells hold the
     // right values); component + property-NOI subtotals come from the (footing)
     // stored document, exactly as the single-statement parity test does.
-    const values: Record<string, number | null> = {};
+    const values: Record<string, number | string | null> = {};
     for (const [path, name] of map) {
       const v =
         path === 'valuation.purchase_price' ||
@@ -506,7 +511,7 @@ describe(`toWorkbook — mixed_use (${MIXED_USE_FILE})`, () => {
       expect(labelToRow.has(decl.label), `${decl.id} should be emitted`).toBe(true);
       let formula = emitExcelFormula(decl.formula, { namedRanges: map });
       for (const name of Object.keys(values)) {
-        formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
+        formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), JSON.stringify(values[name]));
       }
       if (!['cash_on_cash', 'ltv', 'total_room_revenue', 'room_revenue_per_key', 'revpar_index', 'fb_gross_margin'].includes(decl.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id} sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
@@ -629,11 +634,11 @@ describe('toWorkbook — Excel ↔ evaluateCalc parity on a stated document', ()
   it('keeps Excel ↔ evaluateCalc parity on Parkview', async () => {
     const parsed = parseUWFile(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8'));
     const wb = await toWorkbook(parsed);
-    const values: Record<string, number | null> = {};
+    const values: Record<string, number | string | null> = {};
     for (const input of MULTIFAMILY_LAYOUT.namedInputs) {
-      const n = namedNumber(wb, input.name);
-      if (['underwritten_value','ltv_basis'].includes(input.name)) {
-        // Parkview states no underwritten value; preserve the blank so the
+      const n = input.name === 'ltv_basis' ? namedScalar(wb, input.name) : namedNumber(wb, input.name);
+      if (input.name === 'underwritten_value') {
+        // Parkview states purchase-price basis and leaves underwritten value blank.
         // explicit-basis contract remains unavailable.
         expect(n, input.name).toBeNull();
       } else {
@@ -650,9 +655,9 @@ describe('toWorkbook — Excel ↔ evaluateCalc parity on a stated document', ()
     for (const decl of MULTIFAMILY_LAYOUT.pack.calculations ?? []) {
       const direct = evaluateCalc(decl, ctx);
       expect(direct.ok, decl.id).toBe(true);
-      if (decl.id === 'ltv') { expect(direct.value).toBeNull(); continue; }
+      if (decl.id === 'ltv') expect(direct.value).toBe(0.7);
       let formula = emitExcelFormula(decl.formula, { namedRanges: map });
-      for (const name of Object.keys(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
+      for (const name of Object.keys(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), JSON.stringify(values[name]));
       // eslint-disable-next-line no-new-func
       const excelCell = (() => { const value = excelValue(formula); return value === null ? null : quantizeDecimal(value, resolveRoundTo(decl)); })();
       expect(excelCell, decl.id).toBe(direct.value);
@@ -699,13 +704,13 @@ async function metricParity(parsed: ReturnType<typeof parseUWFile>) {
   const ws = wb.getWorksheet('Underwriting')!;
   const rows = rowByLabel(ws);
   const noi = blockPayload(parsed.sections['noi_model'] as UWBlock) as Record<string, unknown>;
-  const values: Record<string, number | null> = {
+  const values: Record<string, number | string | null> = {
     [SUBTOTAL_RANGES.egi]: (noi['income'] as Record<string, number>)['effective_gross_income']!,
     [SUBTOTAL_RANGES.opex]: (noi['expenses'] as Record<string, number>)['total_operating_expenses']!,
     [SUBTOTAL_RANGES.noi]: noi['net_operating_income'] as number,
   };
   for (const input of MULTIFAMILY_LAYOUT.namedInputs) {
-    const n = namedNumber(wb, input.name);
+    const n = input.name === 'ltv_basis' ? namedScalar(wb, input.name) : namedNumber(wb, input.name);
     values[input.name] = n;
   }
   const ctx: CalcEvaluationContext = { parsed, prior_results: {}, locale: 'en-US' };
@@ -724,7 +729,7 @@ async function metricParity(parsed: ReturnType<typeof parseUWFile>) {
       continue;
     }
     let formula = emitExcelFormula(decl.formula, { namedRanges: map });
-    for (const name of Object.keys(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
+    for (const name of Object.keys(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), JSON.stringify(values[name]));
 
     // eslint-disable-next-line no-new-func
     const excelCell = (() => { const value = excelValue(formula); return value === null ? null : quantizeDecimal(value, resolveRoundTo(decl)); })();
