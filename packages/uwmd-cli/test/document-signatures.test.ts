@@ -81,12 +81,14 @@ describe('document authentication CLI', () => {
     expect((await cli('verify', source, '--integrity')).stdout).toContain('Document snapshot authentication: not checked');
   });
   it('distinguishes verified block attribution from present but unverifiable keys', async () => {
-    const verified = await cli('verify', source, '--integrity', '--signing', `--keystore=${store}`, '--json');
-    expect(verified.status).toBe(0);
-    expect(JSON.parse(verified.stdout).signature_checks).toMatchObject({
-      embedded_blocks: { requested: true, state: 'verified', present: 3, verified: 3 },
-      detached_document: { requested: false, state: 'not_checked' },
-    });
+    for (const flag of ['--signing', '--signing=true']) {
+      const verified = await cli('verify', source, '--integrity', flag, `--keystore=${store}`, '--json');
+      expect(verified.status).toBe(0);
+      expect(JSON.parse(verified.stdout).signature_checks).toMatchObject({
+        embedded_blocks: { requested: true, state: 'verified', present: 3, verified: 3 },
+        detached_document: { requested: false, state: 'not_checked' },
+      });
+    }
     const empty = resolve(temp, 'trusted-keys.json');
     writeFileSync(empty, JSON.stringify({ keystore_version: '1', keys: [] }));
     const unknown = await cli('verify', source, '--integrity', '--signing', `--keystore=${empty}`, '--json');

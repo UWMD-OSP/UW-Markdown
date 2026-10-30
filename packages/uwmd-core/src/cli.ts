@@ -468,7 +468,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
       : chain.signatures_verified < chain.signatures_present ? 'unverifiable' : 'verified';
     sections['signature_checks'] = {
       embedded_blocks: {
-        requested: flags['signing'] === true,
+        requested: Boolean(flags['signing']),
         state: blockState,
         present: chain.signatures_present,
         verified: chain.signatures_verified,
