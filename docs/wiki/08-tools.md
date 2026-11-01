@@ -583,6 +583,11 @@ so `src/receipts.test.ts` runs it under plain vitest with no editor harness. CI
 job: **VS Code extension (build + test)** (typecheck + esbuild bundle + vitest);
 before this the extension had no CI coverage at all.
 
+The packager's lockfile selects Azure Identity 4.14.1 and its supported MSAL
+Node 7.1.2 dependency, resolving the tracked authorization-flow advisory (#592).
+These are development packaging dependencies; the extension's verifier bundle
+does not include an authentication flow.
+
 **Representation-aware validation** (`src/validate.ts`, also `vscode`-free) —
 the language contribution now covers **both** `.uw.md` and `.uwx.md` under the
 single `uwmd` id, and the parser is chosen from the *content* via
