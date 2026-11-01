@@ -633,6 +633,9 @@ carry source ranges, structured findings map `section` → `block.lineStart`.
 
 ## Docs site — `tools/docs-site` (VitePress)
 
+Syntax colors include scoped overrides for dark comment gray and light
+property-name orange to meet AA text contrast without changing code text.
+
 The **published, human-facing** documentation site. A prebuild step
 (`scripts/prebuild.mjs`) copies repo-root markdown (spec, governance, RFCs,
 schemas, examples) into the site tree and rewrites links — repo root stays the

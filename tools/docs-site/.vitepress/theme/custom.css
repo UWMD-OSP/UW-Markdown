@@ -90,6 +90,8 @@ body { text-rendering: optimizeLegibility; }
 .vp-doc div[class*="language-"] { border: 1px solid var(--vp-c-border); border-radius: 3px; box-shadow: none; }
 /* The bundled GitHub syntax palette's comment gray is too dim on dark panels. */
 .dark .vp-doc pre span[style*="#6A737D" i] { color: #aeb2bd !important; --shiki-dark: #aeb2bd !important; }
+/* Property-name orange also needs AA contrast on the light code background. */
+:root:not(.dark) .vp-doc pre span[style*="#E36209" i] { color: #9a4300 !important; --shiki-light: #9a4300 !important; }
 .vp-doc table { font-size: 13px; font-variant-numeric: tabular-nums; }
 .vp-doc th { background: var(--vp-c-bg-alt); font-size: 12px; }
 .vp-doc th, .vp-doc td { border-color: var(--vp-c-border); }
