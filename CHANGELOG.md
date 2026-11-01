@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Make viewer file selection and section details keyboard accessible with native buttons, visible focus and disclosure state (#631).
+
 - Make the data-lake walkthrough runnable from an empty directory with pinned tools, a synthetic record, explicit ZIP extraction and semantic-identity guidance (#626).
 
 - Include valid records with empty location fields in batch indexes and fact exports (#627).

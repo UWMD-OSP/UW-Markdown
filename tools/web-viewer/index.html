@@ -18,6 +18,9 @@
     --bad: #ef6f6c;
   }
   * { box-sizing: border-box; }
+  a { color: var(--accent); }
+  button { font: inherit; color: inherit; background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; cursor: pointer; }
+  :is(a, button):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   body { margin: 0; font: 14px/1.5 -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
          background: var(--bg); color: var(--text); }
   header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; }
@@ -25,7 +28,7 @@
   header .sub { color: var(--muted); font-size: 12px; }
   main { padding: 24px; max-width: 1100px; margin: 0 auto; }
   .drop { border: 2px dashed var(--border); border-radius: 12px; padding: 48px; text-align: center; color: var(--muted);
-          transition: border-color .15s, background .15s; cursor: pointer; }
+          transition: border-color .15s, background .15s; }
   .drop.hover { border-color: var(--accent); background: rgba(78, 161, 255, .06); }
   .drop input[type=file] { display: none; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 24px; }
@@ -39,9 +42,10 @@
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
   .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .card-heading { margin: 0; font-size: 14px; font-weight: 600; }
   .card-head { padding: 12px 16px; display: flex; align-items: baseline; justify-content: space-between;
-               border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
-  .card-head h3 { margin: 0; font-size: 14px; font-weight: 600; }
+               width: 100%; text-align: left; background: var(--panel); border: 0; border-bottom: 1px solid var(--border); border-radius: 0; }
+  .card-head:focus-visible { outline-offset: -3px; }
   .card-head .desc { color: var(--muted); font-size: 12px; margin-left: 8px; }
   .card-head .toggle { color: var(--muted); font-size: 11px; }
   .card-body { padding: 12px 16px; display: none; background: var(--panel-2); }
@@ -71,11 +75,12 @@
   <span class="sub">Reference viewer · structured <code>.uwx.md</code> records</span>
 </header>
 <main id="app">
-  <label class="drop" id="drop">
+  <div class="drop" id="drop">
     <input type="file" id="file" accept=".uwx.md,.md,text/markdown" />
-    <div><strong>Drop a .uwx.md record here</strong> or click to choose</div>
+    <div><strong>Drop a .uwx.md record here</strong></div>
+    <button type="button" id="choose" style="margin-top:12px">Choose a .uwx.md record</button>
     <div style="margin-top:8px; font-size: 12px;">No upload — everything runs in your browser.</div>
-  </label>
+  </div>
   <p>Working with a .uw.md Lite file? <a href="/editor/">Open it in the editor</a>.</p>
   <div id="content"></div>
 </main>
@@ -314,12 +319,12 @@ function renderDeal(parsed) {
     const content = block.content || {};
     const vm = VIEW_MODELS[id];
     const card = el('div', { class: 'card' });
-    const head = el('div', { class: 'card-head' }, [
-      el('div', {}, [el('h3', {}, vm.name)]),
+    const head = el(vm.detail ? 'button' : 'span', { class: 'card-head', ...(vm.detail ? { type: 'button', 'aria-expanded': 'false', 'aria-controls': `details-${id}` } : {}) }, [
+      el('span', {}, vm.name),
       el('span', { class: 'toggle' }, vm.detail ? '▾ details' : ''),
     ]);
-    head.onclick = () => card.classList.toggle('open');
-    card.appendChild(head);
+    if (vm.detail) head.onclick = () => head.setAttribute('aria-expanded', String(card.classList.toggle('open')));
+    card.appendChild(el('h3', { class: 'card-heading' }, [head]));
     const primary = el('div', { class: 'primary' });
     for (const [path, label, kind, decimals] of vm.primary) {
       primary.appendChild(el('div', { class: 'metric' }, [
@@ -329,7 +334,7 @@ function renderDeal(parsed) {
     }
     card.appendChild(primary);
     if (vm.detail) {
-      const body = el('div', { class: 'card-body' });
+      const body = el('div', { class: 'card-body', id: `details-${id}` });
       const rows = el('div', { class: 'detail-rows' });
       for (const [path, label, kind, decimals] of vm.detail) {
         rows.appendChild(el('span', { class: 'label' }, label));
@@ -383,7 +388,7 @@ function loadText(text, samplePath = null) {
   }
 }
 
-drop.addEventListener('click', () => fileInput.click());
+document.getElementById('choose').addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return;
   f.text().then(loadText);

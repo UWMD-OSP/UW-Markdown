@@ -24,6 +24,31 @@ afterEach(() => {
 });
 
 describe('published sample loading', () => {
+  it('offers a native file-picker button', () => {
+    openViewer('');
+    const input = document.querySelector<HTMLInputElement>('#file')!;
+    const click = vi.spyOn(input, 'click');
+    fireEvent.click(screen.getByRole('button', { name: /choose a .uwx.md record/i }));
+    expect(click).toHaveBeenCalledOnce();
+  });
+
+  it('exposes detail disclosures as buttons with expanded and controlled state', async () => {
+    const text = readFileSync(resolve('../../examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8');
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, text: async () => text }));
+    openViewer('/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md');
+    const toggle = await screen.findByRole('button', { name: /property.*details/i });
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(document.getElementById(toggle.getAttribute('aria-controls')!)).toBeTruthy();
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(toggle.closest('.card')?.classList.contains('open')).toBe(true);
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(toggle.closest('.card')?.classList.contains('open')).toBe(false);
+    expect(screen.queryByRole('button', { name: /NOI Model/i })).toBeNull();
+    expect(screen.getByRole('heading', { name: 'NOI Model' })).toBeTruthy();
+  });
+
   it.each(samples)('renders %s in the standalone viewer', async name => {
     const text = readFileSync(resolve(`../../examples/${name}`), 'utf8');
     const fetch = vi.fn().mockResolvedValue({ ok: true, text: async () => text });

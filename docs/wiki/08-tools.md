@@ -465,6 +465,10 @@ browser is present).
 
 ## Web viewer — `tools/web-viewer`
 
+The local file picker and section-detail disclosures use native buttons with
+visible keyboard focus. Detail buttons expose `aria-expanded` and `aria-controls`;
+sections without details retain a plain heading.
+
 Single-file `index.html`, under 500 LOC, no build step. Drag-drop a `.uwx.md` and
 it renders (embeds a minimal Parser + Renderer). Reader demo. Skip it for editing
 or calc. The drop zone and header name UWX consistently; a nearby editor link
