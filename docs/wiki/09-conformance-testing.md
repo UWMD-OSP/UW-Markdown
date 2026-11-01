@@ -22,6 +22,12 @@ declare `ltv_basis: "purchase-price"` under RFC 0092; a valuation note alone
 does not select that basis. Wrong-value, receipt-tamper and signature-tamper
 controls remain part of the same command.
 
+`npm run examples:quickstart` executes the pinned tutorial's main-path commands
+with published CLI 4.3.0 and the built source CLI. Both download the immutable
+synthetic fixture revision, check its bytes against the tracked record, issue
+and verify eight computed receipt outputs, and convert the same record to JSON
+and loss-reported Lite. It runs inside the required Node 20 CI job (#614).
+
 ## Unit tests (Vitest)
 
 - Nearly every `src/*.ts` has a sibling `src/*.test.ts`. In `@uwmd/core` the

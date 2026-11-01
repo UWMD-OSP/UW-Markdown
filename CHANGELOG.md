@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Add a release-pinned quickstart that takes one synthetic record through summary, validation, receipt verification and JSON/Lite conversion, with the documented commands checked against npm and current source in CI (#614).
+
 - Keep a newly created editor record's generated heading and download filenames in sync with its deal name, including undo and redo (#610).
 
 - Load published UWX samples in the viewer and editor, with visible viewer loading and failure states, retry and download actions (#611).
