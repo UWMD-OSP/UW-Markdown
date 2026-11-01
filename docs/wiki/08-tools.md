@@ -109,6 +109,11 @@ document/results hashes. Partial metric coverage still produces the pack's
 complete result/status set. Missing inputs differ from verification failure;
 no asset equity allocation is inferred from portfolio capitalization.
 
+The receipt guide's opening, rationale and verdict table distinguish matching
+covered result values/statuses from complete computation coverage. Matching
+uncomputed statuses can verify without claiming every stated metric was
+calculated (#613; receipt specification §5.3–§5.5).
+
 Issuance refusals print the existing `ReceiptError` code and available calc
 message/pointer, including unresolved metric, section and variants. A missing
 pack remains `RCP_PACK_UNRESOLVED`; no other pack is substituted. `receipt verify`

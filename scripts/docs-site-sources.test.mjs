@@ -1,10 +1,20 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { rfcCopies, docsVersions, docsNpmPackages, docsPublishedGeneration, docsSiteVersions } from './docs-site-sources.mjs';
 import { pageStatus, markNormative, siteSidebars } from '../tools/docs-site/.vitepress/page-status.mjs';
+
+test('receipt guidance distinguishes a verified receipt from complete computation coverage', () => {
+  const guide = readFileSync(new URL('../docs/UW_RECEIPTS.md', import.meta.url), 'utf8');
+  assert.doesNotMatch(guide, /every stated result recomputes/);
+  assert.doesNotMatch(guide, /every NOI, DSCR, LTV, and IRR is computed/);
+  assert.doesNotMatch(guide, /The stated metrics — DSCR, LTV, cap rate, and the rest — \*\*follow\s+deterministically/);
+  const verified = guide.split('\n').find(line => line.startsWith('| **verified**'));
+  assert.match(verified, /values and computation statuses match/);
+  assert.match(guide, /verified.*does not mean every metric was computed/i);
+});
 
 test('new RFCs are discovered without script edits; special routes survive', () => {
   const root = mkdtempSync(join(tmpdir(), 'uwmd-docs-'));

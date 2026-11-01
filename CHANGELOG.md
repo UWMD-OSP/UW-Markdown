@@ -14,6 +14,8 @@ protocol, and each package each carry an independent semver).
 
 - Use consistent `.uwx.md` guidance in the viewer and New UWX dialog, with a link for Lite users to open the editor (#612).
 
+- Clarify throughout the receipt guide that a verified receipt can include matching uncomputed statuses and does not establish complete metric coverage (#613).
+
 - Make `verify-receipt` return exit 3 for an unverifiable receipt, matching `receipt verify`; synchronize the portable contract, reference and Python CLIs, and engine-relative conformance (RFC 0130).
 
 - Track the batch, CLI, Excel and report npm launchers as executable so POSIX dependency installation leaves identified-source checkouts clean.

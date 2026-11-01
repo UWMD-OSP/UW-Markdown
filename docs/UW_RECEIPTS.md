@@ -1,8 +1,8 @@
 # Verification receipts
 
 A **verification receipt** is a small JSON file that sits beside a deal and lets
-someone who did not run the numbers confirm, offline, that those numbers follow
-from that record.
+someone who did not issue it check, offline, that the committed record and the
+covered result values and computation statuses match under its declared rules.
 
 It answers exactly one question: *do these outputs follow from these inputs?*
 
@@ -16,8 +16,11 @@ anything else.
 A receipt that verifies tells you two things:
 
 1. The deal's financial content is **unchanged** since the receipt was issued.
-2. The stated metrics — DSCR, LTV, cap rate, and the rest — **follow
-   deterministically** from that content under a named calculation pack.
+2. Its covered **result values and computation statuses match** when checked
+   under the named calculation pack, including matching uncomputed statuses.
+
+Inspect coverage: **verified does not mean every metric was computed**. A metric
+may remain stated in the record without being computed by this receipt.
 
 It tells you **nothing** about whether the inputs are true, complete, sourced
 from genuine documents, or reasonable. A deal asserting a fabricated NOI can
@@ -43,8 +46,8 @@ the questions that actually require judgment.
 ## Why this is possible
 
 UW Markdown has a rule that AI never does financial math. Extraction and
-narrative are model work; every NOI, DSCR, LTV, and IRR is computed
-deterministically by a calculation pack. The protocol fixes the rounding rule
+narrative are model work. Registered packs compute the metrics they cover;
+other values may remain stated or uncomputed. The protocol fixes the rounding rule
 and precision, and the Excel export's formulas match the pack's quantized values
 exactly for the metrics the workbook covers.
 
@@ -133,7 +136,7 @@ third into either of the others.
 
 | Verdict | Exit code | Meaning |
 |---|---|---|
-| **verified** | 0 | The record is unchanged and every stated result recomputes. |
+| **verified** | 0 | The committed record and the receipt's covered result values and computation statuses match under the declared verification rules. Inspect coverage: verified does not mean every metric was computed. |
 | **failed** | 1 | The digest, a result, or the signature disagrees. |
 | **unverifiable** | 3 | This verifier *cannot decide*. |
 
