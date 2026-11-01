@@ -39,8 +39,12 @@ export function App() {
     if (sampleLoaded.current) return;
     sampleLoaded.current = true;
     const sample = new URLSearchParams(window.location.search).get('sample');
-    if (!sample || !/^\/viewer\/samples\/[A-Za-z0-9-]+\.uw\.md$/.test(sample)) return;
-    const filename = sample.split('/').pop() ?? 'sample.uw.md';
+    if (!sample) return;
+    if (!/^\/viewer\/samples\/[A-Za-z0-9._-]+\.uwx?\.md$/.test(sample)) {
+      actions.setStatus('Unsupported sample URL — choose a published sample or open a local Lite / UWX file');
+      return;
+    }
+    const filename = sample.split('/').pop() ?? 'sample.uwx.md';
     actions.setStatus(`Loading ${filename}…`);
     void fetch(sample).then((response) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
