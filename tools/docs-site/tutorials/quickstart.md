@@ -11,7 +11,7 @@ or repository clone is required.
 
 This walkthrough is tested with **published `@uwmd/cli@4.3.0`**, whose npm source
 revision is `80c68c3d0950948c85a1d3a90c02cd05f3a650a4`. The teaching record is
-pinned to fixture revision `7e8f5d34e741499b15332fe4c0341ad04aee371b`. Every command
+pinned to fixture revision `05929d21a8020c488ffa55385ce0dac5f10df183`. Every command
 below uses that CLI version and the same `quickstart.uwx.md` file. CI downloads
 the pinned bytes and executes this walkthrough with both the published CLI and
 the current source CLI.
@@ -26,10 +26,10 @@ It contains no real property, borrower or transaction.
 <!-- quickstart:start -->
 
 ```bash
-node --input-type=module -e "import { writeFile } from 'node:fs/promises'; const r = await fetch('https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/7e8f5d34e741499b15332fe4c0341ad04aee371b/docs/downloads/tutorials/quickstart.uwx.md'); if (!r.ok) throw new Error('HTTP ' + r.status); await writeFile('quickstart.uwx.md', await r.text());"
+node --input-type=module -e "import { writeFile } from 'node:fs/promises'; const r = await fetch('https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/05929d21a8020c488ffa55385ce0dac5f10df183/docs/downloads/tutorials/quickstart.uwx.md'); if (!r.ok) throw new Error('HTTP ' + r.status); await writeFile('quickstart.uwx.md', await r.text());"
 ```
 
-You can also [download those exact fixture bytes](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/7e8f5d34e741499b15332fe4c0341ad04aee371b/docs/downloads/tutorials/quickstart.uwx.md).
+You can also [download those exact fixture bytes](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/05929d21a8020c488ffa55385ce0dac5f10df183/docs/downloads/tutorials/quickstart.uwx.md).
 Keep this file as the record throughout the walkthrough.
 
 ## 2. Read its summary
