@@ -173,6 +173,10 @@ JSON fact per deal, the normative `block_values` row (via `@uwmd/verify`'s
 (`path`, `deal_id`, `asset_class`, `semantic_digest`, `valid`) — plus a manifest with
 counts and a `deals_skipped` list. See [`docs/DATA_LAKE.md`](../DATA_LAKE.md) for the
 full lake pipeline.
+The data-lake walkthrough pins its published tools and synthetic input, creates
+its directories, and extracts the CSV bundle before running DuckDB queries.
+Bundle ZIP bytes may include changing export metadata; ingestion identity uses
+the semantic digest.
 
 The output is intentionally a read model, not a new storage protocol: databases or
 other structured systems may import it while `.uw.md` remains the canonical record.

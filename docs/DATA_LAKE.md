@@ -8,19 +8,30 @@ re-encoding), and **verifiable trust** (receipts that attest outputs follow
 from inputs) — and stays out of everything a lake vendor already does well
 (storage, orchestration, query engines).
 
-This guide shows the full pipeline with nothing but the published `uwmd` CLI
-and DuckDB. Every command and query below was run before it was written down.
+This guide uses Node.js 20 or newer, Python 3 (for ZIP extraction), the
+published CLI 4.3.0 and batch 0.9.2, and DuckDB. Run the shell commands in a
+fresh working directory, then run the SQL queries in DuckDB from that same
+directory. The walkthrough uses a synthetic QA record, not a track record.
 The same CSVs load into Snowflake, ClickHouse, BigQuery, or Pandas unchanged —
 DuckDB is just the shortest path to a working demo.
 
 ## 1. From deals to bundles
+
+Download the pinned synthetic record as `deal.uwx.md` and create the output
+directory before exporting. The CLI does not create missing parent directories:
+
+```bash
+node -e "fetch('https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/4f716a0a024fb213aef546467d7aba027b56115c/examples/Parkview-Apts-Glendale-AZ.uwx.md').then(r => { if (!r.ok) throw new Error('Download failed: ' + r.status); return r.text(); }).then(t => require('node:fs').writeFileSync('deal.uwx.md', t))"
+node -e "require('node:fs').mkdirSync('lake/deal-001', { recursive: true })"
+```
 
 Each `.uwx.md` (or `.uw.md` Lite) deal converts to a **UW CSV bundle**
 ([`UW_CSV_BUNDLE.md`](../spec/UW_CSV_BUNDLE.md)) — a deterministic ZIP
 of typed CSV files plus a manifest:
 
 ```bash
-npx @uwmd/cli convert deal.uwx.md --to uw-csv-bundle --output lake/deal-001/deal.uw.csv.zip
+npx @uwmd/cli@4.3.0 convert deal.uwx.md --to uw-csv-bundle --output lake/deal-001/deal.uw.csv.zip
+python -m zipfile -e lake/deal-001/deal.uw.csv.zip lake/deal-001/bundle
 ```
 
 Extracted, every bundle has the same layout:
@@ -94,8 +105,10 @@ FROM read_json('lake/*/bundle/manifest.json', filename = true);
 ```
 
 The digest is computed over the canonical envelope, so it is the natural
-idempotency key for ingestion: re-encoding an unchanged deal produces a
-byte-identical bundle with the same digest, and your loader can skip it. A
+idempotency key for ingestion: re-encoding an unchanged deal preserves its
+semantic digest, and your loader can skip an already ingested digest. Export
+metadata such as generation timestamps can change the ZIP bytes; compare the
+semantic digest to identify the deal, rather than a hash of the ZIP. A
 changed digest means the deal's semantic content actually changed.
 
 ## 3. Joining in trust
@@ -103,7 +116,7 @@ changed digest means the deal's semantic content actually changed.
 A lake of numbers is only as good as its provenance. Issue a receipt per deal:
 
 ```bash
-npx @uwmd/cli receipt issue deal.uwx.md --output lake/deal-001/deal.receipt.json
+npx @uwmd/cli@4.3.0 receipt issue deal.uwx.md --output lake/deal-001/deal.receipt.json
 ```
 
 A receipt ([`UW_RECEIPT.md`](../spec/UW_RECEIPT.md)) attests that the
@@ -137,8 +150,12 @@ The loop over deals is deliberately boring — any orchestrator can run
 deal-level catalog (`uwmd-collection.json` + CSV, with semantic digests) and —
 with `--facts` — the corpus fact table directly:
 
+For this one-record walkthrough, create the input directory and copy the same
+record into it first:
+
 ```bash
-npx @uwmd/batch deals --out lake-out --facts
+node -e "const fs = require('node:fs'); fs.mkdirSync('deals', { recursive: true }); fs.copyFileSync('deal.uwx.md', 'deals/deal.uwx.md')"
+npx @uwmd/batch@0.9.2 deals --out lake-out --facts
 ```
 
 `lake-out/uwmd-facts.jsonl` is one line per JSON fact per deal: the same
