@@ -635,6 +635,9 @@ carry source ranges, structured findings map `section` → `block.lineStart`.
 
 ## Docs site — `tools/docs-site` (VitePress)
 
+Local Workers state in `.wrangler/` is generated and Git-ignored. Biome excludes
+it alongside other build output, so hosting checks can run before source lint.
+
 Syntax colors include scoped overrides for dark comment gray and light
 property-name orange to meet AA text contrast without changing code text.
 

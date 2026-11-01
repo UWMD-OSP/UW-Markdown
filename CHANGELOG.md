@@ -23,6 +23,8 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Exclude generated local Workers middleware from source lint checks (#638).
+
 - Open the hosted editor from the standalone viewer's Lite link, including local-file use (#636).
 
 - Improve light-theme syntax-token contrast in documentation code samples (#634).

@@ -4,6 +4,7 @@
     "ignore": [
       "**/node_modules/**",
       "**/dist/**",
+      "**/.wrangler/**",
       "**/dist-validator/**",
       "**/.vitepress/dist/**",
       "**/.vitepress/cache/**",
