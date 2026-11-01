@@ -24,10 +24,9 @@ underwrite. To see a full deal, look at
 [`examples/Parkview-Apts-Glendale-AZ.uwx.md`](https://github.com/UWMD-OSP/UW-Markdown/blob/main/examples/Parkview-Apts-Glendale-AZ.uwx.md)
 once you're done here.
 
-> **The fast path:** the [quickstart](/tutorials/quickstart) runs
-> `npx @uwmd/cli init --output deal.uwx.md`, which scaffolds a complete
-> record with every standard section stubbed out. This tutorial
-> builds a file by hand instead, so you understand what each piece is.
+> **The fast path:** the [quickstart](/tutorials/quickstart) takes a pinned
+> synthetic record through summary, validation, receipts and conversion.
+> This tutorial builds a file by hand so you understand what each piece is.
 
 ## Step 1 — Create the file
 
