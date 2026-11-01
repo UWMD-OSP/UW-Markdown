@@ -372,13 +372,13 @@ const drop = document.getElementById('drop');
 const fileInput = document.getElementById('file');
 const content = document.getElementById('content');
 
-function loadText(text) {
+function loadText(text, samplePath = null) {
   content.innerHTML = '';
   try {
     const parsed = parseUW(text);
     content.appendChild(renderDeal(parsed));
   } catch (e) {
-    content.appendChild(el('div', { class: 'err' }, 'Parse failed: ' + e.message));
+    showLoadError('Parse failed: ' + e.message, samplePath);
   }
 }
 
@@ -395,17 +395,34 @@ drop.addEventListener('drop', e => {
 });
 
 const sample = new URLSearchParams(window.location.search).get('sample');
-if (sample && /^\/viewer\/samples\/[A-Za-z0-9._-]+\.uw\.md$/.test(sample)) {
-  fetch(sample)
+function showLoadError(message, samplePath = null) {
+  content.innerHTML = '';
+  const error = el('div', { class: 'err', role: 'alert' }, message);
+  if (samplePath) {
+    error.appendChild(el('p', {}, [
+      el('button', { type: 'button', onclick: () => loadSample(samplePath) }, 'Retry sample'),
+      ' · ', el('a', { href: samplePath, download: samplePath.split('/').pop() }, 'Download sample'),
+      ' to open locally.',
+    ]));
+  }
+  content.appendChild(error);
+}
+
+function loadSample(path) {
+  content.innerHTML = '';
+  content.appendChild(el('p', { role: 'status' }, 'Loading sample…'));
+  return fetch(path)
     .then(response => {
-      if (!response.ok) throw new Error('Sample could not be loaded.');
+      if (!response.ok) throw new Error(`Sample could not be loaded (HTTP ${response.status}).`);
       return response.text();
     })
-    .then(loadText)
-    .catch(error => {
-      content.innerHTML = '';
-      content.appendChild(el('div', { class: 'err' }, error.message));
-    });
+    .then(text => loadText(text, path))
+    .catch(error => showLoadError(error.message, path));
+}
+
+if (sample) {
+  if (/^\/viewer\/samples\/[A-Za-z0-9._-]+\.uwx\.md$/.test(sample)) void loadSample(sample);
+  else showLoadError('Unsupported sample URL. Choose a published .uwx.md sample from the viewer page or open a local file.');
 }
 </script>
 </body>

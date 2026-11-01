@@ -10,6 +10,8 @@ protocol, and each package each carry an independent semver).
 
 - Keep a newly created editor record's generated heading and download filenames in sync with its deal name, including undo and redo (#610).
 
+- Load published UWX samples in the viewer and editor, with visible viewer loading and failure states, retry and download actions (#611).
+
 - Make `verify-receipt` return exit 3 for an unverifiable receipt, matching `receipt verify`; synchronize the portable contract, reference and Python CLIs, and engine-relative conformance (RFC 0130).
 
 - Track the batch, CLI, Excel and report npm launchers as executable so POSIX dependency installation leaves identified-source checkouts clean.

@@ -454,6 +454,11 @@ Single-file `index.html`, under 500 LOC, no build step. Drag-drop a `.uw.md` and
 it renders (embeds a minimal Parser + Renderer). Reader demo. Skip it for editing
 or calc.
 
+Published sample links use `.uwx.md`. Both viewer and editor load these deep
+links; the viewer exposes loading, parse/network failures, retry and a sample
+download. Unsupported sample URLs are reported without fetching them. The
+editor suite opens every published sample in the standalone viewer (#611).
+
 ## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.8.0, private)
 
 React 18 + Tailwind CSS 4 (Vite). Opens `.uw.md` Lite summaries by compiling their supported anchored fields into a canonical `.uwx.md` record (retaining the complete Lite source in a namespaced extension), and opens `.uwx.md` structured records directly. Export Lite is explicitly loss-reported: omitted UWX paths are listed before the smaller deal-summary projection is downloaded. Embeds `@uwmd/core/browser` (parser, validator,
