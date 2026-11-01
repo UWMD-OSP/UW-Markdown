@@ -59,7 +59,7 @@ export function useDeal(): [DealState, DealActions] {
   const [loaded, setLoaded] = useState<EditState | null>(null);
   const [past, setPast] = useState<EditState[]>([]);
   const [future, setFuture] = useState<EditState[]>([]);
-  const [filename, setFilename] = useState('');
+  const [openedFilename, setFilename] = useState('');
   const [sourceRepresentation, setSourceRepresentation] = useState<UWSourceRepresentation | null>(null);
   const [liteCompilation, setLiteCompilation] = useState<UWLiteCompilationReport | null>(null);
   const [status, setStatus] = useState('Ready — open a .uw.md Lite or .uwx.md structured deal');
@@ -68,12 +68,15 @@ export function useDeal(): [DealState, DealActions] {
   const [originalSource, setOriginalSource] = useState('');
 
   const dirty = !!loaded && loaded.source !== originalSource;
+  const filename = loaded?.generated
+    ? dealFilename(loaded.parsed.frontmatter.deal_name)
+    : openedFilename;
 
   const setEditSettings = useCallback((patch: Partial<EditSettings>) => {
     setEditSettingsState((current) => ({ ...current, ...patch }));
   }, []);
 
-  const loadFile = useCallback((text: string, name: string) => {
+  const loadFile = useCallback((text: string, name: string, generated = false) => {
     try {
       const detection = detectUWSourceRepresentation(text, name);
       const isLite = detection.representation !== UWX_REPRESENTATION_ID;
@@ -86,7 +89,7 @@ export function useDeal(): [DealState, DealActions] {
         throw new Error(`Lite compilation needs attention. ${messages}`);
       }
       const source = compilation ? stringifyUWX(compilation.envelope) : text;
-      const state = loadInitialState(source);
+      const state = { ...loadInitialState(source), generated };
       const workingName = ensureUWXFilename(name);
       setOriginalSource(source);
       setLoaded(state);
@@ -110,8 +113,7 @@ export function useDeal(): [DealState, DealActions] {
 
   const newDeal = useCallback((opts: InitOptions) => {
     const source = generateBlankUWFile(opts);
-    const slug = (opts.dealName ?? 'new-deal').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    loadFile(source, `${slug || 'new-deal'}.uwx.md`);
+    loadFile(source, dealFilename(opts.dealName ?? 'Untitled Deal'), true);
     setOriginalSource('');
     setStatus('New UWX deal created — fill in the frontmatter, then add data');
   }, [loadFile]);
@@ -185,6 +187,11 @@ export function useDeal(): [DealState, DealActions] {
 function issueSummary(state: EditState): string {
   const count = state.validation.issues.length;
   return `${count} issue${count === 1 ? '' : 's'}`;
+}
+
+function dealFilename(name: string): string {
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return `${slug || 'new-deal'}.uwx.md`;
 }
 
 function ensureUWXFilename(name: string): string {
