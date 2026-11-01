@@ -19,7 +19,8 @@ assert.equal(commands.length, 11);
 /** The tutorial uses single-line argv commands, never shell operators. */
 function commandWords(line) {
   const words = [];
-  let word = '', quote = null;
+  let word = '';
+  let quote = null;
   for (const char of line) {
     if (quote) {
       if (char === quote) quote = null;
