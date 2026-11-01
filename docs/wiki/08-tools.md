@@ -518,6 +518,11 @@ issuance/verification). Six tabs:
 Plus: snapshot-based **undo/redo** (Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z), **Ctrl+S**
 download, and a **New Deal** dialog (`generateBlankUWFile`).
 
+For a scaffold created in the current editor session, changing `deal_name`
+updates its matching generated H1 and suggested UWX/Lite download filenames;
+undo/redo restores them together. Uploaded filenames and authored titles stay
+as supplied. Creation-log entries retain their original names (#610).
+
 All mutations flow through `src/edits.ts` → `applyEdit()` → re-parse (the single
 chokepoint; React state just holds the result). `edits.ts` threads the active
 `EditSettings` into the `EditContext` and promotes `section_replace` →

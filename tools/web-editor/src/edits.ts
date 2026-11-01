@@ -2,8 +2,8 @@
 //
 // Calls @uwmd/core's applyEdit() to produce a new file content string,
 // then re-parses it so the in-memory parsed state stays canonical. This
-// is the only place that mutates the loaded deal — the editor never
-// hand-edits ParsedUWFile or the source string. That single chokepoint
+// is the only place that mutates the loaded deal. A generated deal's matching
+// H1 follows its name without reserializing any other body bytes. This chokepoint
 // is what guarantees calc-integrity: nothing can write a value to the
 // file without going through the protocol's edit semantics.
 
@@ -21,6 +21,8 @@ export interface EditState {
   source: string;
   parsed: ParsedUWFile;
   validation: ValidationResult;
+  /** This session created the scaffold; uploaded records keep authored titles. */
+  generated?: boolean;
 }
 
 export interface EditApplied {
@@ -98,11 +100,19 @@ export function runEdit(
     };
   }
 
-  const parsed = parseUWFile(result.content, { strict: false });
+  let source = result.content;
+  if (state.generated && op.kind === 'frontmatter_set' && op.path === 'deal_name' && typeof op.value === 'string') {
+    // Only the scaffold's leading H1 is managed, and only while it still
+    // matches the previous name. Preserve line endings, prose and history.
+    source = source.replace(/^(---\r?\n[\s\S]*?\r?\n---\r?\n\s*# )([^\r\n]*)/,
+      (match, prefix: string, heading: string) => heading === state.parsed.frontmatter.deal_name
+        ? `${prefix}${op.value}` : match);
+  }
+  const parsed = parseUWFile(source, { strict: false });
   const validation = validateUWFile(parsed);
   return {
     ok: true,
-    state: { source: result.content, parsed, validation },
+    state: { ...state, source, parsed, validation },
   };
 }
 
