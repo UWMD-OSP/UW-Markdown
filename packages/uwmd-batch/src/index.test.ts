@@ -2,6 +2,7 @@ import { copyFile, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { parseUWFile, validateUWFile } from '@uwmd/verify';
 import {
   buildUWMDFactTable,
   filterUWMDCollection,
@@ -45,6 +46,47 @@ const COLLECTION: UWMDCollectionIndex = {
 };
 
 describe('indexUWMDDirectory', () => {
+  it('indexes a valid sparse record and its facts without inventing location data', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'uwmd-batch-sparse-'));
+    try {
+      const source = await readFile(join(process.cwd(), '../../docs/downloads/tutorials/quickstart.uwx.md'), 'utf8');
+      expect(validateUWFile(parseUWFile(source)).issues.filter(issue => issue.severity === 'error')).toEqual([]);
+      const file = join(root, 'sparse.uwx.md');
+      await writeFile(file, source, 'utf8');
+      const index = await indexUWMDDirectory(root);
+      expect(index.valid_deals).toBe(1);
+      expect(index.deals[0]).toMatchObject({ deal_id: 'uw_SYNTHETIC_QUICKSTART', valid: true, error_count: 0 });
+      const facts = await buildUWMDFactTable(root);
+      expect(facts.deals_included).toBe(1);
+      expect(facts.deals_skipped).toEqual([]);
+      expect(facts.rows.some(row => row.pointer === '/net_operating_income')).toBe(true);
+      expect(facts.rows.every(row => row.semantic_digest === index.deals[0].semantic_digest)).toBe(true);
+      expect(await readFile(file, 'utf8')).toBe(source);
+    } finally {
+      expect(root.startsWith(join(tmpdir(), 'uwmd-batch-sparse-'))).toBe(true);
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it.each([
+    ['absent city', (source: string) => source.replace(/^city:.*\n/m, '')],
+    ['non-string city', (source: string) => source.replace(/^city:.*$/m, 'city: 17')],
+    ['empty identity', (source: string) => source.replace(/^deal_id:.*$/m, 'deal_id: ""')],
+  ])('still refuses an incomplete envelope: %s', async (_name, transform) => {
+    const root = await mkdtemp(join(tmpdir(), 'uwmd-batch-envelope-'));
+    try {
+      const source = await readFile(join(process.cwd(), '../../docs/downloads/tutorials/quickstart.uwx.md'), 'utf8');
+      await writeFile(join(root, 'refused.uwx.md'), transform(source), 'utf8');
+      const index = await indexUWMDDirectory(root);
+      expect(index.invalid_deals).toBe(1);
+      expect(index.deals[0].error).toContain('MISSING_UW_ENVELOPE');
+      expect((await buildUWMDFactTable(root)).deals_skipped).toHaveLength(1);
+    } finally {
+      expect(root.startsWith(join(tmpdir(), 'uwmd-batch-envelope-'))).toBe(true);
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
   it('indexes valid deals, isolates malformed files, and writes deterministic projections', async () => {
     const root = await mkdtemp(join(tmpdir(), 'uwmd-batch-'));
 

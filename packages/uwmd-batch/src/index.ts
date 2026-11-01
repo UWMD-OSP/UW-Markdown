@@ -287,8 +287,10 @@ function numericRecord(value: unknown): Record<string, number> {
   return Object.fromEntries(Object.entries(value).filter(([, item]) => typeof item === 'number' && Number.isFinite(item)));
 }
 function hasUWEnvelope(frontmatter: Record<string, unknown>): boolean {
-  return ['uw_version', 'deal_id', 'deal_name', 'created', 'last_modified', 'property_address', 'city', 'state', 'zip', 'asset_class']
-    .every((field) => typeof frontmatter[field] === 'string' && frontmatter[field].length > 0);
+  const identityFields = ['uw_version', 'deal_id', 'deal_name', 'created', 'last_modified', 'asset_class'];
+  const locationFields = ['property_address', 'city', 'state', 'zip'];
+  return identityFields.every((field) => typeof frontmatter[field] === 'string' && frontmatter[field].length > 0)
+    && locationFields.every((field) => typeof frontmatter[field] === 'string');
 }
 function csvCell(value: unknown): string { const text = value == null ? '' : String(value); return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text; }
 function normaliseFilter(value: string | readonly string[] | undefined): ReadonlySet<string> | undefined {

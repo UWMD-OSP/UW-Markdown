@@ -8,6 +8,10 @@ npx @uwmd/batch deals --out batch-output
 
 The index is a projection over canonical deal files, not a storage protocol. A host may import it into any database without changing `.uwx.md` semantics.
 
+Location fields may be empty strings, as in a newly initialized record. Batch
+keeps the record's identity and facts without filling in an address. Missing or
+non-string location fields still produce a `MISSING_UW_ENVELOPE` error.
+
 ## Read-only workflow projections
 
 `filterUWMDCollection(index, filters)` narrows an existing index by asset class,

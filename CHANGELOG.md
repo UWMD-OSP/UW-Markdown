@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Include valid records with empty location fields in batch indexes and fact exports (#627).
+
 - Add a release-pinned quickstart that takes one synthetic record through summary, validation, receipt verification and JSON/Lite conversion, with the documented commands checked against npm and current source in CI (#614).
 
 - Update the extension packager's supported Azure Identity dependency to 4.14.1 with patched MSAL Node 7.1.2 (#592).

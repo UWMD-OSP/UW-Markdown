@@ -177,6 +177,9 @@ full lake pipeline.
 The output is intentionally a read model, not a new storage protocol: databases or
 other structured systems may import it while `.uw.md` remains the canonical record.
 Invalid or non-UW files are included with an error instead of halting the batch.
+Empty string location fields are accepted, matching the scaffold and validator;
+missing or non-string location fields still fail the envelope check. Sparse
+records retain their identity, semantic digest and fact rows without invented geography.
 ## PostgreSQL lake adapter — `packages/uwmd-lake` (`@uwmd/lake`)
 
 The RFC 0049 reference adapter. It is a **host-side integration**, not part of the
