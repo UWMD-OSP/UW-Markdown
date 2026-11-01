@@ -22,6 +22,9 @@ class pack and canonical statement homes. Authored values (including explicit
 nulls) win, and rendering never writes the record. Missing values carry no
 currency/unit suffix; CSV uses two decimal percent and three decimal DSCR display.
 
+CLI summary omits an absent location line and prints address/city/state
+separators only between supplied parts (#622).
+
 Reading commands use core's Node-only `loadUWSourceFile`: UWX keeps its raw
 bytes, Lite compiles through its bridge, and JSON/XML/CSV decode through the
 codec registry. CSV reconstruction preserves own JSON content members, including

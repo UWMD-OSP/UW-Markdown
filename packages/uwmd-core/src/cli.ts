@@ -658,11 +658,12 @@ async function cmdSummary(file: string): Promise<void> {
   const money = (value: unknown) => formatCurrency(value, { locale, currencyCode: fm.currency_code });
   const pctFmt = (value: unknown) => formatPercent(value, { locale });
   const ratio = (value: unknown) => formatRatio(value, { locale });
+  const cityState = [fm.city, fm.state].filter(Boolean).join(' ');
+  const location = [fm.property_address, cityState].filter(Boolean).join(', ');
 
   console.log(`
 ─────────────────────────────────────────────────
-  ${fm.deal_name ?? 'Untitled'}
-  ${fm.property_address ?? ''}, ${fm.city ?? ''} ${fm.state ?? ''}
+  ${fm.deal_name ?? 'Untitled'}${location ? `\n  ${location}` : ''}
   ${fm.asset_class ?? ''} · ${fm.deal_stage ?? 'draft'}
 ─────────────────────────────────────────────────
   Purchase Price:   ${money(qm.purchase_price)}

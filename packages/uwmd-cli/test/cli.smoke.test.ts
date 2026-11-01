@@ -63,6 +63,33 @@ function runCliBinary(args: string[]) {
 }
 
 describe('uwmd CLI', () => {
+  it.each([
+    [[], null],
+    [['--address', '100 Example Way'], '100 Example Way'],
+    [['--city', 'Example City'], 'Example City'],
+    [['--state', 'AZ'], 'AZ'],
+    [['--city', 'Example City', '--state', 'AZ'], 'Example City AZ'],
+    [['--address', '100 Example Way', '--city', 'Example City', '--state', 'AZ'], '100 Example Way, Example City AZ'],
+  ] as const)('prints only supplied location parts in summary: %j', async (location, expected) => {
+    const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-summary-location-'));
+    try {
+      const file = resolve(temp, 'synthetic.uwx.md');
+      const init = await runCli(['init', '--name', 'Synthetic location test', '--output', file, ...location]);
+      expect(init.status).toBe(0);
+      const result = await runCli(['summary', file]);
+      expect(result.status).toBe(0);
+      const lines = result.stdout.split(/\r?\n/);
+      const title = lines.findIndex(line => line.trim() === 'Synthetic location test');
+      expect(lines[title + 1].trim()).toBe(expected ?? 'multifamily · screening');
+      expect(result.stdout).not.toMatch(/^\s*,\s*$/m);
+      expect(result.stdout).toContain('Purchase Price:');
+    } finally {
+      // This exact directory was freshly returned by mkdtempSync above.
+      expect(temp.startsWith(resolve(tmpdir(), 'uwmd-cli-summary-location-'))).toBe(true);
+      rmSync(temp, { recursive: true, force: true });
+    }
+  });
+
   it('prints help on --help with exit code 0', async () => {
     const r = await runCli(['--help']);
     expect(r.status).toBe(0);
