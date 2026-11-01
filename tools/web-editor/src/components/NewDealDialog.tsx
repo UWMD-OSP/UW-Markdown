@@ -59,11 +59,11 @@ export function NewDealDialog(props: {
         }}
       >
         <h2 id="new-deal-title" className="font-display text-lg text-accent">
-          New Deal
+          New UWX
         </h2>
         <p className="mt-1 text-xs text-muted">
-          Scaffolds a blank .uw.md via <code>generateBlankUWFile</code> — canonical section order,
-          empty data stubs, initial pipeline-log entry.
+          Create a structured .uwx.md record with empty sections.
+          Fill in the deal details, then add your underwriting data.
         </p>
 
         <div className="mt-4 space-y-3">

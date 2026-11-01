@@ -12,6 +12,8 @@ protocol, and each package each carry an independent semver).
 
 - Load published UWX samples in the viewer and editor, with visible viewer loading and failure states, retry and download actions (#611).
 
+- Use consistent `.uwx.md` guidance in the viewer and New UWX dialog, with a link for Lite users to open the editor (#612).
+
 - Make `verify-receipt` return exit 3 for an unverifiable receipt, matching `receipt verify`; synchronize the portable contract, reference and Python CLIs, and engine-relative conformance (RFC 0130).
 
 - Track the batch, CLI, Excel and report npm launchers as executable so POSIX dependency installation leaves identified-source checkouts clean.

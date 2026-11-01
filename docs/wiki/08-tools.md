@@ -450,9 +450,11 @@ browser is present).
 
 ## Web viewer — `tools/web-viewer`
 
-Single-file `index.html`, under 500 LOC, no build step. Drag-drop a `.uw.md` and
+Single-file `index.html`, under 500 LOC, no build step. Drag-drop a `.uwx.md` and
 it renders (embeds a minimal Parser + Renderer). Reader demo. Skip it for editing
-or calc.
+or calc. The drop zone and header name UWX consistently; a nearby editor link
+directs `.uw.md` Lite users to the format bridge. The editor's New UWX dialog
+describes a structured record with empty sections (#612).
 
 Published sample links use `.uwx.md`. Both viewer and editor load these deep
 links; the viewer exposes loading, parse/network failures, retry and a sample

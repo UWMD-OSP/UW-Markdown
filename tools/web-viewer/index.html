@@ -68,14 +68,15 @@
 <body>
 <header>
   <h1>UW Markdown</h1>
-  <span class="sub">Reference Tier-1 Viewer · drop a <code>.uw.md</code> file</span>
+  <span class="sub">Reference viewer · structured <code>.uwx.md</code> records</span>
 </header>
 <main id="app">
   <label class="drop" id="drop">
-    <input type="file" id="file" accept=".md,.uwmd,.uw,.txt" />
-    <div><strong>Drop a .uw.md file here</strong> or click to choose</div>
+    <input type="file" id="file" accept=".uwx.md,.md,text/markdown" />
+    <div><strong>Drop a .uwx.md record here</strong> or click to choose</div>
     <div style="margin-top:8px; font-size: 12px;">No upload — everything runs in your browser.</div>
   </label>
+  <p>Working with a .uw.md Lite file? <a href="/editor/">Open it in the editor</a>.</p>
   <div id="content"></div>
 </main>
 
