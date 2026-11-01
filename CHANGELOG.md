@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Keep a newly created editor record's generated heading and download filenames in sync with its deal name, including undo and redo (#610; StackUW UPSTREAM-034).
+- Keep a newly created editor record's generated heading and download filenames in sync with its deal name, including undo and redo (#610).
 
 - Make `verify-receipt` return exit 3 for an unverifiable receipt, matching `receipt verify`; synchronize the portable contract, reference and Python CLIs, and engine-relative conformance (RFC 0130).
 
