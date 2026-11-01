@@ -468,6 +468,8 @@ browser is present).
 The local file picker and section-detail disclosures use native buttons with
 visible keyboard focus. Detail buttons expose `aria-expanded` and `aria-controls`;
 sections without details retain a plain heading.
+The Lite-editor link uses the canonical hosted editor URL so it also works
+when the standalone HTML is opened from a local file.
 
 Single-file `index.html`, under 500 LOC, no build step. Drag-drop a `.uwx.md` and
 it renders (embeds a minimal Parser + Renderer). Reader demo. Skip it for editing

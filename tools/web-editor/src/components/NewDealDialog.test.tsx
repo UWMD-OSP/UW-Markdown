@@ -17,6 +17,6 @@ it('asks viewer users for UWX and points Lite users to the editor', () => {
   const html = readFileSync(resolve('../web-viewer/index.html'), 'utf8');
   document.body.innerHTML = html.match(/<body>([\s\S]*?)<script type="module">/)![1];
   expect(screen.getByText('Drop a .uwx.md record here')).toBeTruthy();
-  expect(screen.getByRole('link', { name: /editor/i }).getAttribute('href')).toBe('/editor/');
+  expect(screen.getByRole('link', { name: /editor/i }).getAttribute('href')).toBe('https://www.uwmd.org/editor/');
   expect(document.querySelector('header .sub')?.textContent).toContain('.uwx.md');
 });

@@ -23,6 +23,8 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Open the hosted editor from the standalone viewer's Lite link, including local-file use (#636).
+
 - Improve light-theme syntax-token contrast in documentation code samples (#634).
 
 - Harden provenance, currency, calendar, cash-flow and receipt checks, with deterministic and independent conformance controls.

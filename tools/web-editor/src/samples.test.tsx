@@ -24,6 +24,12 @@ afterEach(() => {
 });
 
 describe('published sample loading', () => {
+  it.each(['file:///C:/uwmd-viewer.html', 'https://www.uwmd.org/viewer/app/'])('resolves the editor link from %s', base => {
+    openViewer('');
+    const href = screen.getByRole('link', { name: 'Open it in the editor' }).getAttribute('href')!;
+    expect(new URL(href, base).href).toBe('https://www.uwmd.org/editor/');
+  });
+
   it('offers a native file-picker button', () => {
     openViewer('');
     const input = document.querySelector<HTMLInputElement>('#file')!;
