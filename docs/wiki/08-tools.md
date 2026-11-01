@@ -588,6 +588,12 @@ Node 7.1.2 dependency, resolving the tracked authorization-flow advisory (#592).
 These are development packaging dependencies; the extension's verifier bundle
 does not include an authentication flow.
 
+`npm --prefix tools/vscode-uwmd run package` creates a self-contained VSIX from
+the esbuild bundle using `--no-dependencies`. Linked workspace `node_modules`
+never enter the archive. The required extension job packages a real archive and
+checks the bundled entry, license, path boundaries and absence of dependency
+trees, TypeScript sources and source maps (#618).
+
 **Representation-aware validation** (`src/validate.ts`, also `vscode`-free) —
 the language contribution now covers **both** `.uw.md` and `.uwx.md` under the
 single `uwmd` id, and the parser is chosen from the *content* via

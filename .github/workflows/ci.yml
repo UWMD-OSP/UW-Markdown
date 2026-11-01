@@ -466,6 +466,8 @@ jobs:
       - name: Test extension
         run: npm test
         working-directory: tools/vscode-uwmd
+      - name: Package and inspect the self-contained VSIX
+        run: node --test scripts/extension-package.test.mjs
 
   coverage:
     if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']

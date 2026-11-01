@@ -80,12 +80,17 @@ deliberately keeps. Run the numbers through the CLI or the web editor.
 This package is not yet on the marketplace. To install locally:
 
 ```bash
+npm ci
+npm run build --workspace @uwmd/verify
 cd tools/vscode-uwmd
-npm install
-npm run build
-npx vsce package
-code --install-extension vscode-uwmd-0.1.0.vsix
+npm ci
+npm run package -- --out uwmd.vsix
+code --install-extension uwmd.vsix
 ```
+
+The package command bundles the verifier into `dist/extension.js` and excludes
+workspace dependency links from the VSIX. It creates `uwmd.vsix` locally; it
+does not publish to the marketplace. The archive includes the MIT license.
 
 ## Roadmap
 

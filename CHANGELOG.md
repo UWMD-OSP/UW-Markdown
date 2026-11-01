@@ -12,6 +12,8 @@ protocol, and each package each carry an independent semver).
 
 - Update the extension packager's supported Azure Identity dependency to 4.14.1 with patched MSAL Node 7.1.2 (#592).
 
+- Package the VS Code extension from its bundled runtime, excluding linked workspace dependencies, including its license and checking the actual VSIX in CI; correct the local install commands (#618).
+
 - Keep a newly created editor record's generated heading and download filenames in sync with its deal name, including undo and redo (#610).
 
 - Load published UWX samples in the viewer and editor, with visible viewer loading and failure states, retry and download actions (#611).

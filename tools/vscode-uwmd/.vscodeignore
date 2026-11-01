@@ -7,4 +7,3 @@ tsconfig.json
 esbuild.mjs
 .gitignore
 node_modules/**
-!node_modules/@uwmd/**
