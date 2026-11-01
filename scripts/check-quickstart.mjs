@@ -73,7 +73,7 @@ for (const mode of ['published', 'source']) {
       assert.match(run.stdout, /60\.00%/);
     }
   }
-  const trackedFixture = execFileSync('git', ['show', 'HEAD:examples/quickstart.uwx.md'], { cwd: root });
+  const trackedFixture = execFileSync('git', ['show', 'HEAD:docs/downloads/tutorials/quickstart.uwx.md'], { cwd: root });
   assert.deepEqual(readFileSync(join(cwd, 'quickstart.uwx.md')), trackedFixture, 'Pinned fixture bytes must equal the tracked Git blob, independent of checkout line endings');
   const receipt = JSON.parse(readFileSync(join(cwd, 'quickstart.receipt.json'), 'utf8'));
   assert.equal(receipt.computation.results.length, 8);

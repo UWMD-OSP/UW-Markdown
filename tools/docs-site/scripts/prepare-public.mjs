@@ -32,6 +32,7 @@ const files = [
   ['docs/downloads/templates/blank-analyst.uw.md', 'downloads/templates/blank-analyst.uw.md'],
   ['docs/downloads/templates/blank-screener.uwx.md', 'downloads/templates/blank-screener.uwx.md'],
   ['docs/downloads/templates/blank-analyst.uwx.md', 'downloads/templates/blank-analyst.uwx.md'],
+  ['docs/downloads/tutorials/quickstart.uwx.md', 'downloads/tutorials/quickstart.uwx.md'],
   ['tools/web-viewer/index.html', 'downloads/programs/uwmd-viewer.html'],
   ['docs/downloads/ai/UWMD-AI-GUIDE.md', 'downloads/ai/UWMD-AI-GUIDE.md'],
   ['docs/downloads/ai/CLAUDE.md', 'downloads/ai/CLAUDE.md'],
