@@ -809,3 +809,12 @@ node packages/uwmd-cli/bin/uwmd.mjs verify-pro-forma conformance/pro-forma/verif
 Every later change runs the indexed pro-forma cases in Main CI. The existing
 required **Build and test (Node 20)** job also selects this profile explicitly;
 its failure blocks that required check. No package version or release is implied.
+
+### Receipt input snapshots
+
+`verifyReceipt` snapshots the receipt and supplied held inputs/packs before its
+first await. Signature providers receive a detached copy; caller or provider
+mutation cannot substitute later results into the authenticated computation.
+Held input lookup uses own properties only. An absent reference named like an
+Object prototype member remains unavailable (`RCP-11`), while an explicitly
+held own document id follows the existing digest comparison rules.

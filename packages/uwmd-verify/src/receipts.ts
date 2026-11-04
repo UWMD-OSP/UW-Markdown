@@ -674,6 +674,15 @@ export async function verifyReceipt(
   options: ReceiptVerificationOptions = {},
 ): Promise<UWReceiptVerification> {
   assertUWReceipt(receipt);
+  // Authenticate and recompute one detached snapshot, including across subject
+  // hashing and signature-provider awaits. The caller retains its own objects.
+  receipt = structuredClone(receipt);
+  options = {
+    ...options,
+    ...(options.inputs ? { inputs: Object.fromEntries(Object.getOwnPropertyNames(options.inputs)
+      .map(id => [id, options.inputs![id]])) } : {}),
+    ...(options.packs ? { packs: structuredClone(options.packs) } : {}),
+  };
 
   const issues: UWReceiptIssue[] = [];
 
@@ -746,7 +755,7 @@ export async function verifyReceipt(
   const held = options.inputs ?? {};
   const unresolved: UWReceiptInputProvenance[] = [];
   for (const reference of references) {
-    const actual = held[reference.document_id];
+    const actual = Object.hasOwn(held, reference.document_id) ? held[reference.document_id] : undefined;
     if (actual === undefined) {
       unresolved.push(reference);
       continue;
@@ -829,7 +838,7 @@ export async function verifyReceipt(
       return { rule_set: ruleSet.format_version, verdict: 'failed', issues: [{ code: 'RCP-01', severity: 'failure',
         message: `The receipt signature input cannot be canonicalized: ${error.message}` }] };
     }
-    const valid = await options.signatureVerifier.verify(receipt, payload);
+    const valid = await options.signatureVerifier.verify(structuredClone(receipt), payload);
     if (!valid) {
       return {
         rule_set: ruleSet.format_version,
