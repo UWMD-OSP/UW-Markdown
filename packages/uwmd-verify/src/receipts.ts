@@ -679,7 +679,8 @@ export async function verifyReceipt(
   receipt = structuredClone(receipt);
   options = {
     ...options,
-    ...(options.inputs ? { inputs: { ...options.inputs } } : {}),
+    ...(options.inputs ? { inputs: Object.fromEntries(Object.getOwnPropertyNames(options.inputs)
+      .map(id => [id, options.inputs![id]])) } : {}),
     ...(options.packs ? { packs: structuredClone(options.packs) } : {}),
   };
 

@@ -39,6 +39,15 @@ describe('receipt input ownership regressions', () => {
     expect(result.issues.map(issue => issue.code)).toEqual(['RCP-11']);
   });
 
+  it('retains a nonenumerable own held input when taking the snapshot', async () => {
+    const receipt = await issueReceipt(source, { ...options,
+      inputs_provenance: [{ source: 'child_record', document_id: 'nonenumerable-child', digest }] });
+    const inputs: Record<string, string> = {};
+    Object.defineProperty(inputs, 'nonenumerable-child', { value: digest });
+    expect(Object.hasOwn(inputs, 'nonenumerable-child')).toBe(true);
+    expect((await verifyReceipt(receipt, source, { inputs })).verdict).toBe('verified');
+  });
+
   it.each(['constructor', '__proto__'])('accepts an own matching %s reference in a null-prototype map', async document_id => {
     const receipt = await issueReceipt(source, { ...options,
       inputs_provenance: [{ source: 'child_record', document_id, digest }] });
