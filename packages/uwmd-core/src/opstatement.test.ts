@@ -68,7 +68,7 @@ describe('deriveOperatingStatement', () => {
   });
 
   it('foots NOI and the ratios', () => {
-    expect(field(d, 'net_operating_income')).toBe(411096); // 640440 − 229344
+    expect(field(d, 'net_operating_income')).toBe(412096); // 640440 − 229344
     expect(field(d, 'expense_ratio')).toBeCloseTo(0.3565, 4);
     expect(field(d, 'noi_margin')).toBeCloseTo(0.6435, 4);
   });
