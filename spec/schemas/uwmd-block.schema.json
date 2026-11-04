@@ -279,7 +279,8 @@
                 "string",
                 "null"
               ],
-              "pattern": "^(sha256:[0-9a-f]{64})?$"
+              "pattern": "^(sha256:[0-9a-f]{64})?$(?![\\s\\S])",
+              "description": "RFC 0133: absent, null or empty is admitted; every other value is exact lowercase SHA-256 syntax. Validation and full-carrier conversion use INT-16/error."
             },
             "content_hash": {
               "type": "string",

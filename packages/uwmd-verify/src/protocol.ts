@@ -1757,6 +1757,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
     capabilities: ['validate'],
   },
   { prefix: 'INT', description: 'Integrity / hash chain', capabilities: ['integrity'] },
+  { prefix: 'INT-16', description: 'Malformed input-hash syntax (RFC 0133)', capabilities: ['validate'] },
   { prefix: 'INVALID-DEAL-STAGE', description: 'Declared stage vocabulary (RFC 0118)', capabilities: ['validate'] },
   { prefix: 'INVALID-TIER', description: 'Declared tier vocabulary (RFC 0118)', capabilities: ['validate'] },
   { prefix: 'INVALID-STATUS', description: 'Declared status vocabulary (RFC 0118)', capabilities: ['validate'] },
@@ -2443,6 +2444,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   },
 
   // ─── Asset-class identifiers (RFC 0003) ────────────────────────────────────
+  {
+    code: 'INT-16', severity: 'error',
+    title: 'Malformed integrity input hash',
+    description: 'A present non-null input hash is outside the admitted SHA-256 syntax.',
+    remediation: 'Supply an empty string, null, or sha256: followed by exactly 64 lowercase hexadecimal characters; do not infer a hash.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.5e',
+  },
   {
     code: 'INVALID-DEAL-STAGE-001', severity: 'error', title: 'Invalid declared stage',
     description: 'frontmatter.deal_stage is outside the closed Format vocabulary.',

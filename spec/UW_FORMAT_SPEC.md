@@ -512,6 +512,16 @@ of value, is forbidden. These are closed META-05/error predicates (RFC0095).
 
 The whole sub-object is optional: integrity remains opt-in.
 
+RFC 0133: a present non-null `input_hash` MUST be the empty string or exactly
+`sha256:` followed by 64 lowercase hexadecimal characters. Wrong types, length,
+uppercase hex and whitespace are malformed. Absent containers/members, null and
+the empty string remain admitted; no hash is inferred or normalized.
+`INT-16`/error reports a malformed member at `_meta.integrity.input_hash` for
+every retained physical/current MODEL block, including superseded blocks. Shape
+admission proves no input authenticity. Full-carrier conversion refuses the
+same malformed input with `INT-16` before a generic schema refusal (Protocol
+§III.6a).
+
 ---
 
 #### 2.5f The `_overrides` block annotation

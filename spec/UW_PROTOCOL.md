@@ -773,7 +773,7 @@ capability is unconditional: every implementation owes it.
 | `INVALID-RECOMMENDATION-NNN` | Closed recommendation vocabulary (RFC 0118, Format §2.2). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Actor grammar and closed resolution vocabulary (Format §2.6). | `validate` | `error` |
-| `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§V.10). | `integrity` | `warning` or `error` |
+| `INT-NN` | Integrity hash chain (V.10) and malformed input-hash syntax (INT-16, Format 2.5e). | `integrity`, `validate` | `warning` or `error` |
 | `POL-NN` | Edit policy (§V.3; `POL-03` is the capability-token refusal, [starter guide §XIV](../docs/starter/capability-tokens.md#xiv-capability-tokens-optional-rfc-0011)). | `edit-replace` or `edit-supersede` | `error` |
 | `MOD-*` | Module runtime (§X). | `module-load` | `info` to `error` |
 | `CALC-*` | Calc engine (§VIII). | `calc-evaluate` | `error` |
@@ -836,6 +836,27 @@ The separate hyphenated `META-01` rejects a block that is not in the Format
 3.0 shape (format §2.4–§2.5). `SOURCE_CONTENT_MISMATCH` rejects structured
 fences under `.uw.md`; `UNSUPPORTED_FORMAT_VERSION` rejects absent or non-3.0
 frontmatter.
+
+**Input-hash syntax (RFC 0133).** After the complete META-06 pass and before
+role/period/source checks, validation MUST complete the `INT-16` pass over the
+exact-reference union: retained physical blocks in source order, followed by
+unvisited current MODEL blocks in the existing model traversal. Read the
+canonical own `_meta.integrity.input_hash` member. Missing/invalid parent
+containers retain their separate owners; they produce no child INT-16.
+A present non-null member outside the exact Format §2.5e domain is one
+`INT-16`/error, with `section` from the block annotation, `field` exactly
+`_meta.integrity.input_hash`, and variant/physical-or-model block ordinal in the message.
+Repeated physical blocks remain separate findings. Do not reparse stale MODEL
+raw strings, mutate source, repair hashes or authenticate inputs from syntax.
+
+JSON, XML and CSV full-carrier admission MUST preserve `INT-16` for malformed
+input hashes before a generic carrier-schema refusal. JSON-value and supported
+root-version checks retain precedence. Inspect only recognized block positions:
+sections in insertion order (variants in insertion order), pipeline_log,
+custom_calculations, custom_scenarios, extensions in insertion order (records
+in order), then superseded in insertion/array order. Other shape and signature
+checks retain their existing owners. This is a bounded malformed-member
+preflight, not relaxed carrier admission.
 
 **Bounded metadata admission (RFC0093).** After the complete existing
 wrapper/nested-object shape validation pass, emit one `META-01`/error for each failed
