@@ -202,10 +202,10 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     missing_meta_blocks = set()
     missing_field_owners = []
     physical = {id(block): index for index, block in enumerate(metadata_blocks(document))}
-    for block in metadata_blocks(document):
+    for index, block in enumerate(metadata_blocks(document)):
         if malformed_input_hash(block.parsed.value):
             ledger.issue("INT-16", "error", block.section, "_meta.integrity.input_hash",
-                         "Malformed input hash in retained block")
+                         f"Malformed input hash in {block.section} variant {dict(block.attributes).get('variant')} at physical/model block {index}")
     ledger.issues.extend(inspect_document_currency(document)["issues"])
     if "locale" in fm and fm["locale"] not in ("en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"):
         ledger.issue("LOC-01", "error", "frontmatter", "locale", "Locale is outside the registered vocabulary", value=fm["locale"])
