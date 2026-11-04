@@ -8,7 +8,7 @@
   "expect": {
     "kind": "json-subset",
     "file": "expected.json",
-    "exit_code": 0,
+    "exit_code": 1,
     "project": "issue-code-severity-set"
   },
   "note": "RFC 0109 D4: listing a code escalates only its error band; a warning-band finding stays a deal flag."

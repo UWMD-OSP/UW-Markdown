@@ -16,7 +16,7 @@
   "expect": {
     "kind": "json-subset",
     "file": "conformance/institution-config/32-escalate-warning-band-stays-flag/expected.json",
-    "exit_code": 0,
+    "exit_code": 1,
     "project": "issue-code-severity-set"
   }
 }
