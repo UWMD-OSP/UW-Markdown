@@ -166,6 +166,8 @@ its RFC was written, and records that process failure rather than hiding it. See
 its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
 section.
 
+| [0131](./0131-sparse-statement-authority.md) | Preserve authored sparse-statement aggregates | draft |
+
 ## Status values
 
 This is the authoritative list. An RFC's frontmatter `status:` must be one of

@@ -10,6 +10,8 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Proposed RFC 0131: preserve authored sparse-statement aggregates, pending project-owner acceptance.
+
 - Attributed loan-quote, offering-memorandum and appraisal fact profiles with explicit projection candidates.
 - Independent Python Reader and Verifier support, bounded pro-forma assessment, and property and lease-up cash-flow verification.
 - Committed-source build identities and a release-pinned synthetic quickstart, checked against published tools and current source.
