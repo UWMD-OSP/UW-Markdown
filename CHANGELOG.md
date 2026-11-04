@@ -23,6 +23,8 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Verify receipt signatures and results against one detached snapshot, and resolve held inputs through own properties only.
+
 - Exclude generated local Workers middleware from source lint checks (#638).
 
 - Open the hosted editor from the standalone viewer's Lite link, including local-file use (#636).
