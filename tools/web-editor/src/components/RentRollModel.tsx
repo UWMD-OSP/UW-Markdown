@@ -54,6 +54,7 @@ const UNIT_MIX_COLUMNS: ColumnDef[] = [
 const TENANT_COLUMNS: ColumnDef[] = [
   { key: 'tenant_name', label: 'Tenant', kind: 'text' },
   { key: 'suite', label: 'Suite', kind: 'text' },
+  { key: 'status', label: 'Status', kind: 'text' },
   { key: 'leased_sf', label: 'SF', kind: 'count' },
   { key: 'annual_base_rent', label: 'Annual Rent', kind: 'currency' },
   { key: 'lease_expiration', label: 'Expires', kind: 'text' },
@@ -165,6 +166,9 @@ export function RentRollModel(props: {
         onRemove={removeRow}
       />
 
+      <output aria-label="Unavailable occupancy" role="status">
+        {Object.entries(derivation.unavailable ?? {}).map(([path, reason]) => <p key={path}>{path}: unavailable ({reason})</p>)}
+      </output>
       <DerivedTotals
         fields={derivation.fields}
         basis={derivation.basis}
@@ -221,6 +225,7 @@ function LineItemTable(props: {
                 {columns.map((col) => (
                   <td key={col.key} className={`px-1 py-0.5 ${col.kind === 'text' ? '' : 'text-right'}`}>
                     <input
+                      aria-label={`${col.label} row ${i + 1}`}
                       type="text"
                       inputMode={col.kind === 'text' ? 'text' : 'decimal'}
                       className={`w-full rounded border border-transparent bg-transparent px-1 py-1 text-sm hover:border-rule focus:border-accent focus:bg-paper focus:ring-1 focus:ring-accent focus:outline-none ${col.kind === 'text' ? '' : 'num'}`}

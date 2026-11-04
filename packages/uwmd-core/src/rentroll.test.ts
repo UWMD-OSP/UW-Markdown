@@ -91,9 +91,9 @@ describe('deriveRentRoll — commercial from tenants[]', () => {
     occupancy_pct: 0,
     weighted_avg_rent_psf: 0,
     tenants: [
-      { tenant_name: 'A', leased_sf: 9500, annual_base_rent: 209000, remaining_term_years: 1.3 },
-      { tenant_name: 'B', leased_sf: 10000, annual_base_rent: 215000, remaining_term_years: 1.4 },
-      { tenant_name: null, leased_sf: 0, vacant_sf: 11500, annual_base_rent: 0 },
+      { tenant_name: 'A', leased_sf: 9500, annual_base_rent: 209000, remaining_term_years: 1.3, status: 'occupied' },
+      { tenant_name: 'B', leased_sf: 10000, annual_base_rent: 215000, remaining_term_years: 1.4, status: 'occupied' },
+      { tenant_name: null, leased_sf: 0, vacant_sf: 11500, annual_base_rent: 0, status: 'vacant' },
     ],
   };
   const d = deriveRentRoll(content);
@@ -102,7 +102,7 @@ describe('deriveRentRoll — commercial from tenants[]', () => {
     expect(d.basis).toBe('tenants');
     expect(field(d, 'occupied_sf')).toBe(19500);
     expect(field(d, 'vacant_sf')).toBe(23000); // 42500 - 19500
-    expect(field(d, 'occupancy_pct')).toBeCloseTo(0.4588, 4);
+    expect(field(d, 'physical_occupancy_pct')).toBeCloseTo(0.4588, 4);
   });
 
   it('sums in-place rent and rent PSF over leased tenants only', () => {
@@ -121,7 +121,7 @@ describe('deriveRentRoll — commercial from tenants[]', () => {
       total_nra_sqft: 20000,
       leased_sqft: 0,
       in_place_rent_per_sqft: 0,
-      tenants: [{ tenant_name: 'A', nra_sqft: 10000, base_rent_annual: 200000 }],
+      tenants: [{ tenant_name: 'A', nra_sqft: 10000, base_rent_annual: 200000, status: 'occupied' }],
     });
     expect(field(spec, 'leased_sqft')).toBe(10000);
     expect(field(spec, 'in_place_rent_per_sqft')).toBe(20);

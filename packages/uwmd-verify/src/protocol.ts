@@ -3135,3 +3135,11 @@ export interface LeaseUpVerificationReport
 
 // RFC0128: closed authored selectors are over/through/period; loan input supplies report loan_ref.
 export type { ProFormaClaim, ProFormaReport, ProFormaRefusal, ProFormaSelectors } from './pro-forma-types.js';
+
+/** RFC 0132: both finite amounts assert one common property scope and reporting period.
+ * Different periods require separate section variants; neither amount is EGI or contractual rent.
+ */
+export interface EconomicOccupancyInputs {
+  rent_collected?: number | null;
+  gross_potential_rent?: number | null;
+}

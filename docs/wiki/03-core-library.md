@@ -839,3 +839,8 @@ the complete current Format detail sets and missing-prerequisite behavior.
 ### Sparse operating statements (RFC 0131)
 
 `deriveOperatingStatement` preserves finite authored aggregates exactly. Only a complete declared detail set supplies a missing subtotal. Missing detail yields an omitted computed field and `unavailable[path] = 'incomplete_detail'`; dependent NOI and ratios remain unavailable. Complete detail is compared with the authored total at whole dollars, half away from zero, without a new tolerance. Local `diagnostics` preserve stated and computed amounts. The accepted RFC lists each bounded detail set.
+
+
+### Named occupancy measures (RFC 0132)
+
+`deriveRentRoll` keeps physical use separate from economic occupancy (rent collected / gross potential rent). The optional `economic_occupancy_inputs` group asserts one common period and scope. Null/missing inputs are unavailable with an explicit reason; zero collected rent stays zero. Physical occupancy requires known statuses/areas or known unit-mix occupancy; occupied zero-rent suites count physically. The editor exposes unavailable reasons. Self-storage's dictionary/pack uses the same collected-rent group, with no EGI fallback.

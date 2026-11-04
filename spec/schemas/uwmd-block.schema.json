@@ -72,6 +72,25 @@
         "null"
       ],
       "description": "Free-text annotation. Never validated, never consumed by agents."
+    },
+    "economic_occupancy_inputs": {
+      "type": "object",
+      "description": "RFC 0132: rent_roll inputs assert one common property scope and reporting period. Different periods require separate variants. Missing/null operands remain unknown.",
+      "additionalProperties": false,
+      "properties": {
+        "rent_collected": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "gross_potential_rent": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
     }
   },
   "$defs": {

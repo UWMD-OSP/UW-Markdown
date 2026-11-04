@@ -32,6 +32,8 @@ export interface RentRollDerivation {
   basis: RentRollBasis;
   /** Footed totals, in display order. Empty when there are no line items. */
   fields: DerivedField[];
+  /** Missing prerequisites are evidence, never a numeric fallback. */
+  unavailable?: Record<string, string>;
   /** Recomputed unit_mix_summary — only when basis === 'units'. */
   unit_mix_summary?: Array<Record<string, unknown>>;
   /** Recomputed tenant_concentration — only for commercial with tenants. */
@@ -69,8 +71,18 @@ export function rentRollVariant(content: Row): RentRollVariant {
 /** Foot a rent-roll content block. Pure: never mutates `content`. */
 export function deriveRentRoll(content: Row): RentRollDerivation {
   const variant = rentRollVariant(content);
-  if (variant === 'commercial') return deriveCommercial(content);
-  return deriveMultifamily(content);
+  const result = variant === 'commercial' ? deriveCommercial(content) : deriveMultifamily(content);
+  const c = collector();
+  const inputs = content['economic_occupancy_inputs'];
+  const row = inputs !== null && typeof inputs === 'object' && !Array.isArray(inputs) ? inputs as Row : {};
+  const collected = num(row['rent_collected']);
+  const potential = num(row['gross_potential_rent']);
+  if (!result.fields.some(field => field.path === 'physical_occupancy_pct') && !result.unavailable?.physical_occupancy_pct) result.unavailable = { ...result.unavailable, physical_occupancy_pct: 'missing_physical_inputs' };
+  const reason = collected == null ? 'missing_rent_collected' : potential == null ? 'missing_gross_potential_rent' : potential <= 0 ? 'nonpositive_gross_potential_rent' : !Number.isFinite(collected / potential) ? 'nonfinite_result' : null;
+  if (reason) result.unavailable = { ...result.unavailable, economic_occupancy_pct: reason };
+  else c.add('economic_occupancy_pct', 'Economic Occupancy', 'rate', (collected as number) / (potential as number));
+  result.fields.push(...c.fields);
+  return result;
 }
 
 // ─── Multifamily ──────────────────────────────────────────────────────────────
@@ -94,6 +106,7 @@ function deriveMultifamily(content: Row): RentRollDerivation {
 function deriveMultifamilyFromUnits(_content: Row, units: Row[]): RentRollDerivation {
   const c = collector();
   const n = units.length;
+  let physicalKnown = true;
   let occ = 0;
   let vac = 0;
   let notice = 0;
@@ -106,6 +119,7 @@ function deriveMultifamilyFromUnits(_content: Row, units: Row[]): RentRollDeriva
 
   for (const u of units) {
     const status = lower(u['status']);
+    if (!['occupied', 'vacant', 'notice', 'model', 'down', 'holdover'].includes(status)) physicalKnown = false;
     if (status === 'occupied') occ++;
     else if (status === 'vacant') vac++;
     else if (status === 'notice') notice++;
@@ -121,12 +135,12 @@ function deriveMultifamilyFromUnits(_content: Row, units: Row[]): RentRollDeriva
   }
 
   c.add('total_units', 'Total Units', 'count', n);
-  c.add('occupied_units', 'Occupied Units', 'count', occ);
+  c.add('occupied_units', 'Occupied Units', 'count', physicalKnown ? occ : null);
   c.add('vacant_units', 'Vacant Units', 'count', vac);
   if (notice > 0) c.add('notice_units', 'Units on Notice', 'count', notice);
   if (model > 0) c.add('model_units', 'Model Units', 'count', model);
   if (down > 0) c.add('down_units', 'Down Units', 'count', down);
-  c.add('physical_occupancy_pct', 'Physical Occupancy', 'rate', n ? occ / n : null);
+  c.add('physical_occupancy_pct', 'Physical Occupancy', 'rate', physicalKnown && n ? occ / n : null);
   c.add('gross_potential_rent_monthly', 'GPR (monthly)', 'currency', gprM);
   c.add('gross_potential_rent_annual', 'GPR (annual)', 'currency', gprM * 12);
   c.add('in_place_rent_monthly', 'In-Place Rent (monthly)', 'currency', inplaceM);
@@ -142,6 +156,7 @@ function deriveMultifamilyFromUnits(_content: Row, units: Row[]): RentRollDeriva
   return {
     variant: 'multifamily',
     basis: 'units',
+    unavailable: physicalKnown ? {} : { physical_occupancy_pct: 'unknown_unit_status' },
     fields: c.fields,
     unit_mix_summary: buildUnitMix(units, n),
   };
@@ -176,7 +191,7 @@ function buildUnitMix(units: Row[], total: number): Row[] {
     row['avg_sqft'] = avgSqft == null ? null : Math.round(avgSqft);
     row['avg_rent_inplace'] = avgInplace == null ? 0 : Math.round(avgInplace);
     row['avg_rent_market'] = avgMarket == null ? null : Math.round(avgMarket);
-    row['occupancy_pct'] = count ? Math.round((occInGroup / count) * 1e4) / 1e4 : 0;
+    row['occupancy_pct'] = us.every(u => ['occupied', 'vacant', 'notice', 'model', 'down', 'holdover'].includes(lower(u['status']))) ? (count ? Math.round((occInGroup / count) * 1e4) / 1e4 : 0) : null;
     row['pct_of_total'] = total ? Math.round((count / total) * 1e4) / 1e4 : 0;
     return row;
   });
@@ -188,12 +203,16 @@ function deriveMultifamilyFromMix(_content: Row, mix: Row[]): RentRollDerivation
   let gprM = 0;
   let inplaceM = 0;
   let occWeighted = 0;
+  let physicalKnown = true;
 
   for (const m of mix) {
     const count = num(m['count']) ?? 0;
     const inplace = num(m['avg_rent_inplace']) ?? 0;
     const market = num(m['avg_rent_market']) ?? inplace;
-    const occ = num(m['occupancy_pct']) ?? 1;
+    const measured = num(m['occupancy_pct']);
+    const valid = num(m['count']) != null && count >= 0 && Number.isInteger(count) && measured != null && measured >= 0 && measured <= 1;
+    if (!valid) physicalKnown = false;
+    const occ = valid ? measured : 0;
     total += count;
     gprM += count * market;
     inplaceM += count * occ * inplace;
@@ -201,8 +220,8 @@ function deriveMultifamilyFromMix(_content: Row, mix: Row[]): RentRollDerivation
   }
 
   c.add('total_units', 'Total Units', 'count', total);
-  c.add('occupied_units', 'Occupied Units', 'count', occWeighted);
-  c.add('physical_occupancy_pct', 'Physical Occupancy', 'rate', total ? occWeighted / total : null);
+  c.add('occupied_units', 'Occupied Units', 'count', physicalKnown ? occWeighted : null);
+  c.add('physical_occupancy_pct', 'Physical Occupancy', 'rate', physicalKnown && total > 0 ? occWeighted / total : null);
   c.add('gross_potential_rent_monthly', 'GPR (monthly)', 'currency', gprM);
   c.add('gross_potential_rent_annual', 'GPR (annual)', 'currency', gprM * 12);
   c.add('in_place_rent_monthly', 'In-Place Rent (monthly)', 'currency', inplaceM);
@@ -210,7 +229,10 @@ function deriveMultifamilyFromMix(_content: Row, mix: Row[]): RentRollDerivation
   c.add('loss_to_lease_monthly', 'Loss to Lease (monthly)', 'currency', gprM - inplaceM);
   c.add('loss_to_lease_pct', 'Loss to Lease %', 'rate', gprM ? (gprM - inplaceM) / gprM : null);
 
-  return { variant: 'multifamily', basis: 'unit_mix_summary', fields: c.fields };
+  if (!physicalKnown) {
+    for (let i = c.fields.length - 1; i >= 0; i--) if (['in_place_rent_monthly', 'in_place_rent_annual', 'loss_to_lease_monthly', 'loss_to_lease_pct'].includes(c.fields[i].path)) c.fields.splice(i, 1);
+  }
+  return { variant: 'multifamily', basis: 'unit_mix_summary', fields: c.fields, unavailable: physicalKnown && total > 0 ? {} : { physical_occupancy_pct: physicalKnown ? 'nonpositive_capacity' : 'unknown_mix_occupancy' } };
 }
 
 // ─── Commercial ─────────────────────────────────────────────────────────────
@@ -232,6 +254,7 @@ function deriveCommercial(content: Row): RentRollDerivation {
   const rows = tenants as Row[];
   const c = collector();
 
+  let physicalKnown = true;
   let allSf = 0;
   let leasedSf = 0;
   let inplaceA = 0;
@@ -242,10 +265,12 @@ function deriveCommercial(content: Row): RentRollDerivation {
     const sf = firstNum(t, SF_KEYS) ?? 0;
     const vacantSf = num(t['vacant_sf']) ?? 0;
     const rent = firstNum(t, RENT_KEYS) ?? 0;
+    const status = lower(t['status']);
+    if (!['occupied', 'vacant'].includes(status) || firstNum(t, SF_KEYS) == null || sf < 0) physicalKnown = false;
+    if (status === 'occupied') leasedSf += sf;
     const leased = isIncomeTenant(t);
     allSf += sf + vacantSf;
     if (leased) {
-      leasedSf += sf;
       inplaceA += rent;
       const term = firstNum(t, TERM_KEYS);
       if (term != null && rent > 0) {
@@ -259,21 +284,21 @@ function deriveCommercial(content: Row): RentRollDerivation {
   const total = num(content[totalKey]) ?? allSf;
   const vacantSf = Math.max(total - leasedSf, 0);
 
-  c.add(pickKey(content, ['occupied_sf', 'leased_sqft']), 'Occupied SF', 'count', leasedSf);
-  c.add('vacant_sf', 'Vacant SF', 'count', vacantSf);
+  c.add(pickKey(content, ['occupied_sf', 'leased_sqft']), 'Occupied SF', 'count', physicalKnown ? leasedSf : null);
+  c.add('vacant_sf', 'Vacant SF', 'count', physicalKnown ? vacantSf : null);
   c.add(totalKey, 'Total Rentable SF', 'count', total);
   c.add(
-    pickKey(content, ['occupancy_pct', 'physical_occupancy_pct']),
+    'physical_occupancy_pct',
     'Physical Occupancy',
     'rate',
-    total ? leasedSf / total : null,
+    physicalKnown && total > 0 ? leasedSf / total : null,
   );
   c.add('in_place_rent_annual', 'In-Place Rent (annual)', 'currency', inplaceA);
   c.add(
     pickKey(content, ['weighted_avg_rent_psf', 'in_place_rent_per_sqft']),
     'In-Place Rent PSF',
     'psf',
-    leasedSf ? inplaceA / leasedSf : null,
+    physicalKnown && leasedSf ? inplaceA / leasedSf : null,
   );
   c.add(
     'weighted_avg_lease_term_years',
@@ -285,6 +310,7 @@ function deriveCommercial(content: Row): RentRollDerivation {
   return {
     variant: 'commercial',
     basis: 'tenants',
+    unavailable: physicalKnown && total > 0 ? {} : { physical_occupancy_pct: physicalKnown ? 'nonpositive_capacity' : 'unknown_tenant_status_or_area' },
     fields: c.fields,
     tenant_concentration: buildConcentration(rows, total, inplaceA),
   };

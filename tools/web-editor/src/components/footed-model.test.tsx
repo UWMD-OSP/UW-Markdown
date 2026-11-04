@@ -12,6 +12,7 @@ import { buildMeta, getSectionVariant, type EditOperation, type UWBlock } from '
 import { deepGet } from '../catalog.js';
 import { loadInitialState, runEdit } from '../edits.js';
 import { ValuationModel } from './ValuationModel.js';
+import { RentRollModel } from './RentRollModel.js';
 import { DcfModel } from './DcfModel.js';
 import { OperatingStatementModel } from './OperatingStatementModel.js';
 
@@ -251,4 +252,23 @@ describe('aggregate-only EGI and partial expense editing', () => {
 it('exposes missing statement prerequisites without deriving a zero NOI', () => {
   const view = render(<OperatingStatementModel sectionId="operating_statement" variant="t12" block={block({})} dispatch={vi.fn()} />);
   expect(view.getByRole('status').textContent).toContain('net_operating_income: unavailable');
+});
+
+describe('separate rent-roll occupancy measures', () => {
+  it('retains zero-rent physical use and economic zero through a component edit and serialized reload', () => {
+    const dispatch = vi.fn();
+    const input = { rent_roll_type: 'commercial', total_rentable_sf: 1000, tenants: [{ tenant_name: 'Use', leased_sf: 1000, status: 'occupied', annual_base_rent: 0 }], economic_occupancy_inputs: { rent_collected: 0, gross_potential_rent: 1000 } };
+    const before = structuredClone(input);
+    const view = render(<RentRollModel sectionId="rent_roll" variant="current" block={block(input)} dispatch={dispatch} />);
+    editField(view.getByLabelText('Tenant row 1'), 'Use revised');
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    const reloaded = JSON.parse(JSON.stringify(dispatchedOp(dispatch).content));
+    expect(reloaded.physical_occupancy_pct).toBe(1);
+    expect(reloaded.economic_occupancy_pct).toBe(0);
+    expect(input).toEqual(before);
+  });
+  it('shows an explicit unavailable physical reason when status is unknown', () => {
+    const view = render(<RentRollModel sectionId="rent_roll" variant={undefined} block={block({ rent_roll_type: 'commercial', total_rentable_sf: 1000, tenants: [{ tenant_name: 'Use', leased_sf: 1000, annual_base_rent: 1200 }] })} dispatch={vi.fn()} />);
+    expect(view.getByLabelText('Unavailable occupancy').textContent).toContain('unknown_tenant_status_or_area');
+  });
 });
