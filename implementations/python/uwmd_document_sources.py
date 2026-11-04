@@ -46,3 +46,15 @@ def number_source(document, token):
         if any(current is token for block in source.blocks for current in block.parsed.numbers):
             return source
     return None
+
+
+def malformed_input_hash(content):
+    """RFC 0133: inspect a canonical present member, leaving parents to their owners."""
+    import re
+    meta = content.get("_meta") if isinstance(content, dict) else None
+    integrity = meta.get("integrity") if isinstance(meta, dict) else None
+    if not isinstance(integrity, dict) or "input_hash" not in integrity:
+        return False
+    value = integrity["input_hash"]
+    return value is not None and value != "" and not (
+        isinstance(value, str) and re.fullmatch(r"sha256:[0-9a-f]{64}", value))

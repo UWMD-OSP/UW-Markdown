@@ -18,6 +18,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 import zlib
 from uwmd_xml_names import ascii_prefixes
+from uwmd_document_sources import malformed_input_hash
 from uwmd_spec_data import schema as spec_schema
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -39,6 +40,10 @@ PROSE = ['prose_ref', 'scope', 'block_ref', 'prose_json']
 FLAT = ['pointer', 'json_type', 'value_json']
 SCOPES = ['annotation', 'meta', 'content', 'block-extra']
 REQUIRED = ['document.csv', 'frontmatter.csv', 'blocks.csv', 'block_values.csv', 'prose.csv']
+
+
+class InputHashError(ValueError):
+    code = "INT-16"
 
 
 def need(condition, reason):
@@ -206,6 +211,8 @@ def blocks(model):
         need(isinstance(section, str) and bool(section) and a.get('section') == section and isinstance(body.get('_meta'), dict) and body['_meta'].get('section') == section, 'section identity')
         need('variant' not in a or isinstance(a['variant'], str), 'variant annotation')
         need(all(kind(v) in ('string', 'number', 'boolean') for v in a.values()), 'annotation scalar')
+        if malformed_input_hash(body):
+            raise InputHashError("INT-16: malformed _meta.integrity.input_hash")
         need(schema_ok(body, spec_schema('uwmd-block.schema.json')), 'block schema')
         need('prose' not in block or isinstance(block['prose'], str), 'prose type')
         result.append((ref, collection, section, variant, ordinal, state, mode, block))
@@ -265,6 +272,7 @@ def validate(model, stamped=True):
     need('generated_at' not in model or date_time(model['generated_at']), 'generated date-time')
     need('generator' not in model or isinstance(model['generator'], str) and bool(model['generator']), 'generator type')
     need('semantic_digest' not in model or isinstance(model['semantic_digest'], str) and re.fullmatch(r'sha256:[0-9a-f]{64}', model['semantic_digest']), 'digest shape')
+    input_hash_preflight(model)
     dump(model)
     blocks(model)
     if stamped:
@@ -748,3 +756,31 @@ if __name__ == '__main__':
         except (ValueError,TypeError,KeyError) as error:
             print(json.dumps({'error':str(error)},ensure_ascii=True));sys.exit(1)
     print(json.dumps(value,ensure_ascii=True,allow_nan=False))
+
+
+def input_hash_preflight(model):
+    """Bounded RFC 0133 recognized positions, before generic block schema checks."""
+    def inspect(block):
+        if isinstance(block, dict) and malformed_input_hash(block.get("content")):
+            raise InputHashError("INT-16: malformed _meta.integrity.input_hash")
+    for entry in model["sections"].values():
+        if is_envelope_block(entry):
+            inspect(entry)
+        elif isinstance(entry, dict):
+            for block in entry.values():
+                inspect(block)
+    for key in ARRAYS:
+        for block in model[key]:
+            inspect(block)
+    for entry in model["extensions"].values():
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("mode") == "single":
+            inspect(entry.get("block"))
+        elif entry.get("mode") == "variants" and isinstance(entry.get("blocks"), list):
+            for record in entry["blocks"]:
+                if isinstance(record, dict):
+                    inspect(record.get("block"))
+    for entries in model["superseded"].values():
+        for block in entries:
+            inspect(block)

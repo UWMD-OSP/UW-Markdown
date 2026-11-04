@@ -3,7 +3,7 @@ import type { UWCodec } from './codec.js';
 import { extractZipSafely } from './zip-safety.js';
 import { encodeCSV, decodeCSV, flatten } from './csv-mapping.js';
 import { descriptors, sourceDescriptors } from './carrier-values.js';
-import { assertUWEnvelope, toUWEnvelope, type UWDocumentEnvelope } from './envelope.js';
+import { UWEnvelopeError, assertUWEnvelope, toUWEnvelope, type UWDocumentEnvelope } from './envelope.js';
 import type { ParsedUWFile } from './types.js';
 export const UW_CSV_BUNDLE_VERSION = '2.0.0' as const;
 export const UW_CSV_BUNDLE_MEDIA_TYPE = 'application/vnd.uwmd.csv-bundle+zip' as const;
@@ -20,6 +20,7 @@ export async function encodeUWCSVBundle(envelope: UWDocumentEnvelope): Promise<U
 }
 function carrierError(error: unknown): UWCSVError {
   const reason = String(error);
+  if (error instanceof UWEnvelopeError && error.code === 'INT-16') return new UWCSVError('INT-16', reason);
   return new UWCSVError(reason.includes('CSV raw byte count') ? 'CSV_SIZE_MISMATCH' : reason.includes('CSV raw byte hash') ? 'CSV_HASH_MISMATCH' : 'CSV_INVALID', reason);
 }
 export async function decodeUWCSVBundle(bundle: UWCSVBundle, options: UWCSVDecodeOptions = {}): Promise<UWDocumentEnvelope> {

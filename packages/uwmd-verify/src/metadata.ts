@@ -72,3 +72,14 @@ export function buildMeta(
   if (opts.inputHash) meta.integrity = { input_hash: `sha256:${opts.inputHash}` };
   return meta;
 }
+
+/** RFC 0133: bounded input-hash syntax only; parent shape has its own owner. */
+export function malformedInputHash(content: Record<string, unknown>): boolean {
+  if (!Object.hasOwn(content, '_meta')) return false;
+  const meta = content['_meta'];
+  if (meta === null || typeof meta !== 'object' || Array.isArray(meta) || !Object.hasOwn(meta, 'integrity')) return false;
+  const integrity = (meta as Record<string, unknown>)['integrity'];
+  if (integrity === null || typeof integrity !== 'object' || Array.isArray(integrity) || !Object.hasOwn(integrity, 'input_hash')) return false;
+  const value = (integrity as Record<string, unknown>)['input_hash'];
+  return value !== null && value !== '' && !(typeof value === 'string' && value.length === 71 && /^sha256:[0-9a-f]{64}$/.test(value));
+}

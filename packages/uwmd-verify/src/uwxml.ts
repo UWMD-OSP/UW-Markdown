@@ -1,5 +1,6 @@
 import type { UWCodec } from './codec.js';
 import { encodeXML, decodeXML } from './xml-mapping.js';
+import { UWEnvelopeError } from './envelope.js';
 import type { UWDocumentEnvelope } from './envelope.js';
 export const UW_XML_REPRESENTATION_VERSION = '2.0.0' as const;
 export const UW_XML_MEDIA_TYPE = 'application/vnd.uwmd.document+xml' as const;
@@ -10,10 +11,10 @@ export class UWXmlError extends Error {
   constructor(code: string, message: string) { super(`[${code}] ${message}`); this.name = 'UWXmlError'; this.code = code; }
 }
 export async function stringifyUWXml(envelope: UWDocumentEnvelope): Promise<string> {
-  try { return await encodeXML(envelope); } catch (error) { throw new UWXmlError('XML_INVALID', String(error)); }
+  try { return await encodeXML(envelope); } catch (error) { throw new UWXmlError(error instanceof UWEnvelopeError && error.code === 'INT-16' ? 'INT-16' : 'XML_INVALID', String(error)); }
 }
 export async function parseUWXml(text: string, options: UWXmlOptions = {}): Promise<UWDocumentEnvelope> {
-  try { return await decodeXML(text, options); } catch (error) { throw new UWXmlError('XML_INVALID', String(error)); }
+  try { return await decodeXML(text, options); } catch (error) { throw new UWXmlError(error instanceof UWEnvelopeError && error.code === 'INT-16' ? 'INT-16' : 'XML_INVALID', String(error)); }
 }
 export async function parseUWXmlVerified(text: string, options: UWXmlOptions = {}): Promise<UWDocumentEnvelope> {
   return parseUWXml(text, options);

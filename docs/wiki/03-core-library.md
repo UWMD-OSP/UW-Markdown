@@ -1,5 +1,11 @@
 # 03 — Core library (`@uwmd/verify` and `@uwmd/core`)
 
+The RFC 0133 draft implementation aligns malformed input-hash admission: SOURCE
+and MODEL validation report INT-16/error, and full JSON/XML/CSV conversion keeps
+that code. Absent, null, empty and complete lowercase SHA-256 values retain their
+existing admission; no source hashes are repaired. The RFC remains proposed.
+
+
 `verifyProvenance` derives authority from `_meta.provenance.source`; the descriptive
 principal does not select an authority class. It checks every current variant,
 and POL-02 requires visible superseded history for that same variant (Protocol
