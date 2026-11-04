@@ -261,6 +261,34 @@ def is_envelope_block(value):
             and isinstance(value.get('content'), dict))
 
 
+def input_hash_preflight(model):
+    """Bounded RFC 0133 recognized positions, before generic block schema checks."""
+    def inspect(block):
+        if isinstance(block, dict) and malformed_input_hash(block.get("content")):
+            raise InputHashError("INT-16: malformed _meta.integrity.input_hash")
+    for entry in model["sections"].values():
+        if is_envelope_block(entry):
+            inspect(entry)
+        elif isinstance(entry, dict):
+            for block in entry.values():
+                inspect(block)
+    for key in ARRAYS:
+        for block in model[key]:
+            inspect(block)
+    for entry in model["extensions"].values():
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("mode") == "single":
+            inspect(entry.get("block"))
+        elif entry.get("mode") == "variants" and isinstance(entry.get("blocks"), list):
+            for record in entry["blocks"]:
+                if isinstance(record, dict):
+                    inspect(record.get("block"))
+    for entries in model["superseded"].values():
+        for block in entries:
+            inspect(block)
+
+
 def validate(model, stamped=True):
     admit_json(model)
     need(isinstance(model, dict) and set(RESERVED) - {'generated_at', 'generator', 'semantic_digest'} <= model.keys(), 'model fields')
@@ -757,30 +785,3 @@ if __name__ == '__main__':
             print(json.dumps({'error':str(error)},ensure_ascii=True));sys.exit(1)
     print(json.dumps(value,ensure_ascii=True,allow_nan=False))
 
-
-def input_hash_preflight(model):
-    """Bounded RFC 0133 recognized positions, before generic block schema checks."""
-    def inspect(block):
-        if isinstance(block, dict) and malformed_input_hash(block.get("content")):
-            raise InputHashError("INT-16: malformed _meta.integrity.input_hash")
-    for entry in model["sections"].values():
-        if is_envelope_block(entry):
-            inspect(entry)
-        elif isinstance(entry, dict):
-            for block in entry.values():
-                inspect(block)
-    for key in ARRAYS:
-        for block in model[key]:
-            inspect(block)
-    for entry in model["extensions"].values():
-        if not isinstance(entry, dict):
-            continue
-        if entry.get("mode") == "single":
-            inspect(entry.get("block"))
-        elif entry.get("mode") == "variants" and isinstance(entry.get("blocks"), list):
-            for record in entry["blocks"]:
-                if isinstance(record, dict):
-                    inspect(record.get("block"))
-    for entries in model["superseded"].values():
-        for block in entries:
-            inspect(block)

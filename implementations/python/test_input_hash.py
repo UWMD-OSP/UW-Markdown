@@ -4,10 +4,13 @@ import copy
 import json
 from pathlib import Path
 import unittest
+import subprocess
+import sys
+import tempfile
 
 from uwmd_reader import parse
 from uwmd_validation import validate_document
-from uwmd_envelope import project_source, validate, encode_xml, encode_csv, InputHashError
+from uwmd_envelope import project_source, validate, encode_xml, encode_csv, encode_zip, stamp, InputHashError
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = (ROOT / "conformance/documents/malformed/74-malformed-input-hash.uwx.md").read_text(encoding="utf-8")
@@ -47,3 +50,34 @@ class InputHashTests(unittest.TestCase):
         model = project_source(raw_hash(None))
         del model["sections"]["property"]["content"]["_meta"]["integrity"]
         validate(model, False)
+
+
+    def test_actual_carrier_cli_initializes_preflight_before_admission(self):
+        model = project_source(raw_hash("sha256:" + "a" * 64))
+        carriers = {
+            "json": json.dumps(stamp(model)).encode("utf-8"),
+            "xml": encode_xml(model).encode("utf-8"),
+            "zip": encode_zip(model),
+        }
+        entry = ROOT / "implementations/python/uwmd_envelope.py"
+        with tempfile.TemporaryDirectory(prefix="uwmd-hash-cli-") as folder:
+            path = Path(folder) / "carrier.input"
+            for command, content in carriers.items():
+                with self.subTest(command=command):
+                    path.write_bytes(content)
+                    child = subprocess.run([sys.executable, "-B", str(entry), command, str(path)],
+                        cwd=folder, capture_output=True, timeout=30)
+                    self.assertEqual(child.returncode, 0, child.stderr)
+                    self.assertEqual(child.stderr, b"")
+                    self.assertEqual(json.loads(child.stdout)["model"]["sections"]["property"]["content"]["_meta"]["integrity"]["input_hash"], "sha256:" + "a" * 64)
+                    self.assertEqual(path.read_bytes(), content)
+            malformed = stamp(model)
+            malformed["sections"]["property"]["content"]["_meta"]["integrity"]["input_hash"] = 0
+            content = json.dumps(malformed).encode("utf-8")
+            path.write_bytes(content)
+            child = subprocess.run([sys.executable, "-B", str(entry), "json", str(path)],
+                cwd=folder, capture_output=True, timeout=30)
+            self.assertEqual(child.returncode, 1)
+            self.assertEqual(child.stderr, b"")
+            self.assertIn("INT-16", json.loads(child.stdout)["error"])
+            self.assertEqual(path.read_bytes(), content)
