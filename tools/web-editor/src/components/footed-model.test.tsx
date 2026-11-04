@@ -8,10 +8,12 @@
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, fireEvent, cleanup } from '@testing-library/react';
-import type { EditOperation, UWBlock } from '@uwmd/core/browser';
+import { buildMeta, getSectionVariant, type EditOperation, type UWBlock } from '@uwmd/core/browser';
 import { deepGet } from '../catalog.js';
+import { loadInitialState, runEdit } from '../edits.js';
 import { ValuationModel } from './ValuationModel.js';
 import { DcfModel } from './DcfModel.js';
+import { OperatingStatementModel } from './OperatingStatementModel.js';
 
 afterEach(cleanup);
 
@@ -156,4 +158,59 @@ describe('DcfModel', () => {
     expect(Array.isArray(flows)).toBe(true);
     expect(flows).toHaveLength(1);
   });
+});
+
+describe('operating statement input to serialized source to reload', () => {
+  const sourceFor = (content: Record<string, unknown>) => {
+    const meta = buildMeta('operating_statement', 1,
+      { source: 'manual', actor: 'test', timestamp: '2026-11-04T00:00:00Z' });
+    return [
+      '---', 'uw_version: "3.0"', 'asset_class: multifamily', 'deal_id: synthetic-footing', '---', '',
+      'Untouched prose before the section.', '',
+      '```json uw:section=operating_statement variant=t12 source=manual',
+      JSON.stringify({ _meta: meta, ...content }, null, 2), '```', '',
+      '```json uw:section=x_unrelated source=manual', '{ "keep": "exact bytes", "amount": 123.45 }', '```', '',
+    ].join('\n');
+  };
+
+  function editAndReload(content: Record<string, unknown>, label: string, value: string) {
+    const original = sourceFor(content);
+    const initial = loadInitialState(original);
+    const dispatch = vi.fn();
+    const selected = getSectionVariant(initial.parsed, 'operating_statement', 't12');
+    expect(selected).not.toBeNull();
+    const view = render(<OperatingStatementModel sectionId="operating_statement" variant="t12"
+      block={selected!} dispatch={dispatch} />);
+    editField(view.getByLabelText(label), value);
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    const outcome = runEdit(initial, dispatchedOp(dispatch));
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) throw new Error(outcome.message);
+    // This exercises actual component dispatch, runEdit/applyEdit and saved
+    // source parsing. It does not claim a native file chooser/download test.
+    const saved = outcome.state.source;
+    const reloaded = loadInitialState(saved);
+    expect(reloaded.source).toBe(saved);
+    expect(saved).toContain('{ "keep": "exact bytes", "amount": 123.45 }');
+    expect(saved).toContain('Untouched prose before the section.');
+    expect(initial.source).toBe(original);
+    return getSectionVariant(reloaded.parsed, 'operating_statement', 't12')!.content;
+  }
+
+  it('persists complete-detail footing and leaves unrelated source bytes alone', () => {
+    const content = editAndReload({ income: { gross_potential_rent: 120000, other_income: { laundry: 12000 } },
+      expenses: { insurance: 6000, real_estate_taxes: 24000 } }, 'Gross Potential Rent', '130000');
+    expect(deepGet(content, 'income.effective_gross_income')).toBe(142000);
+    expect(deepGet(content, 'expenses.total_operating_expenses')).toBe(30000);
+    expect(content.net_operating_income).toBe(112000);
+  });
+
+  it('regression: persists the established half-away -101 loss after a half-dollar expense edit', () => {
+    const content = editAndReload({ income: { gross_potential_rent: 0 }, expenses: { insurance: 100 } },
+      'Insurance', '100.5');
+    expect(deepGet(content, 'expenses.insurance')).toBe(100.5);
+    expect(deepGet(content, 'expenses.total_operating_expenses')).toBe(101);
+    expect(content.net_operating_income).toBe(-101);
+  });
+
 });

@@ -91,3 +91,12 @@ describe('deriveOperatingStatement — partial / empty', () => {
     expect(field(d, 'expenses.total_operating_expenses')).toBe(10000);
   });
 });
+
+describe('regression: negative half-dollar operating loss', () => {
+  it('reports the independently known -101 whole-dollar NOI for a -100.5 loss', () => {
+    const derived = deriveOperatingStatement({ income: { gross_potential_rent: 0 }, expenses: { insurance: 100.5 } });
+    expect(field(derived, 'income.effective_gross_income')).toBe(0);
+    expect(field(derived, 'expenses.total_operating_expenses')).toBe(101);
+    expect(field(derived, 'net_operating_income')).toBe(-101);
+  });
+});

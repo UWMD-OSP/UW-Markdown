@@ -139,3 +139,34 @@ describe('deriveRentRoll — empty', () => {
     expect(deriveRentRoll({ rent_roll_type: 'commercial', tenants: [] }).fields).toHaveLength(0);
   });
 });
+
+describe('regression: tenant concentration and income share one eligible population', () => {
+  it.each(['vacant', 'VACANT'])('excludes a %s row retaining positive source rent', status => {
+    const input = { rent_roll_type: 'commercial', total_rentable_sf: 2000, tenants: [
+      { tenant_name: 'Live', leased_sf: 1000, annual_base_rent: 12000, status: 'occupied' },
+      { tenant_name: 'Vacant', leased_sf: 1000, annual_base_rent: 24000, status },
+    ] };
+    const before = structuredClone(input);
+    const derived = deriveRentRoll(input);
+    expect(input).toEqual(before);
+    expect(field(derived, 'in_place_rent_annual')).toBe(12000);
+    expect(derived.tenant_concentration).toEqual([
+      { tenant_name: 'Live', pct_of_nra: 0.5, pct_of_income: 1 },
+    ]);
+  });
+
+  it('retains unequal positive occupied income shares and leaves source rows untouched', () => {
+    const input = { rent_roll_type: 'commercial', total_rentable_sf: 4000, tenants: [
+      { tenant_name: 'A', leased_sf: 1000, annual_base_rent: 12000 },
+      { tenant_name: 'B', leased_sf: 3000, annual_base_rent: 36000 },
+    ] };
+    const before = structuredClone(input);
+    const derived = deriveRentRoll(input);
+    expect(input).toEqual(before);
+    expect(field(derived, 'in_place_rent_annual')).toBe(48000);
+    expect(derived.tenant_concentration).toEqual([
+      { tenant_name: 'B', pct_of_nra: 0.75, pct_of_income: 0.75 },
+      { tenant_name: 'A', pct_of_nra: 0.25, pct_of_income: 0.25 },
+    ]);
+  });
+});

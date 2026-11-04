@@ -24,6 +24,7 @@ protocol, and each package each carry an independent semver).
 ### Fixed
 
 - Verify receipt signatures and results against one detached snapshot, and resolve held inputs through own properties only.
+- Apply shared half-away reporting ties and keep commercial income and concentration on the same tenant population.
 
 - Exclude generated local Workers middleware from source lint checks (#638).
 

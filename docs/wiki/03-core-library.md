@@ -818,3 +818,10 @@ mutation cannot substitute later results into the authenticated computation.
 Held input lookup uses own properties only. An absent reference named like an
 Object prototype member remains unavailable (`RCP-11`), while an explicitly
 held own document id follows the existing digest comparison rules.
+### Starter reporting boundaries
+
+Derived-field currency/count, rate and per-area reporting reuse the shared
+half-away-from-zero quantizer at their existing 0/4/2 decimal places. Commercial
+rent-roll income and tenant concentration use the same positive-rent,
+non-vacant population; vacant rows retaining source rent do not enter income
+shares. These changes select no new occupancy or financial convention.

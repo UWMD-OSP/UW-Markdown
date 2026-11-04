@@ -47,3 +47,16 @@ describe('numOrNull', () => {
     expect(numOrNull(null)).toBeNull();
   });
 });
+
+describe('regression: reporting ties use half away from zero at the existing precision', () => {
+  // Authored known answers, independent of the production quantizer. No new
+  // currency/rate precision is proposed by this test-only branch.
+  it.each([
+    [100.5, 'currency', 101], [-100.5, 'currency', -101],
+    [0.5, 'currency', 1], [-0.5, 'currency', -1],
+    [1.005, 'psf', 1.01], [-1.005, 'psf', -1.01],
+    [0.00005, 'rate', 0.0001], [-0.00005, 'rate', -0.0001],
+  ] as const)('%s as %s reports %s', (input, kind, expected) => {
+    expect(roundByKind(input, kind)).toBe(expected);
+  });
+});
