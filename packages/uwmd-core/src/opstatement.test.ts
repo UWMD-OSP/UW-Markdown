@@ -128,7 +128,7 @@ describe('authored statement aggregates remain authoritative during partial edit
 
 describe('regression: negative half-dollar operating loss', () => {
   it('reports the independently known -101 whole-dollar NOI for a -100.5 loss', () => {
-    const derived = deriveOperatingStatement({ income: { gross_potential_rent: 0 }, expenses: { insurance: 100.5 } });
+    const derived = deriveOperatingStatement({ income: { effective_gross_income: 0 }, expenses: { real_estate_taxes: 0, insurance: 100.5, management_fees: 0, payroll_benefits: 0, repairs_maintenance: 0, contract_services: 0, marketing_advertising: 0, administrative: 0, professional_fees: 0, other_expenses: 0, utilities: { electric: 0, gas: 0, water_sewer: 0, trash: 0 } } });
     expect(field(derived, 'income.effective_gross_income')).toBe(0);
     expect(field(derived, 'expenses.total_operating_expenses')).toBe(101);
     expect(field(derived, 'net_operating_income')).toBe(-101);
