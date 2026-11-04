@@ -27,6 +27,18 @@ import { FootedValue } from './Footed.js';
 
 type Row = Record<string, unknown>;
 
+const OCCUPANCY_REASON_TEXT: Readonly<Record<string, string>> = {
+  unknown_unit_status: 'Supply a recognized status for every unit.',
+  unknown_mix_occupancy: 'Supply measured occupancy and a unit count for every unit type.',
+  unknown_tenant_status_or_area: 'Supply a status and known area for every tenant.',
+  missing_physical_inputs: 'Add a unit or tenant schedule.',
+  nonpositive_capacity: 'A positive property capacity is required.',
+  missing_rent_collected: 'Supply rent collected for the same period as gross potential rent.',
+  missing_gross_potential_rent: 'Supply gross potential rent for the collection period.',
+  nonpositive_gross_potential_rent: 'Gross potential rent must be positive to calculate this ratio.',
+  nonfinite_result: 'These amounts do not produce a finite ratio.',
+};
+
 interface ColumnDef {
   key: string;
   label: string;
@@ -166,8 +178,12 @@ export function RentRollModel(props: {
         onRemove={removeRow}
       />
 
-      <output aria-label="Unavailable occupancy">
-        {Object.entries(derivation.unavailable ?? {}).map(([path, reason]) => <p key={path}>{path}: unavailable ({reason})</p>)}
+      <output aria-label="Unavailable occupancy" className="mb-2 block text-xs text-muted">
+        {Object.entries(derivation.unavailable ?? {}).map(([path, reason]) => (
+          <span className="block" key={path}>
+            {path === 'physical_occupancy_pct' ? 'Physical occupancy' : 'Economic occupancy'} unavailable. {OCCUPANCY_REASON_TEXT[reason] ?? 'Required inputs are unavailable.'}
+          </span>
+        ))}
       </output>
       <DerivedTotals
         fields={derivation.fields}

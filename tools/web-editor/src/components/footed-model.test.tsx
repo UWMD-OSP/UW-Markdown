@@ -269,6 +269,6 @@ describe('separate rent-roll occupancy measures', () => {
   });
   it('shows an explicit unavailable physical reason when status is unknown', () => {
     const view = render(<RentRollModel sectionId="rent_roll" variant={undefined} block={block({ rent_roll_type: 'commercial', total_rentable_sf: 1000, tenants: [{ tenant_name: 'Use', leased_sf: 1000, annual_base_rent: 1200 }] })} dispatch={vi.fn()} />);
-    expect(view.getByLabelText('Unavailable occupancy').textContent).toContain('unknown_tenant_status_or_area');
+    expect(view.getByLabelText('Unavailable occupancy').textContent).toContain('Supply a status and known area for every tenant.');
   });
 });
