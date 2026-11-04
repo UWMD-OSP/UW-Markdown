@@ -43,8 +43,7 @@ describe('INT-16 complete populations and representation errors', () => {
     const original = parsedPhysicalBlocks(base).find(b => b.annotation.section === 'rent_roll')!;
     const content = structuredClone(original.content);
     (content._meta as { section: string }).section = section;
-    const raw = `---\nuw_version: "3.0"\ndeal_id: HASH-TEST\ndeal_name: Hash test\n---\n\n` +
-      '```json uw:section=' + section + '\n' + JSON.stringify(content) + '\n```\n';
+    const raw = `---\nuw_version: "3.0"\ndeal_id: HASH-TEST\ndeal_name: Hash test\n---\n\n\`\`\`json uw:section=${section}\n${JSON.stringify(content)}\n\`\`\`\n`;
     const parsed = parseUWFile(raw);
     const before = JSON.stringify(parsed);
     expect(validateUWFile(raw).issues.filter(i => i.code === 'INT-16')).toEqual([
@@ -64,9 +63,9 @@ describe('INT-16 complete populations and representation errors', () => {
       const content = structuredClone(original.content);
       const meta = content._meta as { section: string; lifecycle: { superseded: boolean } };
       meta.section = 'property'; meta.lifecycle.superseded = superseded;
-      return '```json uw:section=property variant=' + variant + (superseded ? ' superseded=true' : '') + '\n' + JSON.stringify(content) + '\n```\n';
+      return `\`\`\`json uw:section=property variant=${variant}${superseded ? ' superseded=true' : ''}\n${JSON.stringify(content)}\n\`\`\`\n`;
     };
-    const raw = '---\nuw_version: "3.0"\ndeal_id: HASH-ORDER\ndeal_name: Hash order\n---\n' + block('prior', true) + block('base') + block('upside');
+    const raw = `---\nuw_version: "3.0"\ndeal_id: HASH-ORDER\ndeal_name: Hash order\n---\n${block('prior', true)}${block('base')}${block('upside')}`;
     const parsed = parseUWFile(raw);
     const findings = validateUWFile(parsed).issues.filter(i => i.code === 'INT-16');
     expect(findings).toHaveLength(3);
