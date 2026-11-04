@@ -81,3 +81,17 @@ class InputHashTests(unittest.TestCase):
             self.assertEqual(child.stderr, b"")
             self.assertIn("INT-16", json.loads(child.stdout)["error"])
             self.assertEqual(path.read_bytes(), content)
+
+
+    def test_hash_pass_follows_metadata_admission_and_precedes_actor_findings(self):
+        document = parse(raw_hash("sha256:abcd"))
+        meta = document.source.blocks[0].parsed.value["_meta"]
+        meta["quality"]["flags"] = 0
+        meta["provenance"]["source"] = "bad_actor"
+        meta["provenance"]["resolution"] = "market_data_accepted"
+        issues = asyncio.run(validate_document(document))["issues"]
+        codes = [issue["code"] for issue in issues]
+        for code in ("META-05", "META-06", "INT-16", "SRC-01"):
+            self.assertIn(code, codes)
+        self.assertLess(codes.index("META-06"), codes.index("INT-16"))
+        self.assertLess(codes.index("INT-16"), codes.index("SRC-01"))

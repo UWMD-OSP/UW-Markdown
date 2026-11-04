@@ -81,3 +81,19 @@ describe('INT-16 complete populations and representation errors', () => {
     expect(validateUWFile(parsed.raw).issues.filter(i => i.code === 'INT-16')).toHaveLength(0);
   });
 });
+
+
+describe('INT-16 complete-pass ordering', () => {
+  it('follows metadata admission and precedes actor findings', () => {
+    const parsed = sourceWithHash('sha256:abcd');
+    const block = parsedPhysicalBlocks(parsed).find(item => item.annotation.section === 'rent_roll')!;
+    const meta = block.content._meta as { quality: Record<string, unknown>; provenance: Record<string, unknown> };
+    meta.quality.flags = 0;
+    meta.provenance.source = 'bad_actor';
+    meta.provenance.resolution = 'market_data_accepted';
+    const codes = validateUWFile(parsed).issues.map(issue => issue.code);
+    expect(codes).toEqual(expect.arrayContaining(['META-05', 'META-06', 'INT-16', 'SRC-01']));
+    expect(codes.indexOf('META-06')).toBeLessThan(codes.indexOf('INT-16'));
+    expect(codes.indexOf('INT-16')).toBeLessThan(codes.indexOf('SRC-01'));
+  });
+});
