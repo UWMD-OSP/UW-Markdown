@@ -77,10 +77,9 @@ describe('deriveOperatingStatement', () => {
 describe('deriveOperatingStatement — partial / empty', () => {
   it('handles a bare block without crashing', () => {
     const d = deriveOperatingStatement({});
-    // No income/expenses objects → no other-income/utilities sub-totals, but EGI
-    // and OpEx still foot to zero.
-    expect(field(d, 'income.effective_gross_income')).toBe(0);
-    expect(field(d, 'net_operating_income')).toBe(0);
+    // Missing income/expense detail supplies no computed subtotal.
+    expect(field(d, 'income.effective_gross_income')).toBeUndefined();
+    expect(field(d, 'net_operating_income')).toBeUndefined();
     expect(field(d, 'income.other_income.total')).toBeUndefined();
   });
 
@@ -89,7 +88,41 @@ describe('deriveOperatingStatement — partial / empty', () => {
       income: { gross_potential_rent: 100000, effective_gross_income: 0 },
       expenses: { management_fees: 10000, management_fee_pct_egi: 0.1 },
     });
-    expect(field(d, 'expenses.total_operating_expenses')).toBe(10000);
+    expect(field(d, 'expenses.total_operating_expenses')).toBeUndefined();
+  });
+});
+
+describe('aggregate-only statement source preservation', () => {
+  it('preserves aggregate-only source values without mutating the input', () => {
+    const input = { income: { gross_potential_rent: 120000, other_income: { total: 12000 } },
+      expenses: { utilities: { total: 6000 }, total_operating_expenses: 30000 }, net_operating_income: 102000 };
+    const before = structuredClone(input);
+    const derived = deriveOperatingStatement(input);
+    expect(input).toEqual(before);
+    expect(field(derived, 'income.other_income.total')).toBe(12000);
+    expect(field(derived, 'expenses.utilities.total')).toBe(6000);
+    expect(field(derived, 'expenses.total_operating_expenses')).toBe(30000);
+    expect(field(derived, 'net_operating_income')).toBe(102000);
+  });
+
+  it('preserves exact fractional authored aggregates instead of reporting-rounding them into new source values', () => {
+    const derived = deriveOperatingStatement({ income: { gross_potential_rent: 100, other_income: { total: 12.34 } },
+      expenses: { utilities: { total: 6.78 }, total_operating_expenses: 30.12 } });
+    expect(field(derived, 'income.other_income.total')).toBe(12.34);
+    expect(field(derived, 'expenses.utilities.total')).toBe(6.78);
+    expect(field(derived, 'expenses.total_operating_expenses')).toBe(30.12);
+  });
+});
+
+describe('authored statement aggregates remain authoritative during partial edits', () => {
+  it('retains explicit aggregate-only EGI, expenses and NOI when a first expense line is added', () => {
+    const input = { income: { effective_gross_income: 132000 },
+      expenses: { total_operating_expenses: 30000, insurance: 6000 }, net_operating_income: 102000 };
+    const derived = deriveOperatingStatement(input);
+    expect(field(derived, 'income.effective_gross_income')).toBe(132000);
+    expect(field(derived, 'expenses.total_operating_expenses')).toBe(30000);
+    expect(field(derived, 'net_operating_income')).toBe(102000);
+    expect(derived.diagnostics).toContainEqual({ path: 'expenses.total_operating_expenses', reason: 'incomplete_detail', stated: 30000, computed: null });
   });
 });
 

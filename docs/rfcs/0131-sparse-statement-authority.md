@@ -1,7 +1,7 @@
 ---
 rfc: 0131
 title: Preserve authored sparse-statement aggregates
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-11-04
 affects:
@@ -14,71 +14,30 @@ affects:
 
 # RFC 0131: Preserve authored sparse-statement aggregates
 
-**Proposed — unaccepted.** Project-owner acceptance or revision is required.
-The current standard is unchanged by this proposal-only PR.
+**Accepted - 2026-11-04.** The owner accepted authored aggregate authority, complete-detail recomputation and whole-dollar half-away-from-zero disagreement checks.
 
-## Summary
+## Rules
 
-Authored financial aggregates remain authoritative. A subtotal is recomputed only when its entire declared detail is available; absent or null detail is never zero. Complete detail that disagrees with a stated aggregate produces a diagnostic instead of silently replacing the aggregate.
+A finite authored aggregate remains authoritative and is preserved exactly. Recalculation requires every finite member of the full declared detail set, in the same statement, variant, period and basis. Missing, null and numeric strings never stand for zero. Explicit zero qualifies. A known-empty set sums to zero only when its emptiness is explicitly established.
 
-## Motivation
+Complete detail is independently computed and compared with the authored aggregate at the existing reporting precision: whole dollars, half away from zero, without an additional tolerance. Disagreement reports the location, authored value and computed value; it never silently replaces the source. Without an authored aggregate, only complete detail supplies a subtotal. Missing prerequisites leave dependent NOI and ratios unavailable, with a reason.
 
-The starter `opstatement.ts` helper excludes nested `total` fields while summing detail. Consequently an aggregate-only `other_income.total=12000` or `utilities.total=6000` becomes zero, and an unrelated editor input can persist the substituted totals. The workbook already retains aggregate-only inputs (`toWorkbook.test.ts`).
+## Declared reference detail sets
 
-## Proposed change
+- `income.other_income`: `laundry`, `parking`, `pet_fees`, `late_fees`, `storage`, `utility_reimbursements`, `cable_internet`, `vending`, `lease_termination_fees`, `insurance_proceeds`, `other`.
+- `expenses.utilities`: `electric`, `gas`, `water_sewer`, `trash`.
+- EGI: `gross_potential_rent`, `less_vacancy_credit_loss`, `less_concessions`, `less_loss_to_lease`, and selected `other_income.total`.
+- OpEx: `real_estate_taxes`, `insurance`, `management_fees`, `payroll_benefits`, `repairs_maintenance`, `contract_services`, `marketing_advertising`, `administrative`, `professional_fees`, `other_expenses`, and selected `utilities.total`.
+- NOI: selected EGI and OpEx. Ratios require their finite numerator and nonzero denominator.
 
-### Proposed rules
+These are the Format operating-statement template detail sets, not an assertion that present numeric leaves form a complete statement. Unknown members do not expand a declared set. Custom class/profile sets require an explicit reviewed declaration before this procedure computes them. No new wire field or admission requirement is introduced.
 
-- A finite authored aggregate MUST remain the selected source value. A producer MUST NOT silently replace it because detail is absent, incomplete or inconsistent.
-- Recalculation MUST require all members of an explicitly defined complete detail set, on the same section, variant, period and basis. Every required member MUST be a finite number. Explicit zero qualifies; absent, null and numeric strings do not.
-- A known-empty complete set sums to zero only when that emptiness is explicitly established; an absent collection establishes no such fact.
-- With a complete detail set, the independently computed subtotal MUST be compared at the existing applicable reporting quantum. Disagreement MUST be reported with the authored value, computed value, location and basis. It MUST NOT change the source aggregate or claim that the source is accurate.
-- Without an authored aggregate, complete detail MAY supply a derived subtotal. Without either, the result MUST remain unavailable with a reason. A dependent NOI/ratio MUST NOT turn that missing prerequisite into zero.
-- Source inspection MUST remain read-only. The starter editor MUST preserve authored aggregates during ordinary detail edits and expose disagreements before a user explicitly adopts a recalculated value.
+## Reference implementation and evidence
 
-### Completeness boundary
+`deriveOperatingStatement` retains authored precision and uses unrounded selected values in dependent arithmetic. Only derived reporting fields are quantized. Local starter evidence uses `diagnostics` entries with `path`, `reason` (`aggregate_mismatch` or `incomplete_detail`), `stated` and `computed`. `unavailable[path] = 'incomplete_detail'` explains an omitted computed field. This preserves the #645 evidence shape; it does not allocate a standard validation-code family. The editor exposes disagreements and preserves authored totals during edits and save/reload.
 
-A detail set is supplied by an accepted class/profile definition or an explicit bounded calculation declaration. Merely enumerating whichever numeric leaves happen to be present does not prove completeness. This draft does not invent missing class line registries, a new amount tolerance or a new financial basis. The exact mismatch diagnostic allocation and the initial dynamic utility/other-income completeness declaration remain review questions below.
+The former expected-failure gates are ordinary passing regressions, with independent controls for absent/null/string detail, explicit zero, signed ties and dependent unknowns. The current dictionary verifier continues to inspect explicit source statements read-only. This RFC does not introduce a generic full financial-statement verifier or an implicit completeness carrier.
 
-## Current contract and synchronized changes
+## Decisions and precedent
 
-This proposal concerns current source/verification and starter tooling, not a
-release authorization. Format/Protocol text, schemas, executable contracts and
-applicable conformance cases must land together in the eventual implementation.
-No package version or published compatibility baseline changes in this draft.
-
-## Conformance impact
-
-Add synthetic positive, wrong-value, absent, null, explicit-zero, invalid-type,
-variant-isolation and source-immutability controls at the affected boundaries.
-Retain each existing code owner and the independent numeric comparison quantum.
-The accompanying proposal tests distinguish executable current prerequisites
-from expected-failure acceptance gates; they claim no implementation support.
-Existing frozen conformance expectations are unchanged in this proposal PR.
-
-## Reference implementation
-
-`packages/uwmd-core/src/opstatement.ts`, its editor model and workbook handoff need consistent aggregate selection and separate computed/diagnostic evidence. Existing dictionary and native procedures continue to consume explicit stated inputs. The separately scoped starter save guard can land without treating this normative proposal as accepted.
-
-Files to review include the corresponding `packages/uwmd-core/src` helper and
-editor tests, `packages/uwmd-verify/src/validator*`, `protocol.ts`, dictionary
-bindings where applicable, representation preflights and independent Python
-validation. Implementation is a separately reviewed follow-up to this draft.
-
-## Alternatives considered
-
-Silently substituting zero or another metric/value hides unavailable evidence.
-Changing only display or only carrier admission leaves inconsistent public
-results. Retaining explicit source values plus bounded, separately reported
-verification evidence keeps source facts and computed assertions assessable.
-
-## Unresolved questions
-
-Which closed diagnostic family should own a complete-detail mismatch? Which accepted class detail registries or explicit completeness carrier cover dynamic utilities and other income? Acceptance must settle these before a conforming verifier claims the broader subtotal procedure.
-
-## Prior art
-
-The current metric dictionary's explicit-input and null rules, Protocol VIII.5
-reporting quantum, and the existing schema/validator code-ownership discipline
-are the primary precedents. RFC 0092's explicit basis/selection and unavailable
-assertion evidence provide the closest in-repository design example.
+Existing Format line sets establish the bounded completeness declaration. Protocol VIII.5 supplies half-away quantization; the accepted decision fixes comparison at whole dollars and introduces no new tolerance. RFC 0078 keeps editor calculation evidence in starter tooling. Source preservation follows the existing reader and edit contracts. No release is authorized.
