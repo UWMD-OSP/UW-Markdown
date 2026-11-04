@@ -25,6 +25,8 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Document local PR merges using the public maintainer identity, with exact-head CI and author/committer verification before a normal push.
+
 - Align all twelve builtin asset classes with the metric dictionary, declared size and LTV-basis rules, workbook layouts and verification profiles.
 - Retain physical block history and provenance across full-record representations; strengthen carrier, archive and source admission.
 - Explain receipt coverage and embedded versus detached authentication; distinguish unverifiable receipt outcomes with exit code 3.
