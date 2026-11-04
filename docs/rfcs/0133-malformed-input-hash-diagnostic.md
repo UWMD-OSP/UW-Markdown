@@ -19,21 +19,21 @@ The current standard is unchanged by this proposal-only PR.
 
 ## Summary
 
-A malformed present `_meta.integrity.input_hash` receives an error-severity validation diagnostic. Full-carrier conversion refuses the same malformed value with the same code, before its generic schema refusal. This addresses issue #629 without repairing source artifacts.
+A malformed present non-null `_meta.integrity.input_hash` receives an error-severity validation diagnostic. Full-carrier conversion refuses the same malformed value with the same code, before its generic schema refusal. This addresses issue #629 without repairing source artifacts.
 
 ## Motivation
 
-Issue [#629](https://github.com/UWMD-OSP/UW-Markdown/issues/629) demonstrates ordinary validation reporting clean while full-carrier serialization refuses malformed input hashes as `ENVELOPE_INVALID_SCHEMA`. The current block/carrier schemas already require the empty string or `sha256:` followed by 64 lowercase hexadecimal characters.
+Issue [#629](https://github.com/UWMD-OSP/UW-Markdown/issues/629) demonstrates ordinary validation reporting clean while full-carrier serialization refuses malformed input hashes as `ENVELOPE_INVALID_SCHEMA`. The current block/carrier schemas admit null, the empty string, or `sha256:` followed by 64 lowercase hexadecimal characters. Null is an admitted unknown value and is not malformed.
 
 ## Proposed change
 
 ### Proposed rules
 
-- A present input hash MUST be a string equal to `""` or matching `^sha256:[0-9a-f]{64}$`. A wrong type, wrong length, uppercase hex, whitespace or other prefix MUST be reported as an error.
+- A present non-null input hash MUST be a string equal to `""` or matching `^sha256:[0-9a-f]{64}$`. A wrong type, wrong length, uppercase hex, whitespace or other prefix MUST be reported as an error.
 - Proposed new allocation: **`INT-16`**, error, "Malformed integrity input hash". The finding MUST identify `_meta.integrity.input_hash` and its section/variant; repeated physical blocks MUST retain deterministic source-order evidence.
 - SOURCE and MODEL validation MUST apply this shape rule to each retained physical block that the full carrier admits, including superseded blocks. This is current structural admission, not a retention or repair obligation.
 - JSON, XML and CSV full-carrier conversion MUST run the shared bounded shape preflight and refuse with `INT-16` for the same malformed input, before a generic carrier-schema error obscures it. Other schema findings retain their existing owners.
-- An absent integrity container or input-hash member MUST retain its separately defined presence behavior. No hash is inferred, shortened, normalized, synthesized or rewritten.
+- An absent integrity container, absent input-hash member, or explicitly null hash MUST retain its separately defined admitted behavior. No hash is inferred, shortened, normalized, synthesized or rewritten.
 - This rule validates syntax only. A well-shaped hash proves neither that an upstream input was checked nor that the source facts are true.
 
 ### Proposed wire work
