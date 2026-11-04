@@ -160,6 +160,14 @@ describe('DcfModel', () => {
   });
 });
 
+function completeStatement(income: Record<string, unknown>, expenses: Record<string, unknown>) {
+  return {
+    income: { less_vacancy_credit_loss: 0, less_concessions: 0, less_loss_to_lease: 0,
+      other_income: { laundry: 0, parking: 0, pet_fees: 0, late_fees: 0, storage: 0, utility_reimbursements: 0, cable_internet: 0, vending: 0, lease_termination_fees: 0, insurance_proceeds: 0, other: 0 }, ...income },
+    expenses: { real_estate_taxes: 0, insurance: 0, management_fees: 0, payroll_benefits: 0, repairs_maintenance: 0, contract_services: 0, marketing_advertising: 0, administrative: 0, professional_fees: 0, other_expenses: 0, utilities: { electric: 0, gas: 0, water_sewer: 0, trash: 0 }, ...expenses },
+  };
+}
+
 describe('operating statement input to serialized source to reload', () => {
   const sourceFor = (content: Record<string, unknown>) => {
     const meta = buildMeta('operating_statement', 1,
@@ -198,15 +206,15 @@ describe('operating statement input to serialized source to reload', () => {
   }
 
   it('persists complete-detail footing and leaves unrelated source bytes alone', () => {
-    const content = editAndReload({ income: { gross_potential_rent: 120000, other_income: { laundry: 12000 } },
-      expenses: { insurance: 6000, real_estate_taxes: 24000 } }, 'Gross Potential Rent', '130000');
+    const content = editAndReload(completeStatement({ gross_potential_rent: 120000, other_income: { laundry: 12000, parking: 0, pet_fees: 0, late_fees: 0, storage: 0, utility_reimbursements: 0, cable_internet: 0, vending: 0, lease_termination_fees: 0, insurance_proceeds: 0, other: 0 } },
+      { insurance: 6000, real_estate_taxes: 24000 }), 'Gross Potential Rent', '130000');
     expect(deepGet(content, 'income.effective_gross_income')).toBe(142000);
     expect(deepGet(content, 'expenses.total_operating_expenses')).toBe(30000);
     expect(content.net_operating_income).toBe(112000);
   });
 
   it('regression: persists the established half-away -101 loss after a half-dollar expense edit', () => {
-    const content = editAndReload({ income: { gross_potential_rent: 0 }, expenses: { insurance: 100 } },
+    const content = editAndReload(completeStatement({ gross_potential_rent: 0 }, { insurance: 100 }),
       'Insurance', '100.5');
     expect(deepGet(content, 'expenses.insurance')).toBe(100.5);
     expect(deepGet(content, 'expenses.total_operating_expenses')).toBe(101);
@@ -238,4 +246,9 @@ describe('aggregate-only EGI and partial expense editing', () => {
     expect(deepGet(saved, 'expenses.total_operating_expenses')).toBe(30000);
     expect(saved.net_operating_income).toBe(102000);
   });
+});
+
+it('exposes missing statement prerequisites without deriving a zero NOI', () => {
+  const view = render(<OperatingStatementModel sectionId="operating_statement" variant="t12" block={block({})} dispatch={vi.fn()} />);
+  expect(view.getByRole('status').textContent).toContain('net_operating_income: unavailable');
 });

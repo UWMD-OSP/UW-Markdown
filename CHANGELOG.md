@@ -8,7 +8,10 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Accept RFC 0131: preserve authored statement aggregates, require complete declared detail for computed subtotals, and expose missing prerequisites and whole-dollar disagreements.
+
 ### Added
+
 
 - Attributed loan-quote, offering-memorandum and appraisal fact profiles with explicit projection candidates.
 - Independent Python Reader and Verifier support, bounded pro-forma assessment, and property and lease-up cash-flow verification.

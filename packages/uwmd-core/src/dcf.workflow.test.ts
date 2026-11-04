@@ -45,8 +45,8 @@ function acquisition(interestOnly: boolean, expenseShock = 0) {
   // units' market/contract difference. The roll's total gap includes both.
   const discount = units.filter(u => u.status === 'occupied').reduce((sum, u) => sum + (u.market_rent - u.monthly_rent!) * 12, 0);
   const concessions = units.reduce((sum, u) => sum + u.concession_monthly_equiv * 12, 0);
-  const income = { gross_potential_rent: gpr, less_vacancy_credit_loss: vacancy, less_loss_to_lease: discount, less_concessions: concessions, other_income: { parking: 6000 } };
-  const expenses = { real_estate_taxes: 10000, insurance: 5000, management_fees: 6000, payroll_benefits: 10000 + expenseShock, utilities: { electric: 3000, water_sewer: 2000 }, repairs_maintenance: 4000, replacement_reserves: 2000, capital_expenditures_actual: 5000 };
+  const income = { gross_potential_rent: gpr, less_vacancy_credit_loss: vacancy, less_loss_to_lease: discount, less_concessions: concessions, other_income: { laundry: 0, parking: 6000, pet_fees: 0, late_fees: 0, storage: 0, utility_reimbursements: 0, cable_internet: 0, vending: 0, lease_termination_fees: 0, insurance_proceeds: 0, other: 0 } };
+  const expenses = { real_estate_taxes: 10000, insurance: 5000, management_fees: 6000, payroll_benefits: 10000 + expenseShock, utilities: { electric: 3000, gas: 0, water_sewer: 2000, trash: 0 }, repairs_maintenance: 4000, contract_services: 0, marketing_advertising: 0, administrative: 0, professional_fees: 0, other_expenses: 0, replacement_reserves: 2000, capital_expenditures_actual: 5000 };
   const operating = fields(deriveOperatingStatement({ income, expenses }).fields);
   const egi = gpr - vacancy - discount - concessions + income.other_income.parking;
   const opex = expenses.real_estate_taxes + expenses.insurance + expenses.management_fees + expenses.payroll_benefits + expenses.utilities.electric + expenses.utilities.water_sewer + expenses.repairs_maintenance;

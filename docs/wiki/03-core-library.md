@@ -833,5 +833,9 @@ their exact values through an editor input edit and serialized-source reload.
 Authored EGI, expenses and NOI also remain authoritative when the first partial
 detail is added. The helper and editor report local incomplete-detail evidence
 and disagreements where the existing closed inputs are complete. These starter
-messages allocate no normative diagnostic or new class detail registry and do
-not accept the separately proposed sparse-statement RFC.
+messages allocate no normative diagnostic. The accepted RFC 0131 below defines
+the complete current Format detail sets and missing-prerequisite behavior.
+
+### Sparse operating statements (RFC 0131)
+
+`deriveOperatingStatement` preserves finite authored aggregates exactly. Only a complete declared detail set supplies a missing subtotal. Missing detail yields an omitted computed field and `unavailable[path] = 'incomplete_detail'`; dependent NOI and ratios remain unavailable. Complete detail is compared with the authored total at whole dollars, half away from zero, without a new tolerance. Local `diagnostics` preserve stated and computed amounts. The accepted RFC lists each bounded detail set.
