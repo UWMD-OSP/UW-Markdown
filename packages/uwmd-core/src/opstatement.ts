@@ -1,3 +1,4 @@
+import { quantizeDecimal } from '@uwmd/verify';
 // Deterministic operating-statement footing — the income/expense line items are
 // the inputs; effective gross income, total operating expenses, NOI, and the
 // ratios foot from them. Same role for the operating_statement section that
@@ -23,6 +24,8 @@ const asObj = (v: unknown): Row => (v !== null && typeof v === 'object' && !Arra
 
 export interface OperatingStatementDerivation {
   fields: DerivedField[];
+  /** Starter evidence only; these are not registered validation diagnostics. */
+  diagnostics: Array<{ path: string; reason: 'aggregate_mismatch' | 'incomplete_detail'; stated: number; computed: number | null }>;
 }
 
 // Operating-expense lines that sum into total_operating_expenses. Excludes
@@ -57,54 +60,57 @@ function sumExcept(obj: Row, skip: string[]): number {
   return total;
 }
 
-/** Foot an operating-statement content block. Pure: never mutates `content`. */
+/** Foot a statement without replacing authored aggregates. Pure: never mutates content. */
 export function deriveOperatingStatement(content: Row): OperatingStatementDerivation {
   const c = collector();
+  const diagnostics: OperatingStatementDerivation['diagnostics'] = [];
   const income = asObj(content['income']);
   const expenses = asObj(content['expenses']);
+  const complete = (row: Row, keys: readonly string[]) => keys.every(key => num(row[key]) != null);
+  const aggregate = (path: string, label: string, stated: number | null, computed: number, detailComplete: boolean): number => {
+    if (stated == null) {
+      c.add(path, label, 'currency', computed);
+      return computed;
+    }
+    // Source inputs retain exact authored values. Only computed replacements
+    // pass through the reporting collector.
+    c.fields.push({ path, label: `${label} (stated)`, kind: 'currency', value: stated });
+    if (!detailComplete) diagnostics.push({ path, reason: 'incomplete_detail', stated, computed: null });
+    else if (quantizeDecimal(stated, 0) !== quantizeDecimal(computed, 0)) {
+      diagnostics.push({ path, reason: 'aggregate_mismatch', stated, computed });
+    }
+    return stated;
+  };
 
-  // Income side.
   const otherIncome = asObj(income['other_income']);
-  const otherIncomeTotal = sumExcept(otherIncome, ['total']);
-  if (Object.keys(otherIncome).length > 0) {
-    const detail = Object.keys(otherIncome).some(key => key !== 'total' && num(otherIncome[key]) != null);
-    if (!detail && num(otherIncome['total']) != null) c.fields.push({ path: 'income.other_income.total', label: 'Other Income (stated total)', kind: 'currency', value: otherIncomeTotal });
-    else c.add('income.other_income.total', 'Other Income (total)', 'currency', otherIncomeTotal);
-  }
-
+  const otherComplete = complete(otherIncome, ['laundry', 'pet_fees', 'late_fees', 'other']);
+  const otherComputed = sumExcept(otherIncome, ['total']);
+  const otherIncomeTotal = Object.keys(otherIncome).length
+    ? aggregate('income.other_income.total', 'Other Income (total)', num(otherIncome['total']), otherComputed, otherComplete)
+    : 0;
   const gpr = num(income['gross_potential_rent']) ?? 0;
   const vacancy = num(income['less_vacancy_credit_loss']) ?? 0;
   const concessions = num(income['less_concessions']) ?? 0;
   const lossToLease = num(income['less_loss_to_lease']) ?? 0;
-  const egi = gpr - vacancy - concessions - lossToLease + otherIncomeTotal;
-
+  const incomeComplete = complete(income, ['gross_potential_rent', 'less_vacancy_credit_loss', 'less_concessions', 'less_loss_to_lease']) &&
+    (num(otherIncome['total']) != null || otherComplete);
+  const egi = aggregate('income.effective_gross_income', 'Effective Gross Income', num(income['effective_gross_income']),
+    gpr - vacancy - concessions - lossToLease + otherIncomeTotal, incomeComplete);
   c.add('income.vacancy_pct', 'Vacancy %', 'rate', gpr ? vacancy / gpr : null);
-  c.add('income.effective_gross_income', 'Effective Gross Income', 'currency', egi);
 
-  // Expense side.
   const utilities = asObj(expenses['utilities']);
-  const utilitiesTotal = sumExcept(utilities, ['total']);
-  if (Object.keys(utilities).length > 0) {
-    const detail = Object.keys(utilities).some(key => key !== 'total' && num(utilities[key]) != null);
-    if (!detail && num(utilities['total']) != null) c.fields.push({ path: 'expenses.utilities.total', label: 'Utilities (stated total)', kind: 'currency', value: utilitiesTotal });
-    else c.add('expenses.utilities.total', 'Utilities (total)', 'currency', utilitiesTotal);
-  }
-
-  let opex = utilitiesTotal;
-  for (const key of EXPENSE_LINES) opex += num(expenses[key]) ?? 0;
-  const expenseDetail = EXPENSE_LINES.some(key => num(expenses[key]) != null) ||
-    Object.keys(utilities).some(key => key !== 'total' && num(utilities[key]) != null);
-  const statedExpenses = num(expenses['total_operating_expenses']);
-  if (!expenseDetail && statedExpenses != null) {
-    opex = statedExpenses;
-    c.fields.push({ path: 'expenses.total_operating_expenses', label: 'Operating Expenses (stated total)', kind: 'currency', value: opex });
-  } else c.add('expenses.total_operating_expenses', 'Total Operating Expenses', 'currency', opex);
-
-  // Bottom line.
-  const noi = egi - opex;
-  c.add('net_operating_income', 'Net Operating Income', 'currency', noi);
+  const utilitiesComplete = complete(utilities, ['electric', 'gas', 'water_sewer', 'trash']);
+  const utilitiesTotal = Object.keys(utilities).length
+    ? aggregate('expenses.utilities.total', 'Utilities (total)', num(utilities['total']), sumExcept(utilities, ['total']), utilitiesComplete)
+    : 0;
+  let expenseComputed = utilitiesTotal;
+  for (const key of EXPENSE_LINES) expenseComputed += num(expenses[key]) ?? 0;
+  const expenseComplete = complete(expenses, EXPENSE_LINES) && (num(utilities['total']) != null || utilitiesComplete);
+  const opex = aggregate('expenses.total_operating_expenses', 'Total Operating Expenses', num(expenses['total_operating_expenses']), expenseComputed, expenseComplete);
+  const noiComplete = (num(income['effective_gross_income']) != null || incomeComplete) &&
+    (num(expenses['total_operating_expenses']) != null || expenseComplete);
+  const noi = aggregate('net_operating_income', 'Net Operating Income', num(content['net_operating_income']), egi - opex, noiComplete);
   c.add('expense_ratio', 'Expense Ratio', 'rate', egi ? opex / egi : null);
   c.add('noi_margin', 'NOI Margin', 'rate', egi ? noi / egi : null);
-
-  return { fields: c.fields };
+  return { fields: c.fields, diagnostics };
 }

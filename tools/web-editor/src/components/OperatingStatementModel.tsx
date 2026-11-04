@@ -140,6 +140,14 @@ export function OperatingStatementModel(props: {
 
   return (
     <div className="px-4 py-4">
+      {derivation.diagnostics.length > 0 && (
+        <div role="status" className="mb-4 text-xs text-muted">
+          {derivation.diagnostics.map(finding => (
+            <p key={finding.path}>{finding.path}: stated value retained; {finding.reason === 'aggregate_mismatch'
+              ? 'complete detail disagrees at the reporting precision.' : 'detail is incomplete; no comparison is claimed.'}</p>
+          ))}
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
         {/* Income */}
         <div>

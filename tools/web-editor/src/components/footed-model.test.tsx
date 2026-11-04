@@ -220,6 +220,22 @@ describe('operating statement input to serialized source to reload', () => {
     expect(deepGet(content, 'income.other_income.total')).toBe(12000);
     expect(deepGet(content, 'expenses.utilities.total')).toBe(6000);
     expect(deepGet(content, 'expenses.total_operating_expenses')).toBe(30000);
-    expect(content.net_operating_income).toBe(112000);
+    expect(content.net_operating_income).toBe(102000);
+  });
+});
+
+describe('aggregate-only EGI and partial expense editing', () => {
+  it('does not replace source aggregates after adding the first expense detail', () => {
+    const dispatch = vi.fn();
+    const content = { income: { effective_gross_income: 132000 },
+      expenses: { total_operating_expenses: 30000, insurance: 0 }, net_operating_income: 102000 };
+    const view = render(<OperatingStatementModel sectionId="operating_statement" variant="t12"
+      block={block(content)} dispatch={dispatch} />);
+    expect(view.getByRole('status').textContent).toContain('stated value retained');
+    editField(view.getByLabelText('Insurance'), '6000');
+    const saved = dispatchedOp(dispatch).content;
+    expect(deepGet(saved, 'income.effective_gross_income')).toBe(132000);
+    expect(deepGet(saved, 'expenses.total_operating_expenses')).toBe(30000);
+    expect(saved.net_operating_income).toBe(102000);
   });
 });
