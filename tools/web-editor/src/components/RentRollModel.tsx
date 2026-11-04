@@ -166,7 +166,7 @@ export function RentRollModel(props: {
         onRemove={removeRow}
       />
 
-      <output aria-label="Unavailable occupancy" role="status">
+      <output aria-label="Unavailable occupancy">
         {Object.entries(derivation.unavailable ?? {}).map(([path, reason]) => <p key={path}>{path}: unavailable ({reason})</p>)}
       </output>
       <DerivedTotals
