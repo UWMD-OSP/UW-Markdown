@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 import re
 
 from uwmd_binding_sources import finite
-from uwmd_document_sources import metadata_blocks
+from uwmd_document_sources import metadata_blocks, malformed_input_hash
 from uwmd_instant import epoch_milliseconds, validation_now_milliseconds
 from uwmd_currency import inspect_document_currency
 from uwmd_reader import APPEND
@@ -202,6 +202,17 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     missing_meta_blocks = set()
     missing_field_owners = []
     physical = {id(block): index for index, block in enumerate(metadata_blocks(document))}
+    hash_issues = []
+    for index, block in enumerate(metadata_blocks(document)):
+        if malformed_input_hash(block.parsed.value):
+            hash_issues.append(dict(code="INT-16", severity="error", section=block.section,
+                field="_meta.integrity.input_hash",
+                message=f"Malformed input hash in {block.section} variant {dict(block.attributes).get('variant')} at physical/model block {index}"))
+    # RFC 0133: finish metadata admission before this complete physical pass,
+    # then retain the existing role/period/actor findings in their relative order.
+    hash_at = next((index for index, issue in enumerate(ledger.issues)
+                    if issue["code"].startswith(("ROLE-", "PS-", "SRC-"))), len(ledger.issues))
+    ledger.issues[hash_at:hash_at] = hash_issues
     ledger.issues.extend(inspect_document_currency(document)["issues"])
     if "locale" in fm and fm["locale"] not in ("en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"):
         ledger.issue("LOC-01", "error", "frontmatter", "locale", "Locale is outside the registered vocabulary", value=fm["locale"])

@@ -87,7 +87,7 @@ describe('indexUWMDDirectory', () => {
     }
   });
 
-  it('indexes valid deals, isolates malformed files, and writes deterministic projections', async () => {
+  it('indexes parseable records with malformed input hashes as invalid and preserves projections', async () => {
     const root = await mkdtemp(join(tmpdir(), 'uwmd-batch-'));
 
     try {
@@ -99,8 +99,9 @@ describe('indexUWMDDirectory', () => {
 
       const index = await indexUWMDDirectory(root);
       expect(index.files_scanned).toBe(2);
-      expect(index.valid_deals).toBe(1);
-      expect(index.invalid_deals).toBe(1);
+      expect(index.valid_deals).toBe(0);
+      expect(index.invalid_deals).toBe(2);
+      expect(index.deals.find(deal => deal.path === 'parkview.uw.md')?.error_count).toBeGreaterThan(0);
       expect(index.deals.find((deal) => deal.path === 'parkview.uw.md')?.semantic_digest).toMatch(/^sha256:/);
       expect(index.deals.find((deal) => deal.path === 'parkview.uw.md')?.quick_metrics.dscr).toBe(1.109);
 
@@ -198,7 +199,7 @@ describe('buildUWMDFactTable', () => {
       for (const row of table.rows) {
         expect(row.path).toBe('parkview.uw.md');
         expect(row.semantic_digest).toBe(parkview?.semantic_digest);
-        expect(row.valid).toBe(true);
+        expect(row.valid).toBe(false); // Authored shortened input hashes are now validation errors.
         expect(['annotation', 'meta', 'content', 'block-extra']).toContain(row.scope);
       }
       // A scalar business fact is addressable by (block_ref, scope, pointer).

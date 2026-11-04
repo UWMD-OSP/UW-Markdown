@@ -28,10 +28,12 @@ for (const script of scripts) {
 }
 
 for (const name of ['Parkview-Apts-Glendale-AZ.uwx.md', 'parkview-reviewed.uwx.md']) {
-  test(`${name} verifies all 9 stated metrics, including both LTV homes`, () => {
+  test(`${name} recomputes all 9 metrics but refuses malformed source hashes`, () => {
     const file = fileURLToPath(new URL(`../examples/${name}`, import.meta.url));
     const run = spawnSync(process.execPath, ['01-valid-document.mjs', file], { cwd: dir, encoding: 'utf8' });
-    assert.equal(run.status, 0, `${run.stdout}\n${run.stderr}`);
+    assert.equal(run.status, 1, `${run.stdout}\n${run.stderr}`);
+    assert.match(run.stdout, /Validation: errors \([1-9][0-9]* errors, 0 warnings\)/);
+    assert.match(run.stdout, /^FAILED$/m);
     assert.equal(run.stderr, '');
     assert.match(run.stdout, /Stated metrics: 9 verified, 0 failed, 0 unverifiable/);
     assert.match(run.stdout, /quick_metrics\.ltv: stated 0\.7, recomputed 0\.7 -> verified/);

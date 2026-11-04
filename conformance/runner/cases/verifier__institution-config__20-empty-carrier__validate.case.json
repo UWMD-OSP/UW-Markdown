@@ -16,7 +16,7 @@
   "expect": {
     "kind": "json-subset",
     "file": "conformance/institution-config/20-empty-carrier/expected.json",
-    "exit_code": 0,
+    "exit_code": 1,
     "project": "issue-code-severity-set"
   }
 }

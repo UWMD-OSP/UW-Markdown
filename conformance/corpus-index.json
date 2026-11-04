@@ -7375,6 +7375,16 @@
       "suite": "document-facts",
       "scenario": "multiple-appraisal-premises-stay-unmapped",
       "target": "document-facts"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/74-malformed-input-hash",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/74-malformed-input-hash [validate]",
+      "target": "verifier"
     }
   ]
 }

@@ -14,7 +14,7 @@
   "expect": {
     "kind": "json-subset",
     "file": "conformance/institution-config/24-automatic-adjacent/expected.json",
-    "exit_code": 0,
+    "exit_code": 1,
     "project": "issue-code-severity-set"
   }
 }

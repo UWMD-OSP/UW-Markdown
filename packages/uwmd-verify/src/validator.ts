@@ -42,7 +42,7 @@ import { parseAssetClass, declaredModuleDependencies, moduleListEntries } from '
 import { checkPeriodSeries } from './period-validation.js';
 import { hasBlockRole, isBlockRole, resolveRoleBlock } from './block-roles.js';
 import type { RoleResolution } from './block-roles.js';
-import { blockOverrides } from './metadata.js';
+import { blockOverrides, malformedInputHash } from './metadata.js';
 
 // ─── BUILTIN_REMEDIATIONS lookup (Protocol §III.6a) ──────────────────
 //
@@ -156,6 +156,7 @@ export function validateUWFile(
   checkMetadataLeaves(parsed, issues);
   checkOptionalMetadata(parsed, issues);
   checkMetadataReferences(parsed, issues);
+  checkInputHashes(parsed, issues);
   checkBlockRoles(parsed, issues);
   checkPeriodSeries(parsed, issues);
   checkSourceVocabulary(parsed, issues);
@@ -3878,3 +3879,12 @@ export function checkDataQuality(
 
 // Re-export UWBlock for use in validator callers
 type UWBlock = import('./types.js').UWBlock;
+
+function checkInputHashes(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  for (const [index, [section, block]] of metadataReferences(parsed).entries()) {
+    if (malformedInputHash(block.content)) issues.push({
+      code: 'INT-16', severity: 'error', section, field: '_meta.integrity.input_hash',
+      message: `Malformed input hash in ${section}${block.annotation.variant === undefined ? '' : ` variant ${block.annotation.variant}`} at physical/model block ${index}.`,
+    });
+  }
+}

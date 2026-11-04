@@ -29,7 +29,7 @@ describe('runChecks', () => {
 });
 
 describe('the example gallery', () => {
-  it('carries one synthetic example per builtin class, each of which verifies', async () => {
+  it("carries every builtin class and recomputes each example's stated metrics", async () => {
     const classes = new Set(GALLERY.map((e) => e.asset_class));
     for (const cls of ['multifamily', 'office', 'retail', 'industrial', 'self_storage', 'hospitality', 'mixed_use',
       'senior_housing', 'student_housing', 'land', 'data_center', 'manufactured_housing']) expect(classes, cls).toContain(cls);

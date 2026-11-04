@@ -1,4 +1,5 @@
 import { admitsCarrierSchema } from './carrier-schema.js';
+import { malformedInputHash } from './metadata.js';
 import { hasBlockShape } from './block-kind.js';
 // UW Document Envelope — format-neutral semantic model shared by machine codecs.
 
@@ -302,6 +303,7 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
       );
     }
   }
+  assertInputHashes(value);
   if (!admitsCarrierSchema(value)) throw new UWEnvelopeError('ENVELOPE_INVALID_SCHEMA', 'Model shape does not satisfy the current full carrier schema.');
   if (!isRecord(value['sections'])) {
     throw new UWEnvelopeError('ENVELOPE_MISSING_SECTIONS', 'sections must be an object.');
@@ -447,4 +449,31 @@ function isVariantMap(entry: UWEnvelopeSectionEntry | ParsedSections[string]): b
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/** RFC 0133: inspect only recognized block positions before generic schema refusal. */
+function assertInputHashes(envelope: Record<string, unknown>): void {
+  const inspect = (block: unknown): void => {
+    if (isRecord(block) && isRecord(block['content']) && malformedInputHash(block['content'])) {
+      throw new UWEnvelopeError('INT-16', 'Malformed _meta.integrity.input_hash in a retained block.');
+    }
+  };
+  if (isRecord(envelope['sections'])) for (const entry of Object.values(envelope['sections'])) {
+    if (hasBlockShape(entry)) inspect(entry);
+    else if (isRecord(entry)) for (const block of Object.values(entry)) inspect(block);
+  }
+  for (const name of ['pipeline_log', 'custom_calculations', 'custom_scenarios']) {
+    const entries = envelope[name];
+    if (Array.isArray(entries)) for (const block of entries) inspect(block);
+  }
+  if (isRecord(envelope['extensions'])) for (const entry of Object.values(envelope['extensions'])) {
+    if (!isRecord(entry)) continue;
+    if (entry['mode'] === 'single') inspect(entry['block']);
+    else if (entry['mode'] === 'variants' && Array.isArray(entry['blocks'])) {
+      for (const record of entry['blocks']) if (isRecord(record)) inspect(record['block']);
+    }
+  }
+  if (isRecord(envelope['superseded'])) for (const entries of Object.values(envelope['superseded'])) {
+    if (Array.isArray(entries)) for (const block of entries) inspect(block);
+  }
 }
