@@ -1680,9 +1680,9 @@
     "rule_set": "3.0",
     "asset_class": "self_storage",
     "counts": {
-      "verified": 11,
+      "verified": 10,
       "failed": 0,
-      "unverifiable": 2
+      "unverifiable": 3
     },
     "evidence": [
       {
@@ -1798,10 +1798,9 @@
         "path": "rent_roll.economic_occupancy",
         "stated": 0.975,
         "stated_decimals": 3,
-        "state": "verified",
-        "computed": 0.975,
-        "comparison": 0.975,
-        "comparison_decimals": 3
+        "state": "unverifiable",
+        "computed": null,
+        "reason": "missing_or_null_input"
       },
       {
         "id": "net_rentable_square_feet",

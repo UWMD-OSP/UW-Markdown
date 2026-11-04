@@ -42,6 +42,8 @@ const NAMED_RANGES = new Map<string, string>([
   ['dcf.annual_cash_flows.Y1.net_cash_flow_levered', 'levered_cash_flow_y1'],
   ['sources_uses.uses.total', 'total_uses'],
   ['rent_roll.occupied_units', 'occupied_units'],
+  ['rent_roll.economic_occupancy_inputs.gross_potential_rent', 'economic_potential'],
+  ['rent_roll.economic_occupancy_inputs.rent_collected', 'rent_collected'],
 ]);
 
 /**
@@ -102,7 +104,7 @@ describe('SELF_STORAGE_PACK', () => {
     // This parity scenario explicitly authors purchase-price in its current model.
     (parsed.sections['debt_structure'] as { content: Record<string, unknown> }).content.ltv_basis = 'purchase-price';
     const values: Record<string, number | string | null> = {
-      ltv_basis: '"purchase-price"', total_project_cost: null,
+      ltv_basis: '"purchase-price"', total_project_cost: null, economic_potential: null, rent_collected: null,
       noi: noi.content['net_operating_income'] as number,
       effective_gross_income: lineValue(income['effective_gross_income']),
       gross_potential_rent: lineValue(income['gross_potential_rent']),
@@ -127,7 +129,7 @@ describe('SELF_STORAGE_PACK', () => {
       for (const [, name] of NAMED_RANGES) {
         formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name] ?? 'null'));
       }
-      if (!['cash_on_cash', 'ltv'].includes(c.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
+      if (!['cash_on_cash', 'ltv', 'economic_occupancy'].includes(c.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
       const excelLike = excelValue(formula);
       // Excel's cell holds ROUND(expr, round_to) because the emitter wraps it
@@ -139,7 +141,7 @@ describe('SELF_STORAGE_PACK', () => {
     }
   });
 
-  it('reads gross_potential_rent as the §4.5 object, not a scalar (adopter report 015)', async () => {
+  it('does not substitute EGI or the NOI model potential for collected-rent evidence from the §4.5 object, not a scalar (adopter report 015)', async () => {
     const raw = await readFile(EXAMPLE, 'utf8');
     const parsed = parseUWFile(raw);
     const noi = parsed.sections['noi_model'] as { content: Record<string, unknown> };
@@ -149,9 +151,16 @@ describe('SELF_STORAGE_PACK', () => {
     expect(income['gross_potential_rent']).toMatchObject({ value: 1080000, source: 'rent_roll' });
 
     const decl = (SELF_STORAGE_PACK.calculations ?? []).find((c) => c.id === 'economic_occupancy')!;
-    expect(decl.formula).toContain('gross_potential_rent.value');
+    expect(decl.formula).toContain('economic_occupancy_inputs.rent_collected');
     const r = evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' });
     expect(r.ok, r.error?.message ?? '').toBe(true);
-    expect(r.value).toBe(0.975);
+    expect(r.value).toBeNull();
+    const rentRoll = parsed.sections['rent_roll'] as { content: Record<string, unknown> };
+    rentRoll.content.economic_occupancy_inputs = { rent_collected: 75000, gross_potential_rent: 100000 };
+    expect(evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' }).value).toBe(0.75);
+    const excel = emitExcelFormula(decl.formula, { namedRanges: NAMED_RANGES }).replaceAll('economic_potential', '100000').replaceAll('rent_collected', '75000');
+    expect(excelValue(excel)).toBe(0.75);
+    rentRoll.content.economic_occupancy_inputs = { rent_collected: 0, gross_potential_rent: 100000 };
+    expect(evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' }).value).toBe(0);
   });
 });

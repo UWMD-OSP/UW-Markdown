@@ -107,9 +107,8 @@ export const SELF_STORAGE_PACK: ModuleManifest = {
     {
       id: 'economic_occupancy',
       label: 'Economic Occupancy',
-      // Format §4.5 states gross_potential_rent as `{ value, source, ... }`,
-      // so the formula reads the object's value, never the object.
-      formula: 'noi_model.income.effective_gross_income / noi_model.income.gross_potential_rent.value',
+      // RFC 0132: both amounts assert one common period and property scope.
+      formula: 'rent_roll.economic_occupancy_inputs.gross_potential_rent > 0 ? rent_roll.economic_occupancy_inputs.rent_collected / rent_roll.economic_occupancy_inputs.gross_potential_rent : null',
       unit: '%',
       deterministic: true,
     },

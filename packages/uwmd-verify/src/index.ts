@@ -901,3 +901,5 @@ export { DOCUMENT_FACTS_PROFILES } from './protocol.js';
 export { readDocumentFactsPackage } from './document-facts-package.js';
 
 export { VERIFY_BUILD_INFO, VERIFY_BUILD_VERSION, type SourceBuildInfo } from './build-info.js';
+
+export type { EconomicOccupancyInputs } from './protocol.js';

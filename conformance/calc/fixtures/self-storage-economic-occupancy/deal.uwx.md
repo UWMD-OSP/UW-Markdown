@@ -20,9 +20,8 @@ created_by: "conformance"
 
 # Self-Storage Economic Occupancy
 
-Pins `economic_occupancy` over a `noi_model` shaped as format §4.5 states it:
-`income.gross_potential_rent` is `{ value, source, ... }`, not a number.
-Result = 1,053,000 / 1,080,000 = 0.975.
+Pins the accepted RFC 0132 collected-rent basis for one common reporting period.
+Economic occupancy = 810000 / 1080000 = 0.75, independently of EGI 1053000.
 
 ```json uw:section=property source=manual ts=2026-09-28T00:00:00Z v=1 confidence=high
 {
@@ -106,5 +105,36 @@ Result = 1,053,000 / 1,080,000 = 0.975.
     "total_operating_expenses": 381000
   },
   "net_operating_income": 672000
+}
+```
+
+```json uw:section=rent_roll source=manual
+{
+  "_meta": {
+    "section": "rent_roll",
+    "provenance": {
+      "source": "manual",
+      "actor": "conformance",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-28T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "economic_occupancy_inputs": {
+    "rent_collected": 810000,
+    "gross_potential_rent": 1080000
+  }
 }
 ```

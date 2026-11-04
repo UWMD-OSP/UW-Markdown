@@ -20,6 +20,18 @@ export function controls(root) {
     debt_structure: block('debt_structure', { annual_debt_service: 25000, loan_amount: 75000 }),
   });
   return [
+    ['collected-rent-economic-occupancy-is-independent-of-physical-and-EGI', () => {
+      const p = deal({ rent_roll: block('rent_roll', { physical_occupancy_pct: 1, economic_occupancy_inputs: { rent_collected: 75, gross_potential_rent: 100 } }), noi_model: block('noi_model', { income: { effective_gross_income: 999 } }) });
+      const economic = metric('economic_occupancy', 'self_storage');
+      assert.equal(verifyStatedMetric(economic, p, 0.75).state, 'verified');
+      assert.equal(verifyStatedMetric(economic, p, 1).state, 'failed');
+      p.sections.rent_roll.content.economic_occupancy_inputs.rent_collected = 0;
+      assert.equal(verifyStatedMetric(economic, p, 0).state, 'verified');
+      delete p.sections.rent_roll.content.economic_occupancy_inputs.rent_collected;
+      assert.equal(verifyStatedMetric(economic, p, 0).state, 'unverifiable');
+      const independent = deal({ rent_roll: block('rent_roll', { economic_occupancy_inputs: { rent_collected: 50, gross_potential_rent: 100 } }) });
+      assert.equal(verifyStatedMetric(economic, independent, 0.5).state, 'verified');
+    }],
     ['verifier-import-graph-excludes-starter-engine', () => {
       // RFC 0083: the verifier's whole import graph is `@uwmd/verify`'s build and
       // this fixture; it reaches no `@uwmd/core` module at all.

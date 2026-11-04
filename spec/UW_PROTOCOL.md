@@ -4723,3 +4723,8 @@ transport is not a fact validation or projection claim.
 The indexed `conformance/document-facts/` cases exercise these obligations.
 `DF-*` errors belong to the standalone profile operations, not a new base
 financial-validation rule or a new financial comparison procedure.
+
+
+## RFC 0132 - Separate occupancy measures
+
+Physical occupancy and economic occupancy are independent named measures. The dictionary self-storage `economic_occupancy` formula uses `rent_roll.economic_occupancy_inputs.rent_collected / rent_roll.economic_occupancy_inputs.gross_potential_rent`, with a positive denominator. The group asserts one common property scope and reporting period in the selected section variant; different periods require separate variants. No EGI, contractual-rent or physical-occupancy fallback is permitted. Unknown operands yield an unavailable result with a reason; an explicit zero numerator stays zero. Physical use follows the existing class capacity definition, and an occupied zero-rent suite is not vacant. Format rent-roll rules, the executable `EconomicOccupancyInputs` type, block schema and dictionary declare the same bounded input group.

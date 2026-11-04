@@ -1133,6 +1133,8 @@ Field notes:
 
 **Size contract (RFC 0100).** The roll's counts, areas and rents listed in the §5.5 size contract table MUST be finite numbers ≥ 0 when stated, and counts MUST also be integers (`SIZE-01`, error). Concessions, credits, loss-to-lease and cash-flow lines are signed and outside the table.
 
+**Separate occupancy measures (RFC 0132).** `physical_occupancy_pct` records physical use on the existing class-specific capacity basis, independently of rent. An explicitly occupied zero-rent suite is physically occupied. `economic_occupancy_pct` records rent collected / gross potential rent. Optional `economic_occupancy_inputs` contains `rent_collected` and `gross_potential_rent`, finite numbers or null, asserting the same property scope and reporting period in this section variant. Different periods require separate variants; no operand is taken from another block. Missing/null operands yield an unavailable result with a reason, never a substitute metric. Explicit zero collected rent stays zero. Nonpositive potential rent leaves the ratio unavailable. The self-storage dictionary metric `economic_occupancy` and its named statement binding use this group; EGI is not collected rent.
+
 **Verified statements (RFC 0099).** `rent_roll.occupancy_pct`, when stated, is a statement of the dictionary metric `occupancy`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
 
 #### Multifamily Variant

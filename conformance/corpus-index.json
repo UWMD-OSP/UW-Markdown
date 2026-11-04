@@ -5473,6 +5473,11 @@
     },
     {
       "suite": "metrics",
+      "scenario": "collected-rent-economic-occupancy-is-independent-of-physical-and-EGI",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
       "scenario": "missing-input-is-not-a-default",
       "target": "verifier"
     },

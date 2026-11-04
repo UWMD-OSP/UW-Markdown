@@ -27,6 +27,18 @@ import { FootedValue } from './Footed.js';
 
 type Row = Record<string, unknown>;
 
+const OCCUPANCY_REASON_TEXT: Readonly<Record<string, string>> = {
+  unknown_unit_status: 'Supply a recognized status for every unit.',
+  unknown_mix_occupancy: 'Supply measured occupancy and a unit count for every unit type.',
+  unknown_tenant_status_or_area: 'Supply a status and known area for every tenant.',
+  missing_physical_inputs: 'Add a unit or tenant schedule.',
+  nonpositive_capacity: 'A positive property capacity is required.',
+  missing_rent_collected: 'Supply rent collected for the same period as gross potential rent.',
+  missing_gross_potential_rent: 'Supply gross potential rent for the collection period.',
+  nonpositive_gross_potential_rent: 'Gross potential rent must be positive to calculate this ratio.',
+  nonfinite_result: 'These amounts do not produce a finite ratio.',
+};
+
 interface ColumnDef {
   key: string;
   label: string;
@@ -54,6 +66,7 @@ const UNIT_MIX_COLUMNS: ColumnDef[] = [
 const TENANT_COLUMNS: ColumnDef[] = [
   { key: 'tenant_name', label: 'Tenant', kind: 'text' },
   { key: 'suite', label: 'Suite', kind: 'text' },
+  { key: 'status', label: 'Status', kind: 'text' },
   { key: 'leased_sf', label: 'SF', kind: 'count' },
   { key: 'annual_base_rent', label: 'Annual Rent', kind: 'currency' },
   { key: 'lease_expiration', label: 'Expires', kind: 'text' },
@@ -165,6 +178,13 @@ export function RentRollModel(props: {
         onRemove={removeRow}
       />
 
+      <output aria-label="Unavailable occupancy" className="mb-2 block text-xs text-muted">
+        {Object.entries(derivation.unavailable ?? {}).map(([path, reason]) => (
+          <span className="block" key={path}>
+            {path === 'physical_occupancy_pct' ? 'Physical occupancy' : 'Economic occupancy'} unavailable. {OCCUPANCY_REASON_TEXT[reason] ?? 'Required inputs are unavailable.'}
+          </span>
+        ))}
+      </output>
       <DerivedTotals
         fields={derivation.fields}
         basis={derivation.basis}
@@ -221,6 +241,7 @@ function LineItemTable(props: {
                 {columns.map((col) => (
                   <td key={col.key} className={`px-1 py-0.5 ${col.kind === 'text' ? '' : 'text-right'}`}>
                     <input
+                      aria-label={`${col.label} row ${i + 1}`}
                       type="text"
                       inputMode={col.kind === 'text' ? 'text' : 'decimal'}
                       className={`w-full rounded border border-transparent bg-transparent px-1 py-1 text-sm hover:border-rule focus:border-accent focus:bg-paper focus:ring-1 focus:ring-accent focus:outline-none ${col.kind === 'text' ? '' : 'num'}`}

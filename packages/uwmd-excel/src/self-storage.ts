@@ -29,6 +29,8 @@ const expenseLines: readonly ExpenseLine[] = [
 ];
 
 const namedInputs: readonly NamedInput[] = [
+  { name: 'rent_collected', label: 'Rent Collected (common period)', source: { section: 'rent_roll', path: 'economic_occupancy_inputs.rent_collected' }, format: 'currency' },
+  { name: 'economic_potential', label: 'Gross Potential Rent (common period)', source: { section: 'rent_roll', path: 'economic_occupancy_inputs.gross_potential_rent' }, format: 'currency' },
   { name: 'purchase_price',              label: 'Purchase Price',       source: { section: 'valuation',      path: 'purchase_price' },              format: 'currency' },
   { name: 'underwritten_value', label: 'Underwritten Value', source: { section: 'valuation', path: 'underwritten_value' }, format: 'currency' },
   { name: 'ltv_basis', label: 'Declared LTV Basis', source: { section: 'debt_structure', path: 'ltv_basis' }, format: 'text' },

@@ -1071,10 +1071,10 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "self_storage"
       ],
-      "formula": "noi_model.income.effective_gross_income / noi_model.income.gross_potential_rent.value",
+      "formula": "rent_roll.economic_occupancy_inputs.gross_potential_rent > 0 ? rent_roll.economic_occupancy_inputs.rent_collected / rent_roll.economic_occupancy_inputs.gross_potential_rent : null",
       "input_paths": [
-        "noi_model.income.effective_gross_income",
-        "noi_model.income.gross_potential_rent.value"
+        "rent_roll.economic_occupancy_inputs.gross_potential_rent",
+        "rent_roll.economic_occupancy_inputs.rent_collected"
       ],
       "unit": "%",
       "round_to": 6,
@@ -3592,6 +3592,9 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       ],
       "land_carry_noi": [
         "noi_model.net_operating_income"
+      ],
+      "economic_occupancy": [
+        "rent_roll.economic_occupancy_pct"
       ]
     }
   }
