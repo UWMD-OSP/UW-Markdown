@@ -160,6 +160,7 @@ and how it gets accepted.
 | [0129](./0129-document-fact-profiles.md) | Catalog document families and three attributable fact profiles | accepted | format, protocol, reference library, conformance |
 | [0130](./0130-receipt-unverifiable-exit.md) | Give indeterminate receipt verification a distinct nonzero exit | accepted | protocol, conformance, tooling |
 | [0131](./0131-sparse-statement-authority.md) | Preserve authored sparse-statement aggregates | accepted |
+| [0132](./0132-physical-economic-occupancy.md) | Separate physical and economic occupancy | draft |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
@@ -167,7 +168,6 @@ its RFC was written, and records that process failure rather than hiding it. See
 its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
 section.
 
-| [0132](./0132-physical-economic-occupancy.md) | Separate physical and economic occupancy | draft |
 
 ## Status values
 
