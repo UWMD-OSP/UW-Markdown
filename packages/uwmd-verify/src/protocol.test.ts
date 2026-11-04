@@ -213,6 +213,7 @@ describe('validator code families (§III.6a, RFC 0030)', () => {
     // The two families the first external adopter could not implement. If these
     // ever become unconditional, a reader-only host stops being conformant.
     expect(validatorCodeFamily('INT-01')?.capabilities).toEqual(['integrity']);
+    expect(validatorCodeFamily('INT-16')?.capabilities).toEqual(['validate']);
     expect(validatorCodeFamily('POL-02')?.capabilities).toEqual(['edit-replace', 'edit-supersede']);
   });
 });

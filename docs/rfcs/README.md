@@ -161,6 +161,7 @@ and how it gets accepted.
 | [0130](./0130-receipt-unverifiable-exit.md) | Give indeterminate receipt verification a distinct nonzero exit | accepted | protocol, conformance, tooling |
 | [0131](./0131-sparse-statement-authority.md) | Preserve authored sparse-statement aggregates | accepted |
 | [0132](./0132-physical-economic-occupancy.md) | Separate physical and economic occupancy | accepted |
+| [0133](./0133-malformed-input-hash-diagnostic.md) | Align malformed input-hash diagnostics | accepted |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Accept RFC 0133: error-severity INT-16 owns malformed input-hash syntax; JSON, XML and CSV retain that refusal code, with META-05 unchanged.
+
 - Accept RFC 0132: separate physical occupancy from same-period collected-rent economic occupancy, preserve explicit zero, and expose unavailable reasons in rent-roll derivation and the editor.
 
 - Accept RFC 0131: preserve authored statement aggregates, require complete declared detail for computed subtotals, and expose missing prerequisites and whole-dollar disagreements.

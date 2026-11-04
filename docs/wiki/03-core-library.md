@@ -844,3 +844,8 @@ the complete current Format detail sets and missing-prerequisite behavior.
 ### Named occupancy measures (RFC 0132)
 
 `deriveRentRoll` keeps physical use separate from economic occupancy (rent collected / gross potential rent). The optional `economic_occupancy_inputs` group asserts one common period and scope. Null/missing inputs are unavailable with an explicit reason; zero collected rent stays zero. Physical occupancy requires known statuses/areas or known unit-mix occupancy; occupied zero-rent suites count physically. The editor exposes unavailable reasons. Self-storage's dictionary/pack uses the same collected-rent group, with no EGI fallback.
+
+
+### Accepted input-hash contract (RFC 0133)
+
+Malformed present input hashes belong to error-severity `INT-16`, including conversion refusal in JSON, XML and CSV. Absent, null, empty and lowercase SHA-256 values remain admitted. `META-05` is unchanged. The contract acceptance and the ordered runtime implementation are separate PRs; runtime support is exercised by the latter's ordinary validation/carrier regressions.

@@ -10,6 +10,15 @@ const envelope=read('spec/schemas/uw-document-envelope.schema.json');
 const ajv=new Ajv.default({strict:false,allErrors:true});addFormats.default(ajv);ajv.addSchema(block);const shape=ajv.compile(envelope);
 const packet=read('conformance/rfc-0089/cases.json');
 describe('full carrier schema admission',()=>{
+  it('pins exact input-hash whitespace refusal in AJV and the executable mirror',()=>{
+    const normal=packet.source_cases.find((x: any)=>x.name==='named-default-single').expected_model;
+    for(const value of ['\n', `sha256:${'a'.repeat(64)}\n`, `sha256:${'a'.repeat(64)}\r\n`]) {
+      const changed=structuredClone(normal);
+      changed.extensions.x_probe.block.content._meta.integrity={input_hash:value};
+      expect(shape(changed)).toBe(false);
+      expect(admitsCarrierSchema(changed)).toBe(false);
+    }
+  });
   it('embeds the current normative schemas exactly',()=>expect(carrierSchemas).toEqual([envelope,block]));
   it('refuses silent growth beyond the executable schema vocabulary',()=>{
     const known=new Set(['$schema','$id','$ref','$defs','title','description','default','examples','type','const','enum','required','properties','additionalProperties','minProperties','minLength','minimum','pattern','format','allOf','anyOf','oneOf','not','if','then','else','contains','items','minItems']);
