@@ -49,28 +49,34 @@ No package version or published compatibility baseline changes in this draft.
 
 ## Conformance impact
 
-Add synthetic positive, wrong-value, absent, null, explicit-zero, invalid-type,
-variant-isolation and source-immutability controls at the affected boundaries.
-Retain each existing code owner and the independent numeric comparison quantum.
-The accompanying proposal tests distinguish executable current prerequisites
-from expected-failure acceptance gates; they claim no implementation support.
-Existing frozen conformance expectations are unchanged in this proposal PR.
+Pin error severity and exact field/code ownership for short hashes, uppercase
+hex, whitespace and non-string values (including explicit zero). Preserve
+absent, null, empty and correctly shaped hashes as admitted controls. Cover
+SOURCE and mutable MODEL input, variants, superseded blocks, every retained
+collection, source immutability and the same code through JSON/XML/CSV.
+
+The proposal-only expected-failure gates execute the requested behavior without
+claiming implementation support. A separate implementation draft turns them
+into ordinary regressions; neither draft accepts this RFC.
 
 ## Reference implementation
 
-Use one small shared predicate/preflight in the verification package and call it from validation and full-carrier admission. Keep finite shape checks separate from hashing, chain assessment and signature authentication. The implementation must audit current affected conformance expectations rather than repair old documents merely to keep their prior outcomes.
+Use one bounded shared syntax predicate in the verification package for
+validation and full-carrier preflight. Keep it separate from digest matching,
+chain assessment and signature authentication. Audit current affected expected
+results; do not repair source artifacts to retain earlier outcomes.
 
-Files to review include the corresponding `packages/uwmd-core/src` helper and
-editor tests, `packages/uwmd-verify/src/validator*`, `protocol.ts`, dictionary
-bindings where applicable, representation preflights and independent Python
-validation. Implementation is a separately reviewed follow-up to this draft.
+The affected boundaries are verification metadata helpers, validator,
+protocol.ts, Envelope admission, typed XML/CSV wrappers, and the independent
+Python validation/envelope implementation. Source commitments remain separate
+from full-carrier schema admission.
 
 ## Alternatives considered
 
-Silently substituting zero or another metric/value hides unavailable evidence.
-Changing only display or only carrier admission leaves inconsistent public
-results. Retaining explicit source values plus bounded, separately reported
-verification evidence keeps source facts and computed assertions assessable.
+Keeping only the generic carrier error leaves ordinary validation inconsistent.
+Using META-05 would silently expand its existing closed predicate allocation.
+Normalizing or synthesizing a hash would invent input evidence. One bounded
+syntax owner with a preserved conversion code makes the two operations agree.
 
 ## Unresolved questions
 
@@ -78,7 +84,8 @@ Confirm `INT-16` and the exact physical-block location carrier/first-error prece
 
 ## Prior art
 
-The current metric dictionary's explicit-input and null rules, Protocol VIII.5
-reporting quantum, and the existing schema/validator code-ownership discipline
-are the primary precedents. RFC 0092's explicit basis/selection and unavailable
-assertion evidence provide the closest in-repository design example.
+The current input_hash domain in uwmd-block.schema.json supplies the admitted
+values. Protocol III.6a supplies closed diagnostic ownership and physical/MODEL
+traversal precedent; Protocol V.9-V.11 separates integrity syntax, digest checks
+and authentication. Existing Envelope admission and typed representation
+errors supply the conversion boundary. This proposal changes no financial math.
