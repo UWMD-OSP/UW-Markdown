@@ -12,6 +12,7 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Proposed RFC 0132: separate physical and economic occupancy, pending project-owner acceptance.
 
 - Attributed loan-quote, offering-memorandum and appraisal fact profiles with explicit projection candidates.
 - Independent Python Reader and Verifier support, bounded pro-forma assessment, and property and lease-up cash-flow verification.

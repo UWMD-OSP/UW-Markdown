@@ -167,6 +167,7 @@ its RFC was written, and records that process failure rather than hiding it. See
 its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
 section.
 
+| [0132](./0132-physical-economic-occupancy.md) | Separate physical and economic occupancy | draft |
 
 ## Status values
 
