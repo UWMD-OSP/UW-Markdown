@@ -3881,10 +3881,10 @@ export function checkDataQuality(
 type UWBlock = import('./types.js').UWBlock;
 
 function checkInputHashes(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
-  for (const [section, block] of metadataReferences(parsed)) {
+  for (const [index, [section, block]] of metadataReferences(parsed).entries()) {
     if (malformedInputHash(block.content)) issues.push({
       code: 'INT-16', severity: 'error', section, field: '_meta.integrity.input_hash',
-      message: `Malformed input hash in ${section}${block.annotation.variant === undefined ? '' : ` variant ${block.annotation.variant}`} at block line ${block.lineStart}.`,
+      message: `Malformed input hash in ${section}${block.annotation.variant === undefined ? '' : ` variant ${block.annotation.variant}`} at physical/model block ${index}.`,
     });
   }
 }
