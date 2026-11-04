@@ -100,3 +100,24 @@ describe('regression: negative half-dollar operating loss', () => {
     expect(field(derived, 'net_operating_income')).toBe(-101);
   });
 });
+describe('aggregate-only statement source preservation', () => {
+  it('preserves aggregate-only source values without mutating the input', () => {
+    const input = { income: { gross_potential_rent: 120000, other_income: { total: 12000 } },
+      expenses: { utilities: { total: 6000 }, total_operating_expenses: 30000 }, net_operating_income: 102000 };
+    const before = structuredClone(input);
+    const derived = deriveOperatingStatement(input);
+    expect(input).toEqual(before);
+    expect(field(derived, 'income.other_income.total')).toBe(12000);
+    expect(field(derived, 'expenses.utilities.total')).toBe(6000);
+    expect(field(derived, 'expenses.total_operating_expenses')).toBe(30000);
+    expect(field(derived, 'net_operating_income')).toBe(102000);
+  });
+
+  it('preserves exact fractional authored aggregates instead of reporting-rounding them into new source values', () => {
+    const derived = deriveOperatingStatement({ income: { gross_potential_rent: 100, other_income: { total: 12.34 } },
+      expenses: { utilities: { total: 6.78 }, total_operating_expenses: 30.12 } });
+    expect(field(derived, 'income.other_income.total')).toBe(12.34);
+    expect(field(derived, 'expenses.utilities.total')).toBe(6.78);
+    expect(field(derived, 'expenses.total_operating_expenses')).toBe(30.12);
+  });
+});

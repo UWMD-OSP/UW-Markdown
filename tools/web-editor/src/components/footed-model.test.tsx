@@ -213,4 +213,13 @@ describe('operating statement input to serialized source to reload', () => {
     expect(content.net_operating_income).toBe(-101);
   });
 
+  it('preserves authored aggregate-only totals in saved source after an input edit', () => {
+    const content = editAndReload({ income: { gross_potential_rent: 120000, other_income: { total: 12000 } },
+      expenses: { utilities: { total: 6000 }, total_operating_expenses: 30000 }, net_operating_income: 102000 },
+    'Gross Potential Rent', '130000');
+    expect(deepGet(content, 'income.other_income.total')).toBe(12000);
+    expect(deepGet(content, 'expenses.utilities.total')).toBe(6000);
+    expect(deepGet(content, 'expenses.total_operating_expenses')).toBe(30000);
+    expect(content.net_operating_income).toBe(112000);
+  });
 });

@@ -44,8 +44,13 @@ const EXPENSE_LINES = [
 
 /** Sum the numeric values of an object, skipping the listed keys. */
 function sumExcept(obj: Row, skip: string[]): number {
+  const entries = Object.entries(obj).filter(([key]) => !skip.includes(key));
+  // An authored subtotal with no numeric breakdown is a source input, not an
+  // empty sum. Preserve its exact value while the broader completeness contract
+  // remains a proposed RFC.
+  if (!entries.some(([, value]) => num(value) != null)) return num(obj['total']) ?? 0;
   let total = 0;
-  for (const [k, v] of Object.entries(obj)) {
+  for (const [k, v] of entries) {
     if (skip.includes(k)) continue;
     total += num(v) ?? 0;
   }
@@ -62,7 +67,9 @@ export function deriveOperatingStatement(content: Row): OperatingStatementDeriva
   const otherIncome = asObj(income['other_income']);
   const otherIncomeTotal = sumExcept(otherIncome, ['total']);
   if (Object.keys(otherIncome).length > 0) {
-    c.add('income.other_income.total', 'Other Income (total)', 'currency', otherIncomeTotal);
+    const detail = Object.keys(otherIncome).some(key => key !== 'total' && num(otherIncome[key]) != null);
+    if (!detail && num(otherIncome['total']) != null) c.fields.push({ path: 'income.other_income.total', label: 'Other Income (stated total)', kind: 'currency', value: otherIncomeTotal });
+    else c.add('income.other_income.total', 'Other Income (total)', 'currency', otherIncomeTotal);
   }
 
   const gpr = num(income['gross_potential_rent']) ?? 0;
@@ -78,12 +85,20 @@ export function deriveOperatingStatement(content: Row): OperatingStatementDeriva
   const utilities = asObj(expenses['utilities']);
   const utilitiesTotal = sumExcept(utilities, ['total']);
   if (Object.keys(utilities).length > 0) {
-    c.add('expenses.utilities.total', 'Utilities (total)', 'currency', utilitiesTotal);
+    const detail = Object.keys(utilities).some(key => key !== 'total' && num(utilities[key]) != null);
+    if (!detail && num(utilities['total']) != null) c.fields.push({ path: 'expenses.utilities.total', label: 'Utilities (stated total)', kind: 'currency', value: utilitiesTotal });
+    else c.add('expenses.utilities.total', 'Utilities (total)', 'currency', utilitiesTotal);
   }
 
   let opex = utilitiesTotal;
   for (const key of EXPENSE_LINES) opex += num(expenses[key]) ?? 0;
-  c.add('expenses.total_operating_expenses', 'Total Operating Expenses', 'currency', opex);
+  const expenseDetail = EXPENSE_LINES.some(key => num(expenses[key]) != null) ||
+    Object.keys(utilities).some(key => key !== 'total' && num(utilities[key]) != null);
+  const statedExpenses = num(expenses['total_operating_expenses']);
+  if (!expenseDetail && statedExpenses != null) {
+    opex = statedExpenses;
+    c.fields.push({ path: 'expenses.total_operating_expenses', label: 'Operating Expenses (stated total)', kind: 'currency', value: opex });
+  } else c.add('expenses.total_operating_expenses', 'Total Operating Expenses', 'currency', opex);
 
   // Bottom line.
   const noi = egi - opex;
