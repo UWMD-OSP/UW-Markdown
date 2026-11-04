@@ -1,4 +1,4 @@
-// Regression gates for the RFC 0133 draft implementation; acceptance stays with the owner.
+// Regression gates for accepted RFC 0133 input-hash validation and conversion.
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseUWFile, parsedPhysicalBlocks } from './parser.js';

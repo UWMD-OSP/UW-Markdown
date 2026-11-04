@@ -1,4 +1,4 @@
-"""Independent RFC 0133 draft implementation controls; no TypeScript oracle."""
+"""Independent accepted RFC 0133 controls; no TypeScript oracle."""
 import asyncio
 import copy
 import json
