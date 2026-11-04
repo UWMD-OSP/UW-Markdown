@@ -56,6 +56,50 @@ Script | Does
 > `release-packages.mjs` with `check-release-readiness.mjs`. `@uwmd/verify`
 > was added to all of them in RFC 0083 Phase 2.
 
+## Merging pull requests
+
+An authorized maintainer merges locally with both Git author and committer set
+to `UWMD <maintainers@uwmd.org>`, then pushes the merge commit. GitHub's merge
+button, `gh pr merge` and server-side merge APIs are not used for integration:
+they create the merge commit under the authenticated account identity.
+Contributor commits retain their authorship. Existing signed history stays intact.
+
+Use a clean, isolated merge checkout. Confirm the required reviews and checks
+passed on the exact PR head, and fetch that head before merging. Substitute the
+PR number and its verified full commit SHA below; `FETCH_HEAD` must equal that SHA.
+The ancestry check must succeed: if main advanced or the PR head changed, update
+the PR branch and rerun CI before integration.
+
+```bash
+git fetch origin
+git fetch origin pull/<number>/head
+git rev-parse FETCH_HEAD
+git merge-base --is-ancestor origin/main <verified-pr-head-sha>
+```
+
+Continue only after the fetched SHA matches and the ancestry check exits zero.
+Create the local merge and inspect its identity:
+
+```bash
+git switch --create merge/pr-<number> origin/main
+git -c user.name=UWMD -c user.email=maintainers@uwmd.org merge --no-ff --no-edit <verified-pr-head-sha>
+git show -s --format='%an <%ae>%n%cn <%ce>' HEAD
+```
+
+Both identity lines must read `UWMD <maintainers@uwmd.org>`. Stop if either
+differs. Only after verifying them, run the separate push command:
+
+```bash
+git push origin HEAD:main
+```
+
+Use a normal, non-force push; if it is refused, inspect
+main and the applicable protections rather than bypassing them. This procedure
+does not grant merge authorization or waive review, CI or signing requirements.
+After pushing, confirm the intended PR is marked merged, remote main matches
+the local merge SHA, and that commit's push CI passes. Do not rewrite published
+history to apply this identity policy retroactively.
+
 ## Versioning (semver-per-surface)
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):

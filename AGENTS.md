@@ -79,6 +79,18 @@ The docs site's prebuild copies repository source Markdown and rewrites links;
 edit those sources. The contributor wiki is separate from the published site nav.
 Tool/package guidance and [wiki 08](docs/wiki/08-tools.md) describe their entry points.
 
+## Merging pull requests
+
+When a merge is authorized, create the merge commit locally with both author
+and committer set to `UWMD <maintainers@uwmd.org>`, then push normally. Do not
+use GitHub's merge button, `gh pr merge`, or server-side merge APIs: those
+create the merge commit under the authenticated account identity.
+
+Follow the [local merge procedure](docs/wiki/11-build-release-governance.md#merging-pull-requests),
+including exact-head CI and identity checks before pushing. Preserve existing
+signed history; do not rewrite it to change identities. Merge authorization,
+required reviews/checks, signing requirements and branch protections still apply.
+
 ## Changes and validation
 
 Keep one PR to one topic, including relevant tests, documentation and an
