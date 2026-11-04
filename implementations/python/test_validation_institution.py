@@ -41,6 +41,8 @@ class InstitutionThresholdTests(unittest.TestCase):
             cwd=self.folder,capture_output=True,encoding="utf8",timeout=30)
         result=json.loads(process.stdout)
         self.assertEqual(process.stderr,"")
+        if "issues" in result:
+            self.assertTrue(any(i["code"] == "INT-16" for i in result["issues"]))
         self.assertEqual({p:p.read_bytes() for p in files},files)
         self.assertEqual(FIXTURE.read_bytes(),self.raw)
         return result,process.returncode
@@ -60,7 +62,7 @@ class InstitutionThresholdTests(unittest.TestCase):
             self.assertNotIn(key,load_institution_thresholds(self.document))
 
     def test_actual_cli_all_three_below_equal_above_controls(self):
-        # Values are already stated in the unchanged positive frozen record.
+        # Financial values remain stated in the unchanged record; malformed hashes independently cause exit 1.
         for key,code,controls in (
                 ("dscr_warning_below","FV-04",((1.108,False),(1.109,False),(1.110,True))),
                 ("ltv_warning_above","FV-09",((.699,True),(.7,False),(.701,False))),
@@ -68,7 +70,7 @@ class InstitutionThresholdTests(unittest.TestCase):
             for bound,expected in controls:
                 with self.subTest(key=key,bound=bound):
                     self.config({key:bound});result,status=self.command()
-                    self.assertEqual(status,0)
+                    self.assertEqual(status,1)
                     # RFC 0109: a deal flag, never an issue, at the warning band.
                     self.assertFalse(any(i["code"]==code for i in result["issues"]))
                     found=[f for f in result["deal_flags"] if f["code"]==code]
@@ -81,7 +83,7 @@ class InstitutionThresholdTests(unittest.TestCase):
         self.assertTrue(any(i["code"]=="FV-04" for i in self.command()[0]["deal_flags"]))
         for flags in (("--institution",selected.name),("--institution="+selected.name,)):
             result,status=self.command(*flags)
-            self.assertEqual(status,0)
+            self.assertEqual(status,1)
             self.assertFalse(any(i["code"]=="FV-04" for i in result["deal_flags"]))
         # Discovery uses the actual document directory, not cwd.
         self.config(dict(dscr_warning_below=1.110),self.folder/".uw.institution.json")
@@ -90,7 +92,7 @@ class InstitutionThresholdTests(unittest.TestCase):
 
     def test_auto_absence_keeps_defaults_and_supplied_missing_never_falls_back(self):
         self.assertEqual(load_institution_thresholds(self.document),{})
-        result,status=self.command();self.assertEqual(status,0)
+        result,status=self.command();self.assertEqual(status,1)
         self.assertTrue(any(f["code"]=="FV-04" and f["band"]=="warning" for f in result["deal_flags"]))
         self.assertFalse(any(i["code"]=="FV-04" for i in result["warnings"]))
         self.config(dict(dscr_warning_below=1.108))
@@ -180,7 +182,7 @@ class InstitutionThresholdTests(unittest.TestCase):
     def test_actual_cli_opaque_overflow_unicode_and_atomic_failure(self):
         self.sidecar.write_bytes(b'{"opaque":1e309,"unknown":"\\ud83d\\ude00","validation_overrides":{"dscr_warning_below":1.108}}')
         value,status=self.command()
-        self.assertEqual(status,0);self.assertNotIn("FV-04",[i["code"] for i in value["deal_flags"]])
+        self.assertEqual(status,1);self.assertNotIn("FV-04",[i["code"] for i in value["deal_flags"]])
         for raw in (b'{"opaque":"\\ud800","validation_overrides":{"dscr_warning_below":1.108}}',
                     b'{"opaque":{"x":1,"\\u0078":2}}'):
             self.sidecar.write_bytes(raw);value,status=self.command()
@@ -212,10 +214,10 @@ class InstitutionThresholdTests(unittest.TestCase):
     def test_configured_then_default_same_process_and_nonvalidation_io_isolation(self):
         self.config(dict(dscr_warning_below=1.108))
         configured,status=main(["validate",str(self.document),"--json"])
-        self.assertEqual(status,0);self.assertNotIn("FV-04",[i["code"] for i in configured["deal_flags"]])
+        self.assertEqual(status,1);self.assertNotIn("FV-04",[i["code"] for i in configured["deal_flags"]])
         self.sidecar.unlink()
         default,status=main(["validate",str(self.document),"--json"])
-        self.assertEqual(status,0);self.assertIn("FV-04",[i["code"] for i in default["deal_flags"]])
+        self.assertEqual(status,1);self.assertIn("FV-04",[i["code"] for i in default["deal_flags"]])
         self.sidecar.write_bytes(b'{ invalid selected config }')
         with patch("uwmd_institution.load_institution_policy",side_effect=AssertionError("not a validation operation")):
             for args in (["parse",str(self.document)],["calc",str(self.document),"1+1","--json"],
@@ -233,7 +235,7 @@ class InstitutionThresholdTests(unittest.TestCase):
         process=subprocess.run([sys.executable,"-B",str(CLI),"validate",str(link),"--json"],
             cwd=self.folder,capture_output=True,encoding="utf8",timeout=30)
         value=json.loads(process.stdout)
-        self.assertEqual(process.returncode,0);self.assertEqual(process.stderr,"")
+        self.assertEqual(process.returncode,1);self.assertEqual(process.stderr,"")
         self.assertNotIn("FV-04",[i["code"] for i in value["deal_flags"]])
         self.assertEqual(selected.read_bytes(),before);self.assertEqual(self.document.read_bytes(),self.raw)
 

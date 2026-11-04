@@ -1,22 +1,17 @@
 {
-  "description": "Authored malformed-hash control; structural refusal without source repair.",
-  "must_parse": true,
-  "expected_codes": [
-    "INT-16"
-  ],
-  "field_issues": [
-    {
-      "code": "INT-16",
-      "section": "property",
-      "field": "_meta.integrity.input_hash"
-    }
-  ],
+  "overall_status": "errors",
   "issues": [
+    {
+      "code": "CC-13",
+      "severity": "warning"
+    },
+    {
+      "code": "DQ-04",
+      "severity": "error"
+    },
     {
       "code": "INT-16",
       "severity": "error"
     }
-  ],
-  "overall_status": "errors",
-  "spec_ref": "spec/UW_FORMAT_SPEC.md \u00a72.5e; RFC 0133"
+  ]
 }

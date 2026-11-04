@@ -1,0 +1,17 @@
+{
+  "overall_status": "errors",
+  "issues": [
+    {
+      "code": "CC-13",
+      "severity": "warning"
+    },
+    {
+      "code": "DQ-04",
+      "severity": "error"
+    },
+    {
+      "code": "INT-16",
+      "severity": "error"
+    }
+  ]
+}

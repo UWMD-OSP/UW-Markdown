@@ -466,7 +466,7 @@ async function runMalformedDocuments() {
     }
 
     const mustParse = expected.must_parse !== false;
-    const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : [];
+    const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : Array.isArray(expected.issues) ? expected.issues.map(issue => issue.code) : [];
     if (expectedCodes.length === 0 && !(expected.must_parse === true && (Array.isArray(expected.metadata_issues) || Array.isArray(expected.payload_issues) || Array.isArray(expected.deal_flags)))) {
       record('documents', `malformed/${id}`, 'fail', 'expected.json has no expected_codes');
       continue;
@@ -1003,7 +1003,7 @@ function runLiteMalformed() {
       record('lite', `malformed/${id}`, 'fail', `expected.json is not valid JSON: ${e.message}`);
       continue;
     }
-    const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : [];
+    const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : Array.isArray(expected.issues) ? expected.issues.map(issue => issue.code) : [];
     if (expectedCodes.length === 0) {
       record('lite', `malformed/${id}`, 'fail', 'expected.json has no expected_codes');
       continue;
@@ -1068,7 +1068,7 @@ function runLiteCompile() {
       continue;
     }
     const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
-    const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : [];
+    const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : Array.isArray(expected.issues) ? expected.issues.map(issue => issue.code) : [];
     if (expectedCodes.length === 0) {
       record('lite', `compile/${id}`, 'fail', 'expected.json has no expected_codes');
       continue;

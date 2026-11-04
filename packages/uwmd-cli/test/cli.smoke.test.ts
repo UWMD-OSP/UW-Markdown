@@ -427,9 +427,12 @@ describe('uwmd CLI', () => {
     });
   });
 
-  it('validates the bundled fixture without errors', async () => {
-    const r = await runCli(['validate', FIXTURE]);
-    expect(r.status).toBe(0);
+  it('reports malformed input hashes in the bundled fixture', async () => {
+    const r = await runCli(['validate', FIXTURE, '--json']);
+    expect(r.status).toBe(1);
+    const errors = JSON.parse(r.stdout).errors;
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors.every((issue: { code: string }) => issue.code === 'INT-16')).toBe(true);
   });
 
   describe('scope on RFC 0080 classes', () => {
@@ -548,7 +551,7 @@ describe('uwmd CLI', () => {
 
   it('refuses retained invalid carrier metadata without rewriting source bytes',async()=>{
     const before=readFileSync(FIXTURE);const result=await runCli(['export',FIXTURE,'--stdout']);
-    expect(result.status).toBe(1);expect(result.stderr).toContain('ENVELOPE_INVALID_SCHEMA');expect(readFileSync(FIXTURE)).toEqual(before);
+    expect(result.status).toBe(1);expect(result.stderr).toContain('INT-16');expect(readFileSync(FIXTURE)).toEqual(before);
   });
 
   it('exports a digested UW Document Envelope to stdout', async () => {
@@ -1160,7 +1163,7 @@ describe('closed flag vocabulary', () => {
     expect(verify.status).toBe(0);
     expect(() => JSON.parse(verify.stdout)).not.toThrow();
 
-    const validate = await runCli(['validate', FIXTURE, '--json']);
+    const validate = await runCli(['validate', resolve(__dirname, '../../../docs/downloads/tutorials/quickstart.uwx.md'), '--json']);
     expect(validate.status).toBe(0);
     expect(() => JSON.parse(validate.stdout)).not.toThrow();
   });
@@ -1226,11 +1229,16 @@ describe('verify recomputes stated metrics (Protocol §II.2 item 2)', () => {
     expect(JSON.parse((await runCli(['verify', WRONG, '--integrity', '--json'])).stdout)).not.toHaveProperty('stated_metrics');
   });
 
-  it('still verifies every builtin class example', async () => {
+  it('recomputes every builtin example and refuses malformed input hashes', async () => {
     for (const [, filename] of ASSET_CLASS_FIXTURES) {
       const r = await runCli(['verify', exampleFixture(filename), '--validate', '--json']);
-      expect(r.status, filename).toBe(0);
-      expect(JSON.parse(r.stdout).stated_metrics.counts.failed, filename).toBe(0);
+      const result = JSON.parse(r.stdout);
+      if (filename === 'Parkview-Apts-Glendale-AZ.uwx.md') {
+        expect(r.status, filename).toBe(1);
+        expect(result.validation.errors.length).toBeGreaterThan(0);
+        expect(result.validation.errors.every((issue: { code: string }) => issue.code === 'INT-16')).toBe(true);
+      } else expect(r.status, filename).toBe(0);
+      expect(result.stated_metrics.counts.failed, filename).toBe(0);
     }
   });
 });
