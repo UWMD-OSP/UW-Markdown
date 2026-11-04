@@ -825,3 +825,13 @@ half-away-from-zero quantizer at their existing 0/4/2 decimal places. Commercial
 rent-roll income and tenant concentration use the same positive-rent,
 non-vacant population; vacant rows retaining source rent do not enter income
 shares. These changes select no new occupancy or financial convention.
+### Aggregate-only operating statement editing
+
+The starter footing helper retains an authored other-income, utility or operating
+expense total when its numeric breakdown is absent. These source inputs retain
+their exact values through an editor input edit and serialized-source reload.
+Authored EGI, expenses and NOI also remain authoritative when the first partial
+detail is added. The helper and editor report local incomplete-detail evidence
+and disagreements where the existing closed inputs are complete. These starter
+messages allocate no normative diagnostic or new class detail registry and do
+not accept the separately proposed sparse-statement RFC.

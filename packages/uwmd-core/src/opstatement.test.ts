@@ -60,16 +60,17 @@ describe('deriveOperatingStatement', () => {
     expect(field(d, 'expenses.utilities.total')).toBe(21600);
   });
 
-  it('foots OpEx excluding capex and replacement reserves', () => {
+  it('retains authored OpEx and reports its complete-detail disagreement', () => {
     // 52000+24500+64044+26400+21600(util)+21600+8400+0+6000+4800+0 = 229344
     // (replacement_reserves 14400 and capex 0 are below the line)
-    expect(field(d, 'expenses.total_operating_expenses')).toBe(229344);
+    expect(field(d, 'expenses.total_operating_expenses')).toBe(228344);
+    expect(d.diagnostics).toContainEqual({ path: 'expenses.total_operating_expenses', reason: 'aggregate_mismatch', stated: 228344, computed: 229344 });
   });
 
   it('foots NOI and the ratios', () => {
-    expect(field(d, 'net_operating_income')).toBe(411096); // 640440 − 229344
-    expect(field(d, 'expense_ratio')).toBeCloseTo(0.3581, 4);
-    expect(field(d, 'noi_margin')).toBeCloseTo(0.6419, 4);
+    expect(field(d, 'net_operating_income')).toBe(412096); // 640440 − 229344
+    expect(field(d, 'expense_ratio')).toBeCloseTo(0.3565, 4);
+    expect(field(d, 'noi_margin')).toBeCloseTo(0.6435, 4);
   });
 });
 
@@ -98,5 +99,38 @@ describe('regression: negative half-dollar operating loss', () => {
     expect(field(derived, 'income.effective_gross_income')).toBe(0);
     expect(field(derived, 'expenses.total_operating_expenses')).toBe(101);
     expect(field(derived, 'net_operating_income')).toBe(-101);
+  });
+});
+describe('aggregate-only statement source preservation', () => {
+  it('preserves aggregate-only source values without mutating the input', () => {
+    const input = { income: { gross_potential_rent: 120000, other_income: { total: 12000 } },
+      expenses: { utilities: { total: 6000 }, total_operating_expenses: 30000 }, net_operating_income: 102000 };
+    const before = structuredClone(input);
+    const derived = deriveOperatingStatement(input);
+    expect(input).toEqual(before);
+    expect(field(derived, 'income.other_income.total')).toBe(12000);
+    expect(field(derived, 'expenses.utilities.total')).toBe(6000);
+    expect(field(derived, 'expenses.total_operating_expenses')).toBe(30000);
+    expect(field(derived, 'net_operating_income')).toBe(102000);
+  });
+
+  it('preserves exact fractional authored aggregates instead of reporting-rounding them into new source values', () => {
+    const derived = deriveOperatingStatement({ income: { gross_potential_rent: 100, other_income: { total: 12.34 } },
+      expenses: { utilities: { total: 6.78 }, total_operating_expenses: 30.12 } });
+    expect(field(derived, 'income.other_income.total')).toBe(12.34);
+    expect(field(derived, 'expenses.utilities.total')).toBe(6.78);
+    expect(field(derived, 'expenses.total_operating_expenses')).toBe(30.12);
+  });
+});
+
+describe('authored statement aggregates remain authoritative during partial edits', () => {
+  it('retains explicit aggregate-only EGI, expenses and NOI when a first expense line is added', () => {
+    const input = { income: { effective_gross_income: 132000 },
+      expenses: { total_operating_expenses: 30000, insurance: 6000 }, net_operating_income: 102000 };
+    const derived = deriveOperatingStatement(input);
+    expect(field(derived, 'income.effective_gross_income')).toBe(132000);
+    expect(field(derived, 'expenses.total_operating_expenses')).toBe(30000);
+    expect(field(derived, 'net_operating_income')).toBe(102000);
+    expect(derived.diagnostics).toContainEqual({ path: 'expenses.total_operating_expenses', reason: 'incomplete_detail', stated: 30000, computed: null });
   });
 });
