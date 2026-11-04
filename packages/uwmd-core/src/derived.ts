@@ -1,3 +1,4 @@
+import { quantizeDecimal } from '@uwmd/verify';
 // Shared plumbing for deterministic "footing" of a section's stored totals from
 // its line-item inputs. Used by rentroll.ts and opstatement.ts (and any future
 // section model). A DerivedField is one footed total: where it is stored, how to
@@ -17,9 +18,9 @@ export interface DerivedField {
 }
 
 export function roundByKind(value: number, kind: DerivedKind): number {
-  if (kind === 'rate') return Math.round(value * 1e4) / 1e4;
-  if (kind === 'psf') return Math.round(value * 100) / 100;
-  return Math.round(value); // currency, count
+  if (kind === 'rate') return quantizeDecimal(value, 4);
+  if (kind === 'psf') return quantizeDecimal(value, 2);
+  return quantizeDecimal(value, 0); // currency, count
 }
 
 /** Accumulates DerivedFields, silently dropping any non-finite result so partial

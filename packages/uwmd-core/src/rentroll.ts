@@ -219,6 +219,11 @@ const SF_KEYS = ['leased_sf', 'nra_sqft'];
 const RENT_KEYS = ['annual_base_rent', 'base_rent_annual'];
 const TERM_KEYS = ['remaining_term_years', 'lease_term_years'];
 
+function isIncomeTenant(tenant: Row): boolean {
+  return (firstNum(tenant, RENT_KEYS) ?? 0) > 0 && lower(tenant['status']) !== 'vacant';
+}
+
+
 function deriveCommercial(content: Row): RentRollDerivation {
   const tenants = content['tenants'];
   if (!Array.isArray(tenants) || tenants.length === 0) {
@@ -237,7 +242,7 @@ function deriveCommercial(content: Row): RentRollDerivation {
     const sf = firstNum(t, SF_KEYS) ?? 0;
     const vacantSf = num(t['vacant_sf']) ?? 0;
     const rent = firstNum(t, RENT_KEYS) ?? 0;
-    const leased = rent > 0 && lower(t['status']) !== 'vacant';
+    const leased = isIncomeTenant(t);
     allSf += sf + vacantSf;
     if (leased) {
       leasedSf += sf;
@@ -287,6 +292,7 @@ function deriveCommercial(content: Row): RentRollDerivation {
 
 function buildConcentration(tenants: Row[], totalSf: number, totalIncome: number): Row[] {
   return tenants
+    .filter(isIncomeTenant)
     .map((t) => {
       const name = typeof t['tenant_name'] === 'string' ? (t['tenant_name'] as string) : null;
       const sf = firstNum(t, SF_KEYS) ?? 0;
