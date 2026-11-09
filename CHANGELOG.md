@@ -34,6 +34,8 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Correct the self-storage economic-occupancy explanation to match RFC 0132's same-period collected-rent inputs, excluding other income and preserving the distinction from physical occupancy.
+
 - Verify receipt signatures and results against one detached snapshot, and resolve held inputs through own properties only.
 - Apply shared half-away reporting ties and keep commercial income and concentration on the same tenant population.
 - Preserve aggregate-only operating income and expenses, including exact authored fractional totals, across editor input edits and reload.
