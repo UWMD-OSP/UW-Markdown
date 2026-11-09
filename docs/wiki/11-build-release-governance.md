@@ -477,34 +477,40 @@ Anything touching `spec/` or `spec/schemas/` | Yes
 The identity guard scans every tracked file, including `MAINTAINERS.md` and
 `.github/CODEOWNERS`, without file exemptions. Generic private-path, internal
 reference and retired-product rules remain in `scripts/public-identity.mjs`.
-Personal patterns belong only in the gitignored `.public-identity.local.json`;
-never commit them, copy them into examples or attach them to build artifacts.
-Current-tree cleanup does not remove historical Git content.
+Personal patterns are supplied only through the process environment variable
+`PUBLIC_IDENTITY_CONFIG_JSON` and parsed in memory. Never write real personal
+patterns to a file, including an ignored file, runtime file, shell history,
+workflow script, example, fixture, log or build artifact. Current-tree cleanup
+does not remove historical Git content.
 
-Configure the local file privately with exactly `version` and `rules` at the
-root. Version is `1`; `rules` is a nonempty array whose entries have exactly
-`id`, `pattern`, `flags` and `boundary`. IDs are opaque unique lowercase letters,
+The environment value is JSON with exactly `version` and `rules` at the root.
+Version is `1`; `rules` is a nonempty array whose entries have exactly `id`,
+`pattern`, `flags` and `boundary`. IDs are opaque unique lowercase letters,
 digits and hyphens, beginning with a letter (maximum 64 characters); generic
 rule IDs are reserved. `pattern` is a nonempty JavaScript regular expression
 source, `flags` is `i` for case-insensitive matching or an empty string, and
 `boundary` is `word` to require word boundaries or `none` to match substrings.
 All rules scan globally. Use only synthetic identities in tracked tests.
 
-`npm run verify-indexes` defaults to the required configured personal scan plus
-generic rules. Missing, empty, malformed or invalid configuration fails with a
-value-free diagnostic. Findings contain only rule ID, tracked path and line;
-parser diagnostics and matched text are never printed. Confirm the file is
-ignored with `git check-ignore .public-identity.local.json`.
+A private account-side secret manager must inject the environment value without
+putting its contents in commands or files. `npm run verify-indexes` defaults to
+the required configured personal scan plus generic rules. Missing, empty,
+malformed or invalid configuration fails with a value-free diagnostic. Findings
+contain only rule ID, tracked path and line; parser diagnostics and matched text
+are never printed. The scanner does not read local configuration files or write
+configuration. `.public-identity.local.json` remains ignored only as a safeguard
+for synthetic test fixtures; it is not a delivery path for real patterns and
+cannot satisfy required mode.
 
 CI separates two results:
 
 - **Verify hand-maintained indexes** runs with `PUBLIC_IDENTITY_MODE=generic`;
   this is safe for every PR and explicitly does not claim personal coverage.
-- **Required configured personal identity** reads the private repository secret
-  `PUBLIC_IDENTITY_CONFIG_JSON`, writes the ignored local file for that job,
-  runs `node scripts/public-identity.mjs --required`, and removes the file even
-  after a failed scan. The secret must contain the validated configuration;
-  an absent secret creates an empty file and the required check fails closed.
+- **Required configured personal identity** injects the private repository
+  secret `PUBLIC_IDENTITY_CONFIG_JSON` directly into the scanner step's process
+  environment and runs `node scripts/public-identity.mjs --required`. It never
+  writes configuration to disk or uploads it. An absent secret leaves the
+  required check failing closed.
 
 Fork and automated dependency PRs fail the required job before checkout or
 configuration delivery. A maintainer must review the exact proposed changes
@@ -515,7 +521,7 @@ are trusted execution, so protect write access and review workflow/guard changes
 before promoting external code. Keep the configured job required in repository
 protection alongside the generic index job; neither result replaces the other.
 Account-side secret setup and required-check settings are separate maintainer
-actions, not evidence inferred from a passing synthetic control. Do not upload
+actions, not evidence inferred from a passing synthetic control. Do not persist
 the configuration or disable required mode to get a green result.
 
 Direct `node scripts/verify-packages.mjs` resolves npm's JavaScript entry on

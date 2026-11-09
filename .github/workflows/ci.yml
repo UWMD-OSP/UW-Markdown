@@ -178,16 +178,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 20
-      - name: Deliver private identity configuration
+      - name: Required configured scan
         env:
           PUBLIC_IDENTITY_CONFIG_JSON: ${{ secrets.PUBLIC_IDENTITY_CONFIG_JSON }}
-        run: |
-          node -e "require('node:fs').writeFileSync('.public-identity.local.json', process.env.PUBLIC_IDENTITY_CONFIG_JSON ?? '', { mode: 0o600 })"
-      - name: Required configured scan
         run: node scripts/public-identity.mjs --required
-      - name: Remove private configuration
-        if: always()
-        run: node -e "const fs = require('node:fs'); if (fs.existsSync('.public-identity.local.json')) fs.unlinkSync('.public-identity.local.json')"
 
   verify-codes:
     if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']

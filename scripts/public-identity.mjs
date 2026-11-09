@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const personalConfigFile = '.public-identity.local.json';
+export const personalConfigEnvironment = 'PUBLIC_IDENTITY_CONFIG_JSON';
 
 // Generic tracked-content rules contain no personal patterns.
 export const identityRules = [
@@ -19,7 +19,7 @@ export const identityRules = [
 
 function configError(reason) {
   // Never include parser/RegExp error text, input values, or file contents.
-  return new Error(`Personal identity configuration ${reason}; configure ${personalConfigFile} privately.`);
+  return new Error(`Personal identity configuration ${reason}; provide ${personalConfigEnvironment} privately in memory.`);
 }
 
 export function parsePersonalIdentityConfig(text) {
@@ -48,13 +48,6 @@ export function parsePersonalIdentityConfig(text) {
   });
 }
 
-export function loadPersonalIdentityRules(root) {
-  let text;
-  try { text = readFileSync(resolve(root, personalConfigFile), 'utf8'); }
-  catch { throw configError('is missing or unreadable'); }
-  return parsePersonalIdentityConfig(text);
-}
-
 export function publicIdentityFindings(path, text, rules = identityRules) {
   const findings = [];
   for (const { id, pattern } of rules) {
@@ -65,9 +58,11 @@ export function publicIdentityFindings(path, text, rules = identityRules) {
   return findings;
 }
 
-export function trackedPublicIdentityFindings(root, { mode = 'required' } = {}) {
+export function trackedPublicIdentityFindings(root, {
+  mode = 'required', configJSON = process.env[personalConfigEnvironment],
+} = {}) {
   if (!['required', 'generic'].includes(mode)) throw new Error('Identity scan mode must be required or generic.');
-  const rules = mode === 'required' ? [...identityRules, ...loadPersonalIdentityRules(root)] : identityRules;
+  const rules = mode === 'required' ? [...identityRules, ...parsePersonalIdentityConfig(configJSON)] : identityRules;
   const files = execFileSync('git', ['-c', 'core.fsmonitor=false', 'ls-files', '-z'], {
     cwd: root, encoding: 'utf8',
   }).split('\0').filter(Boolean);

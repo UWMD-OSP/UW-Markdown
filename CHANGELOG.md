@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Load personal identity scan patterns from validated, gitignored configuration; require a configured trusted CI scan separately from fork-safe generic checks.
+- Parse personal identity scan patterns only in memory from validated process environment configuration; require a configured trusted CI scan separately from fork-safe generic checks without writing private patterns to files.
 
 - Enforce the eight-package launch set, exact manifest/lockfile dependency pins and 5.0.0 launch boundary; newly prepared prelaunch publications require 4.x while source audits retain the existing mixed baseline.
 

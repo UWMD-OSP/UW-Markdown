@@ -27,5 +27,5 @@ CLAUDE.local.md
 # Python conformance-driver bytecode
 conformance/runner/__pycache__/
 
-# Private identity patterns; never commit or upload this configuration.
+# Synthetic local identity fixtures only; real patterns stay in memory.
 .public-identity.local.json
