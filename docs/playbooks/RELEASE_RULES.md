@@ -17,6 +17,21 @@ accepted RFC 0111 ([below](#verification-rule-sets)).
   write their own readers pin those. VERSIONS.md maps every UWMD release to the
   Format and Protocol versions it carries.
 
+## Eight-package launch preparation
+
+The launch set is exactly @uwmd/verify, @uwmd/core, @uwmd/cli,
+@uwmd/signing, @uwmd/batch, @uwmd/excel, @uwmd/report and @uwmd/lake,
+derived from `RELEASE_PACKAGES` in `scripts/release-packages.mjs`. Private MCP
+is outside that set. Launch preparation requires all eight manifest versions,
+package-lock workspace entries and internal dependency pins at exactly 5.0.0.
+Verify publishes before core, then all dependents.
+
+The source audit permits the existing mixed 4.x/0.x baseline; it does not
+authorize publishing it. Newly prepared prelaunch publications must use 4.x
+for every package. A tag-mode check rejects 5.x except the coordinated 5.0.0
+launch. Nothing here changes checked-in versions or grants launch approval.
+Package publication numbers do not select a record's Format or Protocol rules.
+
 ## Versions
 
 - **Packages move in lockstep.** Every `@uwmd/*` npm package launches at 5.0.0

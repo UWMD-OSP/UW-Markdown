@@ -8,6 +8,9 @@ name: Release
 # report pipeline) and @uwmd/lake (RFC 0049 warehouse adapter). @uwmd/verify
 # joins from 4.1.0; 4.0.x published the other seven. The two module packages
 # published through 3.x were deleted by RFC 0081 (scripts/release-packages.mjs).
+# Launch preparation requires all eight versions and internal pins at exactly
+# 5.0.0. Before launch, newly prepared publications use 4.x for every package;
+# existing mixed 4.x/0.x source is audit-only, never a publish exemption.
 # Core and cli share the tag — they version in lockstep because the CLI
 # re-exposes the library's CLI module. Every other package versions
 # independently (package.json versions, not the tag or module contract) and

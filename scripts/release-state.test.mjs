@@ -1,10 +1,11 @@
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { changelogUnreleasedEntries, checkReleasedTags, checkReleaseState, dependencyDrift } from './release-state.mjs';
-import { releasePackagesForGeneration } from './release-packages.mjs';
+import { checkPublicationPackages, changelogUnreleasedEntries, checkReleasedTags, checkReleaseState, dependencyDrift } from './release-state.mjs';
+import { RELEASE_PACKAGES, releasePackagesForGeneration } from './release-packages.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const TAGS_BEFORE = ['v2.13.0', 'v2.14.0'];
@@ -498,4 +499,65 @@ test('release-state checks depend on public contracts, not preparation/evidence 
     },
   });
   assert.deepEqual(checkReleaseState(inputs).failures, []);
+});
+
+// Synthetic publication fixtures: no checked-in manifest or lockfile is rewritten.
+function publicationFixture(version = '5.0.0', mode = 'launch') {
+  const manifests = RELEASE_PACKAGES.map(({ name }, i) => ({
+    name, version, ...(i === 0 ? {} : { dependencies: { [i === 1 ? '@uwmd/verify' : '@uwmd/core']: version } }),
+  }));
+  const lockfile = { packages: Object.fromEntries(RELEASE_PACKAGES.map(({ dir }, i) => [dir, structuredClone(manifests[i])])) };
+  return { manifests, lockfile, mode, version };
+}
+
+test('launch accepts exactly eight 5.0.0 manifests and locked exact dependencies', () => {
+  assert.equal(checkPublicationPackages(publicationFixture()).failures.length, 0);
+});
+for (const mutation of ['missing', 'duplicate', 'unexpected', 'version', 'lock-version', 'pin', 'lock-pin', 'peer-pin', 'optional-pin']) {
+  test(`launch rejects ${mutation}`, () => {
+    const fixture = publicationFixture();
+    const core = fixture.manifests[1];
+    const lockedCore = fixture.lockfile.packages['packages/uwmd-core'];
+    if (mutation === 'missing') fixture.manifests.pop();
+    if (mutation === 'duplicate') fixture.manifests.push(structuredClone(core));
+    if (mutation === 'unexpected') fixture.manifests.push({ name: '@uwmd/unexpected', version: '5.0.0' });
+    if (mutation === 'version') fixture.manifests[7].version = '5.0.1';
+    if (mutation === 'lock-version') lockedCore.version = '4.9.0';
+    if (mutation === 'pin') core.dependencies['@uwmd/verify'] = '^5.0.0';
+    if (mutation === 'lock-pin') lockedCore.dependencies['@uwmd/verify'] = '4.9.0';
+    if (mutation === 'peer-pin') core.peerDependencies = { '@uwmd/signing': '~5.0.0' };
+    if (mutation === 'optional-pin') core.optionalDependencies = { '@uwmd/signing': '5.0.1' };
+    assert.ok(checkPublicationPackages(fixture).failures.length > 0);
+  });
+}
+test('new prelaunch publication accepts 4.x and rejects 0.x, 5.x and non-final versions', () => {
+  assert.equal(checkPublicationPackages(publicationFixture('4.4.0', 'prelaunch')).failures.length, 0);
+  for (const version of ['0.9.0', '5.0.0', '5.1.0', '4.4.0-beta.1']) {
+    assert.ok(checkPublicationPackages(publicationFixture(version, 'prelaunch')).failures.length > 0);
+  }
+});
+test('source audit permits mixed 4.x/0.x but applies launch rules to any 5.x', () => {
+  const fixture = publicationFixture('4.4.0', 'source');
+  fixture.manifests[7].version = '0.3.2';
+  fixture.lockfile.packages[RELEASE_PACKAGES[7].dir].version = '0.3.2';
+  assert.equal(checkPublicationPackages(fixture).failures.length, 0);
+  assert.equal(checkPublicationPackages(publicationFixture('5.0.0', 'source')).failures.length, 0);
+  fixture.manifests[7].version = '5.0.0';
+  assert.ok(checkPublicationPackages(fixture).failures.length > 0);
+  assert.ok(checkPublicationPackages(publicationFixture('5.0.1', 'source')).failures.length > 0);
+});
+test('launch requires the exact 5.0.0 tag and rejects unknown modes', () => {
+  assert.ok(checkPublicationPackages({ ...publicationFixture(), version: '5.0.1' }).failures.length > 0);
+  assert.ok(checkPublicationPackages({ ...publicationFixture(), mode: 'other' }).failures.length > 0);
+});
+test('publication workflow follows declared verify-first package order', () => {
+  const workflow = readFileSync(resolve(ROOT, '.github/workflows/release.yml'), 'utf8').replace(/\r\n/g, '\n');
+  const positions = RELEASE_PACKAGES.map(({ dir }) => workflow.indexOf(`working-directory: ${dir}\n`));
+  assert.equal(RELEASE_PACKAGES[0].name, '@uwmd/verify');
+  assert.equal(RELEASE_PACKAGES[1].name, '@uwmd/core');
+  assert.equal(RELEASE_PACKAGES.length, 8);
+  for (let i = 0; i < positions.length; i++) {
+    assert.ok(positions[i] >= 0);
+    if (i > 0) assert.ok(positions[i] > positions[i - 1]);
+  }
 });

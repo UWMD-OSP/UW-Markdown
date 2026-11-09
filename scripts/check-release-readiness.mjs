@@ -11,6 +11,7 @@
 //
 // Run: npm run release:check
 
+import { checkPublicationPackages } from './release-state.mjs';
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,6 +23,13 @@ const passes = [];
 
 const read = (path) => readFileSync(resolve(root, path), 'utf8');
 const readJson = (path) => JSON.parse(read(path));
+
+const publication = checkPublicationPackages({
+  manifests: RELEASE_PACKAGES.map(({ dir }) => JSON.parse(read(`${dir}/package.json`))),
+  lockfile: JSON.parse(read('package-lock.json')),
+});
+failures.push(...publication.failures);
+passes.push(...publication.checks);
 
 // ── 1. Workflow Verification ──────────────────────────────────────────────────
 try {

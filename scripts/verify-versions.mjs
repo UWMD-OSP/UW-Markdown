@@ -29,6 +29,8 @@
 //
 // Run: npm run verify-versions
 
+import { RELEASE_PACKAGES } from './release-packages.mjs';
+import { checkPublicationPackages } from './release-state.mjs';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -39,6 +41,13 @@ const checks = [];
 
 const read = (path) => readFileSync(resolve(root, path), 'utf8');
 const readJson = (path) => JSON.parse(read(path));
+
+const publication = checkPublicationPackages({
+  manifests: RELEASE_PACKAGES.map(({ dir }) => JSON.parse(read(`${dir}/package.json`))),
+  lockfile: JSON.parse(read('package-lock.json')),
+});
+failures.push(...publication.failures);
+checks.push(...publication.checks);
 
 // ── Isolate the "Current matrix" section ─────────────────────────────────────
 // The "Planned 1.1+ interchange train" table below it lists candidate versions
