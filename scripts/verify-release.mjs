@@ -58,12 +58,13 @@
 // Run: npm run verify-release
 //      node scripts/verify-release.mjs --tag v2.16.0
 
+import { checkPublicationPackages } from './release-state.mjs';
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { changelogReleaseSections, checkReleasedTags, checkReleaseState, dependencyDrift } from './release-state.mjs';
-import { releasePackagesForGeneration } from './release-packages.mjs';
+import { RELEASE_PACKAGES, releasePackagesForGeneration } from './release-packages.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
@@ -81,6 +82,15 @@ const read = (path) => readFileSync(resolve(root, path), 'utf8');
 const changelog = read('CHANGELOG.md');
 const coreVersion = JSON.parse(read('packages/uwmd-core/package.json')).version;
 const cli = JSON.parse(read('packages/uwmd-cli/package.json'));
+
+const publication = checkPublicationPackages({
+  manifests: RELEASE_PACKAGES.map(({ dir }) => JSON.parse(read(`${dir}/package.json`))),
+  lockfile: JSON.parse(read('package-lock.json')),
+  mode: tag === undefined ? 'source' : tag === 'v5.0.0' ? 'launch' : 'prelaunch',
+  version: tag?.replace(/^v/, ''),
+});
+failures.push(...publication.failures);
+checks.push(...publication.checks.map((check) => `[PASS] ${check}`));
 
 // ── Tags ─────────────────────────────────────────────────────────────────────
 // A shallow clone has no tags, and a guard that passes because it could not see

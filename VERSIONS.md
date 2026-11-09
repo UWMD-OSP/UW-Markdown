@@ -8,6 +8,13 @@ every UWMD release to the Format and Protocol versions it carries
 ([release rules](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/playbooks/RELEASE_RULES.md#one-public-number)).
 This file also records the versions actually released.
 
+The eight launch packages are @uwmd/verify, core, cli, signing, batch, excel,
+report and lake. Their manifests, package-lock workspace entries and all
+internal published-package dependency pins must be exactly 5.0.0 for launch.
+The current mixed 4.x/0.x matrix is existing drift, retained for an accurate
+source audit; any newly prepared prelaunch publication must use 4.x across
+all eight packages. No version is changed by this enforcement work.
+
 ## Current matrix
 
 | Surface | Version | Pairs with |

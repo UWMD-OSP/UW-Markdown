@@ -66,7 +66,7 @@
 // precedent. Its CHANGELOG said Released, its tag was never pushed, and no 1.4.0
 // of any package exists.
 
-import { RETIRED_MODULE_PACKAGES, releasePackagesForGeneration } from './release-packages.mjs';
+import { RELEASE_PACKAGES, RETIRED_MODULE_PACKAGES, releasePackagesForGeneration } from './release-packages.mjs';
 /** Wording that describes a generation as not yet final. */
 const NOT_FINAL = /\b(candidate|unreleased|unpublished)\b/i;
 /** A row annotation that names a publication, e.g. the stale "published 2.14.0". */
@@ -350,4 +350,54 @@ export function dependencyDrift(packages) {
       fields: DEPENDENCY_FIELDS.filter((field) => dependencyKey(current[field]) !== dependencyKey(previous[field])),
     }))
     .filter((drift) => drift.fields.length > 0);
+}
+
+/** Validate current source or a newly prepared publication, without changing versions. */
+export function checkPublicationPackages({ manifests, lockfile, mode = 'source', version }) {
+  const failures = [];
+  const checks = [];
+  if (!['source', 'prelaunch', 'launch'].includes(mode)) {
+    return { checks, failures: [`Unknown publication mode: ${mode}`] };
+  }
+  // A prepared launch tree must also pass ordinary CI/readiness without a tag.
+  if (mode === 'source' && manifests.some(({ version }) => /^5\./.test(version))) {
+    return checkPublicationPackages({ manifests, lockfile, mode: 'launch', version: '5.0.0' });
+  }
+  const expected = new Map(RELEASE_PACKAGES.map((pkg) => [pkg.name, pkg]));
+  const declared = new Map();
+  for (const manifest of manifests) {
+    if (!expected.has(manifest.name)) failures.push(`Unexpected publication package: ${manifest.name}`);
+    if (declared.has(manifest.name)) failures.push(`Duplicate publication package: ${manifest.name}`);
+    declared.set(manifest.name, manifest);
+  }
+  for (const { name, dir } of RELEASE_PACKAGES) {
+    const manifest = declared.get(name);
+    if (!manifest) { failures.push(`Missing publication package: ${name}`); continue; }
+    if (mode === 'launch' && (version !== '5.0.0' || manifest.version !== '5.0.0')) {
+      failures.push(`${name}: launch requires exactly 5.0.0 in every manifest and the release tag`);
+    }
+    if (mode === 'prelaunch' && (!/^4\.\d+\.\d+$/.test(version ?? '') || !/^4\.\d+\.\d+$/.test(manifest.version))) {
+      failures.push(`${name}: newly prepared prelaunch publications must use 4.x.x, never 5.x or legacy 0.x`);
+    }
+    if (mode === 'source' && !/^(?:0|4)\.\d+\.\d+$/.test(manifest.version)) {
+      failures.push(`${name}: source audit permits existing 0.x/4.x only; launch needs explicit launch preparation`);
+    }
+    const locked = lockfile?.packages?.[dir];
+    if (!locked || locked.version !== manifest.version) failures.push(`${name}: package-lock workspace version must match manifest ${manifest.version}`);
+    for (const field of ['dependencies', 'peerDependencies', 'optionalDependencies', 'devDependencies']) {
+      const dependencies = manifest[field] ?? {};
+      const lockedDependencies = locked?.[field] ?? {};
+      const names = new Set([...Object.keys(dependencies), ...Object.keys(lockedDependencies)]);
+      for (const dependency of names) {
+        if (!dependency.startsWith('@uwmd/')) continue;
+        const target = declared.get(dependency);
+        if (!target || !expected.has(dependency) || dependencies[dependency] !== target.version) {
+          failures.push(`${name} ${field}: ${dependency} must pin the exact declared publication version`);
+        }
+        if (lockedDependencies[dependency] !== dependencies[dependency]) failures.push(`${name}: package-lock ${field} pin for ${dependency} must match manifest`);
+      }
+    }
+  }
+  if (failures.length === 0) checks.push(`${mode}: exactly ${RELEASE_PACKAGES.length} publication packages, workspace lock versions and internal exact pins agree`);
+  return { checks, failures };
 }
