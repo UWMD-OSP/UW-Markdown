@@ -472,10 +472,51 @@ Change provenance rules (§V.2–§V.4), integrity, calc notation or numeric mod
 Change starter behavior: cascade order, defaults, editor mechanics, view models, display, agents | No (starter guide + package semver); numerics still go to maintainers
 Anything touching `spec/` or `spec/schemas/` | Yes
 
-The required index gate also enforces tracked-content identity policy. Its exact
-public-handle exceptions are the maintainer and code-owner files; other matches
-fail regardless of directory. Retained historical evidence with redactions is
-not public release proof. Launch-day file moves and slimming are separate work.
+## Configured public identity checks
+
+The identity guard scans every tracked file, including `MAINTAINERS.md` and
+`.github/CODEOWNERS`, without file exemptions. Generic private-path, internal
+reference and retired-product rules remain in `scripts/public-identity.mjs`.
+Personal patterns belong only in the gitignored `.public-identity.local.json`;
+never commit them, copy them into examples or attach them to build artifacts.
+Current-tree cleanup does not remove historical Git content.
+
+Configure the local file privately with exactly `version` and `rules` at the
+root. Version is `1`; `rules` is a nonempty array whose entries have exactly
+`id`, `pattern`, `flags` and `boundary`. IDs are opaque unique lowercase letters,
+digits and hyphens, beginning with a letter (maximum 64 characters); generic
+rule IDs are reserved. `pattern` is a nonempty JavaScript regular expression
+source, `flags` is `i` for case-insensitive matching or an empty string, and
+`boundary` is `word` to require word boundaries or `none` to match substrings.
+All rules scan globally. Use only synthetic identities in tracked tests.
+
+`npm run verify-indexes` defaults to the required configured personal scan plus
+generic rules. Missing, empty, malformed or invalid configuration fails with a
+value-free diagnostic. Findings contain only rule ID, tracked path and line;
+parser diagnostics and matched text are never printed. Confirm the file is
+ignored with `git check-ignore .public-identity.local.json`.
+
+CI separates two results:
+
+- **Verify hand-maintained indexes** runs with `PUBLIC_IDENTITY_MODE=generic`;
+  this is safe for every PR and explicitly does not claim personal coverage.
+- **Required configured personal identity** reads the private repository secret
+  `PUBLIC_IDENTITY_CONFIG_JSON`, writes the ignored local file for that job,
+  runs `node scripts/public-identity.mjs --required`, and removes the file even
+  after a failed scan. The secret must contain the validated configuration;
+  an absent secret creates an empty file and the required check fails closed.
+
+Fork and automated dependency PRs fail the required job before checkout or
+configuration delivery. A maintainer must review the exact proposed changes
+and promote them to a trusted branch in this repository before a configured
+scan can run; the workflow never uses `pull_request_target` to execute fork code
+with secrets. Same-repository branches, main pushes and ordinary manual CI runs
+are trusted execution, so protect write access and review workflow/guard changes
+before promoting external code. Keep the configured job required in repository
+protection alongside the generic index job; neither result replaces the other.
+Account-side secret setup and required-check settings are separate maintainer
+actions, not evidence inferred from a passing synthetic control. Do not upload
+the configuration or disable required mode to get a green result.
 
 Direct `node scripts/verify-packages.mjs` resolves npm's JavaScript entry on
 Windows and launches it with the current Node executable and argument array.

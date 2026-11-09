@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Load personal identity scan patterns from validated, gitignored configuration; require a configured trusted CI scan separately from fork-safe generic checks.
+
 - Enforce the eight-package launch set, exact manifest/lockfile dependency pins and 5.0.0 launch boundary; newly prepared prelaunch publications require 4.x while source audits retain the existing mixed baseline.
 
 - Align malformed input-hash validation and JSON/XML/CSV refusal under accepted RFC 0133, with error-severity INT-16 and unchanged META-05 predicates.
