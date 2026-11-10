@@ -152,8 +152,36 @@ jobs:
         with:
           node-version: 20
       - run: npm run verify-indexes
+        env:
+          PUBLIC_IDENTITY_MODE: generic
       - name: Verify supplemental source build identity
         run: node --test scripts/build-source.test.mjs
+
+  verify-personal-identity:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
+    name: Required configured personal identity
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      # Stop before checkout or configuration delivery for untrusted execution.
+      # Reviewed external changes must be promoted to a trusted repository branch.
+      - name: Refuse untrusted configuration execution
+        if: ${{ github.event_name == 'pull_request' && (github.event.pull_request.head.repo.full_name != github.repository || github.actor == 'dependabot[bot]') }}
+        run: |
+          echo 'Fork and automated PRs require a reviewed trusted branch; no private configuration was delivered.'
+          exit 1
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - name: Required configured scan
+        env:
+          PUBLIC_IDENTITY_CONFIG_JSON: ${{ secrets.PUBLIC_IDENTITY_CONFIG_JSON }}
+        run: node scripts/public-identity.mjs --required
 
   verify-codes:
     if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
