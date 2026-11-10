@@ -87,6 +87,25 @@ When sources conflict, trust them in this order:
 5. **This wiki** — orientation and cross-references. If this wiki is wrong, fix it,
    but never treat it as authority over 1–4.
 
+## Contributor identity and governance guidance
+
+Use [`MAINTAINERS.md`](../../MAINTAINERS.md) and the pointer in
+[`.github/CODEOWNERS`](../../.github/CODEOWNERS) for neutral maintainer ownership
+and project contact. Personal handles have no identity-scan exemption. The
+[build and governance guide](11-build-release-governance.md#configured-public-identity-checks)
+describes environment-only, in-memory personal-pattern configuration, fail-closed
+required scanner mode and the separate generic CI and branch-protection checks.
+Real personal patterns must never be written to any file, including ignored
+runtime files; synthetic tests do not establish real configured coverage.
+
+[`GOVERNANCE.md`](../../GOVERNANCE.md) defines collaborative mode as beginning
+when the first outside RFC or PR arrives, with the owner announcing the date and
+triggering contribution under "Mode" (or announcing an earlier start). Arrival
+activates the collaborative rules, including at least 14 days of public comment
+for normative changes, subject to Governance's emergency security provision.
+The first contribution does not need to merge. See
+[Governance & RFCs](11-build-release-governance.md#governance--rfcs) for the summary.
+
 ## Keeping this wiki honest
 
 Every claim here was grounded in the source at time of writing. Code drifts.

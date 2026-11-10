@@ -371,7 +371,10 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   died at `ENEEDAUTH` after passing every gate, and the release went out by
   hand instead. A credential that expires silently between releases is one that
   is always broken exactly when it is needed.
-- **`CODEOWNERS`** routes spec / schema / reference-library paths to the BDFL.
+- **[`.github/CODEOWNERS`](../../.github/CODEOWNERS)** currently points to
+  [`MAINTAINERS.md`](../../MAINTAINERS.md) for neutral maintainer ownership and
+  contact through project issues. It contains no active path assignments. Use
+  those sources for review routing; personal handles have no identity-scan exemption.
 - **`labels.yml`**: on a push to `main` that changes `.github/labels.json`,
   creates or updates every label it lists. It never deletes a label. The
   `verify-issue-forms` CI job holds the issue forms and `docs/FEEDBACK.md` to
@@ -389,10 +392,19 @@ Releases and npm provenance; working evidence belongs outside the public tree.
 
 ## Governance & RFCs
 
-- Model: owner-led until outside contributions begin
-  ([`GOVERNANCE.md`](../../GOVERNANCE.md)). The owner can accept and implement
-  changes immediately. External PRs require owner review; after the first external
-  PR merges, normative RFCs also receive a 14-day public comment window.
+- Model: owner-led until the first RFC or pull request from an outside
+  contributor arrives ([`GOVERNANCE.md`](../../GOVERNANCE.md)). Arrival starts
+  the collaborative rules; the contribution does not need to merge. The owner
+  announces the date and triggering contribution under Governance's "Mode"
+  section, or may announce collaborative mode earlier. External PRs require
+  owner review in either mode. In owner-led mode the owner may accept and
+  implement changes immediately, without a mandatory public comment period.
+  In collaborative mode normative changes require an RFC, a public comment
+  period of at least 14 days, project-owner approval and a reference
+  implementation in the same PR or a linked follow-up. The owner may extend
+  the comment period; emergency security fixes may merge immediately and be
+  documented afterward. Editorial and implementation changes require a PR,
+  passing applicable automated checks and one maintainer approval.
 - **Normative = anything that changes the spec, protocol, schemas, metric
   dictionary or conformance contract.** That includes most things this wiki's
   recipes touch when they alter behavior: new sections, new validation codes
@@ -510,7 +522,7 @@ CI separates two results:
   secret `PUBLIC_IDENTITY_CONFIG_JSON` directly into the scanner step's process
   environment and runs `node scripts/public-identity.mjs --required`. It never
   writes configuration to disk or uploads it. An absent secret leaves the
-  required check failing closed.
+  configured job failing closed.
 
 Fork and automated dependency PRs fail the required job before checkout or
 configuration delivery. A maintainer must review the exact proposed changes
@@ -518,11 +530,20 @@ and promote them to a trusted branch in this repository before a configured
 scan can run; the workflow never uses `pull_request_target` to execute fork code
 with secrets. Same-repository branches, main pushes and ordinary manual CI runs
 are trusted execution, so protect write access and review workflow/guard changes
-before promoting external code. Keep the configured job required in repository
-protection alongside the generic index job; neither result replaces the other.
-Account-side secret setup and required-check settings are separate maintainer
-actions, not evidence inferred from a passing synthetic control. Do not persist
-the configuration or disable required mode to get a green result.
+before promoting external code.
+
+Required scanner mode is a fail-closed configuration contract, separate from
+branch-protection required checks. The configured identity job is not currently
+a required branch check; an unconfigured job is failing, not evidence of personal
+coverage. The existing required branch checks remain applicable. The owner
+personally provisions the real `PUBLIC_IDENTITY_CONFIG_JSON` repository secret
+in GitHub. A maintainer then reruns the configured scan on main and fixes any
+findings. Only after that scan passes should making the configured job a
+required branch check be proposed, alongside the generic index job. Account-side
+secret setup and protection changes are separate owner actions. A passing
+synthetic unit control proves only fixture behavior, not real configuration
+coverage. Do not persist configuration, supply synthetic configuration to CI,
+or disable required mode to get a green result.
 
 Direct `node scripts/verify-packages.mjs` resolves npm's JavaScript entry on
 Windows and launches it with the current Node executable and argument array.
