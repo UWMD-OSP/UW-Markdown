@@ -374,7 +374,8 @@ node scripts/verify-release.mjs --tag vX.Y.Z
 - **[`.github/CODEOWNERS`](../../.github/CODEOWNERS)** currently points to
   [`MAINTAINERS.md`](../../MAINTAINERS.md) for neutral maintainer ownership and
   contact through project issues. It contains no active path assignments. Use
-  those sources for review routing; personal handles have no identity-scan exemption.
+  those sources for review routing. Personal names, handles and email addresses
+  are allowed; see [generic tracked-content checks](#generic-tracked-content-checks).
 - **`labels.yml`**: on a push to `main` that changes `.github/labels.json`,
   creates or updates every label it lists. It never deletes a label. The
   `verify-issue-forms` CI job holds the issue forms and `docs/FEEDBACK.md` to
@@ -484,66 +485,28 @@ Change provenance rules (§V.2–§V.4), integrity, calc notation or numeric mod
 Change starter behavior: cascade order, defaults, editor mechanics, view models, display, agents | No (starter guide + package semver); numerics still go to maintainers
 Anything touching `spec/` or `spec/schemas/` | Yes
 
-## Configured public identity checks
+## Generic tracked-content checks
 
-The identity guard scans every tracked file, including `MAINTAINERS.md` and
-`.github/CODEOWNERS`, without file exemptions. Generic private-path, internal
-reference and retired-product rules remain in `scripts/public-identity.mjs`.
-Personal patterns are supplied only through the process environment variable
-`PUBLIC_IDENTITY_CONFIG_JSON` and parsed in memory. Never write real personal
-patterns to a file, including an ignored file, runtime file, shell history,
-workflow script, example, fixture, log or build artifact. Current-tree cleanup
-does not remove historical Git content.
+The guard in `scripts/public-identity.mjs` scans every tracked file, including
+`MAINTAINERS.md` and `.github/CODEOWNERS`, without file exemptions. Its eight
+generic private-path, internal-reference, private-corpus and retired-product
+rules remain enforced by `npm run verify-indexes` and by the scanner's default
+CLI invocation, `node scripts/public-identity.mjs`. Findings contain only rule
+ID, tracked path and line; matched text is not printed.
 
-The environment value is JSON with exactly `version` and `rules` at the root.
-Version is `1`; `rules` is a nonempty array whose entries have exactly `id`,
-`pattern`, `flags` and `boundary`. IDs are opaque unique lowercase letters,
-digits and hyphens, beginning with a letter (maximum 64 characters); generic
-rule IDs are reserved. `pattern` is a nonempty JavaScript regular expression
-source, `flags` is `i` for case-insensitive matching or an empty string, and
-`boundary` is `word` to require word boundaries or `none` to match substrings.
-All rules scan globally. Use only synthetic identities in tracked tests.
+Configured personal-identity clearance is retired. Personal names, handles and
+email addresses are allowed. No personal patterns, environment configuration,
+secret setup or separate configured CI scan is required. Obsolete identity
+environment variables are ignored; the scanner accepts no CLI arguments and
+does not read local configuration files. The retired
+`.public-identity.local.json` filename remains ignored as a safeguard.
 
-A private account-side secret manager must inject the environment value without
-putting its contents in commands or files. `npm run verify-indexes` defaults to
-the required configured personal scan plus generic rules. Missing, empty,
-malformed or invalid configuration fails with a value-free diagnostic. Findings
-contain only rule ID, tracked path and line; parser diagnostics and matched text
-are never printed. The scanner does not read local configuration files or write
-configuration. `.public-identity.local.json` remains ignored only as a safeguard
-for synthetic test fixtures; it is not a delivery path for real patterns and
-cannot satisfy required mode.
-
-CI separates two results:
-
-- **Verify hand-maintained indexes** runs with `PUBLIC_IDENTITY_MODE=generic`;
-  this is safe for every PR and explicitly does not claim personal coverage.
-- **Required configured personal identity** injects the private repository
-  secret `PUBLIC_IDENTITY_CONFIG_JSON` directly into the scanner step's process
-  environment and runs `node scripts/public-identity.mjs --required`. It never
-  writes configuration to disk or uploads it. An absent secret leaves the
-  configured job failing closed.
-
-Fork and automated dependency PRs fail the required job before checkout or
-configuration delivery. A maintainer must review the exact proposed changes
-and promote them to a trusted branch in this repository before a configured
-scan can run; the workflow never uses `pull_request_target` to execute fork code
-with secrets. Same-repository branches, main pushes and ordinary manual CI runs
-are trusted execution, so protect write access and review workflow/guard changes
-before promoting external code.
-
-Required scanner mode is a fail-closed configuration contract, separate from
-branch-protection required checks. The configured identity job is not currently
-a required branch check; an unconfigured job is failing, not evidence of personal
-coverage. The existing required branch checks remain applicable. The owner
-personally provisions the real `PUBLIC_IDENTITY_CONFIG_JSON` repository secret
-in GitHub. A maintainer then reruns the configured scan on main and fixes any
-findings. Only after that scan passes should making the configured job a
-required branch check be proposed, alongside the generic index job. Account-side
-secret setup and protection changes are separate owner actions. A passing
-synthetic unit control proves only fixture behavior, not real configuration
-coverage. Do not persist configuration, supply synthetic configuration to CI,
-or disable required mode to get a green result.
+The required index CI job runs the default generic checks for every PR. The
+public language guard and credential/secret protections remain unchanged.
+Fixtures remain synthetic, customer privacy requirements remain, and live
+credentials must never appear in tracked content or evidence. Local merge
+identity, review, release approval and publication requirements above remain
+in force.
 
 Direct `node scripts/verify-packages.mjs` resolves npm's JavaScript entry on
 Windows and launches it with the current Node executable and argument array.

@@ -8,9 +8,9 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Align contributor guidance with neutral maintainer routing, the first outside RFC or PR arrival trigger, and environment-only identity configuration; distinguish fail-closed scanner mode from branch protection.
+- Align contributor guidance with neutral maintainer routing and the first outside RFC or PR arrival trigger, including the public comment window.
 
-- Parse personal identity scan patterns only in memory from validated process environment configuration; require a configured trusted CI scan separately from fork-safe generic checks without writing private patterns to files.
+- Retire configured personal-identity clearance and its CI job; names, handles and emails are allowed. Default tracked-content checks need no configuration; the eight generic rules, public language guard and credential/secret protections remain unchanged.
 
 - Enforce the eight-package launch set, exact manifest/lockfile dependency pins and 5.0.0 launch boundary; newly prepared prelaunch publications require 4.x while source audits retain the existing mixed baseline.
 

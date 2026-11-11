@@ -198,17 +198,14 @@ if (!failures.some(f => f.startsWith('CLAUDE.md') || f.startsWith('AGENTS.md')))
 }
 
 // Public content policy is part of this already-required Main CI gate.
-const identityMode = process.env.PUBLIC_IDENTITY_MODE ?? 'required';
 let identities = [];
 try {
-  identities = trackedPublicIdentityFindings(root, { mode: identityMode });
+  identities = trackedPublicIdentityFindings(root);
 } catch (error) {
   failures.push(error.message);
 }
 failures.push(...identities.map(({ path, line, rule }) => `${path}:${line}: public identity policy (${rule})`));
-checks.push(identityMode === 'generic'
-  ? 'Generic identity policy checked; personal scan NOT performed'
-  : 'Required configured personal and generic identity policies checked');
+checks.push('Generic tracked-content policy checked');
 
 // Public language is enforced in this already-required Main CI gate.
 const voice = trackedPublicVoiceFindings(root);
