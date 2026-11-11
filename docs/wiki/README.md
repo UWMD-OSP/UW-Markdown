@@ -91,12 +91,12 @@ When sources conflict, trust them in this order:
 
 Use [`MAINTAINERS.md`](../../MAINTAINERS.md) and the pointer in
 [`.github/CODEOWNERS`](../../.github/CODEOWNERS) for neutral maintainer ownership
-and project contact. Personal handles have no identity-scan exemption. The
-[build and governance guide](11-build-release-governance.md#configured-public-identity-checks)
-describes environment-only, in-memory personal-pattern configuration, fail-closed
-required scanner mode and the separate generic CI and branch-protection checks.
-Real personal patterns must never be written to any file, including ignored
-runtime files; synthetic tests do not establish real configured coverage.
+and project contact. Personal names, handles and email addresses are allowed;
+configured personal-identity clearance is retired. The
+[build and governance guide](11-build-release-governance.md#generic-tracked-content-checks)
+describes the eight generic tracked-content rules and the default index checks,
+which require no personal configuration or secret setup. Public language and
+credential/secret protections remain unchanged.
 
 [`GOVERNANCE.md`](../../GOVERNANCE.md) defines collaborative mode as beginning
 when the first outside RFC or PR arrives, with the owner announcing the date and

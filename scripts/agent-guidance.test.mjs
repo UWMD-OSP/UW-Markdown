@@ -35,13 +35,12 @@ function requireClaims(text, claims) {
   }
 }
 
-test('wiki routes through neutral maintainer sources without promising personal exemptions', () => {
+test('wiki routes through neutral maintainer sources and retains generic tracked coverage', () => {
   for (const guide of [wiki, orientation]) {
     requireClaims(guide, [
       ['maintainer source', /MAINTAINERS\.md/],
       ['ownership source', /\.github\/CODEOWNERS/],
       ['neutral routing', /neutral maintainer ownership/],
-      ['uniform identity coverage', /[Pp]ersonal handles have no identity-scan exemption/],
     ]);
   }
   requireClaims(wiki, [
@@ -81,36 +80,32 @@ test('wiki follows the adopted arrival trigger and preserves governance definiti
   }
 });
 
-test('identity guidance requires private environment delivery and distinguishes CI from protection', () => {
+test('guidance follows retired personal clearance and default generic checks', () => {
+  for (const guide of [wiki, orientation]) {
+    requireClaims(guide, [
+      ['personal clearance retired', /[Cc]onfigured personal-identity clearance is retired/],
+      ['personal identities allowed', /Personal names, handles and email addresses are allowed/],
+      ['generic rules retained', /eight generic/],
+      ['credential protections unchanged', /credential\/secret protections remain unchanged/],
+    ]);
+    assert.ok(!/PUBLIC_IDENTITY_CONFIG_JSON|PUBLIC_IDENTITY_MODE|configured-public-identity-checks|identity-scan exemption/.test(guide),
+      'no obsolete provisioning instructions or anchor');
+  }
   requireClaims(wiki, [
-    ['environment-only parsing', /only through the process environment variable `PUBLIC_IDENTITY_CONFIG_JSON` and parsed in memory/],
-    ['no file delivery', /Never write real personal patterns to a file, including an ignored file, runtime file, shell history/],
-    ['history remains', /Current-tree cleanup does not remove historical Git content/],
-    ['required default', /`npm run verify-indexes` defaults to the required configured personal scan plus generic rules/],
-    ['fail-closed configuration', /Missing, empty, malformed or invalid configuration fails with a value-free diagnostic/],
-    ['generic CI coverage', /Verify hand-maintained indexes.*PUBLIC_IDENTITY_MODE=generic.*does not claim personal coverage/],
-    ['configured job delivery', /secret `PUBLIC_IDENTITY_CONFIG_JSON` directly into the scanner step's process environment.*--required/],
-    ['fork safety', /Fork and automated dependency PRs fail the required job before checkout or configuration delivery/],
-    ['scanner mode differs from protection', /Required scanner mode is a fail-closed configuration contract, separate from branch-protection required checks/],
-    ['current protection state', /configured identity job is not currently a required branch check/],
-    ['existing checks remain applicable', /existing required branch checks remain applicable/],
-    ['owner provisions real secret', /owner personally provisions the real `PUBLIC_IDENTITY_CONFIG_JSON` repository secret in GitHub/],
-    ['scan before protection proposal', /reruns the configured scan on main and fixes any findings\. Only after that scan passes should making the configured job a required branch check be proposed/],
-    ['synthetic controls are bounded evidence', /synthetic unit control proves only fixture behavior, not real configuration coverage/],
-    ['no synthetic CI configuration', /Do not persist configuration, supply synthetic configuration to CI, or disable required mode/],
+    ['default index and scanner', /rules remain enforced by \x60npm run verify-indexes\x60 and by the scanner's default CLI invocation/],
+    ['no personal setup', /No personal patterns, environment configuration, secret setup or separate configured CI scan is required/],
+    ['required index CI', /required index CI job runs the default generic checks for every PR/],
+    ['local merge and release requirements', /Local merge identity, review, release approval and publication requirements above remain in force/],
   ]);
-  requireClaims(orientation, [
-    ['orientation forbids ignored runtime delivery', /Real personal patterns must never be written to any file, including ignored runtime files/],
-    ['orientation bounds fixture evidence', /synthetic tests do not establish real configured coverage/],
-  ]);
+  assert.ok(orientation.includes('11-build-release-governance.md#generic-tracked-content-checks'),
+    'orientation points to current generic checks section');
 });
 
-test('guidance controls reject synthetic regressions without identity probes', () => {
+test('guidance controls reject synthetic arrival and comment-window regressions', () => {
   const claim = [['synthetic arrival contract', /first outside RFC or PR arrives/]];
   assert.doesNotThrow(() => requireClaims('The first outside RFC or PR arrives.', claim));
   assert.throws(() => requireClaims('The first outside PR merges.', claim), /synthetic arrival contract/);
-  const uniform = [['synthetic uniform coverage', /Personal handles have no identity-scan exemption/]];
-  assert.throws(() => requireClaims('Synthetic canary handles are exempt.', uniform), /synthetic uniform coverage/);
-  const environment = [['synthetic environment contract', /environment-only, in-memory/]];
-  assert.throws(() => requireClaims('Synthetic canary configuration uses a runtime file.', environment), /synthetic environment contract/);
+  const window = [['synthetic comment window', /at least 14 days of public comment/]];
+  assert.doesNotThrow(() => requireClaims('Allow at least 14 days of public comment.', window));
+  assert.throws(() => requireClaims('Allow seven days of public comment.', window), /synthetic comment window/);
 });
