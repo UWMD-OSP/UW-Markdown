@@ -87,6 +87,25 @@ When sources conflict, trust them in this order:
 5. **This wiki** — orientation and cross-references. If this wiki is wrong, fix it,
    but never treat it as authority over 1–4.
 
+## Contributor identity and governance guidance
+
+Use [`MAINTAINERS.md`](../../MAINTAINERS.md) and the pointer in
+[`.github/CODEOWNERS`](../../.github/CODEOWNERS) for neutral maintainer ownership
+and project contact. Personal names, handles and email addresses are allowed;
+configured personal-identity clearance is retired. The
+[build and governance guide](11-build-release-governance.md#generic-tracked-content-checks)
+describes the eight generic tracked-content rules and the default index checks,
+which require no personal configuration or secret setup. Public language and
+credential/secret protections remain unchanged.
+
+[`GOVERNANCE.md`](../../GOVERNANCE.md) defines collaborative mode as beginning
+when the first outside RFC or PR arrives, with the owner announcing the date and
+triggering contribution under "Mode" (or announcing an earlier start). Arrival
+activates the collaborative rules, including at least 14 days of public comment
+for normative changes, subject to Governance's emergency security provision.
+The first contribution does not need to merge. See
+[Governance & RFCs](11-build-release-governance.md#governance--rfcs) for the summary.
+
 ## Keeping this wiki honest
 
 Every claim here was grounded in the source at time of writing. Code drifts.

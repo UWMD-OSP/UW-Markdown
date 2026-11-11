@@ -371,7 +371,11 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   died at `ENEEDAUTH` after passing every gate, and the release went out by
   hand instead. A credential that expires silently between releases is one that
   is always broken exactly when it is needed.
-- **`CODEOWNERS`** routes spec / schema / reference-library paths to the BDFL.
+- **[`.github/CODEOWNERS`](../../.github/CODEOWNERS)** currently points to
+  [`MAINTAINERS.md`](../../MAINTAINERS.md) for neutral maintainer ownership and
+  contact through project issues. It contains no active path assignments. Use
+  those sources for review routing. Personal names, handles and email addresses
+  are allowed; see [generic tracked-content checks](#generic-tracked-content-checks).
 - **`labels.yml`**: on a push to `main` that changes `.github/labels.json`,
   creates or updates every label it lists. It never deletes a label. The
   `verify-issue-forms` CI job holds the issue forms and `docs/FEEDBACK.md` to
@@ -389,10 +393,19 @@ Releases and npm provenance; working evidence belongs outside the public tree.
 
 ## Governance & RFCs
 
-- Model: owner-led until outside contributions begin
-  ([`GOVERNANCE.md`](../../GOVERNANCE.md)). The owner can accept and implement
-  changes immediately. External PRs require owner review; after the first external
-  PR merges, normative RFCs also receive a 14-day public comment window.
+- Model: owner-led until the first RFC or pull request from an outside
+  contributor arrives ([`GOVERNANCE.md`](../../GOVERNANCE.md)). Arrival starts
+  the collaborative rules; the contribution does not need to merge. The owner
+  announces the date and triggering contribution under Governance's "Mode"
+  section, or may announce collaborative mode earlier. External PRs require
+  owner review in either mode. In owner-led mode the owner may accept and
+  implement changes immediately, without a mandatory public comment period.
+  In collaborative mode normative changes require an RFC, a public comment
+  period of at least 14 days, project-owner approval and a reference
+  implementation in the same PR or a linked follow-up. The owner may extend
+  the comment period; emergency security fixes may merge immediately and be
+  documented afterward. Editorial and implementation changes require a PR,
+  passing applicable automated checks and one maintainer approval.
 - **Normative = anything that changes the spec, protocol, schemas, metric
   dictionary or conformance contract.** That includes most things this wiki's
   recipes touch when they alter behavior: new sections, new validation codes
