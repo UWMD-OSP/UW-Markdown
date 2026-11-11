@@ -1,32 +1,34 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  identityRules, parsePersonalIdentityConfig, personalConfigEnvironment,
-  publicIdentityFindings, trackedPublicIdentityFindings,
-} from './public-identity.mjs';
+import { identityRules, publicIdentityFindings, trackedPublicIdentityFindings } from './public-identity.mjs';
 
-const personalConfigFile = '.public-identity.local.json';
-const subject = 'SyntheticSubjectQ';
-const handle = 'synthetic-handle-q';
-const config = { version: 1, rules: [
-  { id: 'private-name', pattern: subject, flags: 'i', boundary: 'word' },
-  { id: 'private-handle', pattern: handle, flags: 'i', boundary: 'none' },
-] };
-const configuredRules = [...identityRules, ...parsePersonalIdentityConfig(JSON.stringify(config))];
 const script = fileURLToPath(new URL('./public-identity.mjs', import.meta.url));
 const root = resolve(dirname(script), '..');
+const retiredFile = '.public-identity.local.json';
+const ordinaryIdentity = 'Avery Example\navery.example@example.invalid\n@avery-example\n';
+const samples = [
+  ['private-repository', ['underwriter', '-app'].join('')],
+  ['private-task', ['TA', 'SK-123'].join('')],
+  ['private-upstream', ['UP', 'STREAM-4'].join('')],
+  ['private-corpus', ['Golden', ' Deal'].join('')],
+  ['personal-path', `C:${String.fromCharCode(92)}Users`],
+  ['session-branch-a', ['co', 'dex/topic'].join('')],
+  ['session-branch-b', ['clau', 'de/topic'].join('')],
+  ['retired-product', ['Banc', 'roft'].join('')],
+];
 
 function withRepository(run) {
   const repo = mkdtempSync(join(tmpdir(), 'uwmd-identity-'));
   try {
     execFileSync('git', ['init', '-q', repo]);
-    writeFileSync(join(repo, '.gitignore'), `${personalConfigFile}\nignored.md\n`);
-    writeFileSync(join(repo, 'tracked-λ.md'), 'safe');
+    writeFileSync(join(repo, '.gitignore'), `${retiredFile}\nignored.md\n`);
+    writeFileSync(join(repo, 'tracked-λ.md'), ordinaryIdentity);
     execFileSync('git', ['-C', repo, 'add', '--', 'tracked-λ.md', '.gitignore']);
     run(repo);
   } finally {
@@ -35,162 +37,126 @@ function withRepository(run) {
   }
 }
 
-function configuredScan(repo) {
-  return trackedPublicIdentityFindings(repo, { configJSON: JSON.stringify(config) });
-}
-
-function runCLI(repo, configJSON, ...args) {
+function environment(poisoned = false) {
   const env = { ...process.env };
-  delete env[personalConfigEnvironment];
-  if (configJSON !== undefined) env[personalConfigEnvironment] = configJSON;
-  return spawnSync(process.execPath, [script, ...args], { cwd: repo, env, encoding: 'utf8' });
+  delete env.PUBLIC_IDENTITY_CONFIG_JSON;
+  delete env.PUBLIC_IDENTITY_MODE;
+  if (poisoned) {
+    env.PUBLIC_IDENTITY_CONFIG_JSON = '{invalid obsolete configuration';
+    env.PUBLIC_IDENTITY_MODE = 'invalid-obsolete-mode';
+  }
+  return env;
 }
 
-test('generic patterns retain useful locations without personal values in source', () => {
-  const samples = [['underwriter', '-app'].join(''), ['TA', 'SK-123'].join(''),
-    ['UP', 'STREAM-4'].join(''), ['Golden', ' Deal'].join(''),
-    `C:${String.fromCharCode(92)}Users`, ['co', 'dex/topic'].join(''),
-    ['clau', 'de/topic'].join(''), ['Banc', 'roft'].join('')];
-  for (const sample of samples) {
-    const findings = publicIdentityFindings('docs/example.md', `safe\n${sample}\n`);
-    assert.equal(findings.length, 1);
-    assert.equal(findings[0].line, 2);
+function runNode(cwd, path, poisoned = false, args = []) {
+  const result = spawnSync(process.execPath, [path, ...args], {
+    cwd, env: environment(poisoned), encoding: 'utf8', timeout: 30000,
+  });
+  assert.ifError(result.error);
+  assert.equal(result.signal, null);
+  return result;
+}
+
+test('all eight generic rules retain IDs, repeated findings and exact locations', () => {
+  assert.deepEqual(identityRules.map(x => x.id), samples.map(x => x[0]));
+  for (const [rule, sample] of samples) {
+    assert.deepEqual(publicIdentityFindings('docs/example.md', `safe\n${sample}\n${sample}`), [
+      { path: 'docs/example.md', rule, line: 2 }, { path: 'docs/example.md', rule, line: 3 },
+    ]);
   }
   assert.equal(publicIdentityFindings('example.json', `C:${String.fromCharCode(92).repeat(2)}Users`).length, 1);
 });
 
-test('configured case and word boundaries apply to every tracked file without exemptions', () => {
-  for (const path of ['MAINTAINERS.md', '.github/CODEOWNERS', 'README.md', 'CODEOWNERS', 'docs/MAINTAINERS.md']) {
-    for (const sample of [subject, subject.toLowerCase(), subject.toUpperCase(), handle, handle.toUpperCase()]) {
-      assert.equal(publicIdentityFindings(path, sample, configuredRules).length, 1);
-    }
-    assert.deepEqual(publicIdentityFindings(path, `prefix${subject}suffix`, configuredRules), []);
-  }
-  assert.deepEqual(publicIdentityFindings('README.md', `${subject}\n${subject}`, configuredRules).map(x => x.line), [1, 2]);
-  assert.deepEqual(publicIdentityFindings('README.md', 'UWMD maintainers', configuredRules), []);
-});
-
-test('schema rejects empty, malformed, unknown properties, missing fields and unsupported flags without values', () => {
-  const invalid = ['', '{', 'null', '[]', '{}', JSON.stringify({ version: 2, rules: config.rules }),
-    JSON.stringify({ version: 1, rules: [] }), JSON.stringify({ ...config, extra: subject }),
-    ...[
-      { ...config.rules[0], extra: subject }, { id: 'missing-fields' },
-      { ...config.rules[0], pattern: '' }, { ...config.rules[0], flags: 'g' },
-      { ...config.rules[0], boundary: 'unknown' }, { ...config.rules[0], id: 'unsafe id' },
-    ].map(rule => JSON.stringify({ version: 1, rules: [rule] }))];
-  for (const text of invalid) {
-    assert.throws(() => parsePersonalIdentityConfig(text), error => {
-      assert.match(error.message, /Personal identity configuration/);
-      assert.ok(!error.message.includes(subject));
-      return true;
-    });
-  }
-});
-
-test('invalid regex and duplicate or reserved IDs fail closed without leaking patterns', () => {
-  for (const rules of [
-    [{ ...config.rules[0], pattern: `[${subject}` }],
-    [config.rules[0], config.rules[0]],
-    [{ ...config.rules[0], id: identityRules[0].id }],
-  ]) {
-    assert.throws(() => parsePersonalIdentityConfig(JSON.stringify({ version: 1, rules })), error => {
-      assert.ok(!error.message.includes(subject));
-      return true;
-    });
-  }
-});
-
-test('configured inventory scans tracked bytes including neutral routing files, not local or untracked files', () => {
+test('ordinary synthetic names, emails and handles are allowed in every tracked location', () => {
   withRepository(repo => {
-    writeFileSync(join(repo, 'untracked.md'), subject);
-    writeFileSync(join(repo, 'ignored.md'), subject);
-    assert.deepEqual(configuredScan(repo), []);
     mkdirSync(join(repo, '.github'));
-    writeFileSync(join(repo, '.github/CODEOWNERS'), subject);
-    writeFileSync(join(repo, 'MAINTAINERS.md'), handle);
-    execFileSync('git', ['-C', repo, 'add', '--', '.github/CODEOWNERS', 'MAINTAINERS.md']);
-    assert.deepEqual(configuredScan(repo).map(x => x.path).sort(), ['.github/CODEOWNERS', 'MAINTAINERS.md']);
-    writeFileSync(join(repo, 'tracked-λ.md'), subject);
-    const found = configuredScan(repo);
-    assert.equal(found.length, 3);
-    assert.ok(found.some(x => x.path === 'tracked-λ.md'));
-    assert.ok(!JSON.stringify(found).includes(subject));
-  });
-});
-
-test('required CLI refuses missing, empty, malformed and invalid config; generic mode never claims personal coverage', () => {
-  withRepository(repo => {
-    for (const text of [undefined, '', '{', JSON.stringify({ version: 1, rules: [] })]) {
-      const result = runCLI(repo, text, '--required');
-      assert.equal(result.status, 1);
-      assert.match(result.stderr, /Personal identity configuration/);
-      assert.ok(!result.stdout.includes('passed'));
+    mkdirSync(join(repo, 'docs'));
+    for (const path of ['MAINTAINERS.md', '.github/CODEOWNERS', 'README.md', 'CODEOWNERS', 'docs/MAINTAINERS.md']) {
+      writeFileSync(join(repo, path), ordinaryIdentity);
+      assert.deepEqual(publicIdentityFindings(path, ordinaryIdentity), []);
+      execFileSync('git', ['-C', repo, 'add', '--', path]);
     }
-    const generic = runCLI(repo, undefined, '--generic');
-    assert.equal(generic.status, 0);
-    assert.match(generic.stdout, /personal scan NOT performed/);
-    assert.throws(() => trackedPublicIdentityFindings(repo, { mode: 'unknown' }), /mode/);
-    assert.equal(runCLI(repo, undefined, '--unknown').status, 1);
-    assert.equal(runCLI(repo, undefined, '--generic', '--required').status, 1);
+    assert.deepEqual(trackedPublicIdentityFindings(repo), []);
+    for (const poisoned of [false, true]) {
+      const result = runNode(repo, script, poisoned);
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(result.stdout.trim(), 'Generic tracked-content scan passed.');
+      assert.equal(result.stderr, '');
+    }
   });
 });
 
-test('configured CLI reports only rule IDs, tracked paths and lines', () => {
+test('actual CLI refuses every generic finding without printing matched content', () => {
   withRepository(repo => {
-    assert.equal(runCLI(repo, JSON.stringify(config), '--required').status, 0);
-    writeFileSync(join(repo, 'tracked-λ.md'), `safe\n${subject}\n`);
-    const result = runCLI(repo, JSON.stringify(config), '--required');
+    for (const [rule, sample] of samples) {
+      writeFileSync(join(repo, 'tracked-λ.md'), `safe\n${sample}\n`);
+      for (const poisoned of [false, true]) {
+        const result = runNode(repo, script, poisoned);
+        assert.equal(result.status, 1);
+        assert.equal(result.stderr.trim(), `tracked-λ.md:2: public identity policy (${rule})`);
+        assert.equal(result.stdout, '');
+        assert.ok(!result.stderr.includes(sample));
+      }
+    }
+  });
+});
+
+test('generic inventory includes routing and Unicode files, excludes ignored and untracked files', () => {
+  withRepository(repo => {
+    const probe = samples[0][1];
+    writeFileSync(join(repo, 'untracked.md'), probe);
+    writeFileSync(join(repo, 'ignored.md'), probe);
+    assert.deepEqual(trackedPublicIdentityFindings(repo), []);
+    mkdirSync(join(repo, '.github'));
+    for (const path of ['.github/CODEOWNERS', 'MAINTAINERS.md', 'tracked-λ.md']) {
+      writeFileSync(join(repo, path), `safe\n${probe}`);
+      execFileSync('git', ['-C', repo, 'add', '--', path]);
+    }
+    const expected = ['.github/CODEOWNERS', 'MAINTAINERS.md', 'tracked-λ.md'];
+    assert.deepEqual(trackedPublicIdentityFindings(repo).map(x => x.path).sort(), expected);
+    const result = runNode(repo, script);
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /tracked-λ\.md:2: public identity policy \(private-name\)/);
-    assert.ok(!result.stderr.includes(subject));
-    assert.ok(!result.stderr.includes(handle));
+    assert.equal(result.stderr.trim().split('\n').length, 3);
   });
 });
 
-test('required environment scan never writes configuration and never falls back to a local file', () => {
+test('obsolete configuration is neither read nor written and retired CLI arguments refuse', () => {
   withRepository(repo => {
+    writeFileSync(join(repo, retiredFile), '{invalid local configuration');
     const before = readdirSync(repo).sort();
-    assert.equal(runCLI(repo, JSON.stringify(config), '--required').status, 0);
+    assert.equal(runNode(repo, script, true).status, 0);
     assert.deepEqual(readdirSync(repo).sort(), before);
-    assert.equal(existsSync(join(repo, personalConfigFile)), false);
-    const scanner = readFileSync(script, 'utf8');
-    assert.doesNotMatch(scanner, /writeFile|appendFile|createWriteStream|\.public-identity\.local\.json/);
-    assert.match(scanner, /configJSON = process\.env\[personalConfigEnvironment\]/);
-    // This file is a synthetic trap: required mode must ignore it entirely.
-    writeFileSync(join(repo, personalConfigFile), JSON.stringify(config));
-    const result = runCLI(repo, undefined, '--required');
-    assert.equal(result.status, 1);
-    assert.match(result.stderr, /PUBLIC_IDENTITY_CONFIG_JSON/);
-    assert.deepEqual(readFileSync(join(repo, personalConfigFile), 'utf8'), JSON.stringify(config));
+    assert.equal(readFileSync(join(repo, retiredFile), 'utf8'), '{invalid local configuration');
+    for (const args of [['--required'], ['--generic'], ['--unknown'], ['--generic', '--required']]) {
+      const result = runNode(repo, script, true, args);
+      assert.equal(result.status, 1);
+      assert.equal(result.stdout, '');
+      assert.match(result.stderr, /accepts no arguments/);
+    }
+    assert.doesNotMatch(readFileSync(script, 'utf8'), /process\.env|JSON\.parse|parsePersonalIdentityConfig|writeFile|appendFile|createWriteStream/);
   });
-});
-test('local configuration path is ignored by the actual Git repository', () => {
-  assert.equal(execFileSync('git', ['check-ignore', personalConfigFile], { cwd: root, encoding: 'utf8' }).trim(), personalConfigFile);
+  assert.equal(execFileSync('git', ['check-ignore', retiredFile], { cwd: root, encoding: 'utf8' }).trim(), retiredFile);
 });
 
-test('CI separates generic checks from the required trusted scan and never delivers configuration to forks', () => {
-  const workflow = readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8');
-  const generic = workflow.split('  verify-indexes:')[1].split('\n  verify-personal-identity:')[0];
-  assert.match(generic, /PUBLIC_IDENTITY_MODE: generic/);
-  const required = workflow.split('  verify-personal-identity:')[1].split('\n  verify-codes:')[0];
-  const condition = /if: \$\{\{ (.+) \}\}/.exec(required)[1];
-  // Evaluate the exact YAML trust refusal expression against synthetic GitHub events.
-  const refuses = github => Function('github', `return (${condition})`)(github);
-  for (const [event, headRepo, actor, expected] of [
-    ['pull_request', 'other/project', 'contributor', true],
-    ['pull_request', 'org/project', 'dependabot[bot]', true],
-    ['pull_request', 'org/project', 'maintainer', false],
-    ['push', undefined, 'maintainer', false],
-    ['workflow_dispatch', undefined, 'maintainer', false],
-  ]) {
-    assert.equal(refuses({ event_name: event, repository: 'org/project', actor,
-      event: { pull_request: { head: { repo: { full_name: headRepo } } } } }), expected);
+test('actual complete index guard works without config and ignores poisoned obsolete environment', () => {
+  for (const poisoned of [false, true]) {
+    const result = runNode(root, join(root, 'scripts/verify-indexes.mjs'), poisoned);
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /Generic tracked-content policy checked/);
+    assert.match(result.stdout, /Tracked public language enforced: 0 findings/);
+    assert.doesNotMatch(result.stdout, /configured personal|personal coverage|required mode/i);
   }
-  assert.match(required, /Fork and automated PRs require a reviewed trusted branch; no private configuration was delivered\.[\s\S]*exit 1[\s\S]*uses: actions\/checkout/);
-  assert.ok(required.indexOf('exit 1') < required.indexOf('secrets.PUBLIC_IDENTITY_CONFIG_JSON'));
-  assert.equal((workflow.match(/secrets\.PUBLIC_IDENTITY_CONFIG_JSON/g) ?? []).length, 1);
-  assert.match(required, /node scripts\/public-identity\.mjs --required/);
-  assert.match(required, /name: Required configured scan\s+env:\s+PUBLIC_IDENTITY_CONFIG_JSON: \$\{\{ secrets\.PUBLIC_IDENTITY_CONFIG_JSON \}\}\s+run: node scripts\/public-identity\.mjs --required/);
-  assert.doesNotMatch(required, /writeFile|appendFile|unlink|\.public-identity\.local\.json|upload-artifact/);
-  assert.ok(!workflow.includes('pull_request_target:'));
+  assert.doesNotMatch(readFileSync(join(root, 'scripts/verify-indexes.mjs'), 'utf8'), /PUBLIC_IDENTITY_/);
+});
+
+test('CI retains its exact contract after removing only the configured job and obsolete mode env', () => {
+  const workflow = readFileSync(join(root, '.github/workflows/ci.yml'), 'utf8').replaceAll('\r\n', '\n');
+  // Existing workflow fingerprint with only those two deletions: pins every
+  // retained job, trigger, permission, credential check and release gate.
+  assert.equal(createHash('sha256').update(workflow).digest('hex'),
+    '0918f3912383d69fab967ed2319f41f1da4be2f33a554d0e923858cdc7831a76');
+  assert.doesNotMatch(workflow, /verify-personal-identity:|PUBLIC_IDENTITY_|pull_request_target:/);
+  const indexes = workflow.split('  verify-indexes:')[1].split('\n  verify-codes:')[0];
+  assert.match(indexes, /run: npm run verify-indexes/);
+  assert.match(indexes, /node --test scripts\/build-source.test.mjs/);
 });
