@@ -2,12 +2,14 @@ import { extensionBlocks } from './extension-entry.js';
 // Parser tests — verified against examples/Parkview-Apts-Glendale-AZ.uwx.md
 // Run: npm test
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseUWFile, getSection, getSectionVariant, deepGet, blockPayload, UWMDParseError } from './parser.js';
 import { validateUWFile } from './validator.js';
+import { buildMeta } from './metadata.js';
+import { toUWEnvelope, computeEnvelopeDigest } from './envelope.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const EXAMPLE_PATH = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
@@ -478,6 +480,89 @@ ${frontmatter}
     const parsed = parseUWFile(wrap('meta:\n  __proto__: "x"\n  kept: "y"'));
     const meta = (parsed.frontmatter as Record<string, unknown>).meta as Record<string, unknown>;
     expect(meta).toEqual({ kept: 'y' });
+  });
+});
+
+describe('section and variant selection keys stay off the prototype', () => {
+  const RESERVED = ['__proto__', 'constructor', 'prototype'] as const;
+  const FRONT = '---\nuw_version: "3.0"\nasset_class: multifamily\ndeal_name: Selection keys\n---\n';
+  function fence(sectionId: string, body: Record<string, unknown>, attrs = '', superseded = false): string {
+    const meta = buildMeta(sectionId, 1, { source: 'manual', actor: 'test', timestamp: '2026-11-19T00:00:00Z' });
+    meta.lifecycle.superseded = superseded;
+    return `\n\`\`\`json uw:section=${sectionId}${attrs}${superseded ? ' superseded=true' : ''}\n${JSON.stringify({ _meta: meta, ...body })}\n\`\`\`\n`;
+  }
+  // A failed refusal must not leak into later tests in this worker.
+  afterEach(() => {
+    delete (Object.prototype as Record<string, unknown>).probe_variant;
+    delete (Object.prototype as Record<string, unknown>).default;
+  });
+  function expectRefused(raw: string): void {
+    let caught: unknown;
+    try { parseUWFile(raw); } catch (error) { caught = error; }
+    expect(Object.hasOwn(Object.prototype, 'probe_variant')).toBe(false);
+    expect(Object.hasOwn(Object.prototype, 'default')).toBe(false);
+    expect(caught).toBeInstanceOf(UWMDParseError);
+    expect((caught as UWMDParseError).code).toBe('RESERVED_SELECTION_KEY');
+  }
+
+  it.each(RESERVED)('refuses role-variant section id %s without touching Object.prototype', sectionId => {
+    expectRefused(FRONT + fence(sectionId, { _role: 'primary', marker: 1 }, ' variant=probe_variant'));
+  });
+  it.each(RESERVED)('refuses single-instance section id %s', sectionId => {
+    expectRefused(FRONT + fence(sectionId, { marker: 1 }));
+    expectRefused(FRONT + fence(sectionId, { marker: 1 }) + fence(sectionId, { marker: 2 }));
+  });
+  it.each(RESERVED)('refuses superseded section id %s', sectionId => {
+    expectRefused(FRONT + fence(sectionId, { marker: 1 }, '', true));
+  });
+  it.each(RESERVED)('refuses variant %s on registry and role-variant sections', variant => {
+    expectRefused(FRONT + fence('operating_statement', { value: 1 }, ` variant=${variant}`));
+    expectRefused(FRONT + fence('rent_roll', { _role: 'primary', value: 1 }, ` variant=${variant}`));
+  });
+
+  it('builds every parsed map without a prototype', () => {
+    const parsed = parseUWFile(FRONT
+      + fence('property', { value: 1 })
+      + fence('property', { value: 0 }, '', true)
+      + fence('operating_statement', { value: 2 }, ' variant=t12')
+      + fence('x_probe', { value: 3 }));
+    for (const map of [parsed.sections, parsed.prose, parsed.superseded, parsed.extensions, parsed.sections.operating_statement]) {
+      expect(Object.getPrototypeOf(map)).toBeNull();
+    }
+    expect(getSection(parsed, 'property')?.content.value).toBe(1);
+    expect(getSectionVariant(parsed, 'operating_statement', 't12')?.content.value).toBe(2);
+  });
+
+  it('accessors read own members only, also on caller-built plain maps', () => {
+    const parsed = parseUWFile(FRONT + fence('property', { value: 1 }) + fence('operating_statement', { value: 2 }, ' variant=t12'));
+    const plain = { ...parsed, sections: { ...parsed.sections, operating_statement: { ...(parsed.sections.operating_statement as object) } } } as typeof parsed;
+    for (const target of [parsed, plain]) {
+      for (const inherited of ['constructor', 'toString', '__proto__', 'hasOwnProperty']) {
+        expect(getSection(target, inherited)).toBeNull();
+        expect(getSectionVariant(target, inherited, 't12')).toBeNull();
+        expect(getSectionVariant(target, 'operating_statement', inherited)).toBeNull();
+      }
+    }
+  });
+
+  it('an own __proto__ section on a caller-built model stays visible to the envelope and its digest', async () => {
+    const parsed = parseUWFile(FRONT + fence('property', { value: 1 }));
+    const block = getSection(parsed, 'property')!;
+    const withSection = (value: number) => {
+      const sections = Object.create(null) as typeof parsed.sections;
+      sections.property = block;
+      const meta = buildMeta('__proto__', 1, { source: 'manual', actor: 'test', timestamp: '2026-11-19T00:00:00Z' });
+      Object.defineProperty(sections, '__proto__', {
+        value: { ...block, annotation: { section: '__proto__' }, meta, content: { _meta: meta, value } },
+        writable: true, enumerable: true, configurable: true,
+      });
+      return { ...parsed, sections } as typeof parsed;
+    };
+    const envelope = toUWEnvelope(withSection(1));
+    expect(Object.keys(envelope.sections)).toContain('__proto__');
+    expect(Object.getPrototypeOf(envelope.sections)).toBeNull();
+    expect(await computeEnvelopeDigest(envelope)).not.toBe(await computeEnvelopeDigest(toUWEnvelope(withSection(2))));
+    expect(await computeEnvelopeDigest(envelope)).not.toBe(await computeEnvelopeDigest(toUWEnvelope(parsed)));
   });
 });
 

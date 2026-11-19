@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Harden parser maps: the Markdown reader builds its section, prose, history, extension and variant maps without a prototype, reads them through own members only, and refuses `__proto__`, `constructor` and `prototype` as a section id or variant with `RESERVED_SELECTION_KEY`.
+
 - Align contributor guidance with neutral maintainer routing and the first outside RFC or PR arrival trigger, including the public comment window.
 
 - Retire configured personal-identity clearance and its CI job; names, handles and emails are allowed. Default tracked-content checks need no configuration; the eight generic rules, public language guard and credential/secret protections remain unchanged.

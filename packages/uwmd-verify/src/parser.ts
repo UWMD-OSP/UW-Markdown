@@ -424,15 +424,17 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
   // editors can still preserve untouched regions of the source document.
   const lines = content.split(/\r?\n/);
 
+  // Every map keyed by a document-authored id has no prototype, so no id can
+  // read or write through to Object.prototype.
   const result: ParsedUWFile = {
     frontmatter: {} as UWFrontmatter,
-    sections: {},
-    prose: {},
+    sections: Object.create(null),
+    prose: Object.create(null),
     pipeline_log: [],
     custom_calculations: [],
     custom_scenarios: [],
-    extensions: {},
-    superseded: {},
+    extensions: Object.create(null),
+    superseded: Object.create(null),
     raw: content,
   };
 
@@ -530,7 +532,9 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
     };
 
     if (firstMember !== undefined) firstSourceMember.set(block, firstMember);
+    // A guarded caller (the signing subject) refuses with its own error first.
     options.onBlock?.(block);
+    refuseReservedSelectionKey(annotation, lineStart);
     scanned.push(block);
   }
 
@@ -578,7 +582,7 @@ function routeBlock(
       prior().push(block);
       return;
     }
-    const existing = result.extensions[sectionId];
+    const existing = ownEntry(result.extensions, sectionId);
     if (roleVariantSections.has(sectionId)) {
       const variant = annotation.variant ?? null;
       const blocks = existing?.mode === 'variants' ? existing.blocks : [];
@@ -596,35 +600,34 @@ function routeBlock(
 
   // Explicitly superseded block — goes to superseded archive, not current sections
   if (annotation.superseded === true || block.meta?.lifecycle?.superseded === true) {
-    if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
-    result.superseded[sectionId].push(block);
+    retainSuperseded(result, sectionId, block);
     return;
   }
 
   // Multi-variant sections — keyed by variant, multiple concurrent instances allowed
   if (MULTI_VARIANT_SECTIONS.has(sectionId) || roleVariantSections.has(sectionId)) {
     const variant = annotation.variant ?? 'default';
-    const existing = result.sections[sectionId];
+    const existing = ownEntry(result.sections, sectionId);
 
     if (!existing || !isMultiVariantMap(existing)) {
-      result.sections[sectionId] = { [variant]: block };
+      const variantMap: { [v: string]: UWBlock } = Object.create(null);
+      defineVariant(variantMap, variant, block);
+      result.sections[sectionId] = variantMap;
     } else {
       const variantMap = existing as { [v: string]: UWBlock };
       // Format §2.7: the last non-superseded block is canonical, whatever its
       // revision. The block it overwrites stays retained in `superseded`, so
       // integrity and subject accounting still see every physical block.
-      if (Object.hasOwn(variantMap, variant)) {
-        if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
-        result.superseded[sectionId].push(variantMap[variant]!);
-      }
+      const prior = ownEntry(variantMap, variant);
+      if (prior) retainSuperseded(result, sectionId, prior);
       defineVariant(variantMap, variant, block);
     }
-    if (!result.prose[sectionId]) result.prose[sectionId] = prose;
+    if (!ownEntry(result.prose, sectionId)) result.prose[sectionId] = prose;
     return;
   }
 
   // Standard single-variant section
-  const existing = result.sections[sectionId] as UWBlock | undefined;
+  const existing = ownEntry(result.sections, sectionId) as UWBlock | undefined;
 
   if (!existing) {
     result.sections[sectionId] = block;
@@ -634,16 +637,43 @@ function routeBlock(
 
   // Format §2.7: the last non-superseded block is canonical, whatever its
   // revision; the block it overwrites stays retained (see above).
-  if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
-  result.superseded[sectionId].push(existing);
+  retainSuperseded(result, sectionId, existing);
   result.sections[sectionId] = block;
   result.prose[sectionId] = prose;
 }
 
+function retainSuperseded(result: ParsedUWFile, sectionId: string, block: UWBlock): void {
+  const history = ownEntry(result.superseded, sectionId);
+  if (history) history.push(block);
+  else result.superseded[sectionId] = [block];
+}
+
+/** An own member of a map keyed by document-authored ids; never an inherited one. */
+function ownEntry<T>(map: Readonly<Record<string, T>>, key: string): T | undefined {
+  return Object.hasOwn(map, key) ? map[key] : undefined;
+}
+
 /**
- * Add or replace a variant peer as an own member. Plain assignment of a variant
- * named `__proto__` would replace the map's prototype and lose the peer; the
- * `{ [variant]: block }` literal that starts a map already defines it.
+ * Section ids and variants select members of the parsed maps. The three
+ * blocked segments are the doors from a property lookup back onto JS
+ * internals, so a document naming one as a selection key is refused here, for
+ * every caller, not only for guarded ones (Protocol §V.13.2 names the same set).
+ */
+function refuseReservedSelectionKey(annotation: UWFenceAnnotation, line: number): void {
+  for (const [role, key] of [['section id', annotation.section], ['variant', annotation.variant]] as const) {
+    if (key !== undefined && isBlockedSegment(key)) {
+      throw new UWMDParseError(
+        'RESERVED_SELECTION_KEY',
+        `Block at line ${line} uses reserved ${role} '${key}'.`,
+        { line },
+      );
+    }
+  }
+}
+
+/**
+ * Add or replace a variant peer as an own member. Variant maps have no
+ * prototype; defining the member keeps that true even for a caller-built map.
  */
 function defineVariant(map: { [v: string]: UWBlock }, variant: string, block: UWBlock): void {
   Object.defineProperty(map, variant, { value: block, writable: true, enumerable: true, configurable: true });
@@ -674,7 +704,7 @@ export function blockPayload(block: UWBlock): unknown {
 }
 
 export function getSection(parsed: ParsedUWFile, sectionId: string): UWBlock | null {
-  const entry = parsed.sections[sectionId];
+  const entry = ownEntry(parsed.sections, sectionId);
   if (!entry) return null;
   if (isMultiVariantMap(entry)) return null; // use getSectionVariant for multi-variant
   return entry as UWBlock;
@@ -685,9 +715,9 @@ export function getSectionVariant(
   sectionId: string,
   variant: string,
 ): UWBlock | null {
-  const entry = parsed.sections[sectionId];
+  const entry = ownEntry(parsed.sections, sectionId);
   if (!entry || !isMultiVariantMap(entry)) return null;
-  return Object.hasOwn(entry, variant) ? (entry as { [v: string]: UWBlock })[variant] ?? null : null;
+  return ownEntry(entry as { [v: string]: UWBlock }, variant) ?? null;
 }
 
 // ─── Path segment safety ─────────────────────────────────────────────────────

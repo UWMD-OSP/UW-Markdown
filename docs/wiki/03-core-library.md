@@ -232,6 +232,11 @@ order.
 - `SOURCE_BLOCK_MALFORMED` — a structured block body that is not one I-JSON
   object (RFC 0106); `parseUWFile` throws it as a `UWMDParseError` with the
   block's line, so a non-strict parse no longer keeps a `_parse_error` block.
+- `RESERVED_SELECTION_KEY` — a fence names `__proto__`, `constructor` or
+  `prototype` as its section id or variant; `parseUWFile` throws it as a
+  `UWMDParseError` with the block's line. Parsed section, prose, history,
+  extension and variant maps have no prototype, and `getSection` /
+  `getSectionVariant` read own members only.
 
 ## editor.ts (starter editor)
 
