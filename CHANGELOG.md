@@ -8,7 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Harden parser maps: the Markdown reader builds its section, prose, history, extension and variant maps without a prototype, reads them through own members only, and refuses `__proto__`, `constructor` and `prototype` as a section id or variant with `RESERVED_SELECTION_KEY`.
+## [4.4.0] - 2026-11-19
 
 - Align contributor guidance with neutral maintainer routing and the first outside RFC or PR arrival trigger, including the public comment window.
 
@@ -23,6 +23,14 @@ protocol, and each package each carry an independent semver).
 - Accept RFC 0132: separate physical occupancy from same-period collected-rent economic occupancy, preserve explicit zero, and expose unavailable reasons in rent-roll derivation and the editor.
 
 - Accept RFC 0131: preserve authored statement aggregates, require complete declared detail for computed subtotals, and expose missing prerequisites and whole-dollar disagreements.
+
+### Security
+
+- `parseUWFile` (`@uwmd/verify`, re-exported by `@uwmd/core`) builds its section, prose, history, extension and variant maps without a prototype, reads them through own members only, and refuses `__proto__`, `constructor` and `prototype` as a section id or variant with `RESERVED_SELECTION_KEY`. A Markdown block could previously write onto `Object.prototype` or keep content out of validation and the semantic digest (GHSA-9w76-w6hc-pwj7).
+
+### Release
+
+- All eight packages move to 4.4.0 together; receipts name `@uwmd/verify` 4.4.0 as the engine.
 
 ### Added
 

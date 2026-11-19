@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/core",
-  "version": "4.3.0",
+  "version": "4.4.0",
   "description": "The UW Markdown starter toolkit — editor, renderer, report, defaults and cascade, refinement, Excel emission, context profiles, the generic writers and the CLI for .uw.md underwriting files, on top of @uwmd/verify (the reference implementation of the standard), whose whole API it re-exports.",
   "repository": {
     "type": "git",
@@ -52,10 +52,10 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@uwmd/verify": "0.2.1"
+    "@uwmd/verify": "4.4.0"
   },
   "peerDependencies": {
-    "@uwmd/signing": "0.6.0"
+    "@uwmd/signing": "4.4.0"
   },
   "peerDependenciesMeta": {
     "@uwmd/signing": {
