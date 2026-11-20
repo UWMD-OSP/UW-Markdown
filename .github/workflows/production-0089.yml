@@ -19,8 +19,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        python: ['3.12.3', '3.12']
+        # 3.12.3 is the exact local verification version (implementations/python
+        # README). setup-python publishes it for Ubuntu up to 24.04 only, so that
+        # cell pins its runner; the current-3.12 cells follow the latest images.
+        include:
+          - { os: ubuntu-24.04, python: '3.12.3' }
+          - { os: ubuntu-latest, python: '3.12' }
+          - { os: windows-latest, python: '3.12.3' }
+          - { os: windows-latest, python: '3.12' }
     env:
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONIOENCODING: utf-8
