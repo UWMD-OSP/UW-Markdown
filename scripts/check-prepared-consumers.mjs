@@ -27,7 +27,10 @@ if (!prepared && !publishedCommit) {
   const npm = process.env.npm_execpath ? process.execPath : process.platform === 'win32' ? 'npm.cmd' : 'npm';
   const prefix = process.env.npm_execpath ? [process.env.npm_execpath] : [];
   try {
-    const packed = publishedCommit ? RELEASE_PACKAGES.map(({ name, dir }) => ({ name, version: manifest(dir).version, files: [] })) : JSON.parse(execFileSync(npm, [...prefix, 'pack', '--workspaces', '--ignore-scripts', '--json', '--pack-destination', sandbox], { cwd: root, encoding: 'utf8' }));
+    // Pack exactly the publication set: `--workspaces` would also pack private
+    // workspaces (the MCP connector), which never publish.
+    const workspaceArgs = RELEASE_PACKAGES.flatMap(({ dir }) => ['--workspace', dir]);
+    const packed = publishedCommit ? RELEASE_PACKAGES.map(({ name, dir }) => ({ name, version: manifest(dir).version, files: [] })) : JSON.parse(execFileSync(npm, [...prefix, 'pack', ...workspaceArgs, '--ignore-scripts', '--json', '--pack-destination', sandbox], { cwd: root, encoding: 'utf8' }));
     assert.equal(packed.length, RELEASE_PACKAGES.length);
     const expected = Object.fromEntries(RELEASE_PACKAGES.map(({ name, dir }) => [name, manifest(dir).version]));
     for (const archive of packed) {

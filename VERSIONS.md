@@ -11,9 +11,8 @@ This file also records the versions actually released.
 The eight launch packages are @uwmd/verify, core, cli, signing, batch, excel,
 report and lake. Their manifests, package-lock workspace entries and all
 internal published-package dependency pins must be exactly 5.0.0 for launch.
-The current mixed 4.x/0.x matrix is existing drift, retained for an accurate
-source audit; any newly prepared prelaunch publication must use 4.x across
-all eight packages. No version is changed by this enforcement work.
+Every prelaunch publication uses 4.x across all eight packages; release 4.4.0
+moves all eight to 4.4.0 together.
 
 ## Current matrix
 
@@ -21,18 +20,22 @@ all eight packages. No version is changed by this enforcement work.
 |---|---|---|
 | Document Envelope / whole-model canonicalization | **2.0 / 2.0** | RFC0089 complete tagged model and `uw-envelope-semantic`; JSON/XML/CSV representations **2.0.0**, XML namespace `/2`; independently versioned from Lite financial subjects and npm packages |
 | `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3); 3.0 names the one verification rule set (Protocol §XII.5, RFC 0111) |
-| UW Protocol | **4.1.0** | format 3.0 only; RFC 0084 adds detached document snapshot authentication (§V.13) to the 4.0.0 contract; carried by core/CLI 4.3.0. Core/CLI 4.0.0, 4.0.1 and 4.1.0 carry Protocol 4.0.0 |
-| `@uwmd/verify` | **0.2.1** | format 3.0, protocol 4.1.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` 4.3.0 depends on it exactly and re-exports it |
-| `@uwmd/core` | **4.3.0** | format 3.0, protocol 4.1.0; `@uwmd/verify` 0.2.1 |
-| `@uwmd/cli` (CLI) | **4.3.0** | `@uwmd/core` 4.3.0 |
-| `@uwmd/excel` | **0.9.19** | `@uwmd/core` 4.3.0, format 3.0, explicit contextual calculations |
-| `@uwmd/report` | **0.9.0** | `@uwmd/core` 4.3.0, starter renderer reference §7.1/§7.2 |
-| `@uwmd/batch` | **0.9.2** | `@uwmd/verify` 0.2.1, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.3.2** | `@uwmd/verify` 0.2.1, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.6.0** | `@uwmd/verify` 0.2.1 and `@uwmd/core` 4.3.0, protocol §V.11, §V.13 document snapshot signatures and §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.3.0 browser entry |
+| UW Protocol | **4.1.0** | format 3.0 only; RFC 0084 adds detached document snapshot authentication (§V.13) to the 4.0.0 contract; carried by core/CLI 4.3.0 and 4.4.0. Core/CLI 4.0.0, 4.0.1 and 4.1.0 carry Protocol 4.0.0 |
+| `@uwmd/verify` | **4.4.0** | format 3.0, protocol 4.1.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` 4.4.0 depends on it exactly and re-exports it |
+| `@uwmd/core` | **4.4.0** | format 3.0, protocol 4.1.0; `@uwmd/verify` 4.4.0 |
+| `@uwmd/cli` (CLI) | **4.4.0** | `@uwmd/core` 4.4.0 |
+| `@uwmd/excel` | **4.4.0** | `@uwmd/core` 4.4.0, format 3.0, explicit contextual calculations |
+| `@uwmd/report` | **4.4.0** | `@uwmd/core` 4.4.0, starter renderer reference §7.1/§7.2 |
+| `@uwmd/batch` | **4.4.0** | `@uwmd/verify` 4.4.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **4.4.0** | `@uwmd/verify` 4.4.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **4.4.0** | `@uwmd/verify` 4.4.0 and `@uwmd/core` 4.4.0, protocol §V.11, §V.13 document snapshot signatures and §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.4.0 browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format 3.0 |
-| `tools/vscode-uwmd` | **0.2.0** | format 3.0; `@uwmd/verify` 0.2.1 (`file:` link) |
+| `tools/vscode-uwmd` | **0.2.0** | format 3.0; `@uwmd/verify` 4.4.0 (`file:` link) |
+
+Release 4.4.0 moves all eight packages to 4.4.0 and pairs core/CLI 4.4.0 with
+the unchanged Protocol 4.1.0 and Format 3.0, with the contents of the 4.4.0
+CHANGELOG section; receipts name `@uwmd/verify` 4.4.0 as the engine.
 
 Release 4.3.0 pairs core/CLI 4.3.0 with the unchanged Protocol 4.1.0 and
 Format 3.0. Verifier 0.2.1 repairs capital-stack and lease-up comparison

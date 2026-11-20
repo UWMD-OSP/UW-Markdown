@@ -58,18 +58,12 @@ describe('lawful variant labels and complete subject accounting', () => {
     expect(parsed.raw).toBe(raw);
   });
   it.each(['__proto__', 'constructor', 'prototype'].flatMap(variant =>
-    [false, true].map(reverse => ({ variant, reverse }))))('keeps blocked-segment variant $variant as an own peer in both source orders (reverse=$reverse)', async ({ variant, reverse }) => {
+    [false, true].map(reverse => ({ variant, reverse }))))('refuses blocked-segment variant $variant in both source orders (reverse=$reverse)', async ({ variant, reverse }) => {
     const peers = [section('z', 111), section(variant, 222)];
     const raw = FRONT + (reverse ? peers.reverse() : peers).join('');
-    const parsed = parseUWFile(raw);
-    const map = parsed.sections.operating_statement as Record<string, UWBlock>;
-    expect(Object.getPrototypeOf(map)).toBe(Object.prototype);
-    expect(Object.keys(map).sort()).toEqual([variant, 'z'].sort());
-    expect(getSectionVariant(parsed, 'operating_statement', variant)?.content.value).toBe(222);
-    expect(parsed.superseded).toEqual({});
-    const changed = raw.replace('"value":222', '"value":223');
-    expect((await resolveReceiptSubject(changed)).subject.digest).not.toBe((await resolveReceiptSubject(raw)).subject.digest);
-    // Signing keeps refusing these selection keys outright.
+    expect(() => parseUWFile(raw)).toThrow(/RESERVED_SELECTION_KEY/);
+    await expect(resolveReceiptSubject(raw)).rejects.toThrow(/RESERVED_SELECTION_KEY/);
+    // Signing keeps refusing these selection keys with its own error.
     await expect(resolveDocumentSigningSubject(raw)).rejects.toThrow(/Unsafe section or variant selection key/);
   });
   it('selects only own variant peers', () => {
