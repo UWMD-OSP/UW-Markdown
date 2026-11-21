@@ -8,9 +8,15 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Pin the exact Python 3.12.3 production-evidence cell to Ubuntu 24.04, the newest image setup-python provides it for; the current-3.12 cells keep the latest runners.
+
 - Draft RFC 0134 proposes refusing `__proto__`, `constructor` and `prototype` as section ids and variants in the Format and every representation, with one registered `RESERVED_SELECTION_KEY` diagnostic.
 
 ## [4.4.0] - 2026-11-19
+
+### Released
+
+Annotated `v4.4.0` targets `c10095f8222b77fc2dee5c96cafd67ff8e292871`. The release workflow published all 8 packages at 4.4.0 with provenance, each the `latest` dist-tag with that `gitHead`. Registry integrity, signatures and attestations and a fresh downstream install pass. The published CLI passes the portable conformance suite 687/687 ([read-only verification run](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/44671585437)). Security advisory [GHSA-9w76-w6hc-pwj7](https://github.com/UWMD-OSP/UW-Markdown/security/advisories/GHSA-9w76-w6hc-pwj7) is published with 4.4.0 as the patched version.
 
 - Align contributor guidance with neutral maintainer routing and the first outside RFC or PR arrival trigger, including the public comment window.
 
