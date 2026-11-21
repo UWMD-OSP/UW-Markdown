@@ -1423,7 +1423,10 @@ const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
  * `system_default` per the cascade in starter guide §V.7).
  */
 export function getAssetClassDefaults(asset_class: string): AssetClassDefaults | null {
-  return REGISTRY[toBuiltinAssetClass(asset_class) ?? asset_class] ?? null;
+  // Only a built-in class names a registry entry, so an inherited member name
+  // (`constructor`, `toString`) never reads through to Object.prototype.
+  const assetClass = toBuiltinAssetClass(asset_class);
+  return assetClass ? REGISTRY[assetClass] ?? null : null;
 }
 
 /**

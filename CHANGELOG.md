@@ -10,6 +10,8 @@ protocol, and each package each carry an independent semver).
 
 - Pin the exact Python 3.12.3 production-evidence cell to Ubuntu 24.04, the newest image setup-python provides it for; the current-3.12 cells keep the latest runners.
 
+- Built-in asset-class registries (calc packs, size intensives, defaults, workbook layouts, class sections and stage overlays) now read only their own entries. An `asset_class` that names an inherited object member such as `constructor` or `toString` resolves to no entry: validation reports `INVALID-ASSET-CLASS-001` instead of throwing, and receipt issuance refuses with `RCP_PACK_UNRESOLVED`.
+
 ## [4.4.0] - 2026-11-19
 
 ### Released

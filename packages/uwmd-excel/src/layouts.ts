@@ -42,5 +42,6 @@ export const SUPPORTED_ASSET_CLASSES: readonly string[] = Object.keys(LAYOUT_REG
  * (the converter only supports the classes with a layout module).
  */
 export function getLayoutForAssetClass(asset_class: string): WorkbookLayout | null {
-  return LAYOUT_REGISTRY[toBuiltinAssetClass(asset_class) ?? asset_class] ?? null;
+  const assetClass = toBuiltinAssetClass(asset_class);
+  return assetClass ? LAYOUT_REGISTRY[assetClass] ?? null : null;
 }

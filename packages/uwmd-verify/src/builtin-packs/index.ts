@@ -64,5 +64,8 @@ const PACK_REGISTRY: Readonly<Record<string, ModuleManifest>> = Object.freeze({
  * is registered (callers may fall back to the multifamily pack or skip metrics).
  */
 export function getPackForAssetClass(asset_class: string): ModuleManifest | null {
-  return PACK_REGISTRY[toBuiltinAssetClass(asset_class) ?? asset_class] ?? null;
+  // Only a built-in class names a registry entry, so an inherited member name
+  // (`constructor`, `toString`) never reads through to Object.prototype.
+  const assetClass = toBuiltinAssetClass(asset_class);
+  return assetClass ? PACK_REGISTRY[assetClass] ?? null : null;
 }

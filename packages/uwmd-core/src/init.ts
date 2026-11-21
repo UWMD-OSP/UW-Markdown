@@ -10,6 +10,7 @@ import {
   parseUWFile,
   SUPPORTED_FORMAT_VERSIONS,
   SCENARIOS,
+  toBuiltinAssetClass,
   writeDoubleQuotedScalar,
 } from '@uwmd/verify';
 
@@ -228,7 +229,8 @@ source_documents: []
   // dc_revenue, mhc_sites) is left out rather than written empty: an empty
   // stub would fail CLS-04 on every required field, and filling it would
   // invent facts. Its absence is a stage-readiness gap (RFC 0116).
-  const officialSections = (BUILTIN_CLASS_CONTENT[assetClass]?.sections ?? [])
+  const builtinClass = toBuiltinAssetClass(assetClass);
+  const officialSections = ((builtinClass ? BUILTIN_CLASS_CONTENT[builtinClass]?.sections : undefined) ?? [])
     .filter((section) => !((section.schema as { required?: string[] }).required?.length))
     .map((section) => section.id);
   sections.push(...officialSections.map(id => ({ id, header: id.replace(/_/g, ' '), label: 'RFC 0080' })));
