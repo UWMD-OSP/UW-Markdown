@@ -36,6 +36,11 @@ moves all eight to 4.4.0 together.
 Release 4.4.0 moves all eight packages to 4.4.0 and pairs core/CLI 4.4.0 with
 the unchanged Protocol 4.1.0 and Format 3.0, with the contents of the 4.4.0
 CHANGELOG section; receipts name `@uwmd/verify` 4.4.0 as the engine.
+All 8 versions are published from annotated `v4.4.0` on
+`c10095f8222b77fc2dee5c96cafd67ff8e292871` (2026-11-20 UTC), with registry
+integrity/provenance, fresh consumers and published-CLI conformance (687/687)
+passing; see the
+[GitHub release](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v4.4.0).
 
 Release 4.3.0 pairs core/CLI 4.3.0 with the unchanged Protocol 4.1.0 and
 Format 3.0. Verifier 0.2.1 repairs capital-stack and lease-up comparison
