@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Draft RFC 0134 proposes refusing `__proto__`, `constructor` and `prototype` as section ids and variants in the Format and every representation, with one registered `RESERVED_SELECTION_KEY` diagnostic.
+
 ## [4.4.0] - 2026-11-19
 
 ### Released
