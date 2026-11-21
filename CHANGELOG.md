@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Pin the exact Python 3.12.3 production-evidence cell to Ubuntu 24.04, the newest image setup-python provides it for; the current-3.12 cells keep the latest runners.
+
 ## [4.4.0] - 2026-11-19
 
 ### Released
