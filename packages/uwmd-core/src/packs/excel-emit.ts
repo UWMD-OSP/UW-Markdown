@@ -76,6 +76,12 @@ const FUNCTION_MAP: Record<string, string> = {
   nper: 'NPER',
 };
 
+/** The Excel name for a builtin. Only an own entry maps, so an inherited member
+ * name (`constructor`, `toString`) is unmapped and refused like any other. */
+function excelFunctionName(name: string): string | undefined {
+  return Object.hasOwn(FUNCTION_MAP, name) ? FUNCTION_MAP[name] : undefined;
+}
+
 /**
  * Emit an Excel formula (without leading `=`) for a parsed expression.
  * Throws ExcelEmitError if the expression references a path not in the map
@@ -167,7 +173,7 @@ export function emitFromAst(expr: Expr, opts: ExcelEmitOptions): string {
     }
 
     case 'call': {
-      const xlName = FUNCTION_MAP[expr.name];
+      const xlName = excelFunctionName(expr.name);
       if (!xlName) {
         throw new ExcelEmitError(
           'EXCEL-EMIT-FN',
@@ -258,7 +264,7 @@ function strictInputs(expr: Expr, opts: ExcelEmitOptions): Set<string> {
         ...intersect([strictInputs(expr.consequent, opts), strictInputs(expr.else, opts)]),
       ]);
     case 'call': {
-      if (!FUNCTION_MAP[expr.name]) return new Set();
+      if (!excelFunctionName(expr.name)) return new Set();
       const args = expr.args.map((a) => strictInputs(a, opts));
       switch (expr.name) {
         case 'sum': return new Set();
@@ -358,7 +364,7 @@ function emitNullFaithful(expr: Expr, opts: ExcelEmitOptions, known: ReadonlySet
     }
 
     case 'call': {
-      const xlName = FUNCTION_MAP[expr.name];
+      const xlName = excelFunctionName(expr.name);
       if (!xlName) return emitFromAst(expr, opts); // EXCEL-EMIT-FN
       const args = expr.args.map((a) => emit(a));
       if (expr.name === 'sum') return `SUM(${args.map((a) => `IF(ISNA(${a}),0,${a})`).join(',')})`;

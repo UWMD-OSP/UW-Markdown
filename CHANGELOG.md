@@ -11,6 +11,7 @@ protocol, and each package each carry an independent semver).
 - Pin the exact Python 3.12.3 production-evidence cell to Ubuntu 24.04, the newest image setup-python provides it for; the current-3.12 cells keep the latest runners.
 
 - Built-in asset-class registries (calc packs, size intensives, defaults, workbook layouts, class sections and stage overlays) now read only their own entries. An `asset_class` that names an inherited object member such as `constructor` or `toString` resolves to no entry: validation reports `INVALID-ASSET-CLASS-001` instead of throwing, and receipt issuance refuses with `RCP_PACK_UNRESOLVED`.
+- The Excel formula emitter and the unit rounding defaults now read only their own built-in entries. A function named after an inherited object member such as `constructor` or `toString` is refused with `EXCEL-EMIT-FN` instead of emitting an invalid formula, and a calculation whose `unit` names one rounds at the default 6 places (Protocol §VIII.5) instead of failing with `CALC-TYPE-001`.
 - Draft RFC 0134 proposes refusing `__proto__`, `constructor` and `prototype` as section ids and variants in the Format and every representation, with one registered `RESERVED_SELECTION_KEY` diagnostic.
 
 ## [4.4.0] - 2026-11-19
