@@ -19,7 +19,7 @@ import { blockPayload } from './parser.js';
 import { SIZE_INTENSIVES, type MetricDictionary, type MetricDictionaryCalculation, type MetricDictionarySize } from './protocol.js';
 import { ruleSetFor } from './rule-sets.js';
 import { resolveSectionBlock } from './section-resolution.js';
-import type { ParsedUWFile, UWBlock } from './types.js';
+import { toBuiltinAssetClass, type ParsedUWFile, type UWBlock } from './types.js';
 import { readYamlScalar } from './yaml-scalar.js';
 import { SIZE_CONTRACT } from './size-contract.js';
 
@@ -143,7 +143,8 @@ export function verifyStatedMetric(
  */
 export function sizeDenominators(formula: string, assetClasses: readonly string[]): string[] {
   const sizes = new Set(assetClasses.flatMap((cls) => {
-    const size = SIZE_INTENSIVES[cls];
+    const builtin = toBuiltinAssetClass(cls);
+    const size = builtin ? SIZE_INTENSIVES[builtin] : undefined;
     return size ? [size.path, ...size.secondary] : [];
   }));
   const found = new Set<string>();

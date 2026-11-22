@@ -860,7 +860,7 @@ export function requiredSectionsFor(stage: DealStage, assetClass?: string): read
 /** Where a class-substituted section should sit in the resolved list: the
  *  index its first displaced base section would have occupied. */
 function indexOfDisplaced(stage: DealStage, assetClass: AssetClass, replacement: string): number {
-  const overlay = STAGE_SECTION_OVERLAYS[assetClass];
+  const overlay = Object.hasOwn(STAGE_SECTION_OVERLAYS, assetClass) ? STAGE_SECTION_OVERLAYS[assetClass] : undefined;
   if (!overlay?.substitute) return -1;
   const base = STAGE_REQUIREMENTS[stage].required_sections;
   const resolved: string[] = [];
@@ -1406,7 +1406,8 @@ export const SIZE_INTENSIVES: Readonly<Record<string, SizeIntensive>> = Object.f
  * unrecognized class (§XIII.3) — never a guess.
  */
 export function getSizeIntensive(assetClass: string): SizeIntensive | null {
-  return SIZE_INTENSIVES[toBuiltinAssetClass(assetClass) ?? assetClass] ?? null;
+  const builtin = toBuiltinAssetClass(assetClass);
+  return builtin ? SIZE_INTENSIVES[builtin] ?? null : null;
 }
 
 /** RFC 0116: class-specific scope size alternatives, without aggregating uses. */
