@@ -60,7 +60,8 @@ export const DEFAULT_ROUND_TO = 6;
 export function resolveRoundTo(decl: { unit?: string; round_to?: number }): number {
   if (decl.round_to !== undefined) return decl.round_to;
   if (decl.unit !== undefined) {
-    const byUnit = DEFAULT_ROUND_TO_BY_UNIT[decl.unit];
+    // Only a listed unit has a default; an inherited member name falls through.
+    const byUnit = Object.hasOwn(DEFAULT_ROUND_TO_BY_UNIT, decl.unit) ? DEFAULT_ROUND_TO_BY_UNIT[decl.unit] : undefined;
     if (byUnit !== undefined) return byUnit;
   }
   return DEFAULT_ROUND_TO;
